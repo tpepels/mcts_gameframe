@@ -30,4 +30,8 @@ public class Move implements IMove {
     public int getUniqueId() {
         return move[0] + move[1] * 1000 + hops * 1000000;
     }
+
+    public String toString() {
+        return "From: " + move[0] + " to: " + move[1] + " hops: " + hops;
+    }
 }

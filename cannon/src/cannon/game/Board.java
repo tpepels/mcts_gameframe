@@ -478,12 +478,12 @@ public class Board implements IBoard {
     }
 
     @Override
-    public IMove[] getExpandMoves() {
+    public MoveList getExpandMoves() {
         if (allMovesForPlayer != currentPlayer) {
             //
             getAllMovesForPlayer(currentPlayer);
         }
-        return moves.getArrayCopy();
+        return moves;
     }
 
     @Override
@@ -583,6 +583,21 @@ public class Board implements IBoard {
     @Override
     public int getMaxUniqueMoveId() {
         return 59999;
+    }
+
+    @Override
+    public void newDeterminization(int myPlayer) {
+        // No implementation required
+    }
+
+    @Override
+    public boolean isPartialObservable() {
+        return false;
+    }
+
+    @Override
+    public boolean isLegal(IMove move) {
+        return true;
     }
 
     @Override

@@ -4,6 +4,7 @@ import ai.FastLog;
 import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
+import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,10 +60,10 @@ public class TreeNode {
         n.nVisits++;
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
-            if (n.isTerminal()) // Game is a draw
+            if (n.isTerminal()) // Game is terminal, no more moves can be played
                 child = n;
             else
-                child = n.select();
+                child = n.select(board);
         }
         double result;
         // (Solver) Check for proven win / loss / draw
@@ -122,8 +123,8 @@ public class TreeNode {
         // If one of the nodes is a win, we don't have to select
         TreeNode winNode = null;
         // Generate all moves
-        IMove[] moves = board.getExpandMoves();
-        children = new ArrayList<TreeNode>(moves.length);
+        MoveList moves = board.getExpandMoves();
+        children = new ArrayList<TreeNode>(moves.size());
 
         // (AUCT) Add an extra virtual node
         if (options.accelerated) {
@@ -134,19 +135,22 @@ public class TreeNode {
             vNode.velocity = velocity;
             children.add(vNode);
         }
-
+        double value;
+        int winner;
         // Add all moves as children to the current node
-        for (IMove move1 : moves) {
-            double value = 0;
-            if (board.doAIMove(move1, player)) {
-                TreeNode child = new TreeNode(nextPlayer, move1, options);
+        for (int i = 0; i < moves.size(); i++) {
+            // If the game is partial observable, we don't want to do the solver part
+            if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
+                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
                 // Check for a winner, (Solver)
-                final int winner = board.checkWin();
+                winner = board.checkWin();
                 // Only the player to move can win
                 if (winner == player) {
                     value = INF;
                     // This is a win for the expanding node
                     winNode = child;
+                } else {
+                    value = 0.;
                 }
                 // Set the value of the child (0 = nothing, +/-INF win/loss)
                 child.totValue = value;
@@ -154,13 +158,17 @@ public class TreeNode {
                 children.add(child);
                 // reset the board
                 board.undoMove();
+            } else if (board.isPartialObservable()) {
+                // No move-checking for partial observable games
+                // Also, the legality of the move depends on the determinization
+                children.add(new TreeNode(nextPlayer, moves.get(i), options));
             }
         }
         // If one of the nodes is a win, return it.
         return winNode;
     }
 
-    private TreeNode select() {
+    private TreeNode select(IBoard board) {
         TreeNode selected = null;
         // Below a threshold, select a random child
         if (nVisits < children.size()) {
@@ -178,6 +186,9 @@ public class TreeNode {
         for (TreeNode c : children) {
             // Skip virtual nodes
             if (options.accelerated && c.isVirtual())
+                continue;
+            // If the game is partial observable, moves in the tree may not be legal
+            if (board.isPartialObservable() && !board.isLegal(c.getMove()))
                 continue;
 
             double uctValue = c.avgValue + Math.sqrt(l.log(nVisits + 1) / (c.nVisits + epsilon));
@@ -211,7 +222,7 @@ public class TreeNode {
             moves = board.getPlayoutMoves();
             moveMade = false;
             while (!moveMade) {
-                // All moves were thrown away, the pentalath.game is a draw
+                // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
                     gameEnded = true;
                     // The current player has no moves left
@@ -237,7 +248,6 @@ public class TreeNode {
                 }
             }
         }
-
         if (winner == player) {
             return 1;
         } else if (winner == IBoard.DRAW) {
@@ -247,12 +257,15 @@ public class TreeNode {
         }
     }
 
-    public TreeNode getBestChild() {
+    public TreeNode getBestChild(IBoard board) {
         double max = Double.NEGATIVE_INFINITY, value;
         TreeNode bestChild = null;
         for (TreeNode t : children) {
             // (AUCT) Skip virtual children
             if (options.accelerated && t.isVirtual())
+                continue;
+            // If the game is partial observable, moves in the tree may not be legal
+            if (board.isPartialObservable() && !board.isLegal(t.getMove()))
                 continue;
             // Add a small number to the visits in case nVisits = 0
             value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));

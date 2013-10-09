@@ -7,12 +7,12 @@ import ai.framework.MoveCallback;
 
 public class MCTSPlayer implements AIPlayer, Runnable {
 
-    private final int timeInterval = 10000;
+    private boolean interrupted = false, parallel = true;
     private TreeNode root;
     private IBoard board;
     private MoveCallback callback;
-    private boolean interrupted = false, parallel = true;
     private IMove bestMove;
+    private int myPlayer;
     //
     private MCTSOptions options;
 
@@ -28,6 +28,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         this.board = board;
         this.callback = callback;
         this.parallel = parallel;
+        this.myPlayer = myPlayer;
         // Create a new root, or reuse the old tree
         if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
             root = new TreeNode(myPlayer, options);
@@ -66,20 +67,22 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     public void run() {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
-        // Search for 15 seconds
-        long endTime = System.currentTimeMillis() + timeInterval;
+        // Search for timeInterval seconds
+        long endTime = System.currentTimeMillis() + options.timeInterval;
         int simulations = 0;
-        // while (simulations < 50000) {
+        // Run the MCTS algorithm while time allows it
         while (!interrupted) {
             simulations++;
-            if (simulations % timeInterval == 0 && System.currentTimeMillis() >= endTime) {
-                break;
+            if (System.currentTimeMillis() >= endTime) {
+                interrupted = true;
             }
+            //
+            board.newDeterminization(myPlayer);
             // Make one simulation from root to leaf.
             TreeNode.MCTS(board, root);
         }
         // Return the best move found
-        TreeNode bestChild = root.getBestChild();
+        TreeNode bestChild = root.getBestChild(board);
         bestMove = bestChild.getMove();
         if (!interrupted && parallel)
             callback.makeMove(bestChild.getMove());
@@ -89,7 +92,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             root = bestChild;
         // show information on the best move
         if (options.debug) {
-            System.out.println("Did " + simulations + " simulations.");
+            System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
         }
     }

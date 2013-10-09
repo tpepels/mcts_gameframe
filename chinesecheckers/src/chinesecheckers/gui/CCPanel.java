@@ -179,7 +179,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         } else if (selected == -1 || board.board[position].occupant == board.getPlayerToMove()) {
             selected = position;
             board.moves.clear();
-            board.generateMovesForPiece(position);
+            board.generateMovesForPiece(position, true);
             repaint();
         }
     }

@@ -5,7 +5,7 @@ import java.util.Random;
 @SuppressWarnings("serial")
 public class FastRandom extends Random {
 	// Stores a number of pre-computed random numbers
-	private final static int N_RAND = 200000;
+	private final static int N_RAND = 1000000;
 	private final static double[] doubles = new double[N_RAND];
 	private final static Random r = new Random();
 	// Counter for the current random number

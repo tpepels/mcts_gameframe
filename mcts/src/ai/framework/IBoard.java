@@ -10,6 +10,25 @@ public interface IBoard {
     public final int P1 = 1, P2 = 2;
 
     /**
+     * Is called before every iteration to create a new determinization.
+     * If your game is fully observable, leave the implementation blank.
+     *
+     * @param myPlayer The player running the algorithm
+     */
+    public void newDeterminization(int myPlayer);
+
+    public boolean isPartialObservable();
+
+    /**
+     * In partially observable games, the legality of a move is tested during selection.
+     * If your game is fully observable, simply return true
+     *
+     * @param move the move to check
+     * @return true, if the move is legal, false otherwise
+     */
+    public boolean isLegal(IMove move);
+
+    /**
      * Should return true if the pentalath.game allows draws.
      *
      * @return True, if draws are possible, false otherwise
@@ -38,7 +57,7 @@ public interface IBoard {
      * @param player The player to move
      * @return a list of legal moves, may contain illegal moves tested be doAIMove
      */
-    public IMove[] getExpandMoves();
+    public MoveList getExpandMoves();
 
     /**
      * Get all moves that can be used to simulate the current pentalath.game

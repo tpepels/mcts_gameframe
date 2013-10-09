@@ -2,6 +2,7 @@ package pentalath.game;
 
 import ai.framework.IBoard;
 import ai.framework.IMove;
+import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,8 @@ public class Board implements IBoard {
     public static final int FREE = 0;
     public static final int SIZE = 81, REAL_SIZE = 61, WIDTH = 9;
     public static final int NUM_NEIGHBOURS = 6, ROW_SIZE = 5;
+    public static final MoveList moves = new MoveList(REAL_SIZE);
+    public static final ArrayList<IMove> poMoves = new ArrayList<IMove>(REAL_SIZE);
     //
     private static final int[] N_VECTOR_ODD = {-9, -8, +1, +10, +9, -1}, N_VECTOR_EVEN = {-10, -9, +1, +9, +8, -1};
     // Move ordering that starts at the centre and spirals outwards
@@ -47,7 +50,6 @@ public class Board implements IBoard {
     public double maxHistVal;
     public int startindex = 0; // Skip the first when getting a move to make
     public int numCapture = 0;
-
     // private void hashCurrentPlayer() {
     // if (currentPlayer == Board.P1) {
     // zobristHash ^= blackHash;
@@ -270,17 +272,17 @@ public class Board implements IBoard {
     }
 
     @Override
-    public IMove[] getExpandMoves() {
+    public MoveList getExpandMoves() {
         int count = (!firstMove) ? freeSquares : REAL_SIZE;
         int c = 0;
-        IMove[] moves = new IMove[count];
+        moves.clear();
         //
         for (int i = 0; i < SIZE; i++) {
             if (board[i] == null)
                 continue;
             // Check if position is free and add it to the free moves
             if (firstMove || board[i].occupant == 0) {
-                moves[c] = new Move(i);
+                moves.add(new Move(i));
                 c++;
                 if (c == count)
                     break;
@@ -293,7 +295,7 @@ public class Board implements IBoard {
     public List<IMove> getPlayoutMoves() {
         int count = 0;
         count = (!firstMove) ? freeSquares : REAL_SIZE;
-        ArrayList<IMove> freeMoves = new ArrayList<IMove>(count);
+        poMoves.clear();
         int c = 0;
         // Add the moves from the spiral ordering
         for (int i = 0; i < SIZE; i++) {
@@ -301,15 +303,15 @@ public class Board implements IBoard {
                 continue;
             // Check if position is free and add it to the free moves
             if (firstMove || board[i].occupant == 0) {
-                freeMoves.add(new Move(i));
+                poMoves.add(new Move(i));
                 c++;
                 // No need to look further
                 if (c == count)
-                    return freeMoves;
+                    return poMoves;
             }
         }
         System.err.println("Error in getPlayoutMoves()");
-        return freeMoves;
+        return poMoves;
     }
 
     public boolean capturePieces(int pos) {
@@ -610,6 +612,20 @@ public class Board implements IBoard {
     @Override
     public int getMaxUniqueMoveId() {
         return 99;
+    }
+
+    @Override
+    public void newDeterminization(int myPlayer) {
+    }
+
+    @Override
+    public boolean isPartialObservable() {
+        return false;
+    }
+
+    @Override
+    public boolean isLegal(IMove move) {
+        return true;
     }
 
     @Override

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/cannon/cannon.iml" filepath="$PROJECT_DIR$/cannon/cannon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/chinesecheckers/chinesecheckers.iml" filepath="$PROJECT_DIR$/chinesecheckers/chinesecheckers.iml" />
+      <module fileurl="file://$PROJECT_DIR$/lostcities/lostcities.iml" filepath="$PROJECT_DIR$/lostcities/lostcities.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mcts/mcts.iml" filepath="$PROJECT_DIR$/mcts/mcts.iml" />
+      <module fileurl="file://$PROJECT_DIR$/pentalath/pentalath.iml" filepath="$PROJECT_DIR$/pentalath/pentalath.iml" />
+    </modules>
+  </component>
+</project>
+
