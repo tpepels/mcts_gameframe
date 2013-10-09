@@ -1,5 +1,7 @@
 package lostcities;
 
+import ai.mcts.MCTSOptions;
+import ai.mcts.MCTSPlayer;
 import lostcities.game.Deck;
 import lostcities.game.Move;
 import lostcities.game.Table;
@@ -7,19 +9,28 @@ import lostcities.game.Table;
 import java.util.Scanner;
 
 public class Game {
-    public char hidden = 176;
 
     public static void main(String[] args) {
         Table t = new Table();
         t.initialize();
         String player;
         Scanner in = new Scanner(System.in);
+        MCTSOptions options = new MCTSOptions();
+        MCTSPlayer aiPlayer = new MCTSPlayer();
+        aiPlayer.setOptions(options);
+        Move m = null;
         //
         while (t.checkWin() == Table.NONE_WIN) {
             drawTable(t);
             player = (t.getPlayerToMove() == Table.P1) ? "Player 1" : "Player 2";
+            if(t.getPlayerToMove() == Table.P2) {
+                System.out.println("AI Player thinking. . .");
+                aiPlayer.getMove(t, null, Table.P2, false, m);
+                t.doMove((Move)aiPlayer.getBestMove());
+                continue;
+            }
             System.out.println(player + " select a card.");
-            Move m = null;
+            m = null;
             int index = -1;
             while (m == null || !t.isLegal(m)) {
                 if(m != null)

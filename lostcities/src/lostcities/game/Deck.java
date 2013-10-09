@@ -4,14 +4,15 @@ import java.util.Random;
 
 public class Deck {
     private static final Random rnd = new Random();
-    public static int MAX_CARD = 10, INVESTMENT = 11;
+    public static int MAX_CARD = 10, INVESTMENT = 11, N_INVEST_C = 3;
     private static int[] COLORS = {100, 200, 300, 400, 500};
     //
     private final int[] deck;
-    private int size;
+    private int size, initSize;
 
     public Deck(int size) {
         deck = new int[size];
+        this.initSize = size;
         this.size = size - 1;
     }
 
@@ -59,13 +60,14 @@ public class Deck {
      */
     public void dealHand(int[] hand, int startIndex, int endIndex) {
         for (int i = startIndex; i < endIndex; i++) {
-           hand[i] = takeCard();
+            hand[i] = takeCard();
         }
     }
 
     public Deck copy() {
-        Deck newDeck = new Deck(size);
-        System.arraycopy(deck, 0, newDeck.deck, 0, size);
+        Deck newDeck = new Deck(initSize);
+        System.arraycopy(deck, 0, newDeck.deck, 0, size());
+        newDeck.size = size;
         return newDeck;
     }
 
@@ -77,21 +79,20 @@ public class Deck {
                 index++;
             }
             /* Each color has three investment cards */
-            deck[index] = COLOR + INVESTMENT;
-            index++;
-            deck[index] = COLOR + INVESTMENT;
-            index++;
-            deck[index] = COLOR + INVESTMENT;
-            index++;
+            for (int j = 0; j < N_INVEST_C; j++) {
+                deck[index] = COLOR + INVESTMENT;
+                index++;
+            }
         }
         // Shuffle!
+        shuffleDeck();
         shuffleDeck();
     }
 
     // Fisher–Yates shuffle
     public void shuffleDeck() {
         int index, a;
-        for (int i = size - 1; i > 0; i--) {
+        for (int i = size() - 1; i > 0; i--) {
             index = rnd.nextInt(i + 1);
             // Simple swap
             a = deck[index];

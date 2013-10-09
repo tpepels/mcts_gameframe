@@ -173,11 +173,9 @@ public class TreeNode {
         // Below a threshold, select a random child
         if (nVisits < children.size()) {
             selected = children.get(r.nextInt(children.size()));
-            if (options.accelerated) {
-                while (selected.isVirtual()) {
-                    selected = children.get(r.nextInt(children.size()));
-                }
-            }
+            while (!board.isLegal(selected.getMove()) || (options.accelerated && selected.isVirtual()))
+                selected = children.get(r.nextInt(children.size()));
+
             return selected;
         }
         //

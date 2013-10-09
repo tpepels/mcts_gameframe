@@ -31,7 +31,7 @@ public class Table implements IBoard {
         // Deal second player's hand
         deck.dealHand(hands, P2_HAND_I, hands.length);
         // Initialize the stacks
-        for(int i = 0; i < stacks.length; i++) {
+        for (int i = 0; i < stacks.length; i++) {
             stacks[i] = new Stack();
         }
     }
@@ -63,6 +63,9 @@ public class Table implements IBoard {
             if (cardType == Deck.INVESTMENT) {
                 move.setPrevTopCard(expeditionCards[pStack]);
                 multipliers[pStack]++;
+                // Investment cards multiply the cost of expeditions
+                expeditionScores[pStack] -= EXP_COST;
+                scores[pIndex] -= EXP_COST;
             } else {
                 // For undoing the move
                 move.setPrevTopCard(expeditionCards[pStack]);
@@ -70,9 +73,12 @@ public class Table implements IBoard {
                 expeditionCards[pStack] = cardType;
                 // Add the score, multiplied to the total score of the player
                 scores[pIndex] += cardType * multipliers[pStack];
+                expeditionScores[pStack] += cardType * multipliers[pStack];
                 // Bonus points for more than 8 cards on any given expedition
-                if (numExpeditionCards[pStack] >= N_BONUS_CARDS)
+                if (numExpeditionCards[pStack] >= N_BONUS_CARDS) {
                     scores[pIndex] += BONUS;
+                    expeditionScores[pStack] += BONUS;
+                }
             }
         }
         int draw = move.getMove()[1];
@@ -90,8 +96,7 @@ public class Table implements IBoard {
                 }
             }
         } else {
-            pStack = (currentPlayer == P1) ? draw : P2_EXP_I + draw;
-            hands[handIndex] = stacks[pStack].takeCard();
+            hands[handIndex] = stacks[draw - 1].takeCard();
         }
         currentPlayer = getOpponent(currentPlayer);
     }
@@ -124,12 +129,10 @@ public class Table implements IBoard {
             // Move for drawing from deck &
             // Moves for drawing from coloured stacks (0 < j < 5)
             for (int j = 0; j < stacks.length + 1; j++) {
-                if (j == 0 || !stacks[j - 1].isEmpty()) {
-                    // Discard move
-                    moves.add(new Move(i, j, true));
-                    // Play card move
-                    moves.add(new Move(i, j, false));
-                }
+                // Discard move
+                moves.add(new Move(i, j, true));
+                // Play card move
+                moves.add(new Move(i, j, false));
             }
         }
     }
@@ -201,12 +204,10 @@ public class Table implements IBoard {
             deck.returnCard(hands[handIndex]);
             winner = NONE_WIN;
         } else {
-            int pStack = (currentPlayer == P1) ? draw : P2_EXP_I + draw;
-            stacks[pStack].addCard(hands[handIndex]);
+            stacks[draw - 1].addCard(hands[handIndex]);
         }
         // Return the played card the the player's hand
         int stack = (card / 100) - 1;
-        int pStack = (currentPlayer == P1) ? stack : P2_EXP_I + stack;
         // Type of move
         if (move.getType() == Move.DISCARD) {
             // Return the discarded card to the player's hand
@@ -216,17 +217,24 @@ public class Table implements IBoard {
             // Either investment, or the value of the card
             int cardType = card % 100;
             int pIndex = (currentPlayer == P1) ? 0 : 1;
-
-            // We're adding an investment
+            int pStack = (currentPlayer == P1) ? stack : P2_EXP_I + stack;
+            // We're taking back an investment
             if (cardType == Deck.INVESTMENT) {
                 multipliers[pStack]--;
+                // Investment
+                // Investment cards multiply the cost of expeditions
+                expeditionScores[pStack] += EXP_COST;
+                scores[pIndex] += EXP_COST;
             } else {
                 expeditionCards[pStack] = move.getPrevTopCard();
                 // Subtract the score, multiplied, from the total score of the player
                 scores[pIndex] -= cardType * multipliers[pStack];
+                expeditionScores[pStack] -= cardType * multipliers[pStack];
                 // Bonus points for more than 8 cards on any given expedition
-                if (numExpeditionCards[pStack] == N_BONUS_CARDS)
+                if (numExpeditionCards[pStack] == N_BONUS_CARDS) { // We are taking the 8th card
                     scores[pIndex] -= BONUS;
+                    expeditionCards[pIndex] -= BONUS;
+                }
             }
             // Keep track of the number of cards per expedition
             numExpeditionCards[pStack]--;

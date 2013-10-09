@@ -23,8 +23,8 @@ public class Stack {
 
     public Stack copy() {
         Stack newStack = new Stack();
-        if (index > 0) {
-            System.arraycopy(stack, 0, newStack.stack, 0, index);
+        if (index >= 0) {
+            System.arraycopy(stack, 0, newStack.stack, 0, index + 1);
             newStack.index = index;
         }
         return newStack;
