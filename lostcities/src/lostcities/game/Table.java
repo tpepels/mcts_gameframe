@@ -145,6 +145,9 @@ public class Table implements IBoard {
 
     public void generateAllMoves() {
         moves.clear();
+        // Don't generate moves if there is already a winner
+        if(winner != NONE_WIN)
+            return;
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
         for (int i = startI; i < endI; i++) {
@@ -174,6 +177,9 @@ public class Table implements IBoard {
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         playoutMoves.clear();
+        // Don't generate moves if there is already a winner
+        if(winner != NONE_WIN)
+            return Arrays.asList();
         Arrays.fill(minCard, 20);
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
