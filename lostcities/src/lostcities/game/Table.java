@@ -178,56 +178,58 @@ public class Table implements IBoard {
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
         int stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
-        int card, colour, stack, type;
-        boolean canPlay;
+        int card, colour, stack, value;
+        boolean canPlay, hasMove = false;
         for (int i = startI; i < endI; i++) {
             canPlay = false;
             card = hands[i];
-            type = card % 100;
+            value = card % 100;
             colour = (card / 100) - 1;
             stack = colour + stackI;
             // Investment card --> no expedition cards have been played
-            if (type == Deck.INVESTMENT && expeditionCards[stack] == 0) {
+            if (value == Deck.INVESTMENT && expeditionCards[stack] == 0) {
                 canPlay = true;
-            } else if (type != Deck.INVESTMENT && expeditionCards[stack] < type) {
+            } else if (value != Deck.INVESTMENT && expeditionCards[stack] < value) {
                 // Expedition card, can be played in the expedition
                 canPlay = true;
+                hasMove = true;
                 // Remember the lowest card per colour
-                if (minCard[colour] > type) {
-                    minCard[colour] = type;
+                if (minCard[colour] > value) {
+                    minCard[colour] = value;
                 }
             }
             // Move for drawing from deck &
             // Moves for drawing from coloured stacks (0 < j < 5)
-            if (canPlay) {
-                for (int j = 0; j < stacks.length + 1; j++) {
-                    if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
-                        // Discard move
-//                    if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW))
-//                        playoutMoves.add(new Move(i, j, true));
-                        // Play card move
-                        //if (canPlay)
+            for (int j = 0; j < stacks.length + 1; j++) {
+                if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
+                    // Discard move
+                    if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW))
+                        playoutMoves.add(new Move(i, j, true));
+                    // Play card move
+                    if (canPlay)
                         playoutMoves.add(new Move(i, j, false));
-                    }
                 }
             }
         }
         // We now have all legal moves, but it doesn't make sense to play high cards when low ones are in hand
         // At the end of the game though, this may not apply (dump high cards quick), use e-greedy with some p here.
-        if (heuristics && deck.size() >= 5) {
+        if (hasMove && heuristics && deck.size() >= 5) {
             Iterator<IMove> i = playoutMoves.iterator();
             IMove m;
             // Make sure no cards higher than the lowest available card are played
             while (i.hasNext()) {
                 m = i.next();
                 card = hands[m.getMove()[0]];
-                type = card % 100;
-                // Only playing value-cards is considered
-                if (m.getType() == Move.DISCARD || type == Deck.INVESTMENT)
+                value = card % 100;
+                if (value == Deck.INVESTMENT)
                     continue;
+                // Only playing value-cards is considered
+                if (m.getType() == Move.DISCARD) {
+                    i.remove();
+                    continue;
+                }
                 colour = (card / 100) - 1;
-                stack = colour + stackI;
-                if (minCard[colour] < type || numExpeditionCards[stack] == 0) {
+                if (minCard[colour] < value) {
                     i.remove();
                 }
             }
