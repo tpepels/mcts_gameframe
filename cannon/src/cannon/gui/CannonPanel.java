@@ -186,7 +186,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
             }
             // Draw the valid moves
             if (occ == Board.B_SOLDIER || occ == Board.W_SOLDIER) {
-                board.getValidMovesForSoldier(position, color);
+                board.getValidMovesForSoldier(position, color, false);
             }
             repaint();
         }

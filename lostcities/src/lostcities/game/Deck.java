@@ -45,9 +45,10 @@ public class Deck {
      * @param startIndex Start index of the hand in the hand array
      * @param endIndex   Final index of the hand in the hand array (i < endIndex)
      */
-    public void addHandToDek(int[] hand, int startIndex, int endIndex) {
+    public void addHandToDek(int[] hand, int startIndex, int endIndex, boolean[] known) {
         for (int i = startIndex; i < endIndex; i++) {
-            deck[++size] = hand[i];
+            if (!known[i])
+                deck[++size] = hand[i];
         }
     }
 
@@ -58,9 +59,10 @@ public class Deck {
      * @param startIndex Start index of the hand in the hand array
      * @param endIndex   Final index of the hand in the hand array (i < endIndex)
      */
-    public void dealHand(int[] hand, int startIndex, int endIndex) {
+    public void dealHand(int[] hand, int startIndex, int endIndex, boolean[] known) {
         for (int i = startIndex; i < endIndex; i++) {
-            hand[i] = takeCard();
+            if (!known[i])
+                hand[i] = takeCard();
         }
     }
 

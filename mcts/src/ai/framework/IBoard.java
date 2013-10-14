@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface IBoard {
     /**
-     * Win/loss/draw and player definitions
+     * Win/loss/draw and player definitions, don't change these
      */
     public final int NONE_WIN = 0, P1_WIN = 1, P2_WIN = 2, DRAW = 3;
     public final int P1 = 1, P2 = 2;
@@ -64,7 +64,7 @@ public interface IBoard {
      *
      * @return a list of all moves (can contain illegal moves)
      */
-    public List<IMove> getPlayoutMoves();
+    public List<IMove> getPlayoutMoves(boolean heuristics);
 
     /**
      * Undo the last move made on the board

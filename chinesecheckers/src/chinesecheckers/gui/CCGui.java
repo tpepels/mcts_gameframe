@@ -40,7 +40,7 @@ public class CCGui extends JFrame {
         setResizable(false);
         setBackground(Color.BLACK);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 600, 700);
+        setBounds(100, 100, 568, 695);
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -57,7 +57,6 @@ public class CCGui extends JFrame {
             }
         });
         mnFile.add(mntmNewGame);
-        mnFile.addSeparator();
 
         JMenu mnPlayer = new JMenu("Player 1");
         menuBar.add(mnPlayer);
@@ -120,21 +119,12 @@ public class CCGui extends JFrame {
         });
         menuBar.add(mntmNewMenuItem_1);
 
-        JMenuItem mntmPrintStats = new JMenuItem("Print stats");
-        menuBar.add(mntmPrintStats);
-        mntmPrintStats.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                // ccPanel.printStats();
-            }
-        });
-
         ccPanel = new CCPanel(currentBoard, true, false);
         ccPanel.setBackground(Color.BLACK);
         ccPanel.setLayout(null);
         setContentPane(ccPanel);
 
     }
-
 
     public static void showBoard(Board board) {
         ccPanel.setBoard(board);

@@ -9,47 +9,65 @@ import lostcities.game.Table;
 import java.util.Scanner;
 
 public class Game {
+    private static boolean allAi = true;
 
     public static void main(String[] args) {
         Table t = new Table();
         t.initialize();
-        String player;
+        String player = "";
         Scanner in = new Scanner(System.in);
-        MCTSOptions options = new MCTSOptions();
-        MCTSPlayer aiPlayer = new MCTSPlayer();
-        aiPlayer.setOptions(options);
+        MCTSOptions options1 = new MCTSOptions();
+        MCTSPlayer aiPlayer1 = new MCTSPlayer();
+        aiPlayer1.setOptions(options1);
+
+        MCTSOptions options2 = new MCTSOptions();
+        MCTSPlayer aiPlayer2 = new MCTSPlayer();
+        options2.useHeuristics = false;
+        aiPlayer2.setOptions(options2);
+
+        MCTSPlayer aiPlayer;
+
         Move m = null;
         //
         while (t.checkWin() == Table.NONE_WIN) {
             drawTable(t);
+            if (m != null)
+                System.out.println(player + " played " + m);
             player = (t.getPlayerToMove() == Table.P1) ? "Player 1" : "Player 2";
-            if(t.getPlayerToMove() == Table.P2) {
+            if (allAi || t.getPlayerToMove() == Table.P2) {
                 System.out.println("AI Player thinking. . .");
-                aiPlayer.getMove(t, null, Table.P2, false, m);
-                t.doMove((Move)aiPlayer.getBestMove());
-                continue;
-            }
-            System.out.println(player + " select a card.");
-            m = null;
-            int index = -1;
-            while (m == null || !t.isLegal(m)) {
-                if(m != null)
-                    System.out.println("illegal move - select another");
-                index = -1;
-                while (index == -1) {
-                    String cardString = in.nextLine();
-                    int card = getCard(cardString);
-                    index = getHandIndex(card, t.getPlayerToMove(), t);
-                    if (index == -1)
-                        System.out.println("Card not in hand");
+                if (t.getPlayerToMove() == Table.P1) {
+                    aiPlayer = aiPlayer1;
+                } else {
+                    aiPlayer = aiPlayer2;
                 }
-                System.out.println("Discard? (true/false)");
-                boolean discard = in.nextBoolean();
-                in.nextLine();
-                System.out.println("Draw from which stack? (0 = Deck, 1 = Y ... 5 = R");
-                int draw = in.nextInt();
-                in.nextLine();
-                m = new Move(index, draw, discard);
+                aiPlayer.getMove(t.copy(), null, t.getPlayerToMove(), false, m);
+                m = (Move) aiPlayer.getBestMove();
+                t.doMove(m);
+                continue;
+            } else {
+                System.out.println(player + " select a card.");
+                m = null;
+                int index = -1;
+                while (m == null || !t.isLegal(m)) {
+                    if (m != null)
+                        System.out.println("illegal move - select another");
+                    index = -1;
+                    while (index == -1) {
+                        String cardString = in.nextLine();
+                        int card = getCard(cardString);
+                        index = getHandIndex(card, t.getPlayerToMove(), t);
+                        if (index == -1)
+                            System.out.println("Card not in hand");
+                    }
+                    System.out.println("Discard? (true/false)");
+                    boolean discard = in.nextBoolean();
+                    in.nextLine();
+                    System.out.println("Draw from which stack? (0 = Deck, 1 = Y ... 5 = R)");
+                    int draw = in.nextInt();
+                    in.nextLine();
+                    m = new Move(index, draw, discard);
+                }
             }
             t.doMove(m);
         }
@@ -72,8 +90,10 @@ public class Game {
         for (int i = 0; i < t.stacks.length; i++) {
             if (t.stacks[i].isEmpty())
                 System.out.print(getColour(i + 1) + ":# ");
-            else
-                System.out.print(getColour(i + 1) + ":" + t.stacks[i].peek() + " ");
+            else {
+                String card = (t.stacks[i].peek() < Deck.INVESTMENT) ? Integer.toString(t.stacks[i].peek()) : "$";
+                System.out.print(getColour(i + 1) + ":" + card + " ");
+            }
         }
         System.out.println("\tD: " + t.deck.size());
         System.out.println("-----------------------------");

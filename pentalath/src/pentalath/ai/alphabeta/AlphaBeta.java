@@ -362,7 +362,7 @@ public class AlphaBeta implements AIPlayer, Runnable {
                 }
             }
         }
-        // Update the history heuristics for move-ordering
+        // Update the history useHeuristics for move-ordering
         if (plyBestMove > -1)
             history[player - 1][plyBestMove]++;
         // Replace if deeper or doesn't exist

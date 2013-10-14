@@ -18,6 +18,7 @@ public class TreeNode {
     //
     private final boolean virtual;
     private final MCTSOptions options;
+    //
     public int player;
     private List<TreeNode> children;
     private IMove move;
@@ -217,12 +218,13 @@ public class TreeNode {
         winner = board.checkWin();
         gameEnded = winner != IBoard.NONE_WIN;
         while (!gameEnded) {
-            moves = board.getPlayoutMoves();
+            moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
                 // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
                     gameEnded = true;
+                    System.out.println("No moves remaining!");
                     // The current player has no moves left
                     // TODO, different games have different rules for this
                     if (board.drawPossible())
@@ -357,7 +359,7 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return "Move: " + move + " Visits: " + nVisits + " Value: " + avgValue + " Velocity: "
+        return move + "\tVisits: " + nVisits + "\tValue: " + avgValue + "\tVelocity: "
                 + velocity;
     }
 }

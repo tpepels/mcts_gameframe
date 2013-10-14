@@ -1,7 +1,7 @@
 package chinesecheckers.game;
 
 public class Field {
-    public int occupant = Board.EMPTY;
+    public Piece occupant = null;
     public int position;
     public Field[] neighbours = new Field[6];
 

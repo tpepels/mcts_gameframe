@@ -3,22 +3,24 @@ package chinesecheckers.gui;
 import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
+import ai.framework.MoveList;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import chinesecheckers.game.Board;
 import chinesecheckers.game.Move;
+import chinesecheckers.game.Piece;
 import rush.HexGridCell;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.DecimalFormat;
 
 public class CCPanel extends JPanel implements MouseListener, MoveCallback {
     private static final long serialVersionUID = -7255477935485381647L;
     private static final int CELL_R = 25;
     public AIPlayer aiPlayer1, aiPlayer2;
+    private MCTSOptions p1Options, p2Options;
     //
     private int[] cornersY = new int[6], cornersX = new int[6];
     private HexGridCell hexagons = new HexGridCell(CELL_R);
@@ -33,13 +35,20 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         this.p1Human = p1Human;
         this.p2Human = p2Human;
         //
+        p1Options = new MCTSOptions();
+        p1Options.useHeuristics = false;
+        p1Options.timeInterval = 10000;
+        p2Options = new MCTSOptions();
+        p2Options.useHeuristics = true;
+        p2Options.timeInterval = 10000;
+        //
         if (!p1Human) {
             aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(new MCTSOptions());
+            aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {
             aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(new MCTSOptions());
+            aiPlayer2.setOptions(p2Options);
         }
         addMouseListener(this);
     }
@@ -68,11 +77,11 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         //
         if (!p1Human) {
             aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(new MCTSOptions());
+            aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {
             aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(new MCTSOptions());
+            aiPlayer2.setOptions(p2Options);
         }
         //
         repaint();
@@ -102,20 +111,23 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
                     g2d.drawPolygon(cornersX, cornersY, 6);
                     //
                     g2d.setColor(Color.DARK_GRAY);
-                    if (board.board[i * Board.WIDTH + j].occupant == Board.P2) {
-                        g2d.setColor(Color.black);
-                        g2d.fillOval(cornersX[0] + 5, cornersY[0] - 2, 25, 25);
-                        g2d.setColor(Color.decode("#FFFFDD"));
-                    }
-                    //
-                    if (board.board[i * Board.WIDTH + j].occupant == Board.P1) {
-                        g2d.setColor(Color.decode("#FFFFDD"));
-                        g2d.fillOval(cornersX[0] + 5, cornersY[0] - 2, 25, 25);
-                        g2d.setColor(Color.black);
+                    Piece occ = board.board[i * Board.WIDTH + j].occupant;
+                    if (occ != null) {
+                        if (occ.colour == Board.P2) {
+                            g2d.setColor(Color.black);
+                            g2d.fillOval(cornersX[0] + 7, cornersY[0] - 3, 30, 30);
+                            g2d.setColor(Color.decode("#FFFFDD"));
+                        }
+                        //
+                        if (occ.colour == Board.P1) {
+                            g2d.setColor(Color.decode("#FFFFDD"));
+                            g2d.fillOval(cornersX[0] + 7, cornersY[0] - 3, 30, 30);
+                            g2d.setColor(Color.black);
+                        }
                     }
 
                     g2d.drawString(Integer.toString(i * Board.WIDTH + j),
-                            cornersX[0] + 17, cornersY[0] + 17);
+                            cornersX[0] + 10, cornersY[0] + 10);
                 }
             }
         }
@@ -125,13 +137,18 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         else
             g2d.setColor(Color.decode("#FFFFDD"));
         //
-        Color green = new Color(0, 100, 0, 100);
-        for (int i = 0; i < board.moves.size(); i++) {
-            int x = board.moves.get(i).getMove()[1] / Board.WIDTH, y = board.moves.get(i).getMove()[1] % Board.WIDTH;
-            hexagons.setCellIndex(x, y);
-            hexagons.computeCorners(cornersY, cornersX);
-            g2d.setColor(green);
-            g2d.fillOval(cornersX[0] + 5, cornersY[0] - 2, 25, 25);
+        if (selected != -1) {
+            MoveList moves = Board.getMoves();
+            Color green = new Color(0, 100, 0, 100);
+            for (int i = 0; i < moves.size(); i++) {
+                int move = moves.get(i).getMove()[1];
+                int x = move / Board.WIDTH, y = move % Board.WIDTH;
+                System.out.println(move);
+                hexagons.setCellIndex(x, y);
+                hexagons.computeCorners(cornersY, cornersX);
+                g2d.setColor(green);
+                g2d.fillOval(cornersX[0] + 10, cornersY[0], 25, 25);
+            }
         }
     }
 
@@ -141,16 +158,17 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             //
             if (!human) {
                 aiPlayer1 = new MCTSPlayer();
-                aiPlayer1.setOptions(new MCTSOptions());
+                aiPlayer1.setOptions(p1Options);
             }
         } else {
             this.p2Human = human;
             //
             if (!human) {
                 aiPlayer2 = new MCTSPlayer();
-                aiPlayer2.setOptions(new MCTSOptions());
+                aiPlayer2.setOptions(p2Options);
             }
         }
+        makeAIMove();
     }
 
     private boolean isInsideBoard(int i, int j) {
@@ -172,13 +190,13 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         int clickJ = hexagons.getIndexJ();
         int position = clickI * Board.WIDTH + clickJ;
         //
-        if (isInsideBoard(clickI, clickJ) && selected != -1 && board.board[position].occupant == Board.EMPTY) {
+        if (isInsideBoard(clickI, clickJ) && selected != -1 && board.board[position].occupant == null) {
             makeMove(new Move(selected, position, 0));
             selected = -1;
-            board.moves.clear();
-        } else if (selected == -1 || board.board[position].occupant == board.getPlayerToMove()) {
+            Board.getMoves().clear();
+        } else if (selected == -1 || board.board[position].occupant.colour == board.getPlayerToMove()) {
             selected = position;
-            board.moves.clear();
+            Board.getMoves().clear();
             board.generateMovesForPiece(position, true);
             repaint();
         }
@@ -234,6 +252,5 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
     @Override
     public void mousePressed(MouseEvent e) {
         // TODO Auto-generated method stub
-
     }
 }

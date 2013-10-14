@@ -74,7 +74,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         while (!interrupted) {
             simulations++;
             if (System.currentTimeMillis() >= endTime) {
-                interrupted = true;
+                break;
             }
             //
             board.newDeterminization(myPlayer);

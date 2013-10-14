@@ -1,8 +1,10 @@
 package cannon.game;
 
+import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
+import cannon.gui.CannonPanel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,6 +16,8 @@ public class Board implements IBoard {
     public static final int EMPTY = 0, W_SOLDIER = 1, W_TOWN = 2, B_SOLDIER = 3, B_TOWN = 4;
     public static final int WIDTH = 10, HEIGHT = 10;
     public static final MoveList moves = new MoveList(500);
+    private static final List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
+    private static final FastRandom random = new FastRandom();
     public final int[] board = new int[WIDTH * HEIGHT];
     public final Stack<IMove> pastMoves = new Stack<IMove>();
     private final int[] capture = {-1, -11, -10, -9, 1};
@@ -25,7 +29,7 @@ public class Board implements IBoard {
     public int whiteTown, blackTown, numWhitePcs, numBlackPcs;
     public int currentPlayer = IBoard.P1, winningPlayer = NONE_WIN;
     private int allMovesForPlayer = 0; // All moves for this player (P1/P2) have been generated
-    private boolean mate = false; // True if the current player has a mate on the opponent (not necess. checkmate)
+    private boolean mate = false; // True if the current player has a mate on the opponent
     private int[] numMates = new int[]{0, 0}; // The number of mates since the board was last copied (this field should not be cloned)
 
     public void initialize() {
@@ -52,7 +56,7 @@ public class Board implements IBoard {
         currentPlayer = IBoard.P1;
         winningPlayer = Board.NONE_WIN;
         pastMoves.clear();
-        getAllMovesForPlayer(currentPlayer);
+        getAllMovesForPlayer(currentPlayer, true);
     }
 
     /**
@@ -112,7 +116,7 @@ public class Board implements IBoard {
             pastMoves.push(move);
             //
             if (genNextMoves) {
-                getAllMovesForPlayer(currentPlayer);
+                getAllMovesForPlayer(currentPlayer, true);
             }
         } else {
             throw new RuntimeException("Illegal move!");
@@ -120,10 +124,11 @@ public class Board implements IBoard {
         return moveMade;
     }
 
-    private void getAllMovesForPlayer(int player) {
+    private void getAllMovesForPlayer(int player, boolean determineMates) {
         int myPieces = (player == P1) ? numBlackPcs : numWhitePcs;
         int mySoldier = (player == P1) ? B_SOLDIER : W_SOLDIER;
         moves.clear();
+        mateMoves.clear();
         mate = false;
         int c = 0;
         // First, players must place the town
@@ -139,7 +144,7 @@ public class Board implements IBoard {
             // Generate all the soldiers moves.
             for (int i = 0; i < board.length; i++) {
                 if (board[i] == mySoldier) {
-                    getValidMovesForSoldier(i, player);
+                    getValidMovesForSoldier(i, player, determineMates);
                     c++;
                     if (c == myPieces)
                         break;
@@ -243,27 +248,28 @@ public class Board implements IBoard {
         return false;
     }
 
-    public void getValidMovesForSoldier(int from, int color) {
+    public void getValidMovesForSoldier(int from, int colour, boolean determineMates) {
         Move testMove;
         int start = 0, end = move.length;
         int cx, cy, initX = from % WIDTH, initY = from / HEIGHT;
         // Reverse the moves for white
-        int multipl = (color == P1) ? 1 : -1;
-        int opp_soldier = (color == P1) ? W_SOLDIER : B_SOLDIER;
-        int opp_town = (color == P1) ? W_TOWN : B_TOWN;
+        int multipl = (colour == P1) ? 1 : -1;
+        int opp_soldier = (colour == P1) ? W_SOLDIER : B_SOLDIER;
+        int opp = (colour == P1) ? P2 : P1;
+        int opp_town = (colour == P1) ? W_TOWN : B_TOWN;
         // Simple move
         if (from % WIDTH == 0) {
-            if (color == P1)
+            if (colour == P1)
                 start++;
             else
                 end--;
         } else if (from % WIDTH == 9) {
-            if (color == P1)
+            if (colour == P1)
                 end--;
             else
                 start++;
         }
-        int to = -1;
+        int to;
         for (int i = start; i < end; i++) {
             to = from + (multipl * move[i]);
             // Not outside the board, and not occupied
@@ -271,27 +277,29 @@ public class Board implements IBoard {
                 // System.out.println("move " + to + " start " + start + " end " + end);
                 testMove = new Move(Move.MOVE, new int[]{from, to});
                 doMove(testMove, false);
-                if (!checkMates(color)) // Check if this move results in a mate for my town
+                if (!checkMates(colour)) // Check if this move results in a mate for my town
                     moves.add(testMove);
+                // Check if the move leads to a mate for the opponent
+                if (determineMates && checkMates(opp))
+                    mateMoves.add(testMove);
                 undoMove();
             }
         }
-        boolean canRetreat = false;
         // Captures
         start = 0;
         end = capture.length;
         if (from % WIDTH == 0) {
-            if (color == P1)
+            if (colour == P1)
                 start += 2;
             else
                 end -= 2;
         } else if (from % WIDTH == 9) {
-            if (color == P1)
+            if (colour == P1)
                 end -= 2;
             else
                 start += 2;
         }
-        to = -1;
+        boolean canRetreat = false;
         for (int i = start; i < end; i++) {
             to = from + (multipl * capture[i]);
             // Not outside the board, and not occupied
@@ -300,9 +308,9 @@ public class Board implements IBoard {
                 if (board[to] == opp_soldier) {
                     testMove = new Move(Move.CAPTURE, new int[]{from, to});
                     doMove(testMove, false);
-                    if (!checkMates(color)) { // Check if this move results in a mate for my town
+                    if (!checkMates(colour)) // Check if this move results in a mate for my town
                         moves.add(testMove);
-                    }
+                    // Only movement can lead to mate positions
                     undoMove();
                     canRetreat = true;
                 } else {
@@ -312,17 +320,17 @@ public class Board implements IBoard {
             }
         }
         // Retreat!
-        if (canRetreat && ((color == P2 && from / 10 > 2) || color == P1 && from / 10 < 8)) {
+        if (canRetreat && ((colour == P2 && from / 10 > 2) || colour == P1 && from / 10 < 8)) {
             start = 0;
             end = retreat.length;
             // Retreat moves
             if (from % WIDTH == 0) {
-                if (color == P1)
+                if (colour == P1)
                     start++;
                 else
                     end--;
             } else if (from % WIDTH == 9) {
-                if (color == P1)
+                if (colour == P1)
                     end--;
                 else
                     start++;
@@ -338,17 +346,20 @@ public class Board implements IBoard {
                     // System.out.println("retreat " + to);
                     testMove = new Move(Move.RETREAT, new int[]{from, to});
                     doMove(testMove, false);
-                    if (!checkMates(color)) // Check if this move results in a mate for my town
+                    if (!checkMates(colour)) // Check if this move results in a mate for my town
                         moves.add(testMove);
+                    // Check if the move leads to a mate for the opponent
+                    if (determineMates && checkMates(opp))
+                        mateMoves.add(testMove);
                     undoMove();
                 }
             }
         }
         // Check the cannons
-        int mySoldier = board[from], sol = mySoldier, c = 1, nextPos = 0;
-        for (int y = 0; y < n.length; y++) {
-            for (int x = 0; x < n.length; x++) {
-                if (n[x] == 0 && n[y] == 0)
+        int mySoldier = board[from], sol, c, nextPos = 0;
+        for (int aN : n) {
+            for (int aN1 : n) {
+                if (aN1 == 0 && aN == 0)
                     continue;
                 sol = mySoldier;
                 c = 0;
@@ -356,8 +367,8 @@ public class Board implements IBoard {
                 cy = initY;
                 while (sol == mySoldier && c < 3) {
                     c++;
-                    cx += n[x];
-                    cy += n[y];
+                    cx += aN1;
+                    cy += aN;
                     // Check out of bounds
                     if (cx >= 0 && cx < WIDTH && cy >= 0 && cy < HEIGHT) {
                         nextPos = cx + (cy * HEIGHT);
@@ -376,14 +387,17 @@ public class Board implements IBoard {
                             // System.out.println("move cannon " + nextPos);
                             testMove = new Move(Move.MOVE, new int[]{from, nextPos});
                             doMove(testMove, false);
-                            if (!checkMates(color)) // Check if this move results in a mate for my town
+                            if (!checkMates(colour)) // Check if this move results in a mate for my town
                                 moves.add(testMove);
+                            // Check if the move leads to a mate for the opponent
+                            if (determineMates && checkMates(opp))
+                                mateMoves.add(testMove);
                             undoMove();
                         }
                     }
                     // Firing direction (opposite)
-                    cx = initX - n[x];
-                    cy = initY - n[y];
+                    cx = initX - aN1;
+                    cy = initY - aN;
                     int h = 0;
                     // Check out of bounds
                     while (cx >= 0 && cx < WIDTH && cy >= 0 && cy < HEIGHT && h < 3) {
@@ -396,7 +410,7 @@ public class Board implements IBoard {
                             if (board[nextPos] == opp_soldier) {
                                 testMove = new Move(Move.FIRE, new int[]{from, nextPos});
                                 doMove(testMove, false);
-                                if (!checkMates(color)) { // Check if this move results in a mate for my town
+                                if (!checkMates(colour)) { // Check if this move results in a mate for my town
                                     moves.add(testMove);
                                 }
                                 undoMove();
@@ -406,8 +420,8 @@ public class Board implements IBoard {
                             }
                         }
                         h++;
-                        cx -= n[x];
-                        cy -= n[y];
+                        cx -= aN1;
+                        cy -= aN;
                     }
                 }
             }
@@ -416,7 +430,7 @@ public class Board implements IBoard {
 
     @Override
     public int checkWin() {
-        // If a player has no pieces left, he lost the pentalath.game
+        // If a player has no pieces left, he lost the game
         if (numWhitePcs == 0) {
             winningPlayer = P1;
         } else if (numBlackPcs == 0) {
@@ -468,7 +482,7 @@ public class Board implements IBoard {
         newBoard.whiteTownPlaced = whiteTownPlaced;
         newBoard.blackTownPlaced = blackTownPlaced;
         newBoard.winningPlayer = winningPlayer;
-        newBoard.getAllMovesForPlayer(currentPlayer);
+        newBoard.getAllMovesForPlayer(currentPlayer, false);
         return newBoard;
     }
 
@@ -481,32 +495,38 @@ public class Board implements IBoard {
     public MoveList getExpandMoves() {
         if (allMovesForPlayer != currentPlayer) {
             //
-            getAllMovesForPlayer(currentPlayer);
+            getAllMovesForPlayer(currentPlayer, false);
         }
-        return moves;
+        return moves.copy();
     }
 
     @Override
-    public List<IMove> getPlayoutMoves() {
+    public List<IMove> getPlayoutMoves(boolean heuristics) {
         if (allMovesForPlayer != currentPlayer) {
             //
-            getAllMovesForPlayer(currentPlayer);
+            getAllMovesForPlayer(currentPlayer, true);
         }
-        // No retreats in simulations
-        List<IMove> simMoves = new ArrayList<IMove>(moves.size());
-        IMove move;
-        for (int i = 0; i < moves.size(); i++) {
-            move = moves.get(i);
-            if (move.getType() == Move.CAPTURE) {
-                simMoves.add(move);
-                simMoves.add(move);
-                simMoves.add(move);
-            } else if (move.getType() == Move.FIRE) {
-                simMoves.add(move);
-                simMoves.add(move);
-                simMoves.add(move);
-                simMoves.add(move);
+        // Favour capturing and shooting :)
+        simMoves.clear();
+        if (mateMoves.isEmpty()) {
+            IMove move;
+            for (int i = 0; i < moves.size(); i++) {
+                move = moves.get(i);
+                // Heuristic: capture and fire whenever possible
+                if (heuristics && random.nextDouble() < 0.95) {
+                    if (move.getType() == Move.CAPTURE) {
+                        simMoves.add(move);
+                    } else if (move.getType() == Move.FIRE) {
+                        simMoves.add(move);
+                        simMoves.add(move);
+                    }
+                } else {
+                    simMoves.add(move);
+                }
             }
+        } else {
+            // Play mate-moves whenever you can
+            return mateMoves;
         }
         //
         if (simMoves.size() > 1)

@@ -292,7 +292,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public List<IMove> getPlayoutMoves() {
+    public List<IMove> getPlayoutMoves(boolean heuristics) {
         int count = 0;
         count = (!firstMove) ? freeSquares : REAL_SIZE;
         poMoves.clear();
@@ -563,7 +563,7 @@ public class Board implements IBoard {
     }
 
     public int checkDraw() {
-        List<IMove> moves = getPlayoutMoves();
+        List<IMove> moves = getPlayoutMoves(false);
         int moveIndex;
         IMove currentMove;
         Random r = new Random();

@@ -28,6 +28,13 @@ public class MoveList {
         return copy;
     }
 
+    public MoveList copy() {
+        MoveList newList = new MoveList(size + 1);
+        System.arraycopy(moves, 0, newList.moves, 0, size);
+        newList.size = size;
+        return newList;
+    }
+
     public int size() {
         return size;
     }

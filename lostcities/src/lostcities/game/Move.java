@@ -7,12 +7,28 @@ public class Move implements IMove {
     public static final int DECK_DRAW = 0, PLAY = 1, DISCARD = -1;
     final int[] move = new int[2];
     final int type;
-    private int prevTopCard, cardPlayed;
+    private int prevTopCard = -1, cardPlayed = -1;
 
     public Move(int handIndex, int draw, boolean discard) {
         move[0] = handIndex;
         move[1] = draw;
         type = (discard) ? DISCARD : PLAY;
+    }
+
+    private String getColour(int colour) {
+        switch (colour) {
+            case (1):
+                return "Y";
+            case (2):
+                return "B";
+            case (3):
+                return "W";
+            case (4):
+                return "G";
+            case (5):
+                return "R";
+        }
+        return "ERROR";
     }
 
     @Override
@@ -33,6 +49,28 @@ public class Move implements IMove {
     @Override
     public int getUniqueId() {
         return move[0] + 1000 * move[1];
+    }
+
+    public String toString() {
+        String cardStr, playStr, drawStr;
+        if (cardPlayed != -1) {
+            int type = cardPlayed % 100;
+            int colour = cardPlayed / 100;
+            cardStr = (type == Deck.INVESTMENT) ? "$" : Integer.toString(type);
+            cardStr = getColour(colour) + cardStr;
+        } else {
+            cardStr = "hand index: " + move[0];
+        }
+        if(type == DISCARD)
+            playStr = "Discard ";
+        else
+            playStr = "Play ";
+        if(move[1] == 0)
+            drawStr = "deck";
+        else
+            drawStr = getColour(move[1]) + " stack";
+
+        return move[0] + " " + playStr + cardStr + " draw from " +  drawStr;
     }
 
     public int getCardPlayed() {
