@@ -79,7 +79,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             //
             board.newDeterminization(myPlayer);
             // Make one simulation from root to leaf.
-            TreeNode.MCTS(board, root);
+            root.MCTS(board, root, 0);
         }
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);

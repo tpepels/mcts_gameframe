@@ -49,9 +49,9 @@ public class TreeNode {
      *
      * @param board The current board
      * @param n     the current tree node
-     * @return the currently evaluated rollout value of the node
+     * @return the currently evaluated playout value of the node
      */
-    public static double MCTS(IBoard board, TreeNode n) {
+    public double MCTS(IBoard board, TreeNode n, int depth) {
         TreeNode child = null;
         // First add some leafs if required
         if (n.isLeaf()) {
@@ -74,10 +74,12 @@ public class TreeNode {
             // When a leaf is reached return the result of the playout
             if (child.nVisits == 0) {
                 result = child.playOut(board.copy());
+                if(options.depthDiscount)
+                    result *= (1. - Math.pow(options.depthD, depth));
                 child.nVisits++;
                 child.updateStats(-result);
             } else { // Select the next child in the tree
-                result = -MCTS(board, child);
+                result = -child.MCTS(board, child, depth + 1);
             }
             // set the board back to its previous configuration
             board.undoMove();
@@ -224,7 +226,6 @@ public class TreeNode {
                 // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
                     gameEnded = true;
-                    System.out.println("No moves remaining!");
                     // The current player has no moves left
                     // TODO, different games have different rules for this
                     if (board.drawPossible())

@@ -1,10 +1,12 @@
+package cannon;
+
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
-import pentalath.game.Board;
+import cannon.game.Board;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,11 +14,10 @@ import java.text.DecimalFormat;
 import java.util.Scanner;
 
 public class AITests implements MoveCallback {
-    //
-    public String outFile;
     DecimalFormat df2 = new DecimalFormat("#,###,###,###,##0");
     DecimalFormat df1 = new DecimalFormat("#,###,###,###,##0.##");
     private AIPlayer aiPlayer1, aiPlayer2;
+    private IBoard board;
     private int games = 20;
     //
     private int winner = -1, totalGames;
@@ -24,6 +25,8 @@ public class AITests implements MoveCallback {
     private int ai1Color = IBoard.P1, ai2Color = IBoard.P2;
     private double ai2Wins = 0;
     private IMove lastMove = null;
+    //
+    private String outFile;
     private PrintWriter out;
 
     public static void main(String[] args) {
@@ -35,6 +38,7 @@ public class AITests implements MoveCallback {
             test = in.nextInt();
             System.out.println("Enter no of games");
             games = in.nextInt();
+            in.nextLine();
             System.out.println("Enter output file");
             aitests.outFile = in.nextLine();
             in.close();
@@ -49,14 +53,6 @@ public class AITests implements MoveCallback {
     }
 
     public void runTests(int which) {
-        // Create the output file for writing.
-        try {
-            out = new PrintWriter(outFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        //
         if (which == 1) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
@@ -86,18 +82,36 @@ public class AITests implements MoveCallback {
             MCTSOptions options2 = new MCTSOptions();
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
-            for (double i = 5; i < 10; i++) {
+            for (double i = 1; i < 7; i++) {
                 options1.lambda = 1 - Math.pow(0.1, i);
                 runGames("AI1 lambda k :" + i + " AI2 Vanilla MCTS");
             }
         } else if (which == 3) {
-
+            MCTSOptions options1 = new MCTSOptions();
+            options1.depthDiscount = true;
+            options1.debug = false;
+            // AI 1
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.depthDiscount = false;
+            options2.debug = false;
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            runGames("AI1 Depth discount, AI2 Vanilla MCTS");
         } else if (which == 4) {
 
         }
     }
 
     private void runGames(String testMessage) {
+        try {
+            out = new PrintWriter(outFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
         writeOutput(testMessage);
         totalGames = 0;
         ai1Color = IBoard.P1;
@@ -125,7 +139,8 @@ public class AITests implements MoveCallback {
     }
 
     public void runGame() {
-        Board board = new Board();
+        board = new Board();
+        board.initialize();
         winner = IBoard.NONE_WIN;
         while (winner == IBoard.NONE_WIN) {
             //
@@ -140,9 +155,6 @@ public class AITests implements MoveCallback {
             if (board.doAIMove(move, board.getPlayerToMove())) {
                 lastMove = move;
                 winner = board.checkWin();
-                if (winner == IBoard.NONE_WIN) {
-                    winner = board.checkDraw();
-                }
             } else {
                 System.err.println("Error, invalid move!");
             }
@@ -161,6 +173,7 @@ public class AITests implements MoveCallback {
         }
     }
 
+    @Override
     public void makeMove(IMove move) {
 
     }

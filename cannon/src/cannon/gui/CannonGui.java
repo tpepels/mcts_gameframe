@@ -17,9 +17,9 @@ public class CannonGui extends JFrame {
         b.initialize();
         //
         CannonPanel panel = CannonPanel.getInstance();
-        CannonPanel.setBoard(b);
         panel.setBackground(Color.LIGHT_GRAY);
         setContentPane(panel);
+        panel.setBoard(b);
     }
 
     public static void main(String[] args) {

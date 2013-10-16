@@ -107,4 +107,6 @@ public interface IBoard {
      * @return Highest move-id
      */
     public int getMaxUniqueMoveId();
+
+    public void initialize();
 }

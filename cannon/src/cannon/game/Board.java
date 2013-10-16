@@ -4,7 +4,6 @@ import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
-import cannon.gui.CannonPanel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,6 +31,7 @@ public class Board implements IBoard {
     private boolean mate = false; // True if the current player has a mate on the opponent
     private int[] numMates = new int[]{0, 0}; // The number of mates since the board was last copied (this field should not be cloned)
 
+    @Override
     public void initialize() {
         numWhitePcs = 0;
         numBlackPcs = 0;

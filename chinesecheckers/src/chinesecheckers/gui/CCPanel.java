@@ -224,6 +224,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             }
         }
         repaint();
+        //System.out.println("P1 Home pieces: " + board.homePieces[0] + " P2 Home pieces: " + board.homePieces[1]);
     }
 
     @Override

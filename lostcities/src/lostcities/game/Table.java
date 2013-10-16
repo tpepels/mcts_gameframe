@@ -28,6 +28,7 @@ public class Table implements IBoard {
     private int[] minCard = new int[5];
     private int[] discardStackDraws = {0, 0};       // Keep track of the discard - stack draw moves
 
+    @Override
     public void initialize() {
         deck = new Deck(60);
         deck.initialize();

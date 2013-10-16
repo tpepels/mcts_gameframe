@@ -615,6 +615,10 @@ public class Board implements IBoard {
     }
 
     @Override
+    public void initialize() {
+    }
+
+    @Override
     public void newDeterminization(int myPlayer) {
     }
 

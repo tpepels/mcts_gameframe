@@ -21,27 +21,35 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
     private static Board board;
     //
     private final int SQUARE_SIZE = 50, OFFS = 50;
-    Color red = new Color(100, 0, 0, 100), green = new Color(0, 100, 0, 100);
-    int selectedPosition = -1;
-    private AIPlayer aiPlayer;
+    private Color red = new Color(100, 0, 0, 100), green = new Color(0, 100, 0, 100);
+    private int selectedPosition = -1;
+    private AIPlayer aiPlayer1, aiPlayer2;
+    private boolean allAi = true;
     private IMove lastMove = null;
 
     private CannonPanel() {
         addMouseListener(this);
         //
-        aiPlayer = new MCTSPlayer();
-        MCTSOptions options = new MCTSOptions();
-        options.debug = true;
-        aiPlayer.setOptions(options);
+        aiPlayer1 = new MCTSPlayer();
+        MCTSOptions options1 = new MCTSOptions();
+        options1.debug = true;
+        aiPlayer1.setOptions(options1);
+        aiPlayer2 = new MCTSPlayer();
+        MCTSOptions options2 = new MCTSOptions();
+        options2.debug = true;
+        aiPlayer2.setOptions(options2);
     }
 
     public static CannonPanel getInstance() {
         return instance;
     }
 
-    public static void setBoard(Board newBoard) {
-        board = newBoard;
+    public void setBoard(Board board) {
+        CannonPanel.board = board;
         instance.repaint();
+        if (allAi) {
+            aiPlayer1.getMove(board.copy(), this, Board.P2, true, lastMove);
+        }
     }
 
     @Override
@@ -101,8 +109,10 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         //
         if (selectedPosition != -1) {
             IMove move;
-            for(int i = 0; i < board.moves.size(); i++) {
+            for (int i = 0; i < board.moves.size(); i++) {
                 move = board.moves.get(i);
+                if(move.getMove()[0] != selectedPosition)
+                    continue;
                 x = move.getMove()[1] % Board.WIDTH;
                 y = move.getMove()[1] / Board.HEIGHT;
                 x = OFFS + x * SQUARE_SIZE - PIECE_SIZE / 2;
@@ -120,6 +130,12 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
     public void makeMove(IMove move) {
         board.doMove(move, true);
         repaint();
+        if (allAi) {
+            if (board.getPlayerToMove() == Board.P2)
+                aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
+            else
+                aiPlayer1.getMove(board.copy(), this, Board.P2, true, lastMove);
+        }
     }
 
     @Override
@@ -150,7 +166,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         // Do the move!
         if (selectedPosition != -1 && occ != mySoldier) {
             IMove move;
-            for(int i = 0; i < board.moves.size(); i++) {
+            for (int i = 0; i < board.moves.size(); i++) {
                 move = board.moves.get(i);
                 if (move.getMove()[0] == selectedPosition && move.getMove()[1] == position) {
                     board.doMove(move, true);
@@ -161,8 +177,12 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
                         } else if (board.checkWin() == Board.P2_WIN) {
                             System.out.println("White wins");
                         }
-                    } else if (board.getPlayerToMove() == Board.P2)
-                        aiPlayer.getMove(board.copy(), this, Board.P2, true, lastMove);
+                    } else if (board.getPlayerToMove() == Board.P2 || (board.getPlayerToMove() == Board.P1 && allAi)) {
+                        if (board.getPlayerToMove() == Board.P2)
+                            aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
+                        else
+                            aiPlayer1.getMove(board.copy(), this, Board.P2, true, lastMove);
+                    }
                     repaint();
                     break;
                 }
@@ -174,7 +194,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
                 board.doMove(new Move(Move.CASTLE, new int[]{-1, position}), false);
                 selectedPosition = -1;
                 repaint();
-                aiPlayer.getMove(board.copy(), this, Board.P2, true, lastMove);
+                aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
                 return;
             } else if (board.currentPlayer == Board.P2 & !board.whiteTownPlaced) {
                 board.doMove(new Move(Move.CASTLE, new int[]{-1, position}), false);
@@ -218,8 +238,11 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         public void actionPerformed(ActionEvent arg0) {
             if (arg0.getActionCommand().equals("undo")) {
                 board.undoMove();
-                if (aiPlayer != null) {
-                    aiPlayer.stop();
+                if (aiPlayer1 != null) {
+                    aiPlayer1.stop();
+                }
+                if (aiPlayer2 != null) {
+                    aiPlayer2.stop();
                 }
                 repaint();
             } else if (arg0.getActionCommand().equals("new")) {

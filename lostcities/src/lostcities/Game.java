@@ -22,7 +22,6 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
-        options2.useHeuristics = false;
         aiPlayer2.setOptions(options2);
 
         MCTSPlayer aiPlayer;
@@ -48,7 +47,7 @@ public class Game {
             } else {
                 System.out.println(player + " select a card.");
                 m = null;
-                int index = -1;
+                int index;
                 while (m == null || !t.isLegal(m)) {
                     if (m != null)
                         System.out.println("illegal move - select another");
