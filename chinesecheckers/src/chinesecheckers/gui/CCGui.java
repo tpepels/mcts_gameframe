@@ -3,8 +3,6 @@ package chinesecheckers.gui;
 import chinesecheckers.game.Board;
 
 import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -40,7 +38,7 @@ public class CCGui extends JFrame {
         setResizable(false);
         setBackground(Color.BLACK);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 568, 695);
+        setBounds(100, 100, 480, 550);
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -124,10 +122,5 @@ public class CCGui extends JFrame {
         ccPanel.setLayout(null);
         setContentPane(ccPanel);
 
-    }
-
-    public static void showBoard(Board board) {
-        ccPanel.setBoard(board);
-        ccPanel.repaint();
     }
 }

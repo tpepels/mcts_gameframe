@@ -5,10 +5,9 @@ import ai.framework.IMove;
 public class Move implements IMove {
     private final int[] move;
     private final int hops;
-    public boolean homeMove = false, leftHome = false, backHome = false;
 
     public Move(int from, int to, int hops) {
-        move = new int[] { from, to};
+        move = new int[]{from, to};
         this.hops = hops;
     }
 

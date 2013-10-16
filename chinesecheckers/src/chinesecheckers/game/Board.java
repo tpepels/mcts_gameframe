@@ -1,9 +1,9 @@
 package chinesecheckers.game;
 
+import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
-import chinesecheckers.gui.CCGui;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,44 +11,43 @@ import java.util.List;
 import java.util.Stack;
 
 public class Board implements IBoard {
-    public static final int EMPTY = 0, WHITE = P1, BLACK = P2;
-    public static final int N_PIECES = 10, WIDTH = 13, HEIGHT = 17, SIZE = 221;
+    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13;
     public static final int[] occupancy = new int[]
             {
-                    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-                    0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-                    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0,
-                    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0,
-                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-                    0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
+                    0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+                    0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                    0, 0, 1, 1, 1, 1, 1, 1, 1, 0,
+                    0, 1, 1, 1, 1, 1, 1, 1, 1, 0,
+                    0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                    0, 0, 0, 0, 1, 1, 1, 0, 0, 0,
+                    0, 0, 0, 0, 1, 1, 0, 0, 0, 0,
+                    0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
             };
+    private static final int SIZE = WIDTH * HEIGHT, B_HOME_MIN = 103, W_HOME_MAX = 27, N_PIECES = 6;
+    private static final int[][] B_TARGET = {{5, 0}, {4, 1}, {5, 1}, {4, 2}, {5, 2}, {6, 2}},
+            W_TARGET = {{5, 12}, {4, 11}, {5, 11}, {4, 10}, {5, 10}, {6, 10}};
+    // Neighbour vectors, differs for odd and even fields
+    private static final int[] N_VECTOR_ODD = {-10, -9, +1, +11, +10, -1}, N_VECTOR_EVEN = {-11, -10, +1, +10, +9, -1};
+    // Move lists
     private static final MoveList moves = new MoveList(1000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>(100);
-    private static final int B_HOME_MIN = 172, W_HOME_MAX = 47;
-    private static final int[][] B_TARGET = {{6, 0}, {5, 1}, {6, 1}, {5, 2}, {6, 2}, {7, 2}, {4, 3}, {5, 3}, {6, 3}, {7, 3}},
-            W_TARGET = {{6, 16}, {5, 15}, {6, 15}, {5, 14}, {6, 14}, {7, 14}, {4, 13}, {5, 13}, {6, 13}, {7, 13}};
-    private static final int[] N_VECTOR_ODD = {-13, -12, +1, +14, +13, -1}, N_VECTOR_EVEN = {-14, -13, +1, +13, +12, -1};
-    private static final long[] seen = new long[SIZE];          // List to keep track of positions seen for jumping
+    // List to keep track of positions seen for jumping
+    private static final long[] seen = new long[SIZE];
     private static long seenIndex = 1;
-    //
+    // The board and pieces
     public final Field[] board;
-    public final Piece[] pieces = new Piece[20];
+    public final Piece[] pieces = new Piece[N_PIECES + N_PIECES];
     private final Stack<IMove> pastMoves = new Stack<IMove>();        // Stack for undo-move
+    //
+    private final FastRandom random = new FastRandom();
     private int[] homePieces = new int[2], target;
-    private int[][] targets;
+    private int[][] targets; // Holds the targets for the current player to move
     private int winner = NONE_WIN, currentPlayer = P1;
-    private int numMoves = 0;
 
     public Board() {
         board = new Field[SIZE];
@@ -141,27 +140,23 @@ public class Board implements IBoard {
     public void doMove(IMove move) {
         if (insideHome(currentPlayer, move.getMove()[0]) && outSideHome(currentPlayer, move.getMove()[1]))
             System.err.println("Invalid move!");
-        Piece stone = board[move.getMove()[0]].occupant;
+        Piece piece = board[move.getMove()[0]].occupant;
         board[move.getMove()[0]].occupant = null;
-        board[move.getMove()[1]].occupant = stone;
+        board[move.getMove()[1]].occupant = piece;
         // Keep track of the stone's location
-        stone.location = move.getMove()[1];
+        piece.location = move.getMove()[1];
         // This is a bit of a trick, mail me for questions about this :)
         if (insideHome(getOpponent(currentPlayer), move.getMove()[0]) && outSideHome(getOpponent(currentPlayer), move.getMove()[1])) {
             homePieces[getOpponent(currentPlayer) - 1]--;
-            ((Move) move).leftHome = true;
-        } else if (insideHome(getOpponent(currentPlayer), move.getMove()[1]) && outSideHome(getOpponent(currentPlayer), move.getMove()[0])) {
+        }
+        if (insideHome(getOpponent(currentPlayer), move.getMove()[1]) && outSideHome(getOpponent(currentPlayer), move.getMove()[0])) {
             homePieces[getOpponent(currentPlayer) - 1]++;
-            ((Move) move).backHome = true;
         }
         // Check if the piece was moved inside the home from outside the home
-        if (insideHome(currentPlayer, move.getMove()[1]) && outSideHome(currentPlayer, move.getMove()[0])) {
+        if (insideHome(currentPlayer, piece.location) && outSideHome(currentPlayer, move.getMove()[0])) {
             homePieces[currentPlayer - 1]++;
-            // Remember that this was a homecoming move, for undo move
-            ((Move) move).homeMove = true;
             if (homePieces[currentPlayer - 1] == N_PIECES) {
                 winner = currentPlayer;
-                //System.out.println(numMoves);
             }
         }
         pastMoves.push(move);
@@ -185,13 +180,11 @@ public class Board implements IBoard {
     public void generateMovesForPiece(int position, boolean closerOnly) {
         seenIndex++;
         int colour = board[position].occupant.colour;
-        if (colour == EMPTY)
-            System.err.println("Wrong colour in generateMovesForPiece");
         targets = (colour == BLACK) ? B_TARGET : W_TARGET;
         target = targets[0];
         if (homePieces[colour - 1] != N_PIECES) {
             int c = 0;
-            while (board[target[0] + (target[1] * WIDTH)].occupant != null) {
+            while (c < targets.length && board[target[0] + (target[1] * WIDTH)].occupant != null) {
                 target = targets[++c];
             }
         }
@@ -206,43 +199,25 @@ public class Board implements IBoard {
             // Checked this position before || Piece is in home-base, and is not allowed to leave
             if (n == null || seen[n.position] == seenIndex || (inHome && outSideHome(colour, n.position)))
                 continue;
+            // Mark as seen so we don't check it again
+            seen[n.position] = seenIndex;
             // Pieces can move to empty squares, or hop over other pieces
             if (hops == 0 && n.occupant == null) {
-                // Mark as seen so we don't check it again
-                seen[n.position] = seenIndex;
                 if (!closerOnly || initDistance > getDistanceToHome(n.position, target))
                     moves.add(new Move(initialPosition, n.position, hops));
             } else if (n.occupant != null && n.neighbours[i] != null && n.neighbours[i].occupant == null) {
                 // Mark as seen so we don't check it again
-                seen[n.position] = seenIndex;
                 seen[n.neighbours[i].position] = seenIndex;
-                //
                 if (inHome && outSideHome(colour, n.neighbours[i].position))
                     continue;
                 // Check if the move is closer to target, and the neighbour is not outside the home, if the piece is inside
-                if (!closerOnly || initDistance > getDistanceToHome(n.position, target))
+                if (!closerOnly || initDistance > getDistanceToHome(n.position, target)) {
                     moves.add(new Move(initialPosition, n.neighbours[i].position, hops + 1));
-                // Search for a hop-over
-                generateMovesForPiece(colour, initialPosition, n.neighbours[i].position, hops + 1, inHome, closerOnly, initDistance);
+                    // Search for a hop-over
+                    generateMovesForPiece(colour, initialPosition, n.neighbours[i].position, hops + 1, inHome, closerOnly, initDistance);
+                }
             }
         }
-    }
-
-    private int getDistanceToHome(int from, int[] target) {
-        return Math.abs((from % WIDTH) - target[0]) + Math.abs((from / WIDTH) - target[1]);
-    }
-
-    private boolean insideHome(int colour, int position) {
-        return (colour == BLACK && position < W_HOME_MAX) || (colour == WHITE && position > B_HOME_MIN);
-    }
-
-    private boolean outSideHome(int colour, int position) {
-        return (colour == BLACK && position > W_HOME_MAX) || (colour == WHITE && position < B_HOME_MIN);
-    }
-
-    @Override
-    public boolean drawPossible() {
-        return false;
     }
 
     @Override
@@ -265,7 +240,6 @@ public class Board implements IBoard {
     @Override
     public boolean doAIMove(IMove move, int player) {
         doMove(move);
-        numMoves++;
         return true;
     }
 
@@ -277,12 +251,22 @@ public class Board implements IBoard {
 
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
-        generateMovesForPlayer(currentPlayer, true);
+        moves.clear();
+        int startI = (currentPlayer == P1) ? 0 : N_PIECES;
+        int piece = random.nextInt(N_PIECES);
+        int c = 0;
+        while (moves.size() == 0 && c < N_PIECES) {
+            generateMovesForPiece(pieces[piece + startI].location, true);
+            piece++;
+            c++;
+            if (piece >= N_PIECES)
+                piece = 0;
+        }
         // No moves were generated because no moves is strictly closer to goal
-        if (moves.size() == 0)
+        if (moves.size() == 0) {
             generateMovesForPlayer(currentPlayer, false);
-        //
-        if (heuristics) {
+            return Arrays.asList(moves.getArrayCopy());
+        } else if (heuristics) { // Don't do the hop-thing with reverse moves in the list
             playoutMoves.clear();
             int hops;
             for (int i = 0; i < moves.size(); i++) {
@@ -309,17 +293,40 @@ public class Board implements IBoard {
             p.location = move.getMove()[0];
             board[move.getMove()[1]].occupant = null;
             board[move.getMove()[0]].occupant = p;
-            // This move places the piece outside the home
-            if (((Move) move).homeMove) {
-                homePieces[currentPlayer - 1]--;
-            } else if (((Move) move).leftHome) {
+
+            if (insideHome(getOpponent(currentPlayer), move.getMove()[0]) && outSideHome(getOpponent(currentPlayer), move.getMove()[1])) {
                 homePieces[getOpponent(currentPlayer) - 1]++;
-            } else if (((Move) move).backHome) {
+            }
+
+            if (insideHome(getOpponent(currentPlayer), move.getMove()[1]) && outSideHome(getOpponent(currentPlayer), move.getMove()[0])) {
                 homePieces[getOpponent(currentPlayer) - 1]--;
             }
-            //
+
+            if (insideHome(currentPlayer, move.getMove()[1]) && outSideHome(currentPlayer, move.getMove()[0])) {
+                homePieces[currentPlayer - 1]--;
+                if (homePieces[currentPlayer - 1] < 0) {
+                    System.err.println("home pieces smaller than 0!");
+                }
+            }
             winner = NONE_WIN;
         }
+    }
+
+    private int getDistanceToHome(int from, int[] target) {
+        return Math.abs((from % WIDTH) - target[0]) + Math.abs((from / WIDTH) - target[1]);
+    }
+
+    private boolean insideHome(int colour, int position) {
+        return (colour == BLACK && position < W_HOME_MAX) || (colour == WHITE && position > B_HOME_MIN);
+    }
+
+    private boolean outSideHome(int colour, int position) {
+        return (colour == BLACK && position > W_HOME_MAX) || (colour == WHITE && position < B_HOME_MIN);
+    }
+
+    @Override
+    public boolean drawPossible() {
+        return false;
     }
 
     @Override
