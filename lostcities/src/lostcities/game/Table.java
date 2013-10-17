@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Table implements IBoard {
     public static int P2_EXP_I = 5, P2_HAND_I = 8, EXP_COST = 20, BONUS = 20, N_BONUS_CARDS = 8, MAX_DISC_STACK_DRAW = 2;
-    private final MoveList moves = new MoveList(500);
+    private final MoveList moves = new MoveList(625);
     private final ArrayList<IMove> playoutMoves = new ArrayList<IMove>(100);
     private final java.util.Stack<Move> pastMoves = new java.util.Stack<Move>();
     //
@@ -25,8 +25,10 @@ public class Table implements IBoard {
     public boolean[] known = new boolean[16];       // Whether all players know you hold this card
     public int[] scores = new int[2];               // Total score per player
     public int currentPlayer = P1, winner = NONE_WIN;
+    private int card, value, colour, stack, stackI; // Some variables for move generation
     private int[] minCard = new int[5];
     private int[] discardStackDraws = {0, 0};       // Keep track of the discard - stack draw moves
+    private int invisiblePlayer;
 
     @Override
     public void initialize() {
@@ -47,9 +49,7 @@ public class Table implements IBoard {
     }
 
     public void doMove(Move move) {
-        int handIndex = move.getMove()[0];
-        int card = hands[handIndex];
-        move.setCardPlayed(card);
+        int card = move.getMove()[0];
         pastMoves.push(move);
         int stack = (card / 100) - 1;
         int pStack = (currentPlayer == P1) ? stack : P2_EXP_I + stack;
@@ -92,6 +92,9 @@ public class Table implements IBoard {
             }
         }
         int draw = move.getMove()[1];
+        int handIndex = getHandIndex(card, currentPlayer);
+        // Set the hand index for undoMove
+        move.setHandIndex(handIndex);
         // Draw a new card
         if (draw == Move.DECK_DRAW) {
             hands[handIndex] = deck.takeCard();
@@ -147,18 +150,45 @@ public class Table implements IBoard {
     public void generateAllMoves() {
         moves.clear();
         // Don't generate moves if there is already a winner
-        if(winner != NONE_WIN)
+        if (winner != NONE_WIN)
             return;
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
+        stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
+        // Generate the moves in the hand of the player
         for (int i = startI; i < endI; i++) {
-            // Move for drawing from deck &
-            // Moves for drawing from coloured stacks (0 < j < 5)
-            for (int j = 0; j < stacks.length + 1; j++) {
+            generateMove(hands[i]);
+        }
+
+        // Also generate moves that are in the deck, for the hidden player
+        if (currentPlayer == invisiblePlayer) {
+            for (int i = 0; i < deck.size(); i++) {
+                generateMove(deck.get(i));
+            }
+        }
+    }
+
+    private void generateMove(int card) {
+        boolean canPlay = false;
+        value = card % 100;
+        colour = (card / 100) - 1;
+        stack = colour + stackI;
+        // Investment card --> no expedition cards have been played
+        if (value == Deck.INVESTMENT && expeditionCards[stack] == 0) {
+            canPlay = true;
+        } else if (value != Deck.INVESTMENT && expeditionCards[stack] < value) {
+            // Expedition card, can be played in the expedition
+            canPlay = true;
+        }
+        // Move for drawing from deck & moves for drawing from coloured stacks (0 < j < 5)
+        for (int j = 0; j < stacks.length + 1; j++) {
+            if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
                 // Discard move
-                moves.add(new Move(i, j, true));
+                if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW))
+                    moves.add(new Move(card, j, true));
                 // Play card move
-                moves.add(new Move(i, j, false));
+                if (canPlay)
+                    moves.add(new Move(card, j, false));
             }
         }
     }
@@ -179,14 +209,14 @@ public class Table implements IBoard {
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         playoutMoves.clear();
         // Don't generate moves if there is already a winner
-        if(winner != NONE_WIN)
+        if (winner != NONE_WIN)
             return Arrays.asList();
         Arrays.fill(minCard, 20);
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
-        int stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
-        int card, colour, stack, value;
+        stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
         boolean canPlay, hasMove = false;
+        IMove m;
         for (int i = startI; i < endI; i++) {
             canPlay = false;
             card = hands[i];
@@ -210,11 +240,17 @@ public class Table implements IBoard {
             for (int j = 0; j < stacks.length + 1; j++) {
                 if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
                     // Discard move
-                    if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW))
-                        playoutMoves.add(new Move(i, j, true));
+                    if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW)) {
+                        m = new Move(card, j, true);
+                        ((Move)m).setHandIndex(i);
+                        playoutMoves.add(m);
+                    }
                     // Play card move
-                    if (canPlay)
-                        playoutMoves.add(new Move(i, j, false));
+                    if (canPlay) {
+                        m = new Move(card, j, false);
+                        ((Move)m).setHandIndex(i);
+                        playoutMoves.add(m);
+                    }
                 }
             }
         }
@@ -222,11 +258,10 @@ public class Table implements IBoard {
         // At the end of the game though, this may not apply (dump high cards quick), use e-greedy with some p here.
         if (hasMove && heuristics && deck.size() >= 5) {
             Iterator<IMove> i = playoutMoves.iterator();
-            IMove m;
             // Make sure no cards higher than the lowest available card are played
             while (i.hasNext()) {
                 m = i.next();
-                card = hands[m.getMove()[0]];
+                card = m.getMove()[0];
                 value = card % 100;
                 if (value == Deck.INVESTMENT)
                     continue;
@@ -252,8 +287,9 @@ public class Table implements IBoard {
         //
         currentPlayer = getOpponent(currentPlayer);
         // Undo the move
-        int card = move.getCardPlayed(), handIndex = move.getMove()[0];
+        int card = move.getMove()[0];
         int draw = move.getMove()[1];
+        int handIndex = move.getHandIndex();
         // Return the drawn card
         if (draw == Move.DECK_DRAW) {
             deck.returnCard(hands[handIndex]);
@@ -304,6 +340,26 @@ public class Table implements IBoard {
         }
     }
 
+    /**
+     * Finds the index of a specified card in the player's hand.
+     *
+     * @param card   The card to search
+     * @param player The player's to search in
+     * @return -1 if the card is not in the player's hand, the hand index otherwise
+     */
+    private int getHandIndex(int card, int player) {
+        int handIndex = (player == P1) ? 0 : P2_HAND_I;
+        int endIndex = (player == P1) ? P2_HAND_I : hands.length;
+        // Find the card in the player's hand
+        while (handIndex < endIndex && hands[handIndex] != card) {
+            handIndex++;
+        }
+        if (handIndex < endIndex)
+            return handIndex;
+        else
+            return -1;
+    }
+
     @Override
     public int getOpponent(int player) {
         return (player == P1) ? P2 : P1;
@@ -332,6 +388,7 @@ public class Table implements IBoard {
     @Override
     public void newDeterminization(int myPlayer) {
         int si = (myPlayer == P1) ? P2_HAND_I : 0, ei = (myPlayer == P1) ? hands.length : P2_HAND_I;
+        invisiblePlayer = (myPlayer == P1) ? P2 : P1;
         // Put the invisible player's hand back in the deck, and shuffle it
         deck.addHandToDek(hands, si, ei, known);
         deck.shuffleDeck();
@@ -358,11 +415,14 @@ public class Table implements IBoard {
         //
         if (!canDraw)
             return false;
+        // Check if the card is in the player's hand
+        if (getHandIndex(move.getMove()[0], currentPlayer) == -1)
+            return false;
         // Cards can always be discarded
         if (move.getType() == Move.DISCARD)
             return true;
         // Check if we can play the card on an expedition
-        int card = hands[move.getMove()[0]];
+        int card = move.getMove()[0];
         int colour = (card / 100) - 1;
         int stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
         int type = card % 100;

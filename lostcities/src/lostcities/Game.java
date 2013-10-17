@@ -48,13 +48,14 @@ public class Game {
                 System.out.println(player + " select a card.");
                 m = null;
                 int index;
+                int card = 0;
                 while (m == null || !t.isLegal(m)) {
                     if (m != null)
                         System.out.println("illegal move - select another");
                     index = -1;
                     while (index == -1) {
                         String cardString = in.nextLine();
-                        int card = getCard(cardString);
+                        card = getCard(cardString);
                         index = getHandIndex(card, t.getPlayerToMove(), t);
                         if (index == -1)
                             System.out.println("Card not in hand");
@@ -65,7 +66,7 @@ public class Game {
                     System.out.println("Draw from which stack? (0 = Deck, 1 = Y ... 5 = R)");
                     int draw = in.nextInt();
                     in.nextLine();
-                    m = new Move(index, draw, discard);
+                    m = new Move(card, draw, discard);
                 }
             }
             t.doMove(m);

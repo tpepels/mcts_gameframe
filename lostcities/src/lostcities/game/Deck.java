@@ -20,6 +20,13 @@ public class Deck {
         return size < 0;
     }
 
+    public int get(int i) {
+        if(i < size())
+            return deck[size - i];
+        else
+            throw new IndexOutOfBoundsException(i + " is out of deck bounds.");
+    }
+
     /**
      * Take the top card from the deck, and remove it from the deck
      *

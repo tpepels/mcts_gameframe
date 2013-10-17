@@ -28,8 +28,6 @@ public class Board implements IBoard {
     public int whiteTown, blackTown, numWhitePcs, numBlackPcs;
     public int currentPlayer = IBoard.P1, winningPlayer = NONE_WIN;
     private int allMovesForPlayer = 0; // All moves for this player (P1/P2) have been generated
-    private boolean mate = false; // True if the current player has a mate on the opponent
-    private int[] numMates = new int[]{0, 0}; // The number of mates since the board was last copied (this field should not be cloned)
 
     @Override
     public void initialize() {
@@ -129,7 +127,6 @@ public class Board implements IBoard {
         int mySoldier = (player == P1) ? B_SOLDIER : W_SOLDIER;
         moves.clear();
         mateMoves.clear();
-        mate = false;
         int c = 0;
         // First, players must place the town
         if (player == P2 && !whiteTownPlaced) {
@@ -150,9 +147,6 @@ public class Board implements IBoard {
                         break;
                 }
             }
-            // Keep track of the number of mate positions per player
-            if (mate)
-                numMates[player - 1]++;
         }
         allMovesForPlayer = player;
     }
@@ -313,9 +307,6 @@ public class Board implements IBoard {
                     // Only movement can lead to mate positions
                     undoMove();
                     canRetreat = true;
-                } else {
-                    // We don't have to make the move, we know that we can capture the town
-                    mate = true;
                 }
             }
         }
@@ -414,9 +405,6 @@ public class Board implements IBoard {
                                     moves.add(testMove);
                                 }
                                 undoMove();
-                            } else {
-                                // We can fire on the town, no need to check the possibility of the move by checkmate
-                                mate = true;
                             }
                         }
                         h++;
@@ -537,12 +525,7 @@ public class Board implements IBoard {
 
     @Override
     public void undoMove() {
-        Move move = null;
-        try {
-            move = (Move) pastMoves.pop();
-        } catch (Exception ex) {
-            throw new RuntimeException("Error in undomove.");
-        }
+        Move move = (Move) pastMoves.pop();
         if (move != null) {
             int player = getOpponent(currentPlayer);
             int soldier = (player == P1) ? B_SOLDIER : W_SOLDIER;

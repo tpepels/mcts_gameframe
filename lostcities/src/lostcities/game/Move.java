@@ -7,10 +7,10 @@ public class Move implements IMove {
     public static final int DECK_DRAW = 0, PLAY = 1, DISCARD = -1;
     final int[] move = new int[2];
     final int type;
-    private int prevTopCard = -1, cardPlayed = -1;
+    private int prevTopCard = -1, handIndex = -1;
 
-    public Move(int handIndex, int draw, boolean discard) {
-        move[0] = handIndex;
+    public Move(int card, int draw, boolean discard) {
+        move[0] = card;
         move[1] = draw;
         type = (discard) ? DISCARD : PLAY;
     }
@@ -53,32 +53,28 @@ public class Move implements IMove {
 
     public String toString() {
         String cardStr, playStr, drawStr;
-        if (cardPlayed != -1) {
-            int type = cardPlayed % 100;
-            int colour = cardPlayed / 100;
-            cardStr = (type == Deck.INVESTMENT) ? "$" : Integer.toString(type);
-            cardStr = getColour(colour) + cardStr;
-        } else {
-            cardStr = "hand index: " + move[0];
-        }
-        if(type == DISCARD)
+        int type = move[0] % 100;
+        int colour = move[0] / 100;
+        cardStr = (type == Deck.INVESTMENT) ? "$" : Integer.toString(type);
+        cardStr = getColour(colour) + cardStr;
+        if (type == DISCARD)
             playStr = "Discard ";
         else
             playStr = "Play ";
-        if(move[1] == 0)
+        if (move[1] == 0)
             drawStr = "deck";
         else
             drawStr = getColour(move[1]) + " stack";
 
-        return move[0] + " " + playStr + cardStr + " draw from " +  drawStr;
+        return handIndex + " " + playStr + cardStr + " draw from " + drawStr;
     }
 
-    public int getCardPlayed() {
-        return cardPlayed;
+    public int getHandIndex() {
+        return handIndex;
     }
 
-    public void setCardPlayed(int cardPlayed) {
-        this.cardPlayed = cardPlayed;
+    public void setHandIndex(int handIndex) {
+        this.handIndex = handIndex;
     }
 
     public int getPrevTopCard() {
