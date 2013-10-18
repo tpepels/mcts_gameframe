@@ -1,18 +1,19 @@
 package lostcities.game;
 
+import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 public class Table implements IBoard {
-    public static int P2_EXP_I = 5, P2_HAND_I = 8, EXP_COST = 20, BONUS = 20, N_BONUS_CARDS = 8, MAX_DISC_STACK_DRAW = 2;
+    public final static int P2_EXP_I = 5, P2_HAND_I = 8, EXP_COST = 20, BONUS = 20, N_BONUS_CARDS = 8, MAX_DISC_STACK_DRAW = 2, MIN_NEW_EXP_VAL = 4;
+    private final static FastRandom random = new FastRandom();
     private final MoveList moves = new MoveList(625);
-    private final ArrayList<IMove> playoutMoves = new ArrayList<IMove>(100);
+    private final ArrayList<IMove> playoutMoves = new ArrayList<IMove>(100), heuristicMoves = new ArrayList<IMove>(100);
     private final java.util.Stack<Move> pastMoves = new java.util.Stack<Move>();
     //
     public Deck deck;                               // The main deck
@@ -25,10 +26,11 @@ public class Table implements IBoard {
     public boolean[] known = new boolean[16];       // Whether all players know you hold this card
     public int[] scores = new int[2];               // Total score per player
     public int currentPlayer = P1, winner = NONE_WIN;
-    private int card, value, colour, stack, stackI; // Some variables for move generation
+    private int card, value, colour, stack, stackI, drawStack; // Some variables for move generation
     private int[] minCard = new int[5];
     private int[] discardStackDraws = {0, 0};       // Keep track of the discard - stack draw moves
     private int invisiblePlayer;
+    private boolean[] invCardsSeen;
 
     @Override
     public void initialize() {
@@ -92,7 +94,11 @@ public class Table implements IBoard {
             }
         }
         int draw = move.getMove()[1];
-        int handIndex = getHandIndex(card, currentPlayer);
+        // During playout, the hand indices are pre-generated
+        int handIndex = move.getHandIndex();
+        // During selection the hand indices are unknown
+        if (handIndex == -1)
+            handIndex = getHandIndex(card, currentPlayer);
         // Set the hand index for undoMove
         move.setHandIndex(handIndex);
         // Draw a new card
@@ -109,6 +115,10 @@ public class Table implements IBoard {
                 } else {
                     winner = DRAW;
                 }
+//                if (Math.random() < 0.001) {
+//                    Game.drawTable(this);
+//                    System.out.println("winner");
+//                }
             }
         } else {
             hands[handIndex] = stacks[draw - 1].takeCard();
@@ -149,6 +159,7 @@ public class Table implements IBoard {
 
     public void generateAllMoves() {
         moves.clear();
+        invCardsSeen = new boolean[5];
         // Don't generate moves if there is already a winner
         if (winner != NONE_WIN)
             return;
@@ -175,7 +186,8 @@ public class Table implements IBoard {
         stack = colour + stackI;
         // Investment card --> no expedition cards have been played
         if (value == Deck.INVESTMENT && expeditionCards[stack] == 0) {
-            canPlay = true;
+            canPlay = !invCardsSeen[colour]; // Only true if it was not already seen
+            invCardsSeen[colour] = true;
         } else if (value != Deck.INVESTMENT && expeditionCards[stack] < value) {
             // Expedition card, can be played in the expedition
             canPlay = true;
@@ -211,17 +223,24 @@ public class Table implements IBoard {
         // Don't generate moves if there is already a winner
         if (winner != NONE_WIN)
             return Arrays.asList();
-        Arrays.fill(minCard, 20);
+        Arrays.fill(minCard, 10);
+        int[] colourCards = new int[5];
+        int[] invCards = new int[5];
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
         stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
         boolean canPlay, hasMove = false;
-        IMove m;
+        IMove move;
         for (int i = startI; i < endI; i++) {
             canPlay = false;
             card = hands[i];
             value = card % 100;
             colour = (card / 100) - 1;
+            // Keep track of the number of cards per colour in hand
+            if (value != Deck.INVESTMENT)
+                colourCards[colour]++;
+            else
+                invCards[colour]++;
             stack = colour + stackI;
             // Investment card --> no expedition cards have been played
             if (value == Deck.INVESTMENT && expeditionCards[stack] == 0) {
@@ -229,52 +248,106 @@ public class Table implements IBoard {
             } else if (value != Deck.INVESTMENT && expeditionCards[stack] < value) {
                 // Expedition card, can be played in the expedition
                 canPlay = true;
-                hasMove = true;
-                // Remember the lowest card per colour
-                if (minCard[colour] > value) {
-                    minCard[colour] = value;
-                }
             }
+            // Remember the lowest card per colour
+            if (minCard[colour] > value)
+                minCard[colour] = value;
             // Move for drawing from deck &
             // Moves for drawing from coloured stacks (0 < j < 5)
             for (int j = 0; j < stacks.length + 1; j++) {
                 if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
                     // Discard move
                     if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW)) {
-                        m = new Move(card, j, true);
-                        ((Move)m).setHandIndex(i);
-                        playoutMoves.add(m);
+                        move = new Move(card, j, true);
+                        ((Move) move).setHandIndex(i);
+                        playoutMoves.add(move);
                     }
                     // Play card move
                     if (canPlay) {
-                        m = new Move(card, j, false);
-                        ((Move)m).setHandIndex(i);
-                        playoutMoves.add(m);
+                        move = new Move(card, j, false);
+                        ((Move) move).setHandIndex(i);
+                        playoutMoves.add(move);
                     }
                 }
             }
         }
         // We now have all legal moves, but it doesn't make sense to play high cards when low ones are in hand
         // At the end of the game though, this may not apply (dump high cards quick), use e-greedy with some p here.
-        if (hasMove && heuristics && deck.size() >= 5) {
-            Iterator<IMove> i = playoutMoves.iterator();
-            // Make sure no cards higher than the lowest available card are played
-            while (i.hasNext()) {
-                m = i.next();
-                card = m.getMove()[0];
-                value = card % 100;
-                if (value == Deck.INVESTMENT)
-                    continue;
-                // Only playing value-cards is considered
-                if (m.getType() == Move.DISCARD) {
-                    i.remove();
-                    continue;
-                }
-                colour = (card / 100) - 1;
-                if (minCard[colour] < value) {
-                    i.remove();
+        if (heuristics) {
+            heuristicMoves.clear();
+            if (random.nextDouble() < 0.95) {
+                // Make sure no cards higher than the lowest available card are played
+                for (IMove m : playoutMoves) {
+                    card = m.getMove()[0];
+                    value = card % 100;
+                    colour = (card / 100) - 1;
+                    stack = colour + stackI;
+
+                    if (m.getMove()[1] > 0) {
+                        drawStack = m.getMove()[1] - 1;
+                        card = stacks[drawStack].peek();
+                        // Don't draw useless cards from the stack
+                        if (expeditionCards[stack] == 0 || card < expeditionCards[stack]) {
+                            continue;
+                        }
+                    }
+                    //
+                    if (m.getType() != Move.DISCARD) {
+                        // If its the next card in order on the stack i.e. 3 on stack - 4 in hand
+                        if (expeditionCards[stack] + 1 == value) {
+                            // Immediately play this move
+                            heuristicMoves.clear();
+                            heuristicMoves.add(m);
+                            return heuristicMoves;
+                        }
+                        // Don't play cards if you have a lower one in hand
+                        if (minCard[colour] == value) {
+                            if (numExpeditionCards[stack] > 0 || multipliers[stack] > 0) {
+                                heuristicMoves.add(m);
+                            } else if (numExpeditionCards[stack] == 0 && value <= MIN_NEW_EXP_VAL && (colourCards[colour] > 2 || deck.size() > 20)) {
+                                // Low probability of play (new expedition)
+                                heuristicMoves.add(m);
+                            }
+                        } else if (value == Deck.INVESTMENT && colourCards[colour] > 2) {
+                            heuristicMoves.add(m);
+                        }
+                    } else {
+                        if (value == Deck.INVESTMENT) {
+                            // Discard useless investment cards
+                            if (numExpeditionCards[stack] > 0 || invCards[colour] > 1) {
+                                heuristicMoves.add(m);
+                                invCards[colour]--;
+                            }
+                        } else if (numExpeditionCards[stack] > 0 && expeditionCards[stack] > value) {
+                            // Discard cards that you can not play anymore, discard lowest first
+                            heuristicMoves.add(m);
+                        }
+                    }
                 }
             }
+            // If no reasonable move to play
+            if (heuristicMoves.size() == 0) {
+                // Play or discard a random card without starting a new expedition
+                for (IMove m : playoutMoves) {
+                    card = m.getMove()[0];
+                    value = card % 100;
+                    colour = (card / 100) - 1;
+                    stack = colour + stackI;
+                    // Only draw from the deck, to bring new cards into play
+                    if (m.getMove()[1] == 0) {
+                        if (m.getType() != Move.DISCARD) {
+                            // Play the card without starting a new expedition
+                            if (numExpeditionCards[stack] > 0 || multipliers[stack] > 0) {
+                                heuristicMoves.add(m);
+                            }
+                        } else {
+                            // Discard a random card
+                            heuristicMoves.add(m);
+                        }
+                    }
+                }
+            }
+            return heuristicMoves;
         }
         return playoutMoves;
     }
@@ -338,6 +411,7 @@ public class Table implements IBoard {
                 scores[pIndex] += EXP_COST;
             }
         }
+        move.setHandIndex(-1);
     }
 
     /**

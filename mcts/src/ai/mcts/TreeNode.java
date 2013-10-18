@@ -5,6 +5,8 @@ import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
+import lostcities.Game;
+import lostcities.game.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -173,16 +175,8 @@ public class TreeNode {
 
     private TreeNode select(IBoard board) {
         TreeNode selected = null;
-        // Below a threshold, select a random child
-        if (nVisits < children.size()) {
-            selected = children.get(r.nextInt(children.size()));
-            while (!board.isLegal(selected.getMove()) || (options.accelerated && selected.isVirtual()))
-                selected = children.get(r.nextInt(children.size()));
-
-            return selected;
-        }
         //
-        double bestValue = Double.NEGATIVE_INFINITY;
+        double bestValue = Double.NEGATIVE_INFINITY, uctValue;
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // Skip virtual nodes
@@ -191,8 +185,11 @@ public class TreeNode {
             // If the game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(c.getMove()))
                 continue;
-
-            double uctValue = c.avgValue + Math.sqrt(l.log(nVisits + 1) / (c.nVisits + epsilon));
+            // First, visit all children at least once
+            if (c.nVisits == 0)
+                uctValue = INF;
+            else
+                uctValue = c.avgValue + Math.sqrt(l.log(nVisits + 1) / (c.nVisits + epsilon));
             //
             if (uctValue > bestValue) {
                 selected = c;
@@ -226,6 +223,7 @@ public class TreeNode {
                 // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
                     gameEnded = true;
+                    Game.drawTable((Table)board);
                     System.out.println("No moves remaining!");
                     // The current player has no moves left
                     // TODO, different games have different rules for this

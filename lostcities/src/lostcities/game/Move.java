@@ -43,7 +43,7 @@ public class Move implements IMove {
 
     @Override
     public boolean equals(IMove move) {
-        return move.getMove()[0] == this.move[0] && move.getMove()[1] == this.move[1];
+        return move.getMove()[0] == this.move[0] && move.getMove()[1] == this.move[1] && move.getType() == this.type;
     }
 
     @Override
@@ -57,10 +57,11 @@ public class Move implements IMove {
         int colour = move[0] / 100;
         cardStr = (type == Deck.INVESTMENT) ? "$" : Integer.toString(type);
         cardStr = getColour(colour) + cardStr;
-        if (type == DISCARD)
+        if (this.type == DISCARD)
             playStr = "Discard ";
         else
             playStr = "Play ";
+
         if (move[1] == 0)
             drawStr = "deck";
         else

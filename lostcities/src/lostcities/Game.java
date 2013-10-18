@@ -18,10 +18,13 @@ public class Game {
         Scanner in = new Scanner(System.in);
         MCTSOptions options1 = new MCTSOptions();
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
+//        options1.useHeuristics = false;
+//        options1.timeInterval = 10000;
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
+        options2.timeInterval = 10000;
         aiPlayer2.setOptions(options2);
 
         MCTSPlayer aiPlayer;
@@ -91,7 +94,7 @@ public class Game {
             if (t.stacks[i].isEmpty())
                 System.out.print(getColour(i + 1) + ":# ");
             else {
-                String card = (t.stacks[i].peek() < Deck.INVESTMENT) ? Integer.toString(t.stacks[i].peek()) : "$";
+                String card = (t.stacks[i].peek() % 100 < Deck.INVESTMENT) ? Integer.toString(t.stacks[i].peek() % 100) : "$";
                 System.out.print(getColour(i + 1) + ":" + card + " ");
             }
         }
