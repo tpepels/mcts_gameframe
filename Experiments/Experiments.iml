@@ -7,6 +7,11 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="cannon" />
+    <orderEntry type="module" module-name="chinesecheckers" />
+    <orderEntry type="module" module-name="lostcities" />
+    <orderEntry type="module" module-name="pentalath" />
+    <orderEntry type="module" module-name="mcts" />
   </component>
 </module>
 

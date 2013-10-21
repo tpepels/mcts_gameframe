@@ -5,8 +5,6 @@ import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
-import lostcities.Game;
-import lostcities.game.Table;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -223,8 +221,6 @@ public class TreeNode {
                 // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
                     gameEnded = true;
-                    Game.drawTable((Table)board);
-                    System.out.println("No moves remaining!");
                     // The current player has no moves left
                     // TODO, different games have different rules for this
                     if (board.drawPossible())

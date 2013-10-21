@@ -1,25 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="ArtifactsWorkspaceSettings">
+    <artifacts-to-build>
+      <artifact name="experiments:jar" />
+    </artifacts-to-build>
+  </component>
   <component name="ChangeListManager">
     <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="Chinese Checkers now on smaller board">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lostcities/src/lostcities/Game.java" afterPath="$PROJECT_DIR$/lostcities/src/lostcities/Game.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java" afterPath="$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java" afterPath="$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Experiments/experiments.iml" />
+      <change type="DELETED" beforePath="D:\Dropbox\Workspaces\GitHub\mcts_gameframe\pentalath\src\pentalath\AITests.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/mcts.iml" afterPath="$PROJECT_DIR$/mcts/mcts.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MOVED" beforePath="D:\Dropbox\Workspaces\GitHub\mcts_gameframe\cannon\src\cannon\AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
     </list>
     <ignored path="mcts_gameframe.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382097573946" ignored="false" />
+    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382219481048" ignored="false" />
     <file path="/Table.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382105349615" ignored="false" />
-    <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381952391604" ignored="false" />
-    <file path="/fragment.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381872080517" ignored="false" />
+    <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382202616669" ignored="false" />
+    <file path="/fragment.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382201142157" ignored="false" />
     <file path="/Deck.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382024963078" ignored="false" />
     <file path="/Stack.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381337749886" ignored="false" />
     <file path="/Move.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382035178777" ignored="false" />
     <file path="/CCPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381841172342" ignored="false" />
-    <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382090038096" ignored="false" />
+    <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382195594351" ignored="false" />
     <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382098350624" ignored="false" />
     <file path="/IBoard.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381871867188" ignored="false" />
     <file path="/MCTSPlayer.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381870580573" ignored="false" />
@@ -29,7 +38,8 @@
     <file path="/MoveList.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381666482638" ignored="false" />
     <file path="/CannonPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381843721186" ignored="false" />
     <file path="/CannonGui.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381773904833" ignored="false" />
-    <file path="/AITests.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381917595615" ignored="false" />
+    <file path="/AITests.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382201104536" ignored="false" />
+    <file path="/PentalathPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382202767260" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -81,23 +91,7 @@
         <option name="LOG_MESSAGE" value="&#13;&#13;JAVA" />
       </breakpoint>
     </breakpoint_any>
-    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true">
-      <breakpoint url="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" line="226" class="ai.mcts.TreeNode" package="ai.mcts">
-        <option name="ENABLED" value="true" />
-        <option name="LOG_ENABLED" value="false" />
-        <option name="LOG_EXPRESSION_ENABLED" value="false" />
-        <option name="REMOVE_AFTER_HIT" value="false" />
-        <option name="SUSPEND_POLICY" value="SuspendAll" />
-        <option name="SUSPEND" value="true" />
-        <option name="COUNT_FILTER_ENABLED" value="false" />
-        <option name="COUNT_FILTER" value="0" />
-        <option name="CONDITION_ENABLED" value="true" />
-        <option name="CLASS_FILTERS_ENABLED" value="false" />
-        <option name="INSTANCE_FILTERS_ENABLED" value="false" />
-        <option name="CONDITION" value="" />
-        <option name="LOG_MESSAGE" value="" />
-      </breakpoint>
-    </line_breakpoints>
+    <line_breakpoints default_suspend_policy="SuspendAll" default_condition_enabled="true" />
     <breakpoint_rules />
     <ui_properties />
   </component>
@@ -107,49 +101,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Table.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java">
+      <file leaf-file-name="AITests.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="319" column="14" selection-start="14377" selection-end="14377" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#579#586#0" expanded="true" />
-                <element signature="e#708#714#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Game.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/Game.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="31" selection-start="640" selection-end="640" vertical-scroll-proportion="0.38323355">
+            <state line="127" column="25" selection-start="4180" selection-end="4180" vertical-scroll-proportion="3.1937323">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="MCTSPlayer.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java">
+      <file leaf-file-name="PentalathGui.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathGui.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="70" column="46" selection-start="2301" selection-end="2301" vertical-scroll-proportion="0.0">
+            <state line="89" column="35" selection-start="2920" selection-end="2920" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TreeNode.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
+      <file leaf-file-name="PentalathPanel.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="215" column="47" selection-start="8009" selection-end="8009" vertical-scroll-proportion="0.0">
+            <state line="170" column="145" selection-start="6268" selection-end="6268" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="Stack.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Stack.java">
+      <file leaf-file-name="Board.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="20" column="0" selection-start="423" selection-end="423" vertical-scroll-proportion="0.0">
+            <state line="302" column="21" selection-start="11157" selection-end="11157" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MCTSOptions.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="20" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -174,9 +165,6 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
-        <option value="$PROJECT_DIR$/cannon/src/AITests.java" />
-        <option value="$PROJECT_DIR$/pentalath/src/AITests.java" />
         <option value="$PROJECT_DIR$/cannon/src/cannon/AITests.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/AITests.java" />
         <option value="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/gui/CCPanel.java" />
@@ -186,18 +174,21 @@
         <option value="$PROJECT_DIR$/cannon/src/cannon/game/Board.java" />
         <option value="$PROJECT_DIR$/lostcities/src/lostcities/game/Deck.java" />
         <option value="$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java" />
-        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
-        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
         <option value="$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java" />
         <option value="$PROJECT_DIR$/lostcities/src/lostcities/Game.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
+        <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
+        <option value="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
+        <option value="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
-    <option name="width" value="1936" />
-    <option name="height" value="1186" />
+    <option name="width" value="1616" />
+    <option name="height" value="886" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -234,6 +225,11 @@
   <component name="ProjectReloadState">
     <option name="STATE" value="0" />
   </component>
+  <component name="ProjectStructureProblems">
+    <ignored-problems>
+      <problem id="module-circular-dependency(project:general)" />
+    </ignored-problems>
+  </component>
   <component name="ProjectView">
     <navigator currentView="PackagesPane" proportions="" version="1" splitterProportion="0.5">
       <flattenPackages />
@@ -248,6 +244,16 @@
     </navigator>
     <panes>
       <pane id="Scope" />
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -282,124 +288,30 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ai" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ai" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lostcities" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lostcities" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lostcities" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lostcities" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="lostcities" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="game" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="OverrideImplement.combined" value="true" />
-    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="recentsLimit" value="5" />
     <property name="MemberChooser.sorted" value="false" />
     <property name="options.lastSelected" value="vcs.Git" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
-    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.2" />
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="FullScreen" value="false" />
     <property name="MemberChooser.showClasses" value="true" />
+    <property name="FullScreen" value="false" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="dynamic.classpath" value="false" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="options.searchVisible" value="true" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="dynamic.classpath" value="false" />
   </component>
-  <component name="RunManager" selected="Application.Lost Cities CI">
+  <component name="RunManager" selected="Application.Pentalath gui">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -412,19 +324,6 @@
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
@@ -452,6 +351,19 @@
       <envs />
       <properties />
       <listeners />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -502,28 +414,6 @@
       <option name="NETWORK_SPEED" value="full" />
       <option name="NETWORK_LATENCY" value="none" />
       <option name="CLEAR_LOGCAT" value="false" />
-      <method />
-    </configuration>
-    <configuration default="false" name="Cannon AITests" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="AITests" />
-      <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="" />
-      <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" value="" />
-      <option name="ENABLE_SWING_INSPECTOR" value="false" />
-      <option name="ENV_VARIABLES" />
-      <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="cannon" />
-      <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
-      <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
-      <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
     <configuration default="false" name="Cannon Gui" type="Application" factoryName="Application">
@@ -608,8 +498,8 @@
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <configuration default="false" name="Pentalath AITests" type="Application" factoryName="Application">
-      <option name="MAIN_CLASS_NAME" value="AITests" />
+    <configuration default="false" name="AI Experiments" type="Application" factoryName="Application">
+      <option name="MAIN_CLASS_NAME" value="experiments.AITests" />
       <option name="VM_PARAMETERS" value="" />
       <option name="PROGRAM_PARAMETERS" value="" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
@@ -618,25 +508,18 @@
       <option name="ENABLE_SWING_INSPECTOR" value="false" />
       <option name="ENV_VARIABLES" />
       <option name="PASS_PARENT_ENVS" value="true" />
-      <module name="pentalath" />
+      <module name="experiments" />
       <envs />
-      <RunnerSettings RunnerId="Debug">
-        <option name="DEBUG_PORT" value="" />
-        <option name="TRANSPORT" value="0" />
-        <option name="LOCAL" value="true" />
-      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
-      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
-    <list size="6">
-      <item index="0" class="java.lang.String" itemvalue="Application.Cannon AITests" />
-      <item index="1" class="java.lang.String" itemvalue="Application.Cannon Gui" />
-      <item index="2" class="java.lang.String" itemvalue="Application.CC Gui" />
-      <item index="3" class="java.lang.String" itemvalue="Application.Lost Cities CI" />
-      <item index="4" class="java.lang.String" itemvalue="Application.Pentalath gui" />
-      <item index="5" class="java.lang.String" itemvalue="Application.Pentalath AITests" />
+    <list size="5">
+      <item index="0" class="java.lang.String" itemvalue="Application.Cannon Gui" />
+      <item index="1" class="java.lang.String" itemvalue="Application.CC Gui" />
+      <item index="2" class="java.lang.String" itemvalue="Application.Lost Cities CI" />
+      <item index="3" class="java.lang.String" itemvalue="Application.Pentalath gui" />
+      <item index="4" class="java.lang.String" itemvalue="Application.AI Experiments" />
     </list>
     <configuration name="&lt;template&gt;" type="WebApp" default="true" selected="false">
       <Host>localhost</Host>
@@ -700,7 +583,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1936" height="1186" extended-state="6" />
+    <frame x="-8" y="-8" width="1616" height="886" extended-state="6" />
     <editor active="false" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32554945" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -716,8 +599,8 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.13660619" sideWeight="0.6702335" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.8404669" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="0" y="295" width="14206" height="279" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16602316" sideWeight="0.6702335" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.8410439" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="0" y="295" width="14206" height="279" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32782102" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -795,26 +678,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/AITests.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="27" selection-start="656" selection-end="656" vertical-scroll-proportion="0.5508982" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Piece.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="13" selection-start="44" selection-end="44" vertical-scroll-proportion="0.054131053" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Move.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="27" selection-start="123" selection-end="123" vertical-scroll-proportion="0.027065527" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Field.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="13" selection-start="44" selection-end="44" vertical-scroll-proportion="0.054131053" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/gui/CCPanel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="226" column="10" selection-start="7945" selection-end="7945" vertical-scroll-proportion="0.0" />
@@ -837,59 +700,70 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Deck.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="32" selection-start="596" selection-end="596" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="24" column="32" selection-start="596" selection-end="596" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="16" selection-start="1347" selection-end="1351" vertical-scroll-proportion="0.065868266">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="39" selection-start="331" selection-end="331" vertical-scroll-proportion="0.23904383">
-          <folding />
-        </state>
+        <state line="55" column="16" selection-start="1347" selection-end="1351" vertical-scroll-proportion="0.065868266" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="46" selection-start="2301" selection-end="2301" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="215" column="47" selection-start="8009" selection-end="8009" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="70" column="46" selection-start="2301" selection-end="2301" vertical-scroll-proportion="0.023904383" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Stack.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="0" selection-start="423" selection-end="423" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="20" column="0" selection-start="423" selection-end="423" vertical-scroll-proportion="0.47808766" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="319" column="14" selection-start="14377" selection-end="14377" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#579#586#0" expanded="true" />
-            <element signature="e#708#714#0" expanded="true" />
-          </folding>
-        </state>
+        <state line="319" column="14" selection-start="14377" selection-end="14377" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/Game.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="31" selection-start="640" selection-end="640" vertical-scroll-proportion="0.38323355">
+        <state line="22" column="31" selection-start="640" selection-end="640" vertical-scroll-proportion="0.023904383" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="6" column="29" selection-start="143" selection-end="143" vertical-scroll-proportion="0.023904383" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="20" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="302" column="21" selection-start="11157" selection-end="11157" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathGui.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="89" column="35" selection-start="2920" selection-end="2920" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="170" column="145" selection-start="6268" selection-end="6268" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="127" column="25" selection-start="4180" selection-end="4180" vertical-scroll-proportion="3.1937323">
           <folding />
         </state>
       </provider>
@@ -900,10 +774,12 @@
       <state key="ArtifactsStructureConfigurable.UI">
         <settings>
           <artifact-editor />
+          <last-edited>experiments:jar</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>
                 <option value="0.2" />
+                <option value="0.5" />
               </list>
             </option>
           </splitter-proportions>
@@ -946,7 +822,7 @@
       </state>
       <state key="ModuleStructureConfigurable.UI">
         <settings>
-          <last-edited>chinesecheckers</last-edited>
+          <last-edited>mcts</last-edited>
           <splitter-proportions>
             <option name="proportions">
               <list>

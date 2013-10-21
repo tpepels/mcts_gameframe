@@ -304,6 +304,17 @@ public class Board implements IBoard {
             // Check if position is free and add it to the free moves
             if (firstMove || board[i].occupant == 0) {
                 poMoves.add(new Move(i));
+                if (heuristics) {
+                    // Increase the chance of connecting pieces
+                    for (Field f : board[i].neighbours) {
+                        // One of the neighbours has a same-coloured piece
+                        if (f != null && f.occupant == currentPlayer) {
+                            poMoves.add(new Move(i));
+                            poMoves.add(new Move(i));
+                            break;
+                        }
+                    }
+                }
                 c++;
                 // No need to look further
                 if (c == count)

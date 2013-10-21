@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="experiments:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/experiments_jar</output-path>
+    <root id="archive" name="experiments.jar">
+      <element id="module-output" name="experiments" />
+      <element id="module-output" name="cannon" />
+      <element id="module-output" name="mcts" />
+      <element id="module-output" name="chinesecheckers" />
+      <element id="module-output" name="lostcities" />
+      <element id="module-output" name="pentalath" />
+    </root>
+  </artifact>
+</component>
