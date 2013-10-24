@@ -26,18 +26,19 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
     //
     private static final long serialVersionUID = -7255477935485381647L;
     private static final int CELL_R = 40;
+    public boolean movenotation = false;
+    public AIPlayer aiPlayer1, aiPlayer2;
+    public String aiMessage = "";
+    DecimalFormat df3 = new DecimalFormat("#,###,###,###,#00");
     //
     private int[] cornersY = new int[6], cornersX = new int[6];
     private HexGridCell hexagons = new HexGridCell(CELL_R);
     private Board board, tempBoard;
     //
     private boolean p1Human = true, p2Human = true;
-    public boolean movenotation = true;
-    public AIPlayer aiPlayer1, aiPlayer2;
     private boolean aiThinking = false;
     private int movenum = 0;
     private IMove lastMove;
-    public String aiMessage = "";
     private Timer t = new Timer(1000, this);
 
     public PentalathPanel(Board board, boolean p1Human, boolean p2Human) {
@@ -45,17 +46,26 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         this.p1Human = p1Human;
         this.p2Human = p2Human;
         //
-        if (!p1Human) {
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(new MCTSOptions());
-        }
-        if (!p2Human) {
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(new MCTSOptions());
-        }
+        resetPlayers();
         addMouseListener(this);
         t = new Timer(1000, this);
         t.start();
+    }
+
+    private void resetPlayers() {
+        if (!p1Human) {
+            aiPlayer1 = new MCTSPlayer();
+            MCTSOptions options = new MCTSOptions();
+            options.depthDiscount = true;
+            options.useHeuristics = false;
+            aiPlayer1.setOptions(options);
+        }
+        if (!p2Human) {
+            aiPlayer2 = new MCTSPlayer();
+            MCTSOptions options = new MCTSOptions();
+            options.useHeuristics = false;
+            aiPlayer2.setOptions(options);
+        }
     }
 
     public void undoMove() {
@@ -97,7 +107,10 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         }
         if (!p2Human) {
             aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(new MCTSOptions());
+            MCTSOptions options = new MCTSOptions();
+            options.mastEnabled = true;
+            options.treeOnlyMast = true;
+            aiPlayer2.setOptions(options);
         }
         //
         repaint();
@@ -178,21 +191,10 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         System.out.println("Player " + player + " human: " + human);
         if (player == 1) {
             this.p1Human = human;
-            //
-            if (!human) {
-                aiPlayer1 = new MCTSPlayer();
-                aiPlayer1.setOptions(new MCTSOptions());
-            }
         } else {
             this.p2Human = human;
-            //
-            if (!human) {
-                aiPlayer2 = new MCTSPlayer();
-                MCTSOptions options = new MCTSOptions();
-                options.useHeuristics = false;
-                aiPlayer2.setOptions(options);
-            }
         }
+        resetPlayers();
     }
 
     public void pass() {
@@ -252,8 +254,6 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         }
 
     }
-
-    DecimalFormat df3 = new DecimalFormat("#,###,###,###,#00");
 
     @Override
     public void makeMove(IMove position) {

@@ -6,7 +6,6 @@ import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Board implements IBoard {
     // @formatter:off
@@ -123,6 +122,7 @@ public class Board implements IBoard {
                 // Check if in field
                 if (nField >= 0 && nField < SIZE) {
                     if (occupancy[nField] == 1) {
+                        board[i].numNeighbours++;
                         board[i].neighbours[j] = board[nField];
                     }
                 }
@@ -305,15 +305,9 @@ public class Board implements IBoard {
             if (firstMove || board[i].occupant == 0) {
                 poMoves.add(new Move(i));
                 if (heuristics) {
-                    // Increase the chance of connecting pieces
-                    for (Field f : board[i].neighbours) {
-                        // One of the neighbours has a same-coloured piece
-                        if (f != null && f.occupant == currentPlayer) {
-                            poMoves.add(new Move(i));
-                            poMoves.add(new Move(i));
-                            break;
-                        }
-                    }
+                    // Prefer the highly connected positions
+                    if (board[i].numNeighbours > 4)
+                        poMoves.add(new Move(i));
                 }
                 c++;
                 // No need to look further
@@ -573,26 +567,6 @@ public class Board implements IBoard {
         return checkWin();
     }
 
-    public int checkDraw() {
-        List<IMove> moves = getPlayoutMoves(false);
-        int moveIndex;
-        IMove currentMove;
-        Random r = new Random();
-        while (moves.size() > 0) {
-            moveIndex = r.nextInt(moves.size());
-            currentMove = moves.get(moveIndex);
-            if (doAIMove(currentMove, currentPlayer)) {
-                undoMove();
-                return NONE_WIN;
-            } else {
-                // The move was illegal, remove it from the list.
-                moves.remove(moveIndex);
-            }
-        }
-        // No moves could be made, the pentalath.game is a draw
-        return DRAW;
-    }
-
     /**
      * Sets the BLACK_BIT bit to true if black
      *
@@ -622,7 +596,7 @@ public class Board implements IBoard {
 
     @Override
     public int getMaxUniqueMoveId() {
-        return 99;
+        return SIZE;
     }
 
     @Override

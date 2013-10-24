@@ -52,7 +52,7 @@ public class PentalathGui extends JFrame {
         setResizable(false);
         setBackground(Color.BLACK);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(100, 100, 885, 623);
+        setBounds(100, 100, 640, 623);
 
         JMenuBar menuBar = new JMenuBar();
         setJMenuBar(menuBar);
@@ -78,7 +78,6 @@ public class PentalathGui extends JFrame {
         });
 
         mnFile.add(moveNotationMenu);
-
         mnFile.addSeparator();
 
         JMenu mnPlayer = new JMenu("Player 1");
@@ -168,7 +167,7 @@ public class PentalathGui extends JFrame {
         pentalathPanel.setLayout(null);
 
         JPanel panel = new JPanel();
-        contentPane.add(panel, BorderLayout.EAST);
+        //contentPane.add(panel, BorderLayout.EAST);
         panel.setLayout(new BorderLayout(0, 0));
 
         JPanel p1Panel = new JPanel();

@@ -115,10 +115,6 @@ public class Table implements IBoard {
                 } else {
                     winner = DRAW;
                 }
-//                if (Math.random() < 0.001) {
-//                    Game.drawTable(this);
-//                    System.out.println("winner");
-//                }
             }
         } else {
             hands[handIndex] = stacks[draw - 1].takeCard();
@@ -456,7 +452,7 @@ public class Table implements IBoard {
 
     @Override
     public int getMaxUniqueMoveId() {
-        return 5511;
+        return 16512;
     }
 
     @Override

@@ -5,6 +5,7 @@ import ai.framework.IMove;
 public class Move implements IMove {
 
     private int position;
+    public int colour;
 
     public Move(int position) {
         this.position = position;
@@ -12,7 +13,7 @@ public class Move implements IMove {
 
     @Override
     public int[] getMove() {
-        return new int[] {position};
+        return new int[]{position};
     }
 
     @Override
@@ -27,5 +28,10 @@ public class Move implements IMove {
     @Override
     public int getUniqueId() {
         return position;
+    }
+
+    @Override
+    public String toString() {
+        return "Position: " + Integer.toString(position);
     }
 }

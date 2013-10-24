@@ -7,39 +7,44 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="Chinese Checkers now on smaller board">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/Experiments/experiments.iml" />
-      <change type="DELETED" beforePath="D:\Dropbox\Workspaces\GitHub\mcts_gameframe\pentalath\src\pentalath\AITests.java" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/cannon/src/cannon/game/Board.java" afterPath="$PROJECT_DIR$/cannon/src/cannon/game/Board.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Board.java" afterPath="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Board.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/game/Field.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/game/Field.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Move.java" afterPath="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Move.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java" afterPath="$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/game/Move.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/game/Move.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathGui.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathGui.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java" afterPath="$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/mcts.iml" afterPath="$PROJECT_DIR$/mcts/mcts.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MOVED" beforePath="D:\Dropbox\Workspaces\GitHub\mcts_gameframe\cannon\src\cannon\AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
     </list>
     <ignored path="mcts_gameframe.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382219481048" ignored="false" />
+    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382617498144" ignored="false" />
     <file path="/Table.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382105349615" ignored="false" />
-    <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382202616669" ignored="false" />
+    <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382458529806" ignored="false" />
     <file path="/fragment.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382201142157" ignored="false" />
     <file path="/Deck.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382024963078" ignored="false" />
     <file path="/Stack.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381337749886" ignored="false" />
-    <file path="/Move.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382035178777" ignored="false" />
+    <file path="/Move.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382383130046" ignored="false" />
     <file path="/CCPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381841172342" ignored="false" />
-    <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382195594351" ignored="false" />
-    <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382098350624" ignored="false" />
+    <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382608545842" ignored="false" />
+    <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382608732346" ignored="false" />
     <file path="/IBoard.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381871867188" ignored="false" />
-    <file path="/MCTSPlayer.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381870580573" ignored="false" />
+    <file path="/MCTSPlayer.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382379402247" ignored="false" />
     <file path="/Game.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382093941183" ignored="false" />
     <file path="/Piece.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381657327493" ignored="false" />
-    <file path="/Field.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381656543264" ignored="false" />
+    <file path="/Field.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382452063829" ignored="false" />
     <file path="/MoveList.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381666482638" ignored="false" />
     <file path="/CannonPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381843721186" ignored="false" />
     <file path="/CannonGui.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381773904833" ignored="false" />
-    <file path="/AITests.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382201104536" ignored="false" />
-    <file path="/PentalathPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382202767260" ignored="false" />
+    <file path="/AITests.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382530405189" ignored="false" />
+    <file path="/PentalathPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382459177103" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -101,37 +106,10 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="AITests.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="AITests.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="127" column="25" selection-start="4180" selection-end="4180" vertical-scroll-proportion="3.1937323">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PentalathGui.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathGui.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="89" column="35" selection-start="2920" selection-end="2920" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PentalathPanel.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="170" column="145" selection-start="6268" selection-end="6268" vertical-scroll-proportion="0.0">
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Board.java" pinned="false" current="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state line="302" column="21" selection-start="11157" selection-end="11157" vertical-scroll-proportion="0.0">
+            <state line="117" column="35" selection-start="4255" selection-end="4255" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -140,7 +118,34 @@
       <file leaf-file-name="MCTSOptions.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="13" column="20" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
+            <state line="12" column="31" selection-start="488" selection-end="488" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="TreeNode.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="85" column="17" selection-start="2769" selection-end="2769" vertical-scroll-proportion="0.4318182">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FastLog.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/FastLog.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="34" selection-start="260" selection-end="260" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="FastRandom.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/FastRandom.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="32" selection-start="66" selection-end="66" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -165,22 +170,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/cannon/src/cannon/AITests.java" />
-        <option value="$PROJECT_DIR$/pentalath/src/pentalath/AITests.java" />
-        <option value="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/gui/CCPanel.java" />
-        <option value="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Move.java" />
-        <option value="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Board.java" />
-        <option value="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/gui/CCGui.java" />
-        <option value="$PROJECT_DIR$/cannon/src/cannon/game/Board.java" />
         <option value="$PROJECT_DIR$/lostcities/src/lostcities/game/Deck.java" />
+        <option value="$PROJECT_DIR$/lostcities/src/lostcities/Game.java" />
+        <option value="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathGui.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java" />
+        <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Move.java" />
         <option value="$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java" />
         <option value="$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java" />
-        <option value="$PROJECT_DIR$/lostcities/src/lostcities/Game.java" />
-        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
-        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
+        <option value="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Move.java" />
+        <option value="$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Board.java" />
+        <option value="$PROJECT_DIR$/cannon/src/cannon/game/Board.java" />
+        <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Field.java" />
+        <option value="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
         <option value="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
-        <option value="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
       </list>
     </option>
   </component>
@@ -243,17 +248,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="Scope" />
-      <pane id="PackagesPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -288,11 +282,64 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
+      <pane id="PackagesPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ai" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ai" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="project.structure.last.edited" value="Artifacts" />
+    <property name="project.structure.last.edited" value="Modules" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
@@ -311,7 +358,7 @@
     <property name="options.splitter.details.proportions" value="0.2" />
     <property name="dynamic.classpath" value="false" />
   </component>
-  <component name="RunManager" selected="Application.Pentalath gui">
+  <component name="RunManager" selected="Application.CC Gui">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -494,7 +541,13 @@
       <option name="PASS_PARENT_ENVS" value="true" />
       <module name="pentalath" />
       <envs />
+      <RunnerSettings RunnerId="Debug">
+        <option name="DEBUG_PORT" value="" />
+        <option name="TRANSPORT" value="0" />
+        <option name="LOCAL" value="true" />
+      </RunnerSettings>
       <RunnerSettings RunnerId="Run" />
+      <ConfigurationWrapper RunnerId="Debug" />
       <ConfigurationWrapper RunnerId="Run" />
       <method />
     </configuration>
@@ -586,24 +639,24 @@
     <frame x="-8" y="-8" width="1616" height="886" extended-state="6" />
     <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32554945" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32554945" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="left" auto_hide="false" internal_type="SLIDING" type="FLOATING" visible="false" weight="0.54571986" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="1921" y="1" width="840" height="1163" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32976654" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32967034" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32806325" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.44642857" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" x="0" y="213" width="13289" height="444" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3286517" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.14414415" sideWeight="0.4271978" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3258427" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24888393" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.16602316" sideWeight="0.6702335" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.8410439" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="0" y="295" width="14206" height="279" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19111969" sideWeight="0.6739726" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.84129214" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="0" y="295" width="14206" height="279" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32782102" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3260274" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32692307" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
     </layout>
@@ -678,92 +731,92 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/gui/CCPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="226" column="10" selection-start="7945" selection-end="7945" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Board.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="254" column="58" selection-start="10340" selection-end="10340" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/gui/CCGui.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="15" selection-start="404" selection-end="404" vertical-scroll-proportion="0.37891737" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/cannon/src/cannon/game/Board.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="405" column="95" selection-start="16789" selection-end="16789" vertical-scroll-proportion="1.8107288" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Deck.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="32" selection-start="596" selection-end="596" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Move.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="55" column="16" selection-start="1347" selection-end="1351" vertical-scroll-proportion="0.065868266" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="70" column="46" selection-start="2301" selection-end="2301" vertical-scroll-proportion="0.023904383" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Stack.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="0" selection-start="423" selection-end="423" vertical-scroll-proportion="0.47808766" />
+        <state line="51" column="56" selection-start="1311" selection-end="1311" vertical-scroll-proportion="0.79041916" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/game/Table.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="319" column="14" selection-start="14377" selection-end="14377" vertical-scroll-proportion="0.0" />
+        <state line="454" column="20" selection-start="19388" selection-end="19388" vertical-scroll-proportion="0.4790419" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/lostcities/src/lostcities/Game.java">
+    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Move.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="31" selection-start="640" selection-end="640" vertical-scroll-proportion="0.023904383" />
+        <state line="30" column="41" selection-start="670" selection-end="670" vertical-scroll-proportion="0.7185629" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
+    <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Board.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="29" selection-start="143" selection-end="143" vertical-scroll-proportion="0.023904383" />
+        <state line="353" column="21" selection-start="13704" selection-end="13704" vertical-scroll-proportion="0.5748503" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+    <entry file="file://$PROJECT_DIR$/cannon/src/cannon/game/Move.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="20" selection-start="432" selection-end="432" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="34" column="25" selection-start="734" selection-end="734" vertical-scroll-proportion="0.6706587" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
+    <entry file="file://$PROJECT_DIR$/cannon/src/cannon/game/Board.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="302" column="21" selection-start="11157" selection-end="11157" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="587" column="20" selection-start="22700" selection-end="22700" vertical-scroll-proportion="0.36427146" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Field.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="5" column="51" selection-start="136" selection-end="136" vertical-scroll-proportion="0.1380814" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathGui.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="89" column="35" selection-start="2920" selection-end="2920" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="287" column="32" selection-start="11042" selection-end="11051" vertical-scroll-proportion="0.0" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="88" column="34" selection-start="2899" selection-end="2899" vertical-scroll-proportion="2.294034" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="145" selection-start="6268" selection-end="6268" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
+        <state line="44" column="61" selection-start="1710" selection-end="1710" vertical-scroll-proportion="-2.752841" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="304" column="58" selection-start="11311" selection-end="11311" vertical-scroll-proportion="0.4318182" />
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="127" column="25" selection-start="4180" selection-end="4180" vertical-scroll-proportion="3.1937323">
+        <state line="117" column="35" selection-start="4255" selection-end="4255" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/FastLog.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="34" selection-start="260" selection-end="260" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/FastRandom.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="32" selection-start="66" selection-end="66" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="31" selection-start="488" selection-end="488" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="85" column="17" selection-start="2769" selection-end="2769" vertical-scroll-proportion="0.4318182">
           <folding />
         </state>
       </provider>

@@ -49,7 +49,70 @@ public class AITests {
     }
 
     public void runTests(int which) {
+        try {
+            out = new PrintWriter(outFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
         if (which == 1) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.mastEnabled = true;
+            options1.treeOnlyMast = false;
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.mastEnabled = false;
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            for (double i = 0.1; i < 1.0; i += .2) {
+                options1.mastEpsilon = i;
+                runGames("AI 1 Using TO-MAST e = " + i + " || AI 2 Normal + Heuristics");
+            }
+        } else if (which == 2) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.mastEnabled = true;
+            options1.treeOnlyMast = true;
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.mastEnabled = false;
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            for (double i = 0.1; i < 1.0; i += .2) {
+                options1.mastEpsilon = i;
+                runGames("AI 1 Using TO-MAST e = " + i + " || AI 2 Normal + Heuristics");
+            }
+        } else if (which == 3) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.depthDiscount = true;
+            options1.mastEnabled = false;
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options1.mastEnabled = false;
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            for (double i = 0.005; i <= .11; i += .005) {
+                options1.depthD = i;
+                runGames("AI 1 Depth Discount, No MAST DD = " + i + " || AI 2 Normal, No MAST");
+            }
+        } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
@@ -58,27 +121,17 @@ public class AITests {
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options2.useHeuristics = false;
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            runGames("AI 1 Using heuristics, AI 2 No heuristics");
-        } else if (which == 2) {
-
-        } else if (which == 3) {
-
-        } else if (which == 4) {
-
+            for (double i = 0.4; i <= 2.1; i += .2) {
+                options1.uctC = i;
+                runGames("AI 1 UCT-C: " + i + " || AI 2 MCTS");
+            }
         }
     }
 
     private void runGames(String testMessage) {
-        try {
-            out = new PrintWriter(outFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
         writeOutput(testMessage);
         totalGames = 0;
         ai1Color = IBoard.P1;
@@ -153,13 +206,10 @@ public class AITests {
         // Bookkeeping
         totalGames++;
         if (winner == ai1Color) {
-            writeOutput("Ai 1 wins.");
             ai1Wins++;
         } else if (winner == ai2Color) {
-            writeOutput("Ai 2 wins.");
             ai2Wins++;
         } else {
-            writeOutput("Draw.");
             draws++;
         }
         printStatistics();

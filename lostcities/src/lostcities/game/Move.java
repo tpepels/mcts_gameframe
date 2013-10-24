@@ -48,7 +48,8 @@ public class Move implements IMove {
 
     @Override
     public int getUniqueId() {
-        return move[0] + 1000 * move[1];
+        int pd = (type == PLAY) ? 0 : 1;
+        return move[0] + (1000 * move[1]) + (10000 * pd);
     }
 
     public String toString() {

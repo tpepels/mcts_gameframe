@@ -29,6 +29,11 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
+
+        // Reset the mastEnabled arrays
+        if (options.mastEnabled)
+            options.resetMast(board.getMaxUniqueMoveId());
+
         // Create a new root, or reuse the old tree
         if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
             root = new TreeNode(myPlayer, options);
@@ -51,7 +56,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
         // Discount all values in the tree
         if (options.treeDecay)
-            root.discountValues(options.discount);
+            root.discountValues(options.treeDiscount);
         //
         interrupted = false;
         if (parallel) {
