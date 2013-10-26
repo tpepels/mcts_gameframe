@@ -64,10 +64,10 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         Graphics2D g2d = (Graphics2D) g;
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        int NUM_SQUARES = 10;
+        int NUM_SQUARES = Board.SIZE;
         for (row = 0; row < NUM_SQUARES; row++) {
             for (col = 0; col < NUM_SQUARES; col++) {
-                boardPos = row * 10 + col;
+                boardPos = row * NUM_SQUARES + col;
                 //
                 x = col * squareSize;
                 y = row * squareSize;
@@ -93,7 +93,8 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
                 }
 
                 g.fillRect(x, y, squareSize, squareSize);
-
+                g.setColor(Color.white);
+                ((Graphics2D) g).drawString(Integer.toString(boardPos), x + 1, y + 11);
                 int boardPiece = board.board[boardPos];
                 if (boardPiece != Board.EMPTY) {
                     if ((boardPiece / 10) == Board.WHITE_Q) {
@@ -137,9 +138,9 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
             return;
         }
         //
-        int boardPos = boardy * 10 + boardx;
+        int boardPos = boardy * Board.SIZE + boardx;
         if (clickNum == 0) {
-            if ((board.board[boardPos] / 10) != board.getPlayerToMove()) {
+            if ((board.board[boardPos] / Board.SIZE) != board.getPlayerToMove()) {
                 return;
             }
             movec = board.getPossibleMovesFrom(boardPos, moves);

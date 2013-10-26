@@ -10,16 +10,16 @@ import java.util.Stack;
 
 public class Board implements IBoard {
     // The board size
-    public static final int SIZE = 10;
+    public static final int SIZE = 8, B_SIZE = SIZE * SIZE;
     // Board occupants
     public static final int EMPTY = 0, WHITE_Q = P1, BLACK_Q = P2, ARROW = 3;
     private static final MoveList moves = new MoveList(5000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>();
     // Initial queen positions
-    public final int[][] POSITIONS = {{60, 69, 93, 96}, {3, 6, 30, 39}};
+    public final int[][] POSITIONS = {{58, 61, 40, 47}, {2, 5, 16, 23}};
     // Board is public for fast access
     public final int[] board;
-    private final int[] ALL_MOVE_INT = {11, -11, 9, -9, 10, -10, -1, 1};
+    private final int[] ALL_MOVE_INT = {9, -9, 7, -7, 8, -8, -1, 1};
     private final int[] possibleMoves = new int[40], possibleShots = new int[40];
     private final Stack<IMove> pastMoves = new Stack<IMove>();
     private int max;
@@ -33,7 +33,7 @@ public class Board implements IBoard {
     private int lastFrom, lastTo, currentPlayer;
 
     /**
-     * Initialise the board using the default size (10)
+     * Initialise the board using the default size
      */
     public Board() {
         board = new int[SIZE * SIZE];
@@ -230,30 +230,30 @@ public class Board implements IBoard {
         for (int i = 0; i < ALL_MOVE_INT.length; i++) {
             // Select a random direction.
             direction = ALL_MOVE_INT[i];
-            col = from % 10;
-            row = from / 10;
+            col = from % SIZE;
+            row = from / SIZE;
 
-            if (direction == -11) {
+            if (direction == -(SIZE + 1)) {
                 min = from + (Math.min(col, row) * direction);
-                max = 99;
-            } else if (direction == 11) {
-                col = 9 - col;
-                row = 9 - row;
+                max = B_SIZE - 1;
+            } else if (direction == (SIZE + 1)) {
+                col = (SIZE - 1) - col;
+                row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
                 min = -1;
-            } else if (direction == 9) {
-                row = 9 - row;
+            } else if (direction == (SIZE - 1)) {
+                row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
-            } else if (direction == -9) {
-                col = 9 - col;
+            } else if (direction == -(SIZE - 1)) {
+                col = (SIZE - 1) - col;
                 min = from + (Math.min(col, row) * direction);
-                max = 100;
-            } else if (direction == 10 || direction == -10) {
-                max = 99;
+                max = B_SIZE;
+            } else if (direction == SIZE || direction == -SIZE) {
+                max = B_SIZE - 1;
                 min = 0;
             } else {
-                max = row * 10 + 9;
-                min = row * 10;
+                max = row * SIZE + (SIZE - 1);
+                min = row * SIZE;
             }
 
             position = from + direction;
@@ -276,34 +276,34 @@ public class Board implements IBoard {
         for (int i = 0; i < ALL_MOVE_INT.length; i++) {
             // Select a random direction.
             direction = ALL_MOVE_INT[i];
-            col = from % 10;
-            row = from / 10;
+            col = from % SIZE;
+            row = from / SIZE;
             //
-            if (direction == -11) {
+            if (direction == -(SIZE + 1)) {
                 min = from + (Math.min(col, row) * direction);
-                max = 99;
-            } else if (direction == 11) {
-                col = 9 - col;
-                row = 9 - row;
+                max = (B_SIZE - 1);
+            } else if (direction == (SIZE + 1)) {
+                col = (SIZE - 1) - col;
+                row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
                 min = -1;
-            } else if (direction == 9) {
-                row = 9 - row;
+            } else if (direction == (SIZE - 1)) {
+                row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
-            } else if (direction == -9) {
-                col = 9 - col;
+            } else if (direction == -(SIZE - 1)) {
+                col = (SIZE - 1) - col;
                 min = from + (Math.min(col, row) * direction);
-                max = 100;
-            } else if (direction == 10 || direction == -10) {
-                max = 99;
+                max = B_SIZE;
+            } else if (direction == SIZE || direction == -SIZE) {
+                max = (B_SIZE - 1);
                 min = 0;
             } else {
-                max = row * 10 + 9;
-                min = row * 10;
+                max = row * SIZE + (SIZE - 1);
+                min = row * SIZE;
             }
 
             position = from + direction;
-            // Select a random position along the chosen direction
+            // Select a  position along the chosen direction
             while (position <= max && position >= min
                     && board[position] == Board.EMPTY) {
                 //
@@ -320,30 +320,30 @@ public class Board implements IBoard {
         for (int i = 0; i < ALL_MOVE_INT.length; i++) {
             // Select a random direction.
             direction = ALL_MOVE_INT[i];
-            col = from % 10;
-            row = from / 10;
+            col = from % SIZE;
+            row = from / SIZE;
             //
-            if (direction == -11) {
+            if (direction == -(SIZE + 1)) {
                 min = from + (Math.min(col, row) * direction);
-                max = 99;
-            } else if (direction == 11) {
-                col = 9 - col;
-                row = 9 - row;
+                max = (B_SIZE - 1);
+            } else if (direction == (SIZE + 1)) {
+                col = (SIZE - 1) - col;
+                row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
                 min = -1;
-            } else if (direction == 9) {
-                row = 9 - row;
+            } else if (direction == (SIZE - 1)) {
+                row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
-            } else if (direction == -9) {
-                col = 9 - col;
+            } else if (direction == -(SIZE - 1)) {
+                col = (SIZE - 1) - col;
                 min = from + (Math.min(col, row) * direction);
-                max = 100;
-            } else if (direction == 10 || direction == -10) {
-                max = 99;
+                max = B_SIZE;
+            } else if (direction == SIZE || direction == -SIZE) {
+                max = (B_SIZE - 1);
                 min = 0;
             } else {
-                max = row * 10 + 9;
-                min = row * 10;
+                max = row * SIZE + (SIZE - 1);
+                min = row * SIZE;
             }
 
             position = from + direction;
@@ -358,7 +358,7 @@ public class Board implements IBoard {
     }
 
     public boolean humanMove(int moveFrom, int moveTo, int shootTo) {
-        int side = board[moveFrom] / 10; // This is the number of the player or  arrow.
+        int side = board[moveFrom] / SIZE; // This is the number of the player or  arrow.
         int queenId = board[moveFrom] % 10; // This is the id of the queen
         //
         // Simple checks for bounds and emptyness of target squares

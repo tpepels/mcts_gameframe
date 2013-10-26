@@ -8,7 +8,7 @@ public class Amazons extends JFrame {
     public static AmazonsBoard amazonsPanel;
 
     public Amazons() {
-        setSize(505, 527);
+        setSize(405, 429);
         setResizable(false);
         setVisible(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
