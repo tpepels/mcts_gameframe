@@ -67,20 +67,19 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.depthDiscount = true;
-            options1.solver = false;
+            options1.mastEnabled = true;
+            options1.treeOnlyMast = false;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options2.solver = false;
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.05; i <= .21; i += .05) {
-                options1.depthD = i;
-                runGames("AI 1 No Solver, Depth Discount, DD = " + i + " || AI 2 Normal, No Solver");
+            for (double i = 0.2; i < 1.; i += .2) {
+                options1.mastEpsilon = i;
+                runGames("AI 1 MAST Epsilon = " + i + " || AI 2 Normal");
             }
         } else if (which == 2) {
             // AI 1
