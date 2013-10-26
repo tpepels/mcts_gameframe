@@ -47,7 +47,7 @@ public class CCGui extends JFrame {
         menuBar.add(mnFile);
         currentBoard = new Board();
         currentBoard.initialize();
-        JMenuItem mntmNewGame = new JMenuItem("New game");
+        JMenuItem mntmNewGame = new JMenuItem("New amazons.game");
         mntmNewGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 currentBoard.initialize();

@@ -1,11 +1,11 @@
 package pentalath.ai.alphabeta;
 
-import pentalath.ai.Transposition;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
+import pentalath.ai.Transposition;
 import pentalath.game.Board;
 import pentalath.game.Field;
 import pentalath.game.Move;
@@ -603,7 +603,7 @@ public class AlphaBeta implements AIPlayer, Runnable {
                         rowfinished = true;
                         totalfreedom++;
                         totFreedom[j]++;
-                        // Total freedom is not considered later in the pentalath.game
+                        // Total freedom is not considered later in the pentalath.amazons.game
                         if (initBoard.freeSquares < FREE_SQ_LIM
                                 || totFreedom[j % 3] + rowLength[j % 3] >= Board.ROW_SIZE)
                             break;

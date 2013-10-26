@@ -418,7 +418,7 @@ public class Board implements IBoard {
 
     @Override
     public int checkWin() {
-        // If a player has no pieces left, he lost the game
+        // If a player has no pieces left, he lost the amazons.game
         if (numWhitePcs == 0) {
             winningPlayer = P1;
         } else if (numBlackPcs == 0) {

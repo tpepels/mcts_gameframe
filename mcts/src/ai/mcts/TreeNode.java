@@ -81,7 +81,6 @@ public class TreeNode {
             } else {
                 // The next child
                 result = -child.MCTS(board, child, depth + 1);
-
                 // Depth treeDiscount (testing)
                 if (options.depthDiscount && Math.abs(result) != INF) {
                     //
@@ -91,7 +90,6 @@ public class TreeNode {
                         result *= (1. - Math.pow(options.depthD, depth));
                 }
             }
-
             // Update the mastEnabled value for the move
             if (options.mastEnabled)
                 options.updateMast(n.player, child.getMove().getUniqueId(), -result); // It's the child's reward that counts, hence -result
@@ -143,7 +141,6 @@ public class TreeNode {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         children = new ArrayList<TreeNode>(moves.size());
-
         // (AUCT) Add an extra virtual node
         if (options.accelerated) {
             TreeNode vNode = new TreeNode(nextPlayer, null, true, options);
@@ -157,7 +154,7 @@ public class TreeNode {
         int winner;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
-            // If the game is partial observable, we don't want to do the solver part
+            // If the amazons.game is partial observable, we don't want to do the solver part
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
                 //
@@ -169,6 +166,8 @@ public class TreeNode {
                         value = INF;
                         // This is a win for the expanding node
                         winNode = child;
+                    } else if (winner == board.getOpponent(player)) {
+                        value = -INF;
                     } else {
                         value = 0.;
                     }
@@ -198,7 +197,7 @@ public class TreeNode {
             // Skip virtual nodes
             if (options.accelerated && c.isVirtual())
                 continue;
-            // If the game is partial observable, moves in the tree may not be legal
+            // If the amazons.game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(c.getMove()))
                 continue;
             // First, visit all children at least once
@@ -237,7 +236,7 @@ public class TreeNode {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
-                // All moves were thrown away, the game is a draw
+                // All moves were thrown away, the amazons.game is a draw
                 if (moves.size() == 0) {
                     gameEnded = true;
                     // The current player has no moves left
@@ -307,7 +306,7 @@ public class TreeNode {
             // (AUCT) Skip virtual children
             if (options.accelerated && t.isVirtual())
                 continue;
-            // If the game is partial observable, moves in the tree may not be legal
+            // If the amazons.game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(t.getMove()))
                 continue;
             // Add a small number to the visits in case nVisits = 0

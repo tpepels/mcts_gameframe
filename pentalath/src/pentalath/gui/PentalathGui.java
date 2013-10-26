@@ -60,7 +60,7 @@ public class PentalathGui extends JFrame {
         JMenu mnFile = new JMenu("File");
         menuBar.add(mnFile);
         currentBoard = new Board();
-        JMenuItem mntmNewGame = new JMenuItem("New pentalath.game");
+        JMenuItem mntmNewGame = new JMenuItem("New pentalath.amazons.game");
         mntmNewGame.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 currentBoard = new Board();

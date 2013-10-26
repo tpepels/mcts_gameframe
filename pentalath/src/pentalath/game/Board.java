@@ -288,7 +288,7 @@ public class Board implements IBoard {
                     break;
             }
         }
-        return moves;
+        return moves.copy();
     }
 
     @Override
@@ -517,7 +517,7 @@ public class Board implements IBoard {
     }
 
     /**
-     * Checks if one of the players has won the pentalath.game, or the pentalath.game is a draw.
+     * Checks if one of the players has won the game, or the game is a draw.
      *
      * @return NONE = 0, WHITE_WIN = Board.WHITE, BLACK_WIN = Board.BLACK, DRAW = 3;
      */
@@ -558,7 +558,7 @@ public class Board implements IBoard {
             isEnd = true;
             return DRAW;
         }
-        // None of the players win, continue the pentalath.game
+        // None of the players win, continue the pentalath.amazons.game
         return NONE_WIN;
     }
 

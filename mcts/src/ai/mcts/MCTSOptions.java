@@ -7,10 +7,9 @@ public class MCTSOptions {
     //
     public boolean debug = true, useHeuristics = true, solver = true;
     // MCTS Specific values
-    public double mastEpsilon = 0.5, uctC = .3;
+    public double mastEpsilon = 0.5, uctC = 1.;
     // Discounting values
-    public double lambda = .9999;
-    public double depthD = 0.05, treeDiscount = 0.6;
+    public double lambda = .9999, depthD = 0.1, treeDiscount = 0.6;
     public int timeInterval = 5000;
     // MAST stuff
     public int nMastValues = 0, minMastValues = 0;

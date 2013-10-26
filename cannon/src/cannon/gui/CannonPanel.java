@@ -111,7 +111,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
             IMove move;
             for (int i = 0; i < board.moves.size(); i++) {
                 move = board.moves.get(i);
-                if(move.getMove()[0] != selectedPosition)
+                if (move.getMove()[0] != selectedPosition)
                     continue;
                 x = move.getMove()[1] % Board.WIDTH;
                 y = move.getMove()[1] / Board.HEIGHT;
@@ -228,7 +228,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
             JMenuItem undoItem = new JMenuItem("Undo move");
             undoItem.setActionCommand("undo");
             undoItem.addActionListener(this);
-            JMenuItem newItem = new JMenuItem("New pentalath.game");
+            JMenuItem newItem = new JMenuItem("New pentalath.amazons.game");
             newItem.setActionCommand("new");
             newItem.addActionListener(this);
             add(newItem);

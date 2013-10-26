@@ -8,7 +8,11 @@ import ai.mcts.MCTSPlayer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Scanner;
 
 public class AITests {
@@ -55,62 +59,64 @@ public class AITests {
             e.printStackTrace();
             return;
         }
+        DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Date today = Calendar.getInstance().getTime();
+        writeOutput(df.format(today));
+
         if (which == 1) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.mastEnabled = true;
-            options1.treeOnlyMast = false;
+            options1.depthDiscount = true;
+            options1.solver = false;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options2.mastEnabled = false;
+            options2.solver = false;
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.1; i < 1.0; i += .2) {
-                options1.mastEpsilon = i;
-                runGames("AI 1 Using TO-MAST e = " + i + " || AI 2 Normal + Heuristics");
+            for (double i = 0.05; i <= .21; i += .05) {
+                options1.depthD = i;
+                runGames("AI 1 No Solver, Depth Discount, DD = " + i + " || AI 2 Normal, No Solver");
             }
         } else if (which == 2) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.mastEnabled = true;
-            options1.treeOnlyMast = true;
+            options1.depthDiscount = true;
+            options1.fixedDD = true;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options2.mastEnabled = false;
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.1; i < 1.0; i += .2) {
-                options1.mastEpsilon = i;
-                runGames("AI 1 Using TO-MAST e = " + i + " || AI 2 Normal + Heuristics");
+            for (double i = 0.05; i <= .21; i += .05) {
+                options1.depthD = i;
+                runGames("AI 1 Fixed Depth Discount, DD = " + i + " || AI 2 Normal");
             }
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.depthDiscount = true;
-            options1.mastEnabled = false;
+            options1.fixedDD = false;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options1.mastEnabled = false;
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.005; i <= .11; i += .005) {
+            for (double i = 0.05; i <= .21; i += .05) {
                 options1.depthD = i;
-                runGames("AI 1 Depth Discount, No MAST DD = " + i + " || AI 2 Normal, No MAST");
+                runGames("AI 1 Depth Discount, DD = " + i + " || AI 2 Normal");
             }
         } else if (which == 4) {
             // AI 1
@@ -124,7 +130,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.4; i <= 2.1; i += .2) {
+            for (double i = 0.6; i <= 1.6; i += .1) {
                 options1.uctC = i;
                 runGames("AI 1 UCT-C: " + i + " || AI 2 MCTS");
             }
@@ -170,6 +176,8 @@ public class AITests {
                 clss = Class.forName("lostcities.game.Table");
             else if (game.equals("pentalath"))
                 clss = Class.forName("pentalath.game.Board");
+            else if (game.equals("amazons"))
+                clss = Class.forName("amazons.game.Board");
             // Instantiate the board for the chosen game and GO
             if (clss != null)
                 return (IBoard) clss.newInstance();
@@ -218,7 +226,7 @@ public class AITests {
     private void printStatistics() {
         double total = ai1Wins + ai2Wins + draws;
         if (total > 0) {
-            double mean = (ai1Wins + 0.5 * draws) / total;
+            double mean = (ai1Wins + (0.5 * draws)) / total;
             // Calculate the variance
             double variance = 0.;
             variance += ai1Wins * Math.pow(1.0 - mean, 2);

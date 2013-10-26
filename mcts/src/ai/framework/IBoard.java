@@ -11,7 +11,7 @@ public interface IBoard {
 
     /**
      * Is called before every iteration to create a new determinization.
-     * If your game is fully observable, leave the implementation blank.
+     * If your amazons.game is fully observable, leave the implementation blank.
      *
      * @param myPlayer The player running the algorithm
      */
@@ -21,7 +21,7 @@ public interface IBoard {
 
     /**
      * In partially observable games, the legality of a move is tested during selection.
-     * If your game is fully observable, simply return true
+     * If your amazons.game is fully observable, simply return true
      *
      * @param move the move to check
      * @return true, if the move is legal, false otherwise
@@ -29,7 +29,7 @@ public interface IBoard {
     public boolean isLegal(IMove move);
 
     /**
-     * Should return true if the pentalath.game allows draws.
+     * Should return true if the pentalath.amazons.game allows draws.
      *
      * @return True, if draws are possible, false otherwise
      */
@@ -60,7 +60,7 @@ public interface IBoard {
     public MoveList getExpandMoves();
 
     /**
-     * Get all moves that can be used to simulate the current pentalath.game
+     * Get all moves that can be used to simulate the current pentalath.amazons.game
      *
      * @return a list of all moves (can contain illegal moves)
      */
@@ -80,14 +80,14 @@ public interface IBoard {
     public int getOpponent(int player);
 
     /**
-     * Check whether the pentalath.game is in a win-loss state
+     * Check whether the pentalath.amazons.game is in a win-loss state
      *
      * @return NONE_WIN = 0, P1_WIN = 1, P2_WIN = 2, DRAW = 3
      */
     public int checkWin();
 
     /**
-     * Check whether the pentalath.game is in a win-loss state for a simulation
+     * Check whether the pentalath.amazons.game is in a win-loss state for a simulation
      *
      * @return NONE_WIN = 0, P1_WIN = 1, P2_WIN = 2, DRAW = 3
      */
@@ -101,7 +101,7 @@ public interface IBoard {
     public int getPlayerToMove();
 
     /**
-     * Gets the highest unique move-id for this pentalath.game.
+     * Gets the highest unique move-id for this pentalath.amazons.game.
      * Each move has a unique ID for storing it in the MAST array.
      *
      * @return Highest move-id
