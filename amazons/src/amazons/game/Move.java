@@ -4,7 +4,7 @@ import ai.framework.IMove;
 
 public class Move implements IMove {
     public final int[] move;
-    public int from, to, arrow;
+    public int arrow;
 
     public Move(int from, int to, int arrow) {
         move = new int[]{from, to};
@@ -28,6 +28,6 @@ public class Move implements IMove {
 
     @Override
     public int getUniqueId() {
-        return 0;
+        return move[0] + 100 * move[1] + 10000 * arrow;
     }
 }

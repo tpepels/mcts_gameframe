@@ -8,17 +8,20 @@
   <component name="ChangeListManager">
     <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amazons/src/amazons/game/Board.java" afterPath="$PROJECT_DIR$/amazons/src/amazons/game/Board.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/amazons/src/amazons/game/Move.java" afterPath="$PROJECT_DIR$/amazons/src/amazons/game/Move.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MOVED" beforePath="D:\Dropbox\Workspaces\GitHub\mcts_gameframe\Experiments\Experiments.iml" afterPath="$PROJECT_DIR$/Experiments/experiments.iml" />
     </list>
     <ignored path="mcts_gameframe.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382798172781" ignored="false" />
+    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382800847486" ignored="false" />
     <file path="/Table.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382105349615" ignored="false" />
     <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382797885835" ignored="false" />
     <file path="/fragment.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382786869295" ignored="false" />
     <file path="/Deck.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382024963078" ignored="false" />
     <file path="/Stack.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381337749886" ignored="false" />
-    <file path="/Move.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382641498338" ignored="false" />
+    <file path="/Move.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382801230992" ignored="false" />
     <file path="/CCPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381841172342" ignored="false" />
     <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382608545842" ignored="false" />
     <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382795017287" ignored="false" />
@@ -96,22 +99,46 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Board.java" pinned="false" current="false" current-in-tab="false">
+      <file leaf-file-name="Board.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/amazons/src/amazons/game/Board.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="39" selection-start="762" selection-end="762" vertical-scroll-proportion="0.0">
-              <folding>
-                <element signature="e#539#546#0" expanded="true" />
-                <element signature="e#926#933#0" expanded="true" />
-              </folding>
+            <state line="193" column="24" selection-start="6303" selection-end="6303" vertical-scroll-proportion="0.17747858">
+              <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="AITests.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="AITests.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="88" column="24" selection-start="3006" selection-end="3006" vertical-scroll-proportion="0.9104478">
+            <state line="178" column="62" selection-start="6352" selection-end="6352" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MCTSOptions.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="24" column="0" selection-start="868" selection-end="868" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Move.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/amazons/src/amazons/game/Move.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="30" column="35" selection-start="649" selection-end="649" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Amazons.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/amazons/src/amazons/gui/Amazons.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="10" column="24" selection-start="230" selection-end="230" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -144,20 +171,20 @@
         <option value="$PROJECT_DIR$/cannon/src/cannon/game/Board.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Field.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" />
-        <option value="$PROJECT_DIR$/amazons/src/amazons/game/Move.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
         <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
         <option value="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
         <option value="$PROJECT_DIR$/amazons/src/amazons/gui/Amazons.java" />
         <option value="$PROJECT_DIR$/amazons/src/amazons/gui/AmazonsBoard.java" />
-        <option value="$PROJECT_DIR$/amazons/src/amazons/game/Board.java" />
         <option value="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
+        <option value="$PROJECT_DIR$/amazons/src/amazons/game/Move.java" />
+        <option value="$PROJECT_DIR$/amazons/src/amazons/game/Board.java" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="7" />
-    <option name="y" value="47" />
+    <option name="x" value="52" />
+    <option name="y" value="131" />
     <option name="width" value="1602" />
     <option name="height" value="1001" />
   </component>
@@ -333,7 +360,7 @@
   </component>
   <component name="PropertiesComponent">
     <property name="GoToFile.includeJavaFiles" value="false" />
-    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.last.edited" value="Artifacts" />
     <property name="OverrideImplement.combined" value="true" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="options.splitter.main.proportions" value="0.3" />
@@ -345,14 +372,14 @@
     <property name="MemberChooser.copyJavadoc" value="false" />
     <property name="GoToClass.toSaveIncludeLibraries" value="false" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="MemberChooser.showClasses" value="true" />
     <property name="FullScreen" value="false" />
+    <property name="MemberChooser.showClasses" value="true" />
     <property name="GoToClass.includeLibraries" value="false" />
-    <property name="options.searchVisible" value="true" />
-    <property name="options.splitter.details.proportions" value="0.2" />
     <property name="dynamic.classpath" value="false" />
+    <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
-  <component name="RunManager" selected="Application.amazons GUI">
+  <component name="RunManager" selected="Application.AI Experiments">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -365,6 +392,19 @@
       <option name="SHMEM_ADDRESS" value="javadebug" />
       <option name="HOST" value="localhost" />
       <option name="PORT" value="5005" />
+      <method />
+    </configuration>
+    <configuration default="true" type="Applet" factoryName="Applet">
+      <module name="" />
+      <option name="MAIN_CLASS_NAME" />
+      <option name="HTML_FILE_NAME" />
+      <option name="HTML_USED" value="false" />
+      <option name="WIDTH" value="400" />
+      <option name="HEIGHT" value="300" />
+      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
+      <option name="VM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="TestNG" factoryName="TestNG">
@@ -392,19 +432,6 @@
       <envs />
       <properties />
       <listeners />
-      <method />
-    </configuration>
-    <configuration default="true" type="Applet" factoryName="Applet">
-      <module name="" />
-      <option name="MAIN_CLASS_NAME" />
-      <option name="HTML_FILE_NAME" />
-      <option name="HTML_USED" value="false" />
-      <option name="WIDTH" value="400" />
-      <option name="HEIGHT" value="300" />
-      <option name="POLICY_FILE" value="$APPLICATION_HOME_DIR$/bin/appletviewer.policy" />
-      <option name="VM_PARAMETERS" />
-      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-      <option name="ALTERNATIVE_JRE_PATH" />
       <method />
     </configuration>
     <configuration default="true" type="Application" factoryName="Application">
@@ -669,7 +696,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="7" y="47" width="1602" height="1001" extended-state="0" />
+    <frame x="52" y="131" width="1602" height="1001" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32554945" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -686,7 +713,7 @@
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22467533" sideWeight="0.6750973" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.35019454" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="0" y="295" width="14206" height="279" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.3499407" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" x="0" y="295" width="14206" height="279" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32427186" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -799,13 +826,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="34" selection-start="457" selection-end="457" vertical-scroll-proportion="0.26347306">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="290" column="27" selection-start="10836" selection-end="10836" vertical-scroll-proportion="0.070858285" />
@@ -828,9 +848,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/amazons/src/amazons/gui/AmazonsBoard.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="35" column="39" selection-start="1169" selection-end="1169" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="178" column="62" selection-start="6352" selection-end="6352" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="24" column="0" selection-start="868" selection-end="868" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/amazons/src/amazons/game/Move.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="14" selection-start="638" selection-end="640" vertical-scroll-proportion="0.0">
+        <state line="30" column="35" selection-start="649" selection-end="649" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -842,26 +883,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/amazons/src/amazons/gui/AmazonsBoard.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="35" column="39" selection-start="1169" selection-end="1169" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/amazons/src/amazons/game/Board.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="39" selection-start="762" selection-end="762" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#539#546#0" expanded="true" />
-            <element signature="e#926#933#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="88" column="24" selection-start="3006" selection-end="3006" vertical-scroll-proportion="0.9104478">
+        <state line="193" column="24" selection-start="6303" selection-end="6303" vertical-scroll-proportion="0.17747858">
           <folding />
         </state>
       </provider>

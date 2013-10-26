@@ -12,6 +12,7 @@
     <orderEntry type="module" module-name="lostcities" />
     <orderEntry type="module" module-name="pentalath" />
     <orderEntry type="module" module-name="mcts" />
+    <orderEntry type="module" module-name="amazons" />
   </component>
 </module>
 
