@@ -603,7 +603,7 @@ public class AlphaBeta implements AIPlayer, Runnable {
                         rowfinished = true;
                         totalfreedom++;
                         totFreedom[j]++;
-                        // Total freedom is not considered later in the pentalath.amazons.game
+                        // Total freedom is not considered later in the game
                         if (initBoard.freeSquares < FREE_SQ_LIM
                                 || totFreedom[j % 3] + rowLength[j % 3] >= Board.ROW_SIZE)
                             break;

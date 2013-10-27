@@ -33,10 +33,9 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
     //
     private int[] cornersY = new int[6], cornersX = new int[6];
     private HexGridCell hexagons = new HexGridCell(CELL_R);
-    private Board board, tempBoard;
+    private Board board;
     //
-    private boolean p1Human = true, p2Human = true;
-    private boolean aiThinking = false;
+    private boolean p1Human = true, p2Human = true, aiThinking = false;
     private int movenum = 0;
     private IMove lastMove;
     private Timer t = new Timer(1000, this);

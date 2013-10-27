@@ -81,14 +81,10 @@ public class TreeNode {
             } else {
                 // The next child
                 result = -child.MCTS(board, child, depth + 1);
+
                 // Depth treeDiscount (testing)
-                if (options.depthDiscount && Math.abs(result) != INF) {
-                    //
-                    if (options.fixedDD)
-                        result *= 1. - options.depthD;
-                    else
-                        result *= (1. - Math.pow(options.depthD, depth));
-                }
+                if (options.depthDiscount && Math.abs(result) != INF)
+                    result *= (1. - Math.pow(options.depthD, depth));
             }
             // Update the mastEnabled value for the move
             if (options.mastEnabled)
@@ -154,7 +150,7 @@ public class TreeNode {
         int winner;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
-            // If the amazons.game is partial observable, we don't want to do the solver part
+            // If the game is partial observable, we don't want to do the solver part
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
                 //
@@ -166,7 +162,7 @@ public class TreeNode {
                         value = INF;
                         // This is a win for the expanding node
                         winNode = child;
-                    } else if (winner == board.getOpponent(player)) {
+                    } else if (winner == nextPlayer) {
                         value = -INF;
                     } else {
                         value = 0.;
@@ -197,14 +193,14 @@ public class TreeNode {
             // Skip virtual nodes
             if (options.accelerated && c.isVirtual())
                 continue;
-            // If the amazons.game is partial observable, moves in the tree may not be legal
+            // If the game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(c.getMove()))
                 continue;
             // First, visit all children at least once
             if (c.nVisits == 0)
-                uctValue = INF;
+                uctValue = INF + r.nextDouble();
             else
-                uctValue = c.avgValue + options.uctC * Math.sqrt(l.log(nVisits + 1) / (c.nVisits + epsilon));
+                uctValue = c.avgValue + (options.uctC * Math.sqrt(l.log(nVisits + 1) / (c.nVisits + epsilon)));
             //
             if (uctValue > bestValue) {
                 selected = c;
@@ -236,18 +232,18 @@ public class TreeNode {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
-                // All moves were thrown away, the amazons.game is a draw
+                // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
                     gameEnded = true;
                     // The current player has no moves left
-                    // TODO, different games have different rules for this
                     if (board.drawPossible())
-                        winner = IBoard.DRAW;                               // Pentalath (,chinese checkers) ?
-                    else
-                        winner = board.getOpponent(board.getPlayerToMove()); // Cannon
+                        winner = IBoard.DRAW;                                   // Pentalath, Lost Cities
+                    else                                                        // Last player to move:
+                        winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers
                     break;
                 }
-                if (options.mastEnabled && options.nMastValues > options.minMastValues && r.nextDouble() < (1. - options.mastEpsilon)) {
+                // Select a move according to the MAST values
+                if (options.mastEnabled && (r.nextDouble() < (1. - options.mastEpsilon))) {
                     mastMax = Double.NEGATIVE_INFINITY;
                     // Select the move with the highest MAST value
                     for (int i = 0; i < moves.size(); i++) {
@@ -259,14 +255,16 @@ public class TreeNode {
                         }
                     }
                 } else {
-                    // Select a random move
+                    // Select a random move from the available ones
                     moveIndex = r.nextInt(moves.size());
                 }
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
+                    // Remember the moves made, to update their mast values later
                     if (options.mastEnabled && !options.treeOnlyMast)
                         movesMade.push(currentMove);
+
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
@@ -306,16 +304,24 @@ public class TreeNode {
             // (AUCT) Skip virtual children
             if (options.accelerated && t.isVirtual())
                 continue;
-            // If the amazons.game is partial observable, moves in the tree may not be legal
+            // If the game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(t.getMove()))
                 continue;
-            // Add a small number to the visits in case nVisits = 0
-            value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
+            // For depth discount, the value of the nodes lose their meaning
+            if (options.depthDiscount) {
+                if (t.avgValue == INF)
+                    value = INF + r.nextDouble();
+                else
+                    value = t.nVisits;
+            } else {
+                value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
+            }
+            //
             if (value > max) {
                 max = value;
                 bestChild = t;
             }
-            // For debugging
+            // For debugging, print the node
             if (options.debug)
                 System.out.println(t);
         }

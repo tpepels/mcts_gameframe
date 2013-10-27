@@ -48,7 +48,6 @@ public class AITests {
             aitests.outFile = args[2];
             aitests.game = args[3];
         }
-        System.out.println("Running test # " + test + ", # games: " + aitests.games);
         aitests.runTests(test);
     }
 
@@ -59,9 +58,11 @@ public class AITests {
             e.printStackTrace();
             return;
         }
+        // Record the date, so the version of the program can be traced back
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date today = Calendar.getInstance().getTime();
         writeOutput(df.format(today));
+        writeOutput("Running test # " + which + ", # of runs: " + games + ", on game: " + game);
 
         if (which == 1) {
             // AI 1
@@ -82,29 +83,12 @@ public class AITests {
                 runGames("AI 1 MAST Epsilon = " + i + " || AI 2 Normal");
             }
         } else if (which == 2) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.depthDiscount = true;
-            options1.fixedDD = true;
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            for (double i = 0.05; i <= .21; i += .05) {
-                options1.depthD = i;
-                runGames("AI 1 Fixed Depth Discount, DD = " + i + " || AI 2 Normal");
-            }
+
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.depthDiscount = true;
-            options1.fixedDD = false;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2

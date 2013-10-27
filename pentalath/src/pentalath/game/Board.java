@@ -558,7 +558,7 @@ public class Board implements IBoard {
             isEnd = true;
             return DRAW;
         }
-        // None of the players win, continue the pentalath.amazons.game
+        // None of the players win, continue the game
         return NONE_WIN;
     }
 

@@ -228,7 +228,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
             JMenuItem undoItem = new JMenuItem("Undo move");
             undoItem.setActionCommand("undo");
             undoItem.addActionListener(this);
-            JMenuItem newItem = new JMenuItem("New pentalath.amazons.game");
+            JMenuItem newItem = new JMenuItem("New game");
             newItem.setActionCommand("new");
             newItem.addActionListener(this);
             add(newItem);

@@ -106,7 +106,7 @@ public class Table implements IBoard {
             hands[handIndex] = deck.takeCard();
             known[handIndex] = false;
             discardStackDraws[currentPlayer - 1] = 0;
-            // The amazons.game has ended, compare the players' scores
+            // The game has ended, compare the players' scores
             if (deck.isEmpty()) {
                 if (scores[0] > scores[1]) {
                     winner = P1_WIN;
@@ -137,7 +137,7 @@ public class Table implements IBoard {
         for (int i = 0; i < stacks.length; i++) {
             newTable.stacks[i] = stacks[i].copy();
         }
-        // Copy the amazons.game state
+        // Copy the gamestate
         System.arraycopy(expeditionScores, 0, newTable.expeditionScores, 0, expeditionScores.length);
         System.arraycopy(multipliers, 0, newTable.multipliers, 0, multipliers.length);
         System.arraycopy(expeditionCards, 0, newTable.expeditionCards, 0, expeditionCards.length);
@@ -267,8 +267,7 @@ public class Table implements IBoard {
                 }
             }
         }
-        // We now have all legal moves, but it doesn't make sense to play high cards when low ones are in hand
-        // At the end of the amazons.game though, this may not apply (dump high cards quick), use e-greedy with some p here.
+        //
         if (heuristics) {
             heuristicMoves.clear();
             if (random.nextDouble() < 0.95) {
@@ -504,7 +503,7 @@ public class Table implements IBoard {
 
     @Override
     public boolean drawPossible() {
-        // For this amazons.game, this method does not apply, since there will always be moves available
+        // For this game, this method does not apply, since there will always be moves available
         return false;
     }
 }

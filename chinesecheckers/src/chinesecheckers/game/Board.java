@@ -129,7 +129,7 @@ public class Board implements IBoard {
                 c++;
             }
         }
-        // Reset current player and amazons.game winner
+        // Reset current player and game winner
         winner = NONE_WIN;
         currentPlayer = P1;
         homePieces[0] = N_PIECES;
