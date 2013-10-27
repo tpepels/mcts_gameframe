@@ -78,12 +78,28 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.2; i < 1.; i += .2) {
+            for (double i = 0.3; i < 1.; i += .2) {
                 options1.mastEpsilon = i;
                 runGames("AI 1 MAST Epsilon = " + i + " || AI 2 Normal");
             }
         } else if (which == 2) {
-
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.depthDiscount = true;
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.depthDiscount = true;
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            for (double i = 0.6; i <= 1.6; i += .1) {
+                options1.uctC = i;
+                runGames("AI 1 DD UCT-C: " + i + " || AI 2 DD MCTS");
+            }
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();

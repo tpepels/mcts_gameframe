@@ -51,8 +51,12 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         }
         //
         aiPlayer1 = new MCTSPlayer();
+        MCTSOptions options1 = new MCTSOptions();
+        options1.useHeuristics = true;
         aiPlayer1.setOptions(new MCTSOptions());
         aiPlayer2 = new MCTSPlayer();
+        MCTSOptions options2 = new MCTSOptions();
+        options2.useHeuristics = true;
         aiPlayer2.setOptions(new MCTSOptions());
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
@@ -134,7 +138,13 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
 
     @Override
     public void mouseClicked(MouseEvent arg0) {
-        if (board.checkWin() > Board.NONE_WIN) {
+        int winner = board.checkWin();
+        //
+        if (winner == Board.P2_WIN) {
+            frame.setTitle("Amazons - Black wins");
+            return;
+        } else if (winner == Board.P1_WIN) {
+            frame.setTitle("Amazons - White wins.");
             return;
         }
         //
@@ -166,12 +176,6 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
                 frame.setTitle("Amazons - Black's move.");
             } else {
                 frame.setTitle("Amazons - White's move.");
-            }
-            //
-            if (board.getWinner() == Board.BLACK_Q) {
-                frame.setTitle("Amazons - Black wins");
-            } else if (board.getWinner() == Board.WHITE_Q) {
-                frame.setTitle("Amazons - White wins.");
             }
             repaint();
             clickNum = 0;
@@ -205,11 +209,11 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         lastMove = move;
         board.humanMove(move.getMove()[0], move.getMove()[1], move.getType());
         //
-        board.checkWin();
-        if (board.getWinner() == Board.P1) {
+        int winner = board.checkWin();
+        if (winner == Board.P2_WIN) {
             frame.setTitle("Amazons - Black wins");
             return;
-        } else if (board.getWinner() == Board.P2) {
+        } else if (winner == Board.P1_WIN) {
             frame.setTitle("Amazons - White wins.");
             return;
         }
@@ -222,7 +226,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
             frame.setTitle("Amazons - Black's move.");
         } else {
             frame.setTitle("Amazons - White's move.");
-            aiPlayer2.getMove(board.copy(), this, Board.P1, true, lastMove);
+            aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
         }
     }
 }

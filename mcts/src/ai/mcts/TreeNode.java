@@ -16,7 +16,7 @@ public class TreeNode {
     static final FastLog l = new FastLog();
     static final double epsilon = 1e-6;
     static final double INF = 999999;
-    static final Stack movesMade = new Stack();
+    static final Stack<IMove> movesMade = new Stack<IMove>();
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -25,6 +25,11 @@ public class TreeNode {
     private List<TreeNode> children;
     private IMove move;
     private double nVisits, totValue, avgValue, velocity = 1.;
+    // Variables used in playout
+    private boolean gameEnded, moveMade;
+    private int winner, currentPlayer, moveIndex;
+    private double mastMax, mastVal, nMoves = 0.;
+    private IMove currentMove;
 
     public TreeNode(int player, MCTSOptions options) {
         this.player = player;
@@ -53,14 +58,13 @@ public class TreeNode {
      * @param n     the current tree node
      * @return the currently evaluated playout value of the node
      */
-    public double MCTS(IBoard board, TreeNode n, int depth) {
+    public double MCTS(IBoard board, TreeNode n, double depth) {
         TreeNode child = null;
         // First add some leafs if required
         if (n.isLeaf()) {
             // Expand returns any node that leads to a win
             child = n.expand(board);
         }
-        n.nVisits++;
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
             if (n.isTerminal()) // Game is terminal, no more moves can be played
@@ -68,6 +72,7 @@ public class TreeNode {
             else
                 child = n.select(board);
         }
+        n.nVisits++;
         double result;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.avgValue) != INF && !child.isTerminal()) {
@@ -76,6 +81,8 @@ public class TreeNode {
             // When a leaf is reached return the result of the playout
             if (child.nVisits == 0) {
                 result = child.playOut(board.copy());
+//                    if (options.depthDiscount && nMoves > 0)
+//                        result += result * (depth / nMoves);
                 child.nVisits++;
                 child.updateStats(-result);
             } else {
@@ -130,6 +137,27 @@ public class TreeNode {
         return result;
     }
 
+    private boolean mateInOne(IBoard board) {
+        // Generate all moves
+        MoveList moves = board.getExpandMoves();
+        int winner;
+        // Check if any of the moves leads to a win
+        for (int i = 0; i < moves.size(); i++) {
+            //
+            if (board.doAIMove(moves.get(i), player)) {
+                // Check for a winner, (Solver)
+                winner = board.checkWin();
+                // Reset the board
+                board.undoMove();
+                //
+                if (winner == player) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private TreeNode expand(IBoard board) {
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // If one of the nodes is a win, we don't have to select
@@ -153,24 +181,21 @@ public class TreeNode {
             // If the game is partial observable, we don't want to do the solver part
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
+                // Check for a winner, (Solver)
+                winner = board.checkWin();
                 //
-                if (options.solver) {
-                    // Check for a winner, (Solver)
-                    winner = board.checkWin();
-                    // Only the player to move can win
-                    if (winner == player) {
-                        value = INF;
-                        // This is a win for the expanding node
-                        winNode = child;
-                    } else if (winner == nextPlayer) {
-                        value = -INF;
-                    } else {
-                        value = 0.;
-                    }
-                    // Set the value of the child (0 = nothing, +/-INF win/loss)
-                    child.totValue = value;
-                    child.avgValue = value;
+                if (winner == player) {
+                    value = INF;
+                    // This is a win for the expanding node
+                    winNode = child;
+                } else if (winner == nextPlayer) {
+                    value = -INF;
+                } else {
+                    value = 0.;
                 }
+                // Set the value of the child (0 = nothing, +/-INF win/loss)
+                child.totValue = value;
+                child.avgValue = value;
                 children.add(child);
                 // reset the board
                 board.undoMove();
@@ -185,6 +210,20 @@ public class TreeNode {
     }
 
     private TreeNode select(IBoard board) {
+        if (nVisits == 1 && !board.isPartialObservable()) {
+            for (TreeNode c : children) {
+                // Skip virtual nodes
+                if ((options.accelerated && c.isVirtual()) || Math.abs(c.avgValue) == INF)
+                    continue;
+                // Check if the child leads to a mate in one
+                if (board.doAIMove(c.move, player)) {
+                    if (c.mateInOne(board)) {
+                        c.avgValue = -INF;
+                    }
+                    board.undoMove();
+                }
+            }
+        }
         TreeNode selected = null;
         //
         double bestValue = Double.NEGATIVE_INFINITY, uctValue;
@@ -220,14 +259,14 @@ public class TreeNode {
     }
 
     private int playOut(IBoard board) {
-        boolean gameEnded, moveMade;
-        int winner, currentPlayer = board.getPlayerToMove(), moveIndex = -1;
-        double mastMax, mastVal;
-        IMove currentMove;
+        gameEnded = false;
+        moveMade = false;
+        currentPlayer = board.getPlayerToMove();
+        nMoves = 0;
         //
         List<IMove> moves;
         winner = board.checkWin();
-        gameEnded = winner != IBoard.NONE_WIN;
+        gameEnded = (winner != IBoard.NONE_WIN);
         while (!gameEnded) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
@@ -264,7 +303,7 @@ public class TreeNode {
                     // Remember the moves made, to update their mast values later
                     if (options.mastEnabled && !options.treeOnlyMast)
                         movesMade.push(currentMove);
-
+                    nMoves++;
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;

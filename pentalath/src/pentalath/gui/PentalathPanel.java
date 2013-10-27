@@ -23,10 +23,8 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
             0, 1, 2, 3, 4, 5, 6, 7, 0, 1, 2, 3, 4, 5, 6, 7, 8, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 2, 3,
             4, 5, 6, 7, 8, 9, 0, 0, 3, 4, 5, 6, 7, 8, 9, 0, 0, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 5, 6,
             7, 8, 9, 0, 0,};
-    //
-    private static final long serialVersionUID = -7255477935485381647L;
     private static final int CELL_R = 40;
-    public boolean movenotation = false;
+    public boolean moveNotation = false;
     public AIPlayer aiPlayer1, aiPlayer2;
     public String aiMessage = "";
     DecimalFormat df3 = new DecimalFormat("#,###,###,###,#00");
@@ -54,16 +52,14 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
     private void resetPlayers() {
         if (!p1Human) {
             aiPlayer1 = new MCTSPlayer();
-            MCTSOptions options = new MCTSOptions();
-            options.depthDiscount = true;
-            options.useHeuristics = false;
-            aiPlayer1.setOptions(options);
+            MCTSOptions options1 = new MCTSOptions();
+            options1.depthDiscount = true;
+            aiPlayer1.setOptions(options1);
         }
         if (!p2Human) {
             aiPlayer2 = new MCTSPlayer();
-            MCTSOptions options = new MCTSOptions();
-            options.useHeuristics = false;
-            aiPlayer2.setOptions(options);
+            MCTSOptions options2 = new MCTSOptions();
+            aiPlayer2.setOptions(options2);
         }
     }
 
@@ -99,19 +95,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
     public void setBoard(Board board) {
         this.board = board;
         movenum = 0;
-        //
-        if (!p1Human) {
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(new MCTSOptions());
-        }
-        if (!p2Human) {
-            aiPlayer2 = new MCTSPlayer();
-            MCTSOptions options = new MCTSOptions();
-            options.mastEnabled = true;
-            options.treeOnlyMast = true;
-            aiPlayer2.setOptions(options);
-        }
-        //
+        resetPlayers();
         repaint();
     }
 
@@ -176,7 +160,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
 
     //
     private String positionString(int position) {
-        if (movenotation) {
+        if (moveNotation) {
             char letter = 'a';
             int row = position / 9;
             letter += row;

@@ -72,7 +72,7 @@ public class PentalathGui extends JFrame {
         final JRadioButtonMenuItem moveNotationMenu = new JRadioButtonMenuItem("Move notation");
         moveNotationMenu.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
-                pentalathPanel.movenotation = !moveNotationMenu.isSelected();
+                pentalathPanel.moveNotation = !moveNotationMenu.isSelected();
                 pentalathPanel.repaint();
             }
         });
@@ -90,7 +90,6 @@ public class PentalathGui extends JFrame {
             }
         });
         player1Group.add(player1Human);
-        player1Human.setSelected(true);
         mnPlayer.add(player1Human);
 
         final JRadioButtonMenuItem player1AI = new JRadioButtonMenuItem("A.I.");
@@ -100,6 +99,7 @@ public class PentalathGui extends JFrame {
             }
         });
         player1Group.add(player1AI);
+        player1AI.setSelected(true);
         mnPlayer.add(player1AI);
 
         JMenu mnPlayer_1 = new JMenu("Player 2");
@@ -161,7 +161,7 @@ public class PentalathGui extends JFrame {
         contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
         setContentPane(contentPane);
         contentPane.setLayout(new BorderLayout(0, 0));
-        pentalathPanel = new PentalathPanel(currentBoard, true, false);
+        pentalathPanel = new PentalathPanel(currentBoard, false, false);
         pentalathPanel.setBackground(Color.BLACK);
         contentPane.add(pentalathPanel);
         pentalathPanel.setLayout(null);

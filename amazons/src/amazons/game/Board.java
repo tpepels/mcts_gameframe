@@ -1,18 +1,21 @@
 package amazons.game;
 
+import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 public class Board implements IBoard {
     // The board size
-    public static final int SIZE = 8, B_SIZE = SIZE * SIZE;
+    public static final int SIZE = 8, B_SIZE = SIZE * SIZE, N_QUEENS = 4;
     // Board occupants
     public static final int EMPTY = 0, WHITE_Q = P1, BLACK_Q = P2, ARROW = 3;
+    private static final Random r = new FastRandom();
     private static final MoveList moves = new MoveList(5000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>();
     // Initial queen positions
@@ -22,24 +25,14 @@ public class Board implements IBoard {
     private final int[] ALL_MOVE_INT = {9, -9, 7, -7, 8, -8, -1, 1};
     private final int[] possibleMoves = new int[40], possibleShots = new int[40];
     private final Stack<IMove> pastMoves = new Stack<IMove>();
-    private int max;
-    private int min;
-    private int col;
-    private int row;
-    private int direction;
-    private int count;
-    private int position;
-    private int winner = NONE_WIN;
-    private int lastFrom, lastTo, currentPlayer;
+    private int max, min, col, row, direction, count, position, lastFrom, lastTo, currentPlayer, from, moveCount, shotCount;
 
     /**
      * Initialise the board using the default size
      */
     public Board() {
         board = new int[SIZE * SIZE];
-
         currentPlayer = P1;
-        winner = NONE_WIN;
     }
 
     @Override
@@ -75,7 +68,6 @@ public class Board implements IBoard {
                 POSITIONS[0].length);
         System.arraycopy(POSITIONS[1], 0, newBoard.POSITIONS[1], 0,
                 POSITIONS[1].length);
-        newBoard.winner = winner;
         newBoard.currentPlayer = currentPlayer;
         return newBoard;
     }
@@ -98,13 +90,13 @@ public class Board implements IBoard {
         moves.clear();
         for (int i = 0; i < POSITIONS[currentPlayer - 1].length; i++) {
             // Select the location to move from, ie the queen to move
-            int from = POSITIONS[currentPlayer - 1][i];
-            int moveCount = getPossibleMovesFrom(from, possibleMoves);
+            from = POSITIONS[currentPlayer - 1][i];
+            moveCount = getPossibleMovesFrom(from, possibleMoves);
             // Move count holds the possible number of moves possible from this position
             for (int j = 0; j < moveCount; j++) {
                 moveQueen(from, possibleMoves[j]);
                 // Iterate through the possible shots
-                int shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
+                shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
                 for (int k = 0; k < shotCount; k++) {
                     moves.add(new Move(from, possibleMoves[j], possibleShots[k]));
                 }
@@ -133,19 +125,43 @@ public class Board implements IBoard {
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         playoutMoves.clear();
-        for (int i = 0; i < POSITIONS[currentPlayer - 1].length; i++) {
-            // Select the location to move from, ie the queen to move
-            int from = POSITIONS[currentPlayer - 1][i];
-            int moveCount = getPossibleMovesFrom(from, possibleMoves);
-            // Move count holds the possible number of moves possible from this position
-            for (int j = 0; j < moveCount; j++) {
-                moveQueen(from, possibleMoves[j]);
-                // Iterate through the possible shots
-                int shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
-                for (int k = 0; k < shotCount; k++) {
-                    playoutMoves.add(new Move(from, possibleMoves[j], possibleShots[k]));
+        if (heuristics) {
+            int start = r.nextInt(N_QUEENS);
+            int c = 0;
+            while (playoutMoves.isEmpty() && c < N_QUEENS) {
+                // Select the location to move from, ie the queen to move
+                from = POSITIONS[currentPlayer - 1][start];
+                moveCount = getPossibleMovesFrom(from, possibleMoves);
+                // Move count holds the possible number of moves possible from this position
+                for (int j = 0; j < moveCount; j++) {
+                    moveQueen(from, possibleMoves[j]);
+                    // Iterate through the possible shots
+                    shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
+                    for (int k = 0; k < shotCount; k++) {
+                        playoutMoves.add(new Move(from, possibleMoves[j], possibleShots[k]));
+                    }
+                    undoQueenMove();
                 }
-                undoQueenMove();
+                // Next queen, in case of no moves
+                start = (start == N_QUEENS - 1) ? 0 : start + 1;
+                c++;
+            }
+        }
+        if (playoutMoves.isEmpty()) {
+            for (int i = 0; i < POSITIONS[currentPlayer - 1].length; i++) {
+                // Select the location to move from, ie the queen to move
+                from = POSITIONS[currentPlayer - 1][i];
+                moveCount = getPossibleMovesFrom(from, possibleMoves);
+                // Move count holds the possible number of moves possible from this position
+                for (int j = 0; j < moveCount; j++) {
+                    moveQueen(from, possibleMoves[j]);
+                    // Iterate through the possible shots
+                    shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
+                    for (int k = 0; k < shotCount; k++) {
+                        playoutMoves.add(new Move(from, possibleMoves[j], possibleShots[k]));
+                    }
+                    undoQueenMove();
+                }
             }
         }
         return playoutMoves;
@@ -387,9 +403,5 @@ public class Board implements IBoard {
         } else {
             return false;
         }
-    }
-
-    public int getWinner() {
-        return winner;
     }
 }

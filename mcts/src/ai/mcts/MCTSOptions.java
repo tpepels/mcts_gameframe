@@ -5,7 +5,7 @@ public class MCTSOptions {
     public boolean depthDiscount = false, accelerated = false;
     public boolean mastEnabled = false, treeOnlyMast = false;
     //
-    public boolean debug = true, useHeuristics = true, solver = true;
+    public boolean debug = true, useHeuristics = true;
     // MCTS Specific values
     public double mastEpsilon = 0.5, uctC = 1.;
     // Discounting values
