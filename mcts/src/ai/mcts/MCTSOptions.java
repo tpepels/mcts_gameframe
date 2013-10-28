@@ -4,6 +4,7 @@ public class MCTSOptions {
     public boolean treeReuse = false, treeDecay = false;
     public boolean depthDiscount = false, accelerated = false;
     public boolean mastEnabled = false, treeOnlyMast = false;
+    public boolean relativeBonus = false;
     //
     public boolean debug = true, useHeuristics = true;
     // MCTS Specific values

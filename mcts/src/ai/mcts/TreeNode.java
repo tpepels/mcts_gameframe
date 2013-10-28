@@ -55,43 +55,42 @@ public class TreeNode {
      * Run the MCTS algorithm on the given node.
      *
      * @param board The current board
-     * @param n     the current tree node
      * @return the currently evaluated playout value of the node
      */
-    public double MCTS(IBoard board, TreeNode n, double depth) {
+    public double MCTS(IBoard board, double depth) {
         TreeNode child = null;
         // First add some leafs if required
-        if (n.isLeaf()) {
+        if (isLeaf()) {
             // Expand returns any node that leads to a win
-            child = n.expand(board);
+            child = expand(board);
         }
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
-            if (n.isTerminal()) // Game is terminal, no more moves can be played
-                child = n;
+            if (isTerminal()) // Game is terminal, no more moves can be played
+                child = this;
             else
-                child = n.select(board);
+                child = select(board);
         }
-        n.nVisits++;
+        nVisits++;
         double result;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.avgValue) != INF && !child.isTerminal()) {
             // Execute the move represented by the child
-            board.doAIMove(child.getMove(), n.player);
+            board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
             if (child.nVisits == 0) {
                 result = child.playOut(board.copy());
-//                    if (options.depthDiscount && nMoves > 0)
-//                        result += result * (depth / nMoves);
+                if (options.relativeBonus && nMoves > 0)
+                    result += result * (1. / (1 + l.log(depth * (nMoves + 1.))));
                 child.nVisits++;
                 child.updateStats(-result);
             } else {
                 // The next child
-                result = -child.MCTS(board, child, depth + 1);
+                result = -child.MCTS(board, depth + 1);
             }
             // Update the mastEnabled value for the move
             if (options.mastEnabled)
-                options.updateMast(n.player, child.getMove().getUniqueId(), -result); // It's the child's reward that counts, hence -result
+                options.updateMast(player, child.getMove().getUniqueId(), -result); // It's the child's reward that counts, hence -result
 
             // set the board back to its previous configuration
             board.undoMove();
@@ -101,62 +100,41 @@ public class TreeNode {
 
         // (Solver) If one of the children is a win, then I'm a win
         if (result == INF) {
-            n.avgValue = -INF;
+            avgValue = -INF;
             return result;
         } else if (result == -INF) {
             // (Solver) Check if all children are a loss
-            for (TreeNode tn : n.children) {
+            for (TreeNode tn : children) {
                 // (AUCT) Skip virtual child
                 if (tn.isVirtual())
                     continue;
                 // Are all children a loss?
                 if (tn.avgValue != result) {
                     // (AUCT) Update the virtual node with a loss
-                    TreeNode virtChild = n.children.get(0);
+                    TreeNode virtChild = children.get(0);
                     if (virtChild.isVirtual()) {
                         virtChild.totValue--;
                         virtChild.nVisits++;
                         virtChild.avgValue = virtChild.totValue / virtChild.nVisits;
                     }
                     // Return a single loss, if not all children are a loss
-                    n.updateStats(-1);
+                    updateStats(1);
                     return -1;
                 }
             }
-            // (Solver) If all children lead to a loss, then I'm a loss
-            n.avgValue = INF;
+            // (Solver) If all children lead to a loss for the opponent, then I'm a win
+            avgValue = INF;
             return result;
 
         }
         // Depth treeDiscount (testing)
         // Update the results for the current node
         if (options.depthDiscount && Math.abs(result) != INF)
-            n.updateStats(result * (1. - Math.pow(options.depthD, depth)));
+            updateStats(result * (1. - Math.pow(options.depthD, depth)));
         else
-            n.updateStats(result);
+            updateStats(result);
         // Back-propagate the result
         return result;
-    }
-
-    private boolean mateInOne(IBoard board) {
-        // Generate all moves
-        MoveList moves = board.getExpandMoves();
-        int winner;
-        // Check if any of the moves leads to a win
-        for (int i = 0; i < moves.size(); i++) {
-            //
-            if (board.doAIMove(moves.get(i), player)) {
-                // Check for a winner, (Solver)
-                winner = board.checkWin();
-                // Reset the board
-                board.undoMove();
-                //
-                if (winner == player) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     private TreeNode expand(IBoard board) {
@@ -211,22 +189,6 @@ public class TreeNode {
     }
 
     private TreeNode select(IBoard board) {
-
-        if (nVisits == 1 && !board.isPartialObservable()) {
-            for (TreeNode c : children) {
-                // Skip virtual nodes
-                if ((options.accelerated && c.isVirtual()) || Math.abs(c.avgValue) == INF)
-                    continue;
-                // Check if the child leads to a mate in one
-                if (board.doAIMove(c.move, player)) {
-                    if (c.mateInOne(board)) {
-                        c.avgValue = -INF;
-                    }
-                    board.undoMove();
-                }
-            }
-        }
-
         TreeNode selected = null;
         double bestValue = Double.NEGATIVE_INFINITY, uctValue;
         // Select a child according to the UCT Selection policy

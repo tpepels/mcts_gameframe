@@ -113,14 +113,16 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.1; i <= .21; i += .05) {
-                options1.depthD = i;
-                runGames("AI 1 Depth Discount, DD = " + i + " || AI 2 Normal");
+            double[] values = {0.1, 0.05, 0.15, 0.025, 0.2};
+            for (int i = 0; i < values.length; i++) {
+                options1.depthD = values[i];
+                runGames("AI 1 Depth Discount, DD = " + values[i] + " || AI 2 Normal");
             }
         } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
+            options1.relativeBonus = true;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
@@ -128,7 +130,10 @@ public class AITests {
             options2.debug = false;
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
+            runGames("AI 1 relative bonus || AI 2 Normal");
             //
+            // Run the UCT exp. subsequently
+            options1.relativeBonus = false;
             for (double i = 0.8; i <= 1.6; i += .1) {
                 options1.uctC = i;
                 runGames("AI 1 UCT-C: " + i + " || AI 2 MCTS");

@@ -84,10 +84,11 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             //
             board.newDeterminization(myPlayer);
             // Make one simulation from root to leaf.
-            root.MCTS(board, root, 0);
+            root.MCTS(board, 0);
         }
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);
+        bestMove = bestChild.getMove();
         if (bestMove == null) {
             options.debug = true;
             // Print the root's children
@@ -96,7 +97,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             int nChildren = (root.getChildren() == null) ? 0 : root.getChildren().size();
             throw new RuntimeException("Null bestMove in MCTS player! Root has " + nChildren + " children.");
         }
-        bestMove = bestChild.getMove();
         if (!interrupted && parallel)
             callback.makeMove(bestChild.getMove());
         // Set the root to the best child, so in the next move
