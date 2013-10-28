@@ -88,10 +88,6 @@ public class TreeNode {
             } else {
                 // The next child
                 result = -child.MCTS(board, child, depth + 1);
-
-                // Depth treeDiscount (testing)
-                if (options.depthDiscount && Math.abs(result) != INF)
-                    result *= (1. - Math.pow(options.depthD, depth));
             }
             // Update the mastEnabled value for the move
             if (options.mastEnabled)
@@ -132,8 +128,13 @@ public class TreeNode {
             return result;
 
         }
+        // Depth treeDiscount (testing)
         // Update the results for the current node
-        n.updateStats(result);
+        if (options.depthDiscount && Math.abs(result) != INF)
+            n.updateStats(result * (1. - Math.pow(options.depthD, depth)));
+        else
+            n.updateStats(result);
+        // Back-propagate the result
         return result;
     }
 
@@ -210,6 +211,7 @@ public class TreeNode {
     }
 
     private TreeNode select(IBoard board) {
+
         if (nVisits == 1 && !board.isPartialObservable()) {
             for (TreeNode c : children) {
                 // Skip virtual nodes
@@ -224,8 +226,8 @@ public class TreeNode {
                 }
             }
         }
+
         TreeNode selected = null;
-        //
         double bestValue = Double.NEGATIVE_INFINITY, uctValue;
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {

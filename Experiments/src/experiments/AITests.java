@@ -78,7 +78,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.3; i < 1.; i += .2) {
+            for (double i = 0.4; i < 1.; i += .2) {
                 options1.mastEpsilon = i;
                 runGames("AI 1 MAST Epsilon = " + i + " || AI 2 Normal");
             }
@@ -96,7 +96,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.6; i <= 1.6; i += .1) {
+            for (double i = 0.6; i <= 1.6; i += .2) {
                 options1.uctC = i;
                 runGames("AI 1 DD UCT-C: " + i + " || AI 2 DD MCTS");
             }
@@ -113,7 +113,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.05; i <= .21; i += .05) {
+            for (double i = 0.1; i <= .21; i += .05) {
                 options1.depthD = i;
                 runGames("AI 1 Depth Discount, DD = " + i + " || AI 2 Normal");
             }
@@ -129,7 +129,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.6; i <= 1.6; i += .1) {
+            for (double i = 0.8; i <= 1.6; i += .1) {
                 options1.uctC = i;
                 runGames("AI 1 UCT-C: " + i + " || AI 2 MCTS");
             }
