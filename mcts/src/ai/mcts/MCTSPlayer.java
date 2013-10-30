@@ -89,6 +89,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);
         bestMove = bestChild.getMove();
+        // This sometimes happens in experiments
         if (bestMove == null) {
             options.debug = true;
             // Print the root's children

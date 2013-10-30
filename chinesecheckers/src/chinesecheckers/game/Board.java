@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class Board implements IBoard {
-    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13;
+    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13, MAX_REV = 2;
     public static final int[] occupancy = new int[]
             {
                     0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
@@ -45,6 +45,8 @@ public class Board implements IBoard {
     private final Stack<IMove> pastMoves = new Stack<IMove>();        // Stack for undo-move
     //
     private final FastRandom random = new FastRandom();
+    private Move[] lastMove = new Move[2];
+    private int[] reverseMoves = {0, 0};
     private int[] homePieces = new int[2], target;
     private int[][] targets; // Holds the targets for the current player to move
     private int winner = NONE_WIN, currentPlayer = P1;
@@ -138,8 +140,6 @@ public class Board implements IBoard {
     }
 
     public void doMove(IMove move) {
-        if (insideHome(currentPlayer, move.getMove()[0]) && outSideHome(currentPlayer, move.getMove()[1]))
-            System.err.println("Invalid move!");
         Piece piece = board[move.getMove()[0]].occupant;
         board[move.getMove()[0]].occupant = null;
         board[move.getMove()[1]].occupant = piece;
@@ -159,6 +159,11 @@ public class Board implements IBoard {
                 winner = currentPlayer;
             }
         }
+        lastMove[currentPlayer - 1] = (Move) move;
+        if (lastMove[currentPlayer - 1].isReverse(move))
+            reverseMoves[currentPlayer - 1]++;
+        else
+            reverseMoves[currentPlayer - 1] = 0;
         pastMoves.push(move);
         currentPlayer = getOpponent(currentPlayer);
     }
@@ -194,6 +199,7 @@ public class Board implements IBoard {
 
     private void generateMovesForPiece(int colour, int initialPosition, int position, int hops, boolean inHome, boolean closerOnly, double initDistance) {
         Field n;
+        Move m;
         for (int i = 0; i < board[position].neighbours.length; i++) {
             n = board[position].neighbours[i];
             // Checked this position before || Piece is in home-base, and is not allowed to leave
@@ -203,8 +209,11 @@ public class Board implements IBoard {
             seen[n.position] = seenIndex;
             // Pieces can move to empty squares, or hop over other pieces
             if (hops == 0 && n.occupant == null) {
-                if (!closerOnly || initDistance > getDistanceToHome(n.position, target))
-                    moves.add(new Move(initialPosition, n.position, hops));
+                if (!closerOnly || initDistance > getDistanceToHome(n.position, target)) {
+                    m = new Move(initialPosition, n.position, hops);
+                    if (!tooManyReversals(m))
+                        moves.add(m);
+                }
             } else if (n.occupant != null && n.neighbours[i] != null && n.neighbours[i].occupant == null) {
                 // Mark as seen so we don't check it again
                 seen[n.neighbours[i].position] = seenIndex;
@@ -212,12 +221,18 @@ public class Board implements IBoard {
                     continue;
                 // Check if the move is closer to target, and the neighbour is not outside the home, if the piece is inside
                 if (!closerOnly || initDistance > getDistanceToHome(n.position, target)) {
-                    moves.add(new Move(initialPosition, n.neighbours[i].position, hops + 1));
-                    // Search for a hop-over
-                    generateMovesForPiece(colour, initialPosition, n.neighbours[i].position, hops + 1, inHome, closerOnly, initDistance);
+                    m = new Move(initialPosition, n.neighbours[i].position, hops + 1);
+                    if (!tooManyReversals(m))
+                        moves.add(m);
                 }
+                // Search for a hop-over
+                generateMovesForPiece(colour, initialPosition, n.neighbours[i].position, hops + 1, inHome, closerOnly, initDistance);
             }
         }
+    }
+
+    public boolean tooManyReversals(Move move) {
+        return reverseMoves[currentPlayer - 1] > MAX_REV && move.isReverse(lastMove[currentPlayer - 1]);
     }
 
     @Override
@@ -234,6 +249,10 @@ public class Board implements IBoard {
         newBoard.currentPlayer = currentPlayer;
         newBoard.homePieces[0] = homePieces[0];
         newBoard.homePieces[1] = homePieces[1];
+        newBoard.lastMove[0] = lastMove[0];
+        newBoard.lastMove[1] = lastMove[1];
+        newBoard.reverseMoves[0] = reverseMoves[0];
+        newBoard.reverseMoves[1] = reverseMoves[1];
         return newBoard;
     }
 
@@ -309,6 +328,7 @@ public class Board implements IBoard {
                 }
             }
             winner = NONE_WIN;
+            lastMove[currentPlayer - 1] = null;
         }
     }
 

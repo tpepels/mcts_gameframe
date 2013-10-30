@@ -81,7 +81,7 @@ public class TreeNode {
             if (child.nVisits == 0) {
                 result = child.playOut(board.copy());
                 if (options.relativeBonus && nMoves > 0)
-                    result += result * (1. / (1 + l.log(depth * (nMoves + 1.))));
+                    result += result * (1. / (options.k * (1 +  l.log(depth * (nMoves + 1.)))));
                 child.nVisits++;
                 child.updateStats(-result);
             } else {
@@ -129,9 +129,9 @@ public class TreeNode {
         }
         // Depth treeDiscount (testing)
         // Update the results for the current node
-        if (options.depthDiscount && Math.abs(result) != INF)
+        if (options.depthDiscount && Math.abs(result) != INF) {
             updateStats(result * (1. - Math.pow(options.depthD, depth)));
-        else
+        } else
             updateStats(result);
         // Back-propagate the result
         return result;

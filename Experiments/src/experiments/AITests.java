@@ -240,7 +240,7 @@ public class AITests {
             variance /= total;
             double ci95 = (1.96 * Math.sqrt(variance)) / Math.sqrt(total);
             double ai2WinRate = (ai2Wins + 0.5 * draws) / total;
-            writeOutput("[" + df2.format(mean * 100.0) + "%, " + df2.format(ai2WinRate * 100.0) + "%] +/- " + df2.format(ci95 * 100.0) + "%");
+            writeOutput(df2.format(mean * 100.0) + "%\t" + df2.format(ai2WinRate * 100.0) + "%]\t±" + df2.format(ci95 * 100.0) + "%");
         }
     }
 }
