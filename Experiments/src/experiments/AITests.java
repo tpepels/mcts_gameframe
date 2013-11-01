@@ -100,7 +100,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.5, .6, .8, .1, .3, .9};
+            double[] values = {.9, .5, .6, .8, .1, .3};
             for (double i : values) {
                 options1.treeDiscount = i;
                 runGames("AI 1 Tree Discount: " + i + " || AI 2 Normal");
@@ -121,7 +121,10 @@ public class AITests {
             aiPlayer2.setOptions(options2);
             //
             runGames("AI 1 Tree reuse, no decay || AI 2 Normal");
-
+            //
+            options1.treeDecay = true;
+            options1.entropyDiscount = true;
+            runGames("AI 1 Tree reuse, entropy decay || AI 2 Normal");
         } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
