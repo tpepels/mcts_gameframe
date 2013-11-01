@@ -46,6 +46,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                     continue;
                 if (t.getMove().equals(lastMove)) {
                     root = t;
+                    // Discount all values in the tree
+                    if (options.treeDecay)
+                        root.discountValues(options.treeDiscount);
                     break;
                 }
             }
@@ -54,10 +57,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.err.println("Root error! Using new root node");
             root = new TreeNode(myPlayer, options);
         }
-        // Discount all values in the tree
-        if (options.treeDecay)
-            root.discountValues(options.treeDiscount);
-        //
+
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -100,15 +100,17 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
         if (!interrupted && parallel)
             callback.makeMove(bestChild.getMove());
-        // Set the root to the best child, so in the next move
-        // the opponent's move can become the new root
-        if (options.treeReuse)
-            root = bestChild;
+
         // show information on the best move
         if (options.debug) {
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
+            System.out.println("Root visits: " + root.getnVisits());
         }
+        // Set the root to the best child, so in the next move
+        // the opponent's move can become the new root
+        if (options.treeReuse)
+            root = bestChild;
     }
 
     @Override

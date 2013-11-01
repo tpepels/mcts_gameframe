@@ -2,7 +2,7 @@ package ai.mcts;
 
 public class MCTSOptions {
     public boolean treeReuse = false, treeDecay = false;
-    public boolean depthDiscount = false, accelerated = false;
+    public boolean depthDiscount = false, accelerated = false, entropyDiscount = false;
     public boolean mastEnabled = false, treeOnlyMast = false;
     public boolean relativeBonus = false;
     //
@@ -17,12 +17,17 @@ public class MCTSOptions {
 
     public void setGame(String game) {
         if (game.equals("cannon")) {
-            if (depthDiscount)
+            if (depthDiscount) {
                 uctC = 0.8;
+                depthD = 0.25;
+            }
         } else if (game.equals("chinesecheckers")) {
             if (depthDiscount)
-                uctC = 0.6;
+                uctC = 0.8;
         } else if (game.equals("lostcities")) {
+            if (depthDiscount) {
+                depthD = 0.2;
+            }
             mastEnabled = true;
             mastEpsilon = 0.6;
             depthD = 0.1;

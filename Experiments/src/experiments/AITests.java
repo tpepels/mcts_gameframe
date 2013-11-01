@@ -68,75 +68,79 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.mastEnabled = true;
-            options1.treeOnlyMast = false;
+            options1.relativeBonus = true;
+            options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.4; i < 1.; i += .2) {
-                options1.mastEpsilon = i;
-                runGames("AI 1 MAST Epsilon = " + i + " || AI 2 Normal");
+            double[] values = {0.1, 0.5, 1.1, 1.5, 2., 3.};
+            for (double i : values) {
+                options1.k = i;
+                runGames("AI 1 RB K = " + i + " || AI 2 Normal");
             }
         } else if (which == 2) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.depthDiscount = true;
+            options1.treeReuse = true;
+            options1.treeDecay = true;
+            options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options2.depthDiscount = true;
+            options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            for (double i = 0.6; i <= 1.6; i += .2) {
-                options1.uctC = i;
-                runGames("AI 1 DD UCT-C: " + i + " || AI 2 DD MCTS");
+            double[] values = {.5, .6, .8, .1, .3, .9};
+            for (double i : values) {
+                options1.treeDiscount = i;
+                runGames("AI 1 Tree Discount: " + i + " || AI 2 Normal");
             }
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.depthDiscount = true;
+            options1.treeReuse = true;
+            options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {0.1, 0.05, 0.15, 0.025, 0.2};
-            for (int i = 0; i < values.length; i++) {
-                options1.depthD = values[i];
-                runGames("AI 1 Depth Discount, DD = " + values[i] + " || AI 2 Normal");
-            }
+            runGames("AI 1 Tree reuse, no decay || AI 2 Normal");
+
         } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.relativeBonus = true;
+            options1.accelerated = true;
+            options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
-            runGames("AI 1 relative bonus || AI 2 Normal");
             //
-            // Run the UCT exp. subsequently
-            options1.relativeBonus = false;
-            for (double i = 0.8; i <= 1.6; i += .1) {
-                options1.uctC = i;
-                runGames("AI 1 UCT-C: " + i + " || AI 2 MCTS");
+            double[] values = {0.999999, 0.99999, 0.9999, 0.999, 0.99, 0.9};
+            for (double i : values) {
+                options1.lambda = i;
+                runGames("AI 1 AUCT lambda: " + i + " || AI 2 Normal");
             }
         }
     }
@@ -240,7 +244,7 @@ public class AITests {
             variance /= total;
             double ci95 = (1.96 * Math.sqrt(variance)) / Math.sqrt(total);
             double ai2WinRate = (ai2Wins + 0.5 * draws) / total;
-            writeOutput(df2.format(mean * 100.0) + "%\t" + df2.format(ai2WinRate * 100.0) + "%]\t±" + df2.format(ci95 * 100.0) + "%");
+            writeOutput(df2.format(mean * 100.0) + "% \t " + df2.format(ai2WinRate * 100.0) + "% \t ±" + df2.format(ci95 * 100.0) + "%");
         }
     }
 }

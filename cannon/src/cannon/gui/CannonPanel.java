@@ -1,6 +1,7 @@
 package cannon.gui;
 
 import ai.framework.AIPlayer;
+import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
@@ -33,6 +34,9 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = true;
+        options1.treeReuse = true;
+        options1.treeDecay = true;
+        options1.entropyDiscount = true;
         aiPlayer1.setOptions(options1);
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
@@ -129,12 +133,13 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
     @Override
     public void makeMove(IMove move) {
         board.doMove(move, true);
+        lastMove = move;
         repaint();
-        if (allAi) {
+        if (allAi && board.checkWin() == IBoard.NONE_WIN) {
             if (board.getPlayerToMove() == Board.P2)
                 aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
             else
-                aiPlayer1.getMove(board.copy(), this, Board.P2, true, lastMove);
+                aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
         }
     }
 

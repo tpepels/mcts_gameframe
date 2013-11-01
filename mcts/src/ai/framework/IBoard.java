@@ -54,7 +54,6 @@ public interface IBoard {
     /**
      * Get all moves that can be used for expanding the current node
      *
-     * @param player The player to move
      * @return a list of legal moves, may contain illegal moves tested be doAIMove
      */
     public MoveList getExpandMoves();

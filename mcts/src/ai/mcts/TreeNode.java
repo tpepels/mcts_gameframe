@@ -51,6 +51,16 @@ public class TreeNode {
         this.options = options;
     }
 
+    private static double log(double x, int base) {
+        if (x == 0)
+            return 0;
+        return Math.log(x) / Math.log(base);
+    }
+
+    public double getnVisits() {
+        return nVisits;
+    }
+
     /**
      * Run the MCTS algorithm on the given node.
      *
@@ -81,12 +91,14 @@ public class TreeNode {
             if (child.nVisits == 0) {
                 result = child.playOut(board.copy());
                 if (options.relativeBonus && nMoves > 0)
-                    result += result * (1. / (options.k * (1 +  l.log(depth * (nMoves + 1.)))));
+                    result += result * (1. / (options.k * (1 + l.log(depth * (nMoves + 1.)))));
                 child.nVisits++;
                 child.updateStats(-result);
             } else {
                 // The next child
                 result = -child.MCTS(board, depth + 1);
+                if (options.depthDiscount && Math.abs(result) != INF)
+                    result *= (1. - Math.pow(options.depthD, depth));
             }
             // Update the mastEnabled value for the move
             if (options.mastEnabled)
@@ -127,12 +139,8 @@ public class TreeNode {
             return result;
 
         }
-        // Depth treeDiscount (testing)
         // Update the results for the current node
-        if (options.depthDiscount && Math.abs(result) != INF) {
-            updateStats(result * (1. - Math.pow(options.depthD, depth)));
-        } else
-            updateStats(result);
+        updateStats(result);
         // Back-propagate the result
         return result;
     }
@@ -354,9 +362,20 @@ public class TreeNode {
     public void discountValues(double discount) {
         if (Math.abs(avgValue) != INF) {
             // In auct we only need to update leafs or virtual nodes
-            if ((options.accelerated && (isVirtual() || isLeaf())) || !options.accelerated) {
-                totValue *= discount;
-                nVisits *= discount;
+            if (!options.accelerated || (isVirtual() || isLeaf())) {
+                double d = discount;
+                if (options.entropyDiscount) {
+                    double val = avgValue;
+                    // Ensure no values greater than 1
+                    if (Math.abs(avgValue) > 1.) {
+                        val = Math.signum(avgValue);
+                    }
+                    d = discount + 0.1 * (getEntropy(.5 * (val + 1.)) - 0.5);
+                    if (Double.isInfinite(d))
+                        System.err.println("huh?");
+                }
+                totValue *= d;
+                nVisits *= d;
             }
         }
         if (children != null) {
@@ -367,6 +386,10 @@ public class TreeNode {
             if (options.accelerated)
                 updateStats(0);
         }
+    }
+
+    private double getEntropy(double value) {
+        return (-value * log(value, 2)) - ((1. - value) * log(1. - value, 2));
     }
 
     public void resetVelocities() {
