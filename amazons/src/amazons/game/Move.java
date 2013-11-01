@@ -30,4 +30,9 @@ public class Move implements IMove {
     public int getUniqueId() {
         return move[0] + 100 * move[1] + 10000 * arrow;
     }
+
+    @Override
+    public String toString() {
+        return "to: " + move[0] + " from: " + move[1] + " shot: " + arrow;
+    }
 }

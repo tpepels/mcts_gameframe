@@ -172,12 +172,12 @@ public class Board implements IBoard {
         IMove move = pastMoves.pop();
         if (move != null) {
             currentPlayer = getOpponent(currentPlayer);
+            // clear the arrow
+            board[move.getType()] = EMPTY;
             //
             board[move.getMove()[0]] = board[move.getMove()[1]];
             board[move.getMove()[1]] = EMPTY;
             POSITIONS[currentPlayer - 1][board[move.getMove()[0]] % 10] = move.getMove()[0];
-            // clear the arrow
-            board[move.getType()] = EMPTY;
         }
     }
 
