@@ -16,7 +16,7 @@ import java.util.Date;
 import java.util.Scanner;
 
 public class AITests {
-    private static final DecimalFormat df2 = new DecimalFormat("###,###.###");
+    private static final DecimalFormat df2 = new DecimalFormat("###,#00.000");
     //
     private AIPlayer aiPlayer1, aiPlayer2;
     private int games = 0, totalGames = 0;
@@ -140,7 +140,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {0.999999, 0.99999, 0.9999, 0.999, 0.99, 0.9};
+            double[] values = {0.9999999, 0.999999, 0.99999, 0.9999, 0.999, 0.99};
             for (double i : values) {
                 options1.lambda = i;
                 runGames("AI 1 AUCT lambda: " + i + " || AI 2 Normal");
@@ -204,6 +204,8 @@ public class AITests {
         IBoard board = getBoard();
         board.initialize();
         int winner = IBoard.NONE_WIN;
+        aiPlayer1.newGame(ai1Color);
+        aiPlayer2.newGame(ai2Color);
         while (winner == IBoard.NONE_WIN) {
             //
             IMove move;

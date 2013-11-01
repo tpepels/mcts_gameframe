@@ -21,6 +21,11 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     }
 
     @Override
+    public void newGame(int myPlayer) {
+        root = new TreeNode(myPlayer, options);
+    }
+
+    @Override
     public void getMove(IBoard board, MoveCallback callback, int myPlayer, boolean parallel,
                         IMove lastMove) {
         if (options == null)
@@ -53,8 +58,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 }
             }
         }
+        // Possible if new root was not expanded
         if (root.player != myPlayer) {
-            System.err.println("Root error! Using new root node");
             root = new TreeNode(myPlayer, options);
         }
 

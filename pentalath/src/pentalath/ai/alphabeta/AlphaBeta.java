@@ -25,6 +25,16 @@ public class AlphaBeta implements AIPlayer, Runnable {
     private final int TT_SIZE = 33554432, TIME_CHECK_INT = 1000, BASE_TIME = 15000;
     private final DecimalFormat decForm = new DecimalFormat("#,###,###,###,##0");
     //
+    public int R = 2, DELTA = 60, DEFAULT_DELTA = 60, MAX_DEPTH = 1000;
+    public boolean nullmoves = true, transpositions = true, historyHeuristic = true,
+            killermoves = true, aspiration = true;
+    public int FREE_SQ_LIM = 55; // The limit for choosing the largest group in stead of max freedom
+    boolean interupted = false;
+    int[] captures = new int[2];
+    int opp, longestRow;
+    boolean[] closedrow = new boolean[3], extrafreedom = new boolean[3];
+    int[] rowLength = new int[3], freedom = new int[6], totFreedom = new int[6];
+    //
     private Random r = new Random();
     private MoveCallback callback;
     private Board initBoard;
@@ -40,17 +50,37 @@ public class AlphaBeta implements AIPlayer, Runnable {
     private Transposition[] tt;
     private int[][] history, bfboard;
     private int[][] killermove;
-    //
-    public int R = 2, DELTA = 60, DEFAULT_DELTA = 60, MAX_DEPTH = 1000;
-    public boolean nullmoves = true, transpositions = true, historyHeuristic = true,
-            killermoves = true, aspiration = true;
     private Thread t;
+    // Weights for the features
+    // [0] Captures
+    // [1] my longest row,
+    // [2] min. freedom of my pieces,
+    // [3] min. freedom of opponent's pieces,
+    // [4] longest opponent's row,
+    // [5] pieces capped by opponent.
+    // [6] my largest group
+    // [7] opponent's largest group
+    private int[] weights = {800, 50, 5, -5, -50, -800, 10, -10, 5, -5};
+    private boolean[] seenFree, visited;
+    private ArrayList<Field> checkedFree = new ArrayList<Field>(Board.SIZE);
+    private int groupSize = 0;
+    // This value is set if there exists a row of length 4 and freedom 2
+    private int winByForce1 = 0, winByForce2 = 0, totalfreedom = 0;
 
     public AlphaBeta() {
         // Assuming we never go deeper than the size of the board.
         history = new int[2][Board.SIZE];
         bfboard = new int[2][Board.SIZE];
     }
+
+    public void newGame(int myPlayer) {
+    }
+
+    // private long MASK = TT_SIZE - 1;
+
+    // private int getHashPos(long hash) {
+    // return (int) (hash & MASK);
+    // }
 
     public void resetStats() {
         totalDepth = 0;
@@ -109,8 +139,6 @@ public class AlphaBeta implements AIPlayer, Runnable {
         }
 
     }
-
-    boolean interupted = false;
 
     public void stop() {
         if (t != null) {
@@ -215,14 +243,6 @@ public class AlphaBeta implements AIPlayer, Runnable {
         else
             return Board.P1;
     }
-
-    // private long MASK = TT_SIZE - 1;
-
-    // private int getHashPos(long hash) {
-    // return (int) (hash & MASK);
-    // }
-
-    int[] captures = new int[2];
 
     private int alphaBeta(Board board, int depth, int alpha, int beta, int player, int move,
                           boolean nullMove) {
@@ -389,19 +409,6 @@ public class AlphaBeta implements AIPlayer, Runnable {
         this.weights = weights;
     }
 
-    // Weights for the features
-    // [0] Captures
-    // [1] my longest row,
-    // [2] min. freedom of my pieces,
-    // [3] min. freedom of opponent's pieces,
-    // [4] longest opponent's row,
-    // [5] pieces capped by opponent.
-    // [6] my largest group
-    // [7] opponent's largest group
-    private int[] weights = {800, 50, 5, -5, -50, -800, 10, -10, 5, -5};
-    private boolean[] seenFree, visited;
-    public int FREE_SQ_LIM = 55; // The limit for choosing the largest group in stead of max freedom
-
     private int evaluate(Board board, int inv_depth) {
         int score = (board.currentPlayer != myPlayer) ? -20 : 0;
         // The number of opponent pieces captured by my player
@@ -501,9 +508,6 @@ public class AlphaBeta implements AIPlayer, Runnable {
         return score;
     }
 
-    private ArrayList<Field> checkedFree = new ArrayList<Field>(Board.SIZE);
-    private int groupSize = 0;
-
     /**
      * Set/get the freedom of a field
      *
@@ -536,12 +540,6 @@ public class AlphaBeta implements AIPlayer, Runnable {
         seenFree[f.position] = true;
         return current;
     }
-
-    // This value is set if there exists a row of length 4 and freedom 2
-    private int winByForce1 = 0, winByForce2 = 0, totalfreedom = 0;
-    int opp, longestRow;
-    boolean[] closedrow = new boolean[3], extrafreedom = new boolean[3];
-    int[] rowLength = new int[3], freedom = new int[6], totFreedom = new int[6];
 
     /**
      * Check the longest row that this field is part of

@@ -66,7 +66,7 @@ public class CCGui extends JFrame {
             }
         });
         player1Group.add(player1Human);
-        player1Human.setSelected(true);
+        player1Human.setSelected(false);
         mnPlayer.add(player1Human);
 
         final JRadioButtonMenuItem player1AI = new JRadioButtonMenuItem("A.I.");
@@ -76,6 +76,7 @@ public class CCGui extends JFrame {
             }
         });
         player1Group.add(player1AI);
+        player1AI.setSelected(true);
         mnPlayer.add(player1AI);
 
         JMenu mnPlayer_1 = new JMenu("Player 2");
@@ -109,15 +110,7 @@ public class CCGui extends JFrame {
 
         menuBar.add(mntmNewMenuItem);
 
-        JMenuItem mntmNewMenuItem_1 = new JMenuItem("AI Move");
-        mntmNewMenuItem_1.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                ccPanel.makeAIMove();
-            }
-        });
-        menuBar.add(mntmNewMenuItem_1);
-
-        ccPanel = new CCPanel(currentBoard, true, false);
+        ccPanel = new CCPanel(currentBoard, false, false);
         ccPanel.setBackground(Color.BLACK);
         ccPanel.setLayout(null);
         setContentPane(ccPanel);

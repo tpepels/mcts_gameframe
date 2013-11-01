@@ -45,8 +45,6 @@ public class Board implements IBoard {
     private final Stack<IMove> pastMoves = new Stack<IMove>();        // Stack for undo-move
     //
     private final FastRandom random = new FastRandom();
-    private Move[] lastMove = new Move[2];
-    private int[] reverseMoves = {0, 0};
     private int[] homePieces = new int[2], target;
     private int[][] targets; // Holds the targets for the current player to move
     private int winner = NONE_WIN, currentPlayer = P1;
@@ -159,11 +157,6 @@ public class Board implements IBoard {
                 winner = currentPlayer;
             }
         }
-        lastMove[currentPlayer - 1] = (Move) move;
-        if (lastMove[currentPlayer - 1].isReverse(move))
-            reverseMoves[currentPlayer - 1]++;
-        else
-            reverseMoves[currentPlayer - 1] = 0;
         pastMoves.push(move);
         currentPlayer = getOpponent(currentPlayer);
     }
@@ -209,10 +202,8 @@ public class Board implements IBoard {
             seen[n.position] = seenIndex;
             // Pieces can move to empty squares, or hop over other pieces
             if (hops == 0 && n.occupant == null) {
-                if (!closerOnly || initDistance > getDistanceToHome(n.position, target)) {
-                    m = new Move(initialPosition, n.position, hops);
-                    if (!tooManyReversals(m))
-                        moves.add(m);
+                if (!closerOnly || initDistance >= getDistanceToHome(n.position, target)) {
+                    moves.add(new Move(initialPosition, n.position, hops));
                 }
             } else if (n.occupant != null && n.neighbours[i] != null && n.neighbours[i].occupant == null) {
                 // Mark as seen so we don't check it again
@@ -220,19 +211,13 @@ public class Board implements IBoard {
                 if (inHome && outSideHome(colour, n.neighbours[i].position))
                     continue;
                 // Check if the move is closer to target, and the neighbour is not outside the home, if the piece is inside
-                if (!closerOnly || initDistance > getDistanceToHome(n.position, target)) {
-                    m = new Move(initialPosition, n.neighbours[i].position, hops + 1);
-                    if (!tooManyReversals(m))
-                        moves.add(m);
+                if (!closerOnly || initDistance >= getDistanceToHome(n.position, target)) {
+                    moves.add(new Move(initialPosition, n.neighbours[i].position, hops + 1));
                 }
                 // Search for a hop-over
                 generateMovesForPiece(colour, initialPosition, n.neighbours[i].position, hops + 1, inHome, closerOnly, initDistance);
             }
         }
-    }
-
-    public boolean tooManyReversals(Move move) {
-        return reverseMoves[currentPlayer - 1] > MAX_REV && move.isReverse(lastMove[currentPlayer - 1]);
     }
 
     @Override
@@ -249,10 +234,6 @@ public class Board implements IBoard {
         newBoard.currentPlayer = currentPlayer;
         newBoard.homePieces[0] = homePieces[0];
         newBoard.homePieces[1] = homePieces[1];
-        newBoard.lastMove[0] = lastMove[0];
-        newBoard.lastMove[1] = lastMove[1];
-        newBoard.reverseMoves[0] = reverseMoves[0];
-        newBoard.reverseMoves[1] = reverseMoves[1];
         return newBoard;
     }
 
@@ -264,7 +245,9 @@ public class Board implements IBoard {
 
     @Override
     public MoveList getExpandMoves() {
-        generateMovesForPlayer(currentPlayer, false);
+        generateMovesForPlayer(currentPlayer, true);
+        if (moves.size() == 0)
+            generateMovesForPlayer(currentPlayer, false);
         return moves.copy();
     }
 
@@ -323,12 +306,8 @@ public class Board implements IBoard {
 
             if (insideHome(currentPlayer, move.getMove()[1]) && outSideHome(currentPlayer, move.getMove()[0])) {
                 homePieces[currentPlayer - 1]--;
-                if (homePieces[currentPlayer - 1] < 0) {
-                    System.err.println("home pieces smaller than 0!");
-                }
             }
             winner = NONE_WIN;
-            lastMove[currentPlayer - 1] = null;
         }
     }
 

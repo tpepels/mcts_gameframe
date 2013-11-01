@@ -1,9 +1,6 @@
 package chinesecheckers.gui;
 
-import ai.framework.AIPlayer;
-import ai.framework.IMove;
-import ai.framework.MoveCallback;
-import ai.framework.MoveList;
+import ai.framework.*;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import chinesecheckers.game.Board;
@@ -26,7 +23,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
     private HexGridCell hexagons = new HexGridCell(CELL_R);
     private Board board;
     //
-    private boolean p1Human = true, p2Human = true;
+    private boolean p1Human = false, p2Human = false;
     private IMove lastMove;
     private int selected = -1;
 
@@ -36,7 +33,8 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         this.p2Human = p2Human;
         //
         p1Options = new MCTSOptions();
-        p1Options.treeReuse = true;
+        p1Options.accelerated = true;
+        p1Options.lambda = 0.99999;
         p2Options = new MCTSOptions();
         //
         if (!p1Human) {
@@ -48,6 +46,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             aiPlayer2.setOptions(p2Options);
         }
         addMouseListener(this);
+        makeAIMove();
     }
 
     public void undoMove() {
@@ -63,8 +62,10 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
 
     public void makeAIMove() {
         if (board.getPlayerToMove() == 1 && !p1Human) {
+
             aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
         } else if (board.getPlayerToMove() == 2 && !p2Human) {
+
             aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
         }
     }
@@ -146,6 +147,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
                 g2d.setColor(green);
                 g2d.fillOval(cornersX[0] + 10, cornersY[0], 25, 25);
             }
+            System.out.println("-----");
         }
     }
 
@@ -212,16 +214,17 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             }
         } else {
             // Check if the AI should make a move
-            if (board.getPlayerToMove() == 1 && !p1Human) {
+            if (board.getPlayerToMove() == IBoard.P1 && !p1Human) {
+
                 aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
                 System.out.println("Player 1, thinking ...");
-            } else if (board.getPlayerToMove() == 2 && !p2Human) {
+            } else if (board.getPlayerToMove() == IBoard.P2 && !p2Human) {
+
                 aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
                 System.out.println("Player 2, thinking ...");
             }
         }
         repaint();
-        //System.out.println("P1 Home pieces: " + board.homePieces[0] + " P2 Home pieces: " + board.homePieces[1]);
     }
 
     @Override
