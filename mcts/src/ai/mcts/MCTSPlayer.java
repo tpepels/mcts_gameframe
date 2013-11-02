@@ -7,7 +7,7 @@ import ai.framework.MoveCallback;
 
 public class MCTSPlayer implements AIPlayer, Runnable {
 
-    private boolean interrupted = false, parallel = true;
+    private boolean interrupted = false, parallel = true, retry = false;
     private TreeNode root;
     private IBoard board;
     private MoveCallback callback;
@@ -30,6 +30,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                         IMove lastMove) {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
+        this.retry = false;
         this.board = board;
         this.callback = callback;
         this.parallel = parallel;
@@ -93,16 +94,25 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);
-        bestMove = bestChild.getMove();
         // This sometimes happens in experiments
-        if (bestMove == null) {
+        if (bestChild == null) {
             options.debug = true;
+
             // Print the root's children
             root.getBestChild(board);
             options.debug = false;
             int nChildren = (root.getChildren() == null) ? 0 : root.getChildren().size();
-            throw new RuntimeException("Null bestMove in MCTS player! Root has " + nChildren + " children.");
+            System.err.println("Null bestMove in MCTS player! Root has " + nChildren + " children.");
+
+            // Try again with a new root
+            root = new TreeNode(myPlayer, options);
+            if (!parallel && !retry) {
+                retry = true;
+                interrupted = false;
+                run();
+            }
         }
+        bestMove = bestChild.getMove();
         if (!interrupted && parallel)
             callback.makeMove(bestChild.getMove());
 
