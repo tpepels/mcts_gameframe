@@ -28,8 +28,6 @@ public class MCTSOptions {
             if (depthDiscount) {
                 depthD = 0.2;
             }
-            mastEnabled = true;
-            mastEpsilon = 0.6;
             depthD = 0.1;
         } else if (game.equals("pentalath")) {
             if (depthDiscount)
