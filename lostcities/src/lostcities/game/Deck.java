@@ -8,21 +8,21 @@ public class Deck {
     private static int[] COLORS = {100, 200, 300, 400, 500};
     //
     private final int[] deck;
-    private int size, initSize;
+    private int index, initSize;
 
     public Deck(int size) {
         deck = new int[size];
         this.initSize = size;
-        this.size = size - 1;
+        this.index = size - 1;
     }
 
     public boolean isEmpty() {
-        return size < 0;
+        return index < 0;
     }
 
     public int get(int i) {
-        if(i < size())
-            return deck[size - i];
+        if (i < size())
+            return deck[index - i];
         else
             throw new IndexOutOfBoundsException(i + " is out of deck bounds.");
     }
@@ -33,15 +33,15 @@ public class Deck {
      * @return The top card from the deck
      */
     public int takeCard() {
-        return deck[size--];
+        return deck[index--];
     }
 
     public void returnCard(int card) {
-        deck[++size] = card;
+        deck[++index] = card;
     }
 
     public int size() {
-        return size + 1;
+        return index + 1;
     }
 
     /**
@@ -52,10 +52,9 @@ public class Deck {
      * @param startIndex Start index of the hand in the hand array
      * @param endIndex   Final index of the hand in the hand array (i < endIndex)
      */
-    public void addHandToDek(int[] hand, int startIndex, int endIndex, boolean[] known) {
+    public void addHandToDek(int[] hand, int startIndex, int endIndex) {
         for (int i = startIndex; i < endIndex; i++) {
-            if (!known[i])
-                deck[++size] = hand[i];
+            returnCard(hand[i]);
         }
     }
 
@@ -66,17 +65,16 @@ public class Deck {
      * @param startIndex Start index of the hand in the hand array
      * @param endIndex   Final index of the hand in the hand array (i < endIndex)
      */
-    public void dealHand(int[] hand, int startIndex, int endIndex, boolean[] known) {
+    public void dealHand(int[] hand, int startIndex, int endIndex) {
         for (int i = startIndex; i < endIndex; i++) {
-            if (!known[i])
-                hand[i] = takeCard();
+            hand[i] = takeCard();
         }
     }
 
     public Deck copy() {
         Deck newDeck = new Deck(initSize);
         System.arraycopy(deck, 0, newDeck.deck, 0, size());
-        newDeck.size = size;
+        newDeck.index = index;
         return newDeck;
     }
 

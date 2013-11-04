@@ -19,13 +19,14 @@ public class Board implements IBoard {
     private static final MoveList moves = new MoveList(5000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>();
     // Initial queen positions
-    public final int[][] POSITIONS = {{58, 61, 40, 47}, {2, 5, 16, 23}};
+    private static final int[][] initPositions = {{58, 61, 40, 47}, {2, 5, 16, 23}};
+    public final int[][] queens = new int[2][4];
     // Board is public for fast access
     public final int[] board;
     private final int[] ALL_MOVE_INT = {9, -9, 7, -7, 8, -8, -1, 1};
     private final int[] possibleMoves = new int[40], possibleShots = new int[40];
     private final Stack<IMove> pastMoves = new Stack<IMove>();
-    private int max, min, col, row, direction, count, position, lastFrom, lastTo, currentPlayer, from, moveCount, shotCount;
+    private int lastFrom, lastTo, currentPlayer;
 
     /**
      * Initialise the board using the default size
@@ -64,33 +65,21 @@ public class Board implements IBoard {
         Board newBoard = new Board();
         // Copy the board data
         System.arraycopy(board, 0, newBoard.board, 0, board.length);
-        System.arraycopy(POSITIONS[0], 0, newBoard.POSITIONS[0], 0,
-                POSITIONS[0].length);
-        System.arraycopy(POSITIONS[1], 0, newBoard.POSITIONS[1], 0,
-                POSITIONS[1].length);
+        System.arraycopy(queens[0], 0, newBoard.queens[0], 0,
+                queens[0].length);
+        System.arraycopy(queens[1], 0, newBoard.queens[1], 0,
+                queens[1].length);
         newBoard.currentPlayer = currentPlayer;
         return newBoard;
     }
 
     @Override
-    public boolean doAIMove(IMove move, int player) {
-        board[move.getMove()[1]] = board[move.getMove()[0]];
-        board[move.getMove()[0]] = EMPTY;
-        POSITIONS[player - 1][board[move.getMove()[1]] % 10] = move.getMove()[1];
-        // Shoot the arrow
-        board[move.getType()] = ARROW;
-        //
-        pastMoves.push(move);
-        currentPlayer = getOpponent(currentPlayer);
-        return true;
-    }
-
-    @Override
     public MoveList getExpandMoves() {
         moves.clear();
-        for (int i = 0; i < POSITIONS[currentPlayer - 1].length; i++) {
+        int from, moveCount, shotCount;
+        for (int i = 0; i < queens[currentPlayer - 1].length; i++) {
             // Select the location to move from, ie the queen to move
-            from = POSITIONS[currentPlayer - 1][i];
+            from = queens[currentPlayer - 1][i];
             moveCount = getPossibleMovesFrom(from, possibleMoves);
             // Move count holds the possible number of moves possible from this position
             for (int j = 0; j < moveCount; j++) {
@@ -106,31 +95,16 @@ public class Board implements IBoard {
         return moves.copy();
     }
 
-    private void undoQueenMove() {
-        board[lastFrom] = board[lastTo];
-        board[lastTo] = EMPTY;
-        POSITIONS[currentPlayer - 1][board[lastFrom] % 10] = lastFrom;
-    }
-
-    private void moveQueen(int from, int to) {
-        // Store the move, so it can be undone later
-        lastFrom = from;
-        lastTo = to;
-        //
-        board[to] = board[from];
-        board[from] = EMPTY;
-        POSITIONS[currentPlayer - 1][board[to] % 10] = to;
-    }
-
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         playoutMoves.clear();
+        int from, moveCount, shotCount;
         if (heuristics) {
             int start = r.nextInt(N_QUEENS);
             int c = 0;
             while (playoutMoves.isEmpty() && c < N_QUEENS) {
                 // Select the location to move from, ie the queen to move
-                from = POSITIONS[currentPlayer - 1][start];
+                from = queens[currentPlayer - 1][start];
                 moveCount = getPossibleMovesFrom(from, possibleMoves);
                 // Move count holds the possible number of moves possible from this position
                 for (int j = 0; j < moveCount; j++) {
@@ -147,10 +121,11 @@ public class Board implements IBoard {
                 c++;
             }
         }
+        //
         if (playoutMoves.isEmpty()) {
-            for (int i = 0; i < POSITIONS[currentPlayer - 1].length; i++) {
+            for (int i = 0; i < queens[currentPlayer - 1].length; i++) {
                 // Select the location to move from, ie the queen to move
-                from = POSITIONS[currentPlayer - 1][i];
+                from = queens[currentPlayer - 1][i];
                 moveCount = getPossibleMovesFrom(from, possibleMoves);
                 // Move count holds the possible number of moves possible from this position
                 for (int j = 0; j < moveCount; j++) {
@@ -172,13 +147,43 @@ public class Board implements IBoard {
         IMove move = pastMoves.pop();
         if (move != null) {
             currentPlayer = getOpponent(currentPlayer);
-            // clear the arrow
+            // clear the arrow (this has to be done before replacing the queen!)
             board[move.getType()] = EMPTY;
-            //
+            // Replace the queen
             board[move.getMove()[0]] = board[move.getMove()[1]];
             board[move.getMove()[1]] = EMPTY;
-            POSITIONS[currentPlayer - 1][board[move.getMove()[0]] % 10] = move.getMove()[0];
+            queens[currentPlayer - 1][board[move.getMove()[0]] % 10] = move.getMove()[0];
         }
+    }
+
+    @Override
+    public boolean doAIMove(IMove move, int player) {
+        board[move.getMove()[1]] = board[move.getMove()[0]];
+        board[move.getMove()[0]] = EMPTY;
+        queens[currentPlayer - 1][board[move.getMove()[1]] % 10] = move.getMove()[1];
+        // Shoot the arrow (after moving the queen!)
+        board[move.getType()] = ARROW;
+        //
+        pastMoves.push(move);
+        currentPlayer = getOpponent(currentPlayer);
+        return true;
+    }
+
+    private void undoQueenMove() {
+        //
+        board[lastFrom] = board[lastTo];
+        board[lastTo] = EMPTY;
+        queens[currentPlayer - 1][board[lastFrom] % 10] = lastFrom;
+    }
+
+    private void moveQueen(int from, int to) {
+        // Store the move, so it can be undone later
+        lastFrom = from;
+        lastTo = to;
+        //
+        board[to] = board[from];
+        board[from] = EMPTY;
+        queens[currentPlayer - 1][board[to] % 10] = to;
     }
 
     @Override
@@ -190,9 +195,9 @@ public class Board implements IBoard {
     public int checkWin() {
         boolean[] can = {false, false};
         for (int i = P1; i <= P2; i++) {
-            for (int j = 0; j < POSITIONS[i - 1].length; j++) {
+            for (int j = 0; j < queens[i - 1].length; j++) {
                 // Check if player can make a move from position.
-                if (canMakeMoveFrom(POSITIONS[i - 1][j])) {
+                if (canMakeMoveFrom(queens[i - 1][j])) {
                     can[i - 1] = true;
                     break;
                 }
@@ -227,68 +232,17 @@ public class Board implements IBoard {
             board[i] = EMPTY;
         }
         // Setup initial positions
-        for (int i = 0; i < POSITIONS[0].length; i++) {
-            board[POSITIONS[0][i]] = WHITE_Q * 10 + i;
-            board[POSITIONS[1][i]] = BLACK_Q * 10 + i;
+        for (int i = 0; i < initPositions[0].length; i++) {
+            board[initPositions[0][i]] = WHITE_Q * 10 + i;
+            queens[0][i] = initPositions[0][i];
+            board[initPositions[1][i]] = BLACK_Q * 10 + i;
+            queens[1][i] = initPositions[1][i];
         }
-    }
-
-    /**
-     * Checks if move from to to is possible
-     *
-     * @param from    Move from
-     * @param to      Move to
-     * @param skippos Treat this position as empty
-     * @return true if the move is possible
-     */
-    private boolean checkMove(int from, int to, int skippos) {
-        count = 0;
-        for (int i = 0; i < ALL_MOVE_INT.length; i++) {
-            // Select a random direction.
-            direction = ALL_MOVE_INT[i];
-            col = from % SIZE;
-            row = from / SIZE;
-
-            if (direction == -(SIZE + 1)) {
-                min = from + (Math.min(col, row) * direction);
-                max = B_SIZE - 1;
-            } else if (direction == (SIZE + 1)) {
-                col = (SIZE - 1) - col;
-                row = (SIZE - 1) - row;
-                max = from + (Math.min(col, row) * direction);
-                min = -1;
-            } else if (direction == (SIZE - 1)) {
-                row = (SIZE - 1) - row;
-                max = from + (Math.min(col, row) * direction);
-            } else if (direction == -(SIZE - 1)) {
-                col = (SIZE - 1) - col;
-                min = from + (Math.min(col, row) * direction);
-                max = B_SIZE;
-            } else if (direction == SIZE || direction == -SIZE) {
-                max = B_SIZE - 1;
-                min = 0;
-            } else {
-                max = row * SIZE + (SIZE - 1);
-                min = row * SIZE;
-            }
-
-            position = from + direction;
-            // Select a random position along the chosen direction
-            while (position <= max && position >= min
-                    && (board[position] == Board.EMPTY || skippos == position)) {
-                //
-                if (position == to) {
-                    System.out.println("Move ok!, direction: " + direction);
-                    return true;
-                }
-                position += direction;
-            }
-        }
-        return false;
     }
 
     public int getPossibleMovesFrom(int from, int[] moves) {
-        count = 0;
+        int count = 0, position;
+        int col, row, direction, min, max;
         for (int i = 0; i < ALL_MOVE_INT.length; i++) {
             // Select a random direction.
             direction = ALL_MOVE_INT[i];
@@ -306,6 +260,7 @@ public class Board implements IBoard {
             } else if (direction == (SIZE - 1)) {
                 row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
+                min = -1;
             } else if (direction == -(SIZE - 1)) {
                 col = (SIZE - 1) - col;
                 min = from + (Math.min(col, row) * direction);
@@ -319,7 +274,7 @@ public class Board implements IBoard {
             }
 
             position = from + direction;
-            // Select a  position along the chosen direction
+            // Select a position along the chosen direction
             while (position <= max && position >= min
                     && board[position] == Board.EMPTY) {
                 //
@@ -333,6 +288,7 @@ public class Board implements IBoard {
     }
 
     private boolean canMakeMoveFrom(int from) {
+        int col, row, direction, min, max, position;
         for (int i = 0; i < ALL_MOVE_INT.length; i++) {
             // Select a random direction.
             direction = ALL_MOVE_INT[i];
@@ -350,6 +306,7 @@ public class Board implements IBoard {
             } else if (direction == (SIZE - 1)) {
                 row = (SIZE - 1) - row;
                 max = from + (Math.min(col, row) * direction);
+                min = -1;
             } else if (direction == -(SIZE - 1)) {
                 col = (SIZE - 1) - col;
                 min = from + (Math.min(col, row) * direction);
@@ -394,7 +351,7 @@ public class Board implements IBoard {
                 // Place the arrow
                 board[shootTo] = ARROW;
                 // Remember the position of the queen.
-                POSITIONS[side - 1][queenId] = moveTo;
+                queens[side - 1][queenId] = moveTo;
                 currentPlayer = getOpponent(currentPlayer);
                 return true;
             } else {
@@ -403,5 +360,59 @@ public class Board implements IBoard {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Checks if move from to to is possible, only used by humanMove method
+     *
+     * @param from    Move from
+     * @param to      Move to
+     * @param skipPos Treat this position as empty
+     * @return true if the move is possible
+     */
+    private boolean checkMove(int from, int to, int skipPos) {
+        int col, row, direction, min, max, position;
+        for (int i = 0; i < ALL_MOVE_INT.length; i++) {
+            // Select a random direction.
+            direction = ALL_MOVE_INT[i];
+            col = from % SIZE;
+            row = from / SIZE;
+
+            if (direction == -(SIZE + 1)) {
+                min = from + (Math.min(col, row) * direction);
+                max = B_SIZE - 1;
+            } else if (direction == (SIZE + 1)) {
+                col = (SIZE - 1) - col;
+                row = (SIZE - 1) - row;
+                max = from + (Math.min(col, row) * direction);
+                min = -1;
+            } else if (direction == (SIZE - 1)) {
+                row = (SIZE - 1) - row;
+                max = from + (Math.min(col, row) * direction);
+                min = -1;
+            } else if (direction == -(SIZE - 1)) {
+                col = (SIZE - 1) - col;
+                min = from + (Math.min(col, row) * direction);
+                max = B_SIZE;
+            } else if (direction == SIZE || direction == -SIZE) {
+                max = B_SIZE - 1;
+                min = 0;
+            } else {
+                max = row * SIZE + (SIZE - 1);
+                min = row * SIZE;
+            }
+
+            position = from + direction;
+            // Select a position along the chosen direction
+            while (position <= max && position >= min
+                    && (board[position] == Board.EMPTY || skipPos == position)) {
+                //
+                if (position == to) {
+                    return true;
+                }
+                position += direction;
+            }
+        }
+        return false;
     }
 }

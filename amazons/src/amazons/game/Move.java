@@ -23,7 +23,7 @@ public class Move implements IMove {
 
     @Override
     public boolean equals(IMove move) {
-        return this.move[0] == move.getMove()[0] && this.move[1] == getMove()[1] && move.getType() == arrow;
+        return this.move[0] == move.getMove()[0] && this.move[1] == move.getMove()[1] && move.getType() == arrow;
     }
 
     @Override
@@ -33,6 +33,6 @@ public class Move implements IMove {
 
     @Override
     public String toString() {
-        return "to: " + move[0] + " from: " + move[1] + " shot: " + arrow;
+        return "from: " + move[0] + " to: " + move[1] + " shot: " + arrow;
     }
 }

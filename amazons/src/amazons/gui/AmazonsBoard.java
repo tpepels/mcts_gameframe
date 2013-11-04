@@ -142,10 +142,14 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         //
         if (winner == Board.P2_WIN) {
             frame.setTitle("Amazons - Black wins");
-            return;
+            System.out.println("P2 wins");
+            board = new Board();
+            board.initialize();
         } else if (winner == Board.P1_WIN) {
             frame.setTitle("Amazons - White wins.");
-            return;
+            System.out.println("P1 wins");
+            board = new Board();
+            board.initialize();
         }
         //
         int boardPos = boardy * Board.SIZE + boardx;
@@ -207,7 +211,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
     @Override
     public void makeMove(IMove move) {
         lastMove = move;
-        board.humanMove(move.getMove()[0], move.getMove()[1], move.getType());
+        board.doAIMove(move, board.getPlayerToMove());
         //
         int winner = board.checkWin();
         if (winner == Board.P2_WIN) {
@@ -225,6 +229,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
             aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
             frame.setTitle("Amazons - Black's move.");
         } else {
+            System.out.println("LastMove in GUI: " + lastMove);
             frame.setTitle("Amazons - White's move.");
             aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
         }

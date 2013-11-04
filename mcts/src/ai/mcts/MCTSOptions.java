@@ -1,16 +1,16 @@
 package ai.mcts;
 
 public class MCTSOptions {
-    public boolean treeReuse = false, treeDecay = false;
-    public boolean depthDiscount = false, accelerated = false, entropyDiscount = false;
+    public boolean treeReuse = false, treeDecay = false, ageDecay = false;
+    public boolean depthDiscount = false, accelerated = false;
     public boolean mastEnabled = false, treeOnlyMast = false;
-    public boolean relativeBonus = false;
+    public boolean relativeBonus = false, includeDepth = true;
     //
-    public boolean debug = true, useHeuristics = true;
+    public boolean debug = true, useHeuristics = true, solverFix = false;
     // MCTS Specific values
     public double mastEpsilon = 0.5, uctC = 1., k = 1.;
     // Discounting values
-    public double lambda = .9999, depthD = 0.1, treeDiscount = 0.6;
+    public double lambda = .999999, depthD = 0.1, treeDiscount = 0.6;
     public int timeInterval = 5000;
     // MAST stuff
     private double[][] mastValues, mastVisits;

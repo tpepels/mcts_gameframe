@@ -5,7 +5,6 @@ import ai.framework.IMove;
 public class Move implements IMove {
 
     private int position;
-    public int colour;
 
     public Move(int position) {
         this.position = position;

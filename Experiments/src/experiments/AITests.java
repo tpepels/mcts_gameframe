@@ -24,6 +24,7 @@ public class AITests {
     private int ai1Color = IBoard.P1, ai2Color = IBoard.P2;
     private IMove lastMove = null;
     //
+    private StringBuilder finalString = new StringBuilder();
     private String outFile, game;
     private PrintWriter out;
 
@@ -52,17 +53,12 @@ public class AITests {
     }
 
     public void runTests(int which) {
-        try {
-            out = new PrintWriter(outFile);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+        createOutputFile();
         // Record the date, so the version of the program can be traced back
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date today = Calendar.getInstance().getTime();
-        writeOutput(df.format(today));
-        writeOutput("Running test # " + which + ", # of runs: " + games + ", on game: " + game);
+        writeOutput(df.format(today), true);
+        writeOutput("Running test # " + which + ", # of runs: " + games + ", on game: " + game, true);
 
         if (which == 1) {
             // AI 1
@@ -79,7 +75,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {0.1, 0.5, 1.1, 1.5, 2., 3.};
+            double[] values = {.1, .5, 1.1, 1.5, 2., 3.};
             for (double i : values) {
                 options1.k = i;
                 runGames("AI 1 RB K = " + i + " || AI 2 Normal");
@@ -87,9 +83,35 @@ public class AITests {
         } else if (which == 2) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
+            //
             options1.debug = false;
+            options1.solverFix = true;
+            //
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            runGames("AI 1 Solver fix || AI 2 Normal");
+            //
+            options1.solverFix = false;
+            options1.relativeBonus = true;
+            options1.includeDepth = false;
+            //
+            runGames("AI 1 RB No depth change || AI 2 Normal");
+        } else if (which == 3) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            //
             options1.treeReuse = true;
-            options1.treeDecay = true;
+            options1.ageDecay = true;
+            //
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -103,28 +125,8 @@ public class AITests {
             double[] values = {.9, .5, .6, .8, .1, .3};
             for (double i : values) {
                 options1.treeDiscount = i;
-                runGames("AI 1 Tree Discount: " + i + " || AI 2 Normal");
+                runGames("AI 1 Tree reuse, age decay || AI 2 Normal");
             }
-        } else if (which == 3) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.treeReuse = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            runGames("AI 1 Tree reuse, no decay || AI 2 Normal");
-            //
-            options1.treeDecay = true;
-            options1.entropyDiscount = true;
-            runGames("AI 1 Tree reuse, entropy decay || AI 2 Normal");
         } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
@@ -140,16 +142,16 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {0.9999999, 0.999999, 0.99999, 0.9999, 0.999, 0.99};
+            double[] values = {3, 4, 5, 1, 2, 6, 7};
             for (double i : values) {
-                options1.lambda = i;
+                options1.lambda = 1 - Math.pow(.1, i);
                 runGames("AI 1 AUCT lambda: " + i + " || AI 2 Normal");
             }
         }
     }
 
     private void runGames(String testMessage) {
-        writeOutput(testMessage);
+        writeOutput(testMessage, true);
         totalGames = 0;
         ai1Color = IBoard.P1;
         ai2Color = IBoard.P2;
@@ -162,18 +164,38 @@ public class AITests {
             ai1Color = ai1Color == IBoard.P1 ? IBoard.P2 : IBoard.P1;
             ai2Color = ai2Color == IBoard.P1 ? IBoard.P2 : IBoard.P1;
         }
-        //
-        writeOutput("AI1: Wins " + ai1Wins);
-        writeOutput("AI2: Wins " + ai2Wins);
+        // Print the final statistics and the win/loss rates
+        printStatistics(true);
+        writeOutput("AI1: Wins " + ai1Wins, true);
+        writeOutput("AI2: Wins " + ai2Wins, true);
+        writeFinalOutput();
     }
 
-    private void writeOutput(String output) {
+    private void writeOutput(String output, boolean isFinal) {
         if (out != null) { // Write output to file
             out.println(output);
             out.flush();
         }
         // Also write it to default output in case writing to file fails.
         System.out.println(output);
+        if (isFinal) {
+            finalString.append(output);
+            finalString.append("\n");
+        }
+    }
+
+    private void writeFinalOutput() {
+        createOutputFile();
+        writeOutput(finalString.toString(), false);
+    }
+
+    private void createOutputFile() {
+        try {
+            out = new PrintWriter(outFile);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
     }
 
     private IBoard getBoard() {
@@ -233,10 +255,10 @@ public class AITests {
         } else {
             draws++;
         }
-        printStatistics();
+        printStatistics(false);
     }
 
-    private void printStatistics() {
+    private void printStatistics(boolean isFinal) {
         double total = ai1Wins + ai2Wins + draws;
         if (total > 0) {
             double mean = (ai1Wins + (0.5 * draws)) / total;
@@ -249,7 +271,7 @@ public class AITests {
             variance /= total;
             double ci95 = (1.96 * Math.sqrt(variance)) / Math.sqrt(total);
             double ai2WinRate = (ai2Wins + 0.5 * draws) / total;
-            writeOutput(df2.format(mean * 100.0) + "% \t " + df2.format(ai2WinRate * 100.0) + "% \t ±" + df2.format(ci95 * 100.0) + "%");
+            writeOutput(df2.format(mean * 100.0) + "% \t " + df2.format(ai2WinRate * 100.0) + "% \t ±" + df2.format(ci95 * 100.0) + "%", isFinal);
         }
     }
 }

@@ -26,10 +26,6 @@ public class Move implements IMove {
         return move.getMove()[0] == this.move[0] && move.getMove()[1] == this.move[1] && hops == move.getType();
     }
 
-    public boolean isReverse(IMove move) {
-        return move.getMove()[0] == this.move[1] && move.getMove()[1] == this.move[0] && hops == move.getType();
-    }
-
     @Override
     public int getUniqueId() {
         return move[0] + (move[1] * 1000);

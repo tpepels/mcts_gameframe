@@ -23,7 +23,6 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
-        options2.timeInterval = 10000;
         aiPlayer2.setOptions(options2);
 
         MCTSPlayer aiPlayer;

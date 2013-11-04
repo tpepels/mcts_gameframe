@@ -23,10 +23,9 @@ public class Table implements IBoard {
     public int[] expeditionCards = new int[10];     // Holds the topmost card for each expedition
     public int[] numExpeditionCards = new int[10];  // Holds the number of cards per expedition (for the 20 bonus points)
     public int[] hands = new int[16];               // Holds the cards in player's hands
-    public boolean[] known = new boolean[16];       // Whether all players know you hold this card
     public int[] scores = new int[2];               // Total score per player
     public int currentPlayer = P1, winner = NONE_WIN;
-    private int card, value, colour, stack, stackI, drawStack; // Some variables for move generation
+    private int value, colour, stack, stackI;
     private int[] minCard = new int[5];
     private int[] discardStackDraws = {0, 0};       // Keep track of the discard - stack draw moves
     private int invisiblePlayer;
@@ -38,12 +37,10 @@ public class Table implements IBoard {
         deck.initialize();
         // Initially all scores are multiplied by 1
         Arrays.fill(multipliers, 1);
-        // Reset the known cards in hand
-        known = new boolean[16];
         // Deal first player's hand
-        deck.dealHand(hands, 0, P2_HAND_I, known);
+        deck.dealHand(hands, 0, P2_HAND_I);
         // Deal second player's hand
-        deck.dealHand(hands, P2_HAND_I, hands.length, known);
+        deck.dealHand(hands, P2_HAND_I, hands.length);
         // Initialize the stacks
         for (int i = 0; i < stacks.length; i++) {
             stacks[i] = new Stack();
@@ -104,7 +101,6 @@ public class Table implements IBoard {
         // Draw a new card
         if (draw == Move.DECK_DRAW) {
             hands[handIndex] = deck.takeCard();
-            known[handIndex] = false;
             discardStackDraws[currentPlayer - 1] = 0;
             // The game has ended, compare the players' scores
             if (deck.isEmpty()) {
@@ -118,7 +114,6 @@ public class Table implements IBoard {
             }
         } else {
             hands[handIndex] = stacks[draw - 1].takeCard();
-            known[handIndex] = true;
             //
             if (move.getType() == Move.DISCARD)
                 discardStackDraws[currentPlayer - 1]++;
@@ -142,7 +137,6 @@ public class Table implements IBoard {
         System.arraycopy(multipliers, 0, newTable.multipliers, 0, multipliers.length);
         System.arraycopy(expeditionCards, 0, newTable.expeditionCards, 0, expeditionCards.length);
         System.arraycopy(hands, 0, newTable.hands, 0, hands.length);
-        System.arraycopy(known, 0, newTable.known, 0, known.length);
         System.arraycopy(numExpeditionCards, 0, newTable.numExpeditionCards, 0, numExpeditionCards.length);
         newTable.scores[0] = scores[0];
         newTable.scores[1] = scores[1];
@@ -155,49 +149,79 @@ public class Table implements IBoard {
 
     public void generateAllMoves() {
         moves.clear();
-        invCardsSeen = new boolean[5];
         // Don't generate moves if there is already a winner
         if (winner != NONE_WIN)
             return;
+        invCardsSeen = new boolean[5];
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
         stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
-        // Generate the moves in the hand of the player
-        for (int i = startI; i < endI; i++) {
-            generateMove(hands[i]);
-        }
-
-        // Also generate moves that are in the deck, for the hidden player
+        //
         if (currentPlayer == invisiblePlayer) {
+            // Generate the moves in the hand of the player
+            for (int i = startI; i < endI; i++) {
+                generateMove(hands[i]);
+            }
+            // For the invisible player, generate all moves, including the deck
             for (int i = 0; i < deck.size(); i++) {
                 generateMove(deck.get(i));
+            }
+        } else {
+            // Generate the moves in the hand of the player
+            for (int i = startI; i < endI; i++) {
+                generateLegalMove(hands[i]);
             }
         }
     }
 
-    private void generateMove(int card) {
+    private void generateLegalMove(int card) {
         boolean canPlay = false;
         value = card % 100;
         colour = (card / 100) - 1;
         stack = colour + stackI;
         // Investment card --> no expedition cards have been played
         if (value == Deck.INVESTMENT && expeditionCards[stack] == 0) {
-            canPlay = !invCardsSeen[colour]; // Only true if it was not already seen
+            // only add an investment once as a child
+            if (invCardsSeen[colour])
+                return;
+            //
+            canPlay = true;
             invCardsSeen[colour] = true;
         } else if (value != Deck.INVESTMENT && expeditionCards[stack] < value) {
             // Expedition card, can be played in the expedition
             canPlay = true;
         }
-        // Move for drawing from deck & moves for drawing from coloured stacks (0 < j < 5)
+
+        // Move for drawing from deck &
+        // Moves for drawing from coloured stacks (0 < j < 5)
         for (int j = 0; j < stacks.length + 1; j++) {
             if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
                 // Discard move
-                if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW))
+                if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW)) {
                     moves.add(new Move(card, j, true));
+                }
                 // Play card move
-                if (canPlay)
+                if (canPlay) {
                     moves.add(new Move(card, j, false));
+                }
             }
+        }
+    }
+
+    private void generateMove(int card) {
+        value = card % 100;
+        colour = (card / 100) - 1;
+        stack = colour + stackI;
+        // Investment card --> add investments only once
+        if (value == Deck.INVESTMENT) {
+            if (invCardsSeen[colour])
+                return;
+            invCardsSeen[colour] = true;
+        }
+        // Move for drawing from deck & moves for drawing from coloured stacks (0 < j < 5)
+        for (int j = 0; j < stacks.length + 1; j++) {
+            moves.add(new Move(card, j, true));
+            moves.add(new Move(card, j, false));
         }
     }
 
@@ -210,7 +234,7 @@ public class Table implements IBoard {
     @Override
     public MoveList getExpandMoves() {
         generateAllMoves();
-        return moves;
+        return moves.copy();
     }
 
     @Override
@@ -225,8 +249,9 @@ public class Table implements IBoard {
         int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
         int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
         stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
-        boolean canPlay, hasMove = false;
+        boolean canPlay;
         IMove move;
+        int card;
         for (int i = startI; i < endI; i++) {
             canPlay = false;
             card = hands[i];
@@ -279,7 +304,7 @@ public class Table implements IBoard {
                     stack = colour + stackI;
 
                     if (m.getMove()[1] > 0) {
-                        drawStack = m.getMove()[1] - 1;
+                        int drawStack = m.getMove()[1] - 1;
                         card = stacks[drawStack].peek();
                         // Don't draw useless cards from the stack
                         if (expeditionCards[stack] == 0 || card < expeditionCards[stack]) {
@@ -459,10 +484,10 @@ public class Table implements IBoard {
         int si = (myPlayer == P1) ? P2_HAND_I : 0, ei = (myPlayer == P1) ? hands.length : P2_HAND_I;
         invisiblePlayer = (myPlayer == P1) ? P2 : P1;
         // Put the invisible player's hand back in the deck, and shuffle it
-        deck.addHandToDek(hands, si, ei, known);
+        deck.addHandToDek(hands, si, ei);
         deck.shuffleDeck();
         // Deal a new hand to the invisible player
-        deck.dealHand(hands, si, ei, known);
+        deck.dealHand(hands, si, ei);
     }
 
     @Override

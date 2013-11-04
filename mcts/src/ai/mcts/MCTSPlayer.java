@@ -50,17 +50,23 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 // Don't select the virtual node
                 if (t.isVirtual())
                     continue;
+                //
                 if (t.getMove().equals(lastMove)) {
                     root = t;
                     // Discount all values in the tree
                     if (options.treeDecay)
                         root.discountValues(options.treeDiscount);
+                    if (options.ageDecay)
+                        root.ageSubtree();
                     break;
                 }
             }
         }
         // Possible if new root was not expanded
         if (root.player != myPlayer) {
+            if (options.debug && root.getChildren() != null)
+                System.err.println("Incorrect player at root, old root has " + root.getArity() + " children");
+            // Create a new root
             root = new TreeNode(myPlayer, options);
         }
 
@@ -78,6 +84,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     public void run() {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
+
+        if (options.debug)
+            System.out.println("Thinking for " + options.timeInterval + " ms");
+
         // Search for timeInterval seconds
         long endTime = System.currentTimeMillis() + options.timeInterval;
         int simulations = 0;
@@ -113,9 +123,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
         }
         bestMove = bestChild.getMove();
-        if (!interrupted && parallel)
-            callback.makeMove(bestChild.getMove());
-
         // show information on the best move
         if (options.debug) {
             System.out.println("Did " + simulations + " simulations");
@@ -126,6 +133,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         // the opponent's move can become the new root
         if (options.treeReuse)
             root = bestChild;
+        // Make the move in the GUI, if parallel
+        if (!interrupted && parallel)
+            callback.makeMove(bestChild.getMove());
     }
 
     @Override
