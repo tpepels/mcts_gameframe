@@ -75,7 +75,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.1, .5, 1.1, 1.5, 2., 3.};
+            double[] values = {.5, 1.1, 1.5, 2., 3.};
             for (double i : values) {
                 options1.k = i;
                 runGames("AI 1 RB K = " + i + " || AI 2 Normal");

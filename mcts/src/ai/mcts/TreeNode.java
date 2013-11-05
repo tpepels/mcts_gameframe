@@ -88,11 +88,13 @@ public class TreeNode {
             if (child.nVisits == 0) {
                 result = child.playOut(board.copy());
                 // Apply the relative bonus
-                if (options.relativeBonus) {
+                if (options.relativeBonus && child.nMoves > 0) {
                     if (options.includeDepth)
                         result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (child.nMoves + 1.)));
                     else
                         result += Math.signum(result) / (options.k * l.log(child.nMoves + 1.));
+                    if(Double.isInfinite(result))
+                        System.out.println("Hier!");
                 }
                 //
                 child.nVisits++;
