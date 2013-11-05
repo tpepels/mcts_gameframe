@@ -97,7 +97,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            runGames("AI 1 Solver fix || AI 2 Normal");
+            // runGames("AI 1 Solver fix || AI 2 Normal");
             //
             options1.solverFix = false;
             options1.relativeBonus = true;
