@@ -1,9 +1,10 @@
-package ai.mcts;
+package ai.mcts.TCTS;
 
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
+import ai.mcts.MCTSOptions;
 
 public class MCTSPlayer implements AIPlayer, Runnable {
 

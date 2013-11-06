@@ -3,12 +3,11 @@ package ai.mcts;
 public class MCTSOptions {
     public boolean treeReuse = false, treeDecay = false, ageDecay = false;
     public boolean depthDiscount = false, accelerated = false;
-    public boolean mastEnabled = false, treeOnlyMast = false;
     public boolean relativeBonus = false, includeDepth = true;
     //
-    public boolean debug = true, useHeuristics = true, solverFix = false;
+    public boolean debug = true, useHeuristics = true, solverFix = true, ucbTuned = false;
     // MCTS Specific values
-    public double mastEpsilon = 0.5, uctC = 1., k = 1.;
+    public double uctC = 1., k = 1., maxVar = .5;
     // Discounting values
     public double lambda = .999999, depthD = 0.1, treeDiscount = 0.6;
     public int timeInterval = 5000;
@@ -17,25 +16,15 @@ public class MCTSOptions {
 
     public void setGame(String game) {
         if (game.equals("cannon")) {
-            if (depthDiscount) {
-                uctC = 0.8;
-                depthD = 0.25;
-            }
+
         } else if (game.equals("chinesecheckers")) {
-            if (depthDiscount)
-                uctC = 0.8;
+
         } else if (game.equals("lostcities")) {
-            if (depthDiscount) {
-                depthD = 0.2;
-            }
-            depthD = 0.1;
+
         } else if (game.equals("pentalath")) {
-            if (depthDiscount)
-                uctC = 0.6;
-            depthD = 0.15;
+
         } else if (game.equals("amazons")) {
-            if (depthDiscount)
-                uctC = 0.6;
+
         }
     }
 

@@ -83,27 +83,28 @@ public class AITests {
         } else if (which == 2) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
-            //
             options1.debug = false;
-            options1.solverFix = true;
-            //
+            options1.ucbTuned = true;
+            options1.relativeBonus = true;
+            options1.maxVar = 1.;
             options1.setGame(game);
+            options1.timeInterval = 2500;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options1.relativeBonus = true;
+            options2.timeInterval = 2500;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
+            runGames("AI 1 ucb 1 tuned RB || AI 2 UCT RB");
             //
-            // runGames("AI 1 Solver fix || AI 2 Normal");
-            //
-            options1.solverFix = false;
-            options1.relativeBonus = true;
-            options1.includeDepth = false;
-            //
-            runGames("AI 1 RB No depth change || AI 2 Normal");
+            options2.relativeBonus = false;
+            options1.relativeBonus = false;
+            options1.maxVar = .5;
+            runGames("AI 1 ucb 1 tuned no RB || AI 2 UCT no RB");
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
@@ -147,6 +148,8 @@ public class AITests {
                 options1.lambda = 1 - Math.pow(.1, i);
                 runGames("AI 1 AUCT lambda: " + i + " || AI 2 Normal");
             }
+        } else if (which == 5) {
+
         }
     }
 

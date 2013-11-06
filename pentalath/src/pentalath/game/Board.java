@@ -42,6 +42,7 @@ public class Board implements IBoard {
     public boolean firstMoveBeforePass = false;
     public boolean firstMove = true;
     public int currentPlayer = P1;
+    public int dontAdd = -1, dontAddPlayer = -1;
     public long totalTime = 900000;
     //
     public ArrayList<Integer> moveList = new ArrayList<Integer>(SIZE);
@@ -302,7 +303,7 @@ public class Board implements IBoard {
             if (board[i] == null)
                 continue;
             // Check if position is free and add it to the free moves
-            if (firstMove || board[i].occupant == 0) {
+            if (firstMove || board[i].occupant == 0 && !(dontAdd == i && dontAddPlayer == currentPlayer)) {
                 poMoves.add(new Move(i));
                 if (heuristics) {
                     // Prefer the highly connected positions
@@ -311,8 +312,11 @@ public class Board implements IBoard {
                 }
                 c++;
                 // No need to look further
-                if (c == count)
+                if (c == count) {
+                    dontAdd = -1;
+                    dontAddPlayer = -1;
                     return poMoves;
+                }
             }
         }
         System.err.println("Error in getPlayoutMoves()");
