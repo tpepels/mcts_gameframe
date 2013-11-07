@@ -14,17 +14,27 @@ public class MCTSOptions {
     // MAST stuff
     private double[][] mastValues, mastVisits;
 
+    public void enableRB(boolean includeDepth) {
+        maxVar = 1.;
+        this.relativeBonus = true;
+        this.includeDepth = includeDepth;
+    }
+
     public void setGame(String game) {
         if (game.equals("cannon")) {
-
+            if (relativeBonus && includeDepth)
+                k = 1.5;
         } else if (game.equals("chinesecheckers")) {
-
+            if (relativeBonus && includeDepth)
+                k = 0.5;
         } else if (game.equals("lostcities")) {
 
         } else if (game.equals("pentalath")) {
-
+            if (relativeBonus && includeDepth)
+                k = 0.5;
         } else if (game.equals("amazons")) {
-
+            if (relativeBonus && includeDepth)
+                k = 0.5;
         }
     }
 

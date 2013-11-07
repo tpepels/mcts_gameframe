@@ -64,54 +64,50 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.relativeBonus = true;
+            options1.enableRB(false);
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.enableRB(true);
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.5, 1.1, 1.5, 2., 3.};
+            double[] values = {.25, .5, 1.1, 1.5, 2., 3.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB K = " + i + " || AI 2 Normal");
+                runGames("AI 1 RB no depth K = " + i + " || AI 2 RB with depth");
             }
         } else if (which == 2) {
+            // Moar games
+            games = 500;
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.ucbTuned = true;
-            options1.relativeBonus = true;
-            options1.maxVar = 1.;
+            options1.enableRB(true);
             options1.setGame(game);
-            options1.timeInterval = 2500;
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options1.relativeBonus = true;
-            options2.timeInterval = 2500;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
-            runGames("AI 1 ucb 1 tuned RB || AI 2 UCT RB");
-            //
-            options2.relativeBonus = false;
-            options1.relativeBonus = false;
-            options1.maxVar = .5;
-            runGames("AI 1 ucb 1 tuned no RB || AI 2 UCT no RB");
+            runGames("AI 1 RB || AI 2 MCTS");
         } else if (which == 3) {
+            // Moar games
+            games = 500;
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             //
             options1.treeReuse = true;
             options1.ageDecay = true;
+            options1.treeDiscount = 0.9;
             //
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -119,20 +115,19 @@ public class AITests {
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.treeReuse = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.9, .5, .6, .8, .1, .3};
-            for (double i : values) {
-                options1.treeDiscount = i;
-                runGames("AI 1 Tree reuse, age decay || AI 2 Normal");
-            }
+            runGames("AI 1 Tree reuse, age decay, gamma = 0.9 || AI 2 MCTS with Tree reuse");
         } else if (which == 4) {
+            // Moar games
+            games = 500;
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.accelerated = true;
+            options1.depthDiscount = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -143,13 +138,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {3, 4, 5, 1, 2, 6, 7};
-            for (double i : values) {
-                options1.lambda = 1 - Math.pow(.1, i);
-                runGames("AI 1 AUCT lambda: " + i + " || AI 2 Normal");
-            }
-        } else if (which == 5) {
-
+            runGames("AI 1 Depth discount dd = 0.1 || AI 2 MCTS");
         }
     }
 
@@ -197,7 +186,6 @@ public class AITests {
             out = new PrintWriter(outFile);
         } catch (IOException e) {
             e.printStackTrace();
-            return;
         }
     }
 
