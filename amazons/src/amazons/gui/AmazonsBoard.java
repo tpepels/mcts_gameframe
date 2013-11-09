@@ -49,15 +49,15 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         } catch (IOException e) {
             e.printStackTrace();
         }
-        //
+        // Definition for player 1
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
-        options1.treeReuse = true;
         aiPlayer1.setOptions(options1);
+        // Definition for player 2
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
-        options2.useHeuristics = true;
-        aiPlayer2.setOptions(new MCTSOptions());
+        options2.relativeBonus = true;
+        aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
     }

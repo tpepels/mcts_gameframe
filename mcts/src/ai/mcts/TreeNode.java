@@ -76,13 +76,14 @@ public class TreeNode {
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
             if (child.nVisits == 0) {
-                result = child.playOut(board.copy());
+                IBoard copyBoard = board.copy();
+                result = child.playOut(copyBoard);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
                     if (options.includeDepth)
                         result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (child.nMoves + 1.)));
                     else
-                        result += Math.signum(result) / (options.k * l.log(child.nMoves + 1.));
+                        result += Math.signum(result) / (options.k * l.log(child.nMoves  + 1.));
                 }
                 //
                 child.nVisits++;

@@ -47,7 +47,7 @@ public class Board implements IBoard {
     private final FastRandom random = new FastRandom();
     private int[] homePieces = new int[2], target;
     private int[][] targets; // Holds the targets for the current player to move
-    private int winner = NONE_WIN, currentPlayer = P1;
+    private int winner = NONE_WIN, currentPlayer = P1, nMoves = 0;
 
     public Board() {
         board = new Field[SIZE];
@@ -101,6 +101,7 @@ public class Board implements IBoard {
      */
     @Override
     public void initialize() {
+        nMoves = 0;
         int c = 0;
         Piece p;
         // Initialize the empty fields
@@ -159,6 +160,7 @@ public class Board implements IBoard {
         }
         pastMoves.push(move);
         currentPlayer = getOpponent(currentPlayer);
+        nMoves++;
     }
 
     private void generateMovesForPlayer(int player, boolean closer) {
@@ -192,7 +194,6 @@ public class Board implements IBoard {
 
     private void generateMovesForPiece(int colour, int initialPosition, int position, int hops, boolean inHome, boolean closerOnly, double initDistance) {
         Field n;
-        Move m;
         for (int i = 0; i < board[position].neighbours.length; i++) {
             n = board[position].neighbours[i];
             // Checked this position before || Piece is in home-base, and is not allowed to leave
@@ -234,6 +235,7 @@ public class Board implements IBoard {
         newBoard.currentPlayer = currentPlayer;
         newBoard.homePieces[0] = homePieces[0];
         newBoard.homePieces[1] = homePieces[1];
+        newBoard.nMoves = nMoves;
         return newBoard;
     }
 
@@ -308,6 +310,7 @@ public class Board implements IBoard {
                 homePieces[currentPlayer - 1]--;
             }
             winner = NONE_WIN;
+            nMoves--;
         }
     }
 
@@ -361,6 +364,11 @@ public class Board implements IBoard {
     @Override
     public boolean isPartialObservable() {
         return false;
+    }
+
+    @Override
+    public int getNMovesMade() {
+        return nMoves;
     }
 
     @Override

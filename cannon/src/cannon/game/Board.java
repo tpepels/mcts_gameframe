@@ -26,13 +26,14 @@ public class Board implements IBoard {
     // Whether the towns have been placed or not determines the first moves
     public boolean whiteTownPlaced = false, blackTownPlaced = false;
     public int whiteTown, blackTown, numWhitePcs, numBlackPcs;
-    public int currentPlayer = IBoard.P1, winningPlayer = NONE_WIN;
+    public int currentPlayer = IBoard.P1, winningPlayer = NONE_WIN, nMoves = 0;
     private int allMovesForPlayer = 0; // All moves for this player (P1/P2) have been generated
 
     @Override
     public void initialize() {
         numWhitePcs = 0;
         numBlackPcs = 0;
+        nMoves = 0;
         // Reset all squares
         for (int i = 0; i < board.length; i++) {
             board[i] = EMPTY;
@@ -110,6 +111,7 @@ public class Board implements IBoard {
             }
         }
         if (moveMade) {
+            nMoves++;
             currentPlayer = (currentPlayer == P1) ? P2 : P1;
             pastMoves.push(move);
             //
@@ -470,6 +472,7 @@ public class Board implements IBoard {
         newBoard.whiteTownPlaced = whiteTownPlaced;
         newBoard.blackTownPlaced = blackTownPlaced;
         newBoard.winningPlayer = winningPlayer;
+        newBoard.nMoves = nMoves;
         newBoard.getAllMovesForPlayer(currentPlayer, false);
         return newBoard;
     }
@@ -566,6 +569,7 @@ public class Board implements IBoard {
                         numBlackPcs++;
                     break;
             }
+            nMoves--;
             winningPlayer = Board.NONE_WIN;
             currentPlayer = player;
         } else {
@@ -596,6 +600,11 @@ public class Board implements IBoard {
     @Override
     public boolean isPartialObservable() {
         return false;
+    }
+
+    @Override
+    public int getNMovesMade() {
+        return nMoves;
     }
 
     @Override

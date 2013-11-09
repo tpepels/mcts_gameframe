@@ -28,12 +28,13 @@ public class Table implements IBoard {
     private int value, colour, stack, stackI;
     private int[] minCard = new int[5];
     private int[] discardStackDraws = {0, 0};       // Keep track of the discard - stack draw moves
-    private int invisiblePlayer;
+    private int invisiblePlayer, nMoves = 0;
     private boolean[] invCardsSeen;
 
     @Override
     public void initialize() {
         deck = new Deck(60);
+        nMoves = 0;
         deck.initialize();
         // Initially all scores are multiplied by 1
         Arrays.fill(multipliers, 1);
@@ -120,6 +121,7 @@ public class Table implements IBoard {
             else
                 discardStackDraws[currentPlayer - 1] = 0;
         }
+        nMoves++;
         currentPlayer = getOpponent(currentPlayer);
     }
 
@@ -144,6 +146,7 @@ public class Table implements IBoard {
         newTable.discardStackDraws[1] = discardStackDraws[1];
         newTable.currentPlayer = currentPlayer;
         newTable.winner = winner;
+        newTable.nMoves = nMoves;
         return newTable;
     }
 
@@ -431,6 +434,7 @@ public class Table implements IBoard {
                 scores[pIndex] += EXP_COST;
             }
         }
+        nMoves--;
         move.setHandIndex(-1);
     }
 
@@ -493,6 +497,11 @@ public class Table implements IBoard {
     @Override
     public boolean isPartialObservable() {
         return true;
+    }
+
+    @Override
+    public int getNMovesMade() {
+        return nMoves;
     }
 
     @Override

@@ -20,6 +20,7 @@ public class Board implements IBoard {
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>();
     // Initial queen positions
     private static final int[][] initPositions = {{58, 61, 40, 47}, {2, 5, 16, 23}};
+    private int nMoves = 0;
     public final int[][] queens = new int[2][4];
     // Board is public for fast access
     public final int[] board;
@@ -47,6 +48,11 @@ public class Board implements IBoard {
     }
 
     @Override
+    public int getNMovesMade() {
+        return nMoves;
+    }
+
+    @Override
     public boolean isLegal(IMove move) {
         return true;
     }
@@ -70,6 +76,7 @@ public class Board implements IBoard {
         System.arraycopy(queens[1], 0, newBoard.queens[1], 0,
                 queens[1].length);
         newBoard.currentPlayer = currentPlayer;
+        newBoard.nMoves = nMoves;
         return newBoard;
     }
 
@@ -153,6 +160,7 @@ public class Board implements IBoard {
             board[move.getMove()[0]] = board[move.getMove()[1]];
             board[move.getMove()[1]] = EMPTY;
             queens[currentPlayer - 1][board[move.getMove()[0]] % 10] = move.getMove()[0];
+            nMoves--;
         }
     }
 
@@ -166,6 +174,7 @@ public class Board implements IBoard {
         //
         pastMoves.push(move);
         currentPlayer = getOpponent(currentPlayer);
+        nMoves++;
         return true;
     }
 
@@ -228,6 +237,7 @@ public class Board implements IBoard {
 
     @Override
     public void initialize() {
+        nMoves = 0;
         for (int i = 0; i < board.length; i++) {
             board[i] = EMPTY;
         }
@@ -353,6 +363,7 @@ public class Board implements IBoard {
                 // Remember the position of the queen.
                 queens[side - 1][queenId] = moveTo;
                 currentPlayer = getOpponent(currentPlayer);
+                nMoves++;
                 return true;
             } else {
                 return false;

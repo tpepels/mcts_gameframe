@@ -17,7 +17,17 @@ public interface IBoard {
      */
     public void newDeterminization(int myPlayer);
 
+    /**
+     * Should return true if the game is not fully observable
+     * @return true if not fully observable
+     */
     public boolean isPartialObservable();
+
+    /**
+     * Should return the number of moves made in the current game
+     * @return The number of moves made so far
+     */
+    public int getNMovesMade();
 
     /**
      * In partially observable games, the legality of a move is tested during selection.

@@ -64,7 +64,7 @@ public class Board implements IBoard {
     private boolean isEnd = false;
     private int[] freeMoves;
     private int[] capturePositions;
-    private int captureI = 0, firstCaptureI = 0;
+    private int captureI = 0, firstCaptureI = 0, nMoves = 0;
     // For the win check, this array holds the positions that have been investigated
     private boolean[] seen;
 
@@ -154,6 +154,7 @@ public class Board implements IBoard {
         newBoard.firstMove = firstMove;
         newBoard.isEnd = isEnd;
         newBoard.currentPlayer = currentPlayer;
+        newBoard.nMoves = nMoves;
         if (moveList.size() > 0)
             newBoard.moveList.add(moveList.get(moveList.size() - 1));
         if (captureList.size() > 0)
@@ -202,6 +203,7 @@ public class Board implements IBoard {
             moveList.add(pos);
             currentPlayer = getOpponent(currentPlayer);
             // hashCurrentPlayer();
+            nMoves++;
             return true;
         } else {
             System.err.println("Something is wrong in doMove.");
@@ -443,6 +445,7 @@ public class Board implements IBoard {
         //
         captureList.remove(moveIndex);
         moveList.remove(moveIndex);
+        nMoves--;
     }
 
     private void capturePositions() {
@@ -605,6 +608,7 @@ public class Board implements IBoard {
 
     @Override
     public void initialize() {
+        nMoves = 0;
     }
 
     @Override
@@ -614,6 +618,11 @@ public class Board implements IBoard {
     @Override
     public boolean isPartialObservable() {
         return false;
+    }
+
+    @Override
+    public int getNMovesMade() {
+        return nMoves;
     }
 
     @Override
