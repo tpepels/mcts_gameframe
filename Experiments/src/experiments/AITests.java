@@ -145,7 +145,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true);
+            options1.depthDiscount = true;
             options1.timeInterval = 2500;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -157,7 +157,12 @@ public class AITests {
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
-            runGames("AI 1 RB || AI 2 MCTS");
+            //
+            double[] values = {.05, .1, .15, .2, .25, .3};
+            for (double i : values) {
+                options1.depthD = i;
+                runGames("AI 1 RB no depth K = " + i + " || AI 2 RB with depth");
+            }
         }
     }
 
