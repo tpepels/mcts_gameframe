@@ -1,14 +1,10 @@
 package cannon.game;
 
-import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class Board implements IBoard {
     // Board constants
@@ -16,7 +12,8 @@ public class Board implements IBoard {
     public static final int WIDTH = 10, HEIGHT = 10;
     public static final MoveList moves = new MoveList(500);
     private static final List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
-    private static final FastRandom random = new FastRandom();
+    private static final Random random = new Random();
+    //
     public final int[] board = new int[WIDTH * HEIGHT];
     public final Stack<IMove> pastMoves = new Stack<IMove>();
     private final int[] capture = {-1, -11, -10, -9, 1};

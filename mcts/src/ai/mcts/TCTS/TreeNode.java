@@ -1,7 +1,6 @@
 package ai.mcts.TCTS;
 
 import ai.FastLog;
-import ai.FastRandom;
 import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -11,7 +10,7 @@ import ai.mcts.MCTSOptions;
 import java.util.*;
 
 public class TreeNode {
-    static final Random r = new FastRandom();
+    static final Random r = new Random();
     static final FastLog l = new FastLog();
     static final double epsilon = 1e-6;
     static final double INF = 999999;

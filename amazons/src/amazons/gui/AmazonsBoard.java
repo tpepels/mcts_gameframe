@@ -224,6 +224,8 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         repaint();
         clickNum = 0;
         clickPos = new int[]{-1, -1, -1};
+        // Run the GC in between moves, to limit the runs during search
+        System.gc();
         //
         if (board.getPlayerToMove() == Board.P2) {
             aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);

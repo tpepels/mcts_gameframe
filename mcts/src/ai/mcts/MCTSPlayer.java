@@ -16,15 +16,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     //
     private MCTSOptions options;
 
-    public void setOptions(MCTSOptions options) {
-        this.options = options;
-    }
-
-    @Override
-    public void newGame(int myPlayer) {
-        root = new TreeNode(myPlayer, options);
-    }
-
     @Override
     public void getMove(IBoard board, MoveCallback callback, int myPlayer, boolean parallel,
                         IMove lastMove) {
@@ -65,7 +56,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Create a new root
             root = new TreeNode(myPlayer, options);
         }
-
+        TreeNode.nMoveAvg = 0.;
+        TreeNode.playOuts = 0.;
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -124,14 +116,28 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
+            System.out.println("Avg playout moves: " + TreeNode.nMoveAvg);
         }
         // Set the root to the best child, so in the next move
         // the opponent's move can become the new root
         if (options.treeReuse)
             root = bestChild;
+        else
+            root = null;
+
+        board = null;
         // Make the move in the GUI, if parallel
         if (!interrupted && parallel)
             callback.makeMove(bestChild.getMove());
+    }
+
+    public void setOptions(MCTSOptions options) {
+        this.options = options;
+    }
+
+    @Override
+    public void newGame(int myPlayer) {
+        root = new TreeNode(myPlayer, options);
     }
 
     @Override

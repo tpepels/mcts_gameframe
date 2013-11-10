@@ -18,7 +18,6 @@ public class Game {
         Scanner in = new Scanner(System.in);
         MCTSOptions options1 = new MCTSOptions();
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
-        options1.treeReuse = true;
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
@@ -41,6 +40,8 @@ public class Game {
                 } else {
                     aiPlayer = aiPlayer2;
                 }
+                // Run the GC in between moves, to limit the runs during search
+                System.gc();
                 aiPlayer.getMove(t.copy(), null, t.getPlayerToMove(), false, m);
                 m = (Move) aiPlayer.getBestMove();
                 t.doMove(m);

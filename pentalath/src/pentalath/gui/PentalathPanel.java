@@ -264,6 +264,8 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
                     PentalathGui.logMessage(message);
                     // printStats();
                 } else {
+                    // Run the GC in between moves, to limit the runs during search
+                    System.gc();
                     // Check if the AI should make a move
                     if (board.currentPlayer == 1 && !p1Human) {
                         aiThinking = true;

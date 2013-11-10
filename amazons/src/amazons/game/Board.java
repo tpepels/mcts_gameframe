@@ -1,6 +1,5 @@
 package amazons.game;
 
-import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -15,7 +14,7 @@ public class Board implements IBoard {
     public static final int SIZE = 8, B_SIZE = SIZE * SIZE, N_QUEENS = 4;
     // Board occupants
     public static final int EMPTY = 0, WHITE_Q = P1, BLACK_Q = P2, ARROW = 3;
-    private static final Random r = new FastRandom();
+    private static final Random r = new Random();
     private static final MoveList moves = new MoveList(5000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>();
     // Initial queen positions

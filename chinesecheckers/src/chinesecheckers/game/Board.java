@@ -1,17 +1,13 @@
 package chinesecheckers.game;
 
-import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class Board implements IBoard {
-    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13, MAX_REV = 2;
+    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13;
     public static final int[] occupancy = new int[]
             {
                     0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
@@ -36,6 +32,7 @@ public class Board implements IBoard {
     // Move lists
     private static final MoveList moves = new MoveList(1000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>(100);
+    private static final Random random = new Random();
     // List to keep track of positions seen for jumping
     private static final long[] seen = new long[SIZE];
     private static long seenIndex = 1;
@@ -44,7 +41,6 @@ public class Board implements IBoard {
     public final Piece[] pieces = new Piece[N_PIECES + N_PIECES];
     private final Stack<IMove> pastMoves = new Stack<IMove>();        // Stack for undo-move
     //
-    private final FastRandom random = new FastRandom();
     private int[] homePieces = new int[2], target;
     private int[][] targets; // Holds the targets for the current player to move
     private int winner = NONE_WIN, currentPlayer = P1, nMoves = 0;

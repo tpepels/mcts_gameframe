@@ -1,7 +1,6 @@
 package ai.mcts;
 
 import ai.FastLog;
-import ai.FastRandom;
 import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -10,13 +9,13 @@ import ai.framework.MoveList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Stack;
 
 public class TreeNode {
-    static final Random r = new FastRandom();
+    static final Random r = new Random();
     static final FastLog l = new FastLog();
     static final double epsilon = 1e-6;
     static final double INF = 999999;
+    public static double nMoveAvg = 0., playOuts = 0.;
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -76,14 +75,29 @@ public class TreeNode {
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
             if (child.nVisits == 0) {
-                IBoard copyBoard = board.copy();
-                result = child.playOut(copyBoard);
+                result = child.playOut(board);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
-                    if (options.includeDepth)
-                        result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (child.nMoves + 1.)));
-                    else
-                        result += Math.signum(result) / (options.k * l.log(child.nMoves  + 1.));
+                    if (!options.oldStyle) {
+                        if (child.nMoves < Math.floor(nMoveAvg)) {
+                            if (options.includeDepth)
+                                result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (nMoveAvg - child.nMoves + 1.)));
+                            else
+                                result += Math.signum(result) / (options.k * l.log(nMoveAvg - child.nMoves + 1.));
+                        } else if (child.nMoves > Math.floor(nMoveAvg)) {
+                            if (options.includeDepth)
+                                result -= Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (nMoveAvg - child.nMoves + 1.)));
+                            else
+                                result -= Math.signum(result) / (options.k * l.log(nMoveAvg - child.nMoves + 1.));
+                        }
+                    } else if (options.oldStyle) {
+
+                        if (options.includeDepth)
+                            result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (child.nMoves + 1.)));
+                        else
+                            result += Math.signum(result) / (options.k * l.log(child.nMoves + 1.));
+
+                    }
                 }
                 //
                 child.nVisits++;
@@ -283,6 +297,13 @@ public class TreeNode {
                 }
             }
         }
+        // Keep track of the average number of moves per play-out
+        playOuts++;
+        nMoveAvg += (nMoves - nMoveAvg) / (playOuts);
+        // Undo the moves done in the playout
+        for (int i = 0; i < nMoves; i++)
+            board.undoMove();
+        // Return the winning player's score
         if (winner == player) {
             return 1;
         } else if (winner == IBoard.DRAW) {

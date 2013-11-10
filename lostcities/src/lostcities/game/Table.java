@@ -1,6 +1,5 @@
 package lostcities.game;
 
-import ai.FastRandom;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -8,10 +7,11 @@ import ai.framework.MoveList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class Table implements IBoard {
     public final static int P2_EXP_I = 5, P2_HAND_I = 8, EXP_COST = 20, BONUS = 20, N_BONUS_CARDS = 8, MAX_DISC_STACK_DRAW = 2, MIN_NEW_EXP_VAL = 4;
-    private final static FastRandom random = new FastRandom();
+    private final static Random random = new Random();
     private final MoveList moves = new MoveList(625);
     private final ArrayList<IMove> playoutMoves = new ArrayList<IMove>(100), heuristicMoves = new ArrayList<IMove>(100);
     private final java.util.Stack<Move> pastMoves = new java.util.Stack<Move>();

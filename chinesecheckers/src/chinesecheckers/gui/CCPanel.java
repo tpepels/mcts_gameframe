@@ -208,6 +208,8 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
     public void makeMove(IMove move) {
         board.doMove(move);
         lastMove = move;
+        // Run the GC in between moves, to limit the runs during search
+        System.gc();
         int winner = board.checkWin();
         if (winner != Board.NONE_WIN) {
             if (winner == Board.P2_WIN) {

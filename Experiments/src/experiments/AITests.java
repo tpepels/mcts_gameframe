@@ -64,72 +64,27 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(false);
-            options1.timeInterval = 2500;
+            options1.enableRB(true, true);
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options2.enableRB(true);
-            options2.timeInterval = 2500;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.25, .5, 1.1, 1.5, 2., 3.};
+            double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB no depth K = " + i + " || AI 2 RB with depth");
+                runGames("AI 1 RB +depth +oldStyle k="+i+" || AI 2 MCTS");
             }
         } else if (which == 2) {
-            // Moar games
-            games = 500;
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true);
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            runGames("AI 1 RB || AI 2 MCTS");
-        } else if (which == 3) {
-            // Moar games
-            games = 500;
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            //
-            options1.treeReuse = true;
-            options1.ageDecay = true;
-            options1.treeDiscount = 0.9;
-            //
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.treeReuse = true;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            runGames("AI 1 Tree reuse, age decay, gamma = 0.9 || AI 2 MCTS with Tree reuse");
-        } else if (which == 4) {
-            // Moar games
-            games = 500;
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.depthDiscount = true;
+            options1.enableRB(false, true);
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -140,29 +95,52 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            runGames("AI 1 Depth discount dd = 0.1 || AI 2 MCTS");
-        } else if (which == 5) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.depthDiscount = true;
-            options1.timeInterval = 2500;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.timeInterval = 2500;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            double[] values = {.05, .1, .15, .2, .25, .3};
+            double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
             for (double i : values) {
-                options1.depthD = i;
-                runGames("AI 1 RB no depth K = " + i + " || AI 2 RB with depth");
+                options1.k = i;
+                runGames("AI 1 RB -depth +oldStyle k="+i+"|| AI 2 MCTS");
             }
+        } else if (which == 3) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.enableRB(false, false);
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
+            for (double i : values) {
+                options1.k = i;
+                runGames("AI 1 RB -depth -oldStyle k="+i+"|| AI 2 MCTS");
+            }
+        } else if (which == 4) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.enableRB(true, false);
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
+            for (double i : values) {
+                options1.k = i;
+                runGames("AI 1 RB +depth -oldStyle k="+i+"|| AI 2 MCTS");
+            }
+        } else if (which == 5) {
         }
     }
 
@@ -259,6 +237,8 @@ public class AITests {
             } else {
                 System.err.println("Error, invalid move!");
             }
+            // Run the GC in between moves, to limit the runs during search
+            System.gc();
         }
         lastMove = null;
         // Bookkeeping
