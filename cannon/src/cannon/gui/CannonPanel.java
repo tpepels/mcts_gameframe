@@ -33,6 +33,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         //
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
+        options1.enableRB(true);
         options1.debug = true;
         aiPlayer1.setOptions(options1);
         //
@@ -111,8 +112,8 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         //
         if (selectedPosition != -1) {
             IMove move;
-            for (int i = 0; i < board.moves.size(); i++) {
-                move = board.moves.get(i);
+            for (int i = 0; i < Board.moves.size(); i++) {
+                move = Board.moves.get(i);
                 if (move.getMove()[0] != selectedPosition)
                     continue;
                 x = move.getMove()[1] % Board.WIDTH;

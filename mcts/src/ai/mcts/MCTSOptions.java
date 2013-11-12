@@ -1,11 +1,18 @@
 package ai.mcts;
 
+import java.util.Random;
+
 public class MCTSOptions {
+    // Initialize a random generator, separate for each MCTS player
+    public final Random r = new Random();
+    // Fields for enabling tree-reuse
     public boolean treeReuse = false, treeDecay = false, ageDecay = false;
-    public boolean depthDiscount = false, accelerated = false;
-    public boolean relativeBonus = false, includeDepth = true, oldStyle = false;
+    // Discount values based on their depth
+    public boolean depthDiscount = false;
+    // Relative bonus!
+    public boolean relativeBonus = false, includeDepth = true;
     //
-    public boolean debug = true, useHeuristics = true, solverFix = true, ucbTuned = false;
+    public boolean debug = true, useHeuristics = true, solverFix = true, ucbTuned = false,  auct = false;
     // MCTS Specific values
     public double uctC = 1., k = 1., maxVar = .5;
     // Discounting values
@@ -14,11 +21,10 @@ public class MCTSOptions {
     // MAST stuff
     private double[][] mastValues, mastVisits;
 
-    public void enableRB(boolean includeDepth, boolean oldStyle) {
+    public void enableRB(boolean includeDepth) {
         maxVar = 1.;
         this.relativeBonus = true;
         this.includeDepth = includeDepth;
-        this.oldStyle = oldStyle;
     }
 
     public void setGame(String game) {

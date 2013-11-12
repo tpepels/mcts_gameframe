@@ -8,14 +8,12 @@ import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class TreeNode {
-    static final Random r = new Random();
     static final FastLog l = new FastLog();
     static final double epsilon = 1e-6;
     static final double INF = 999999;
-    public static double nMoveAvg = 0., playOuts = 0.;
+    public static double[] nMoveAvg = {0., 0.}, playOuts = {0., 0.};
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -78,25 +76,12 @@ public class TreeNode {
                 result = child.playOut(board);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
-                    if (!options.oldStyle) {
-                        if (child.nMoves < Math.floor(nMoveAvg)) {
-                            if (options.includeDepth)
-                                result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (nMoveAvg - child.nMoves + 1.)));
-                            else
-                                result += Math.signum(result) / (options.k * l.log(nMoveAvg - child.nMoves + 1.));
-                        } else if (child.nMoves > Math.floor(nMoveAvg)) {
-                            if (options.includeDepth)
-                                result -= Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (nMoveAvg - child.nMoves + 1.)));
-                            else
-                                result -= Math.signum(result) / (options.k * l.log(nMoveAvg - child.nMoves + 1.));
-                        }
-                    } else if (options.oldStyle) {
-
+                    int p = child.player - 1;
+                    if (child.nMoves < Math.floor(nMoveAvg[p])) {
                         if (options.includeDepth)
-                            result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (child.nMoves + 1.)));
+                            result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (nMoveAvg[p] - child.nMoves + 1.)));
                         else
-                            result += Math.signum(result) / (options.k * l.log(child.nMoves + 1.));
-
+                            result += Math.signum(result) / (options.k * l.log(nMoveAvg[p] - child.nMoves + 1.));
                     }
                 }
                 //
@@ -120,7 +105,7 @@ public class TreeNode {
             // (Solver) Check if all children are a loss
             for (TreeNode tn : children) {
                 // (AUCT) Skip virtual child
-                if (options.accelerated && tn.isVirtual())
+                if (options.auct && tn.isVirtual())
                     continue;
                 // If the child is not expanded, make sure it is
                 if (options.solverFix && tn.isLeaf()) {
@@ -136,7 +121,7 @@ public class TreeNode {
                 // Are all children a loss?
                 if (tn.avgValue != result) {
                     // (AUCT) Update the virtual node with a loss
-                    if (options.accelerated && children.get(0).isVirtual()) {
+                    if (options.auct && children.get(0).isVirtual()) {
                         TreeNode virtChild = children.get(0);
                         virtChild.totValue--;
                         virtChild.nVisits++;
@@ -165,7 +150,7 @@ public class TreeNode {
         MoveList moves = board.getExpandMoves();
         children = new ArrayList<TreeNode>(moves.size());
         // (AUCT) Add an extra virtual node
-        if (options.accelerated) {
+        if (options.auct) {
             TreeNode vNode = new TreeNode(nextPlayer, null, true, options);
             vNode.totValue = -totValue; // Switch wins / losses
             vNode.nVisits = nVisits;
@@ -214,7 +199,7 @@ public class TreeNode {
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // Skip virtual nodes
-            if (options.accelerated && c.isVirtual())
+            if (options.auct && c.isVirtual())
                 continue;
             // If the game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(c.getMove()))
@@ -222,7 +207,7 @@ public class TreeNode {
 
             if (c.nVisits == 0) {
                 // First, visit all children at least once
-                uctValue = INF + r.nextDouble();
+                uctValue = INF + options.r.nextDouble();
             } else {
                 avgValue = c.avgValue;
                 // Depth discount changes the average value
@@ -247,7 +232,7 @@ public class TreeNode {
             }
         }
         // (AUCT) Update/decay the velocities
-        if (options.accelerated && selected != null) {
+        if (options.auct && selected != null) {
             double sel;
             for (TreeNode c1 : children) {
                 sel = (selected.equals(c1)) ? 1. : 0.;
@@ -281,7 +266,7 @@ public class TreeNode {
                     break;
                 }
                 // Select a random move from the available ones
-                moveIndex = r.nextInt(moves.size());
+                moveIndex = options.r.nextInt(moves.size());
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
@@ -297,9 +282,10 @@ public class TreeNode {
                 }
             }
         }
+        int w = winner - 1;
         // Keep track of the average number of moves per play-out
-        playOuts++;
-        nMoveAvg += (nMoves - nMoveAvg) / (playOuts);
+        playOuts[w]++;
+        nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
@@ -318,7 +304,7 @@ public class TreeNode {
         TreeNode bestChild = null;
         for (TreeNode t : children) {
             // (AUCT) Skip virtual children
-            if (options.accelerated && t.isVirtual())
+            if (options.auct && t.isVirtual())
                 continue;
             // If the game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(t.getMove()))
@@ -329,7 +315,7 @@ public class TreeNode {
             } else {
                 // If there are children with INF value, choose on of them
                 if (t.avgValue == INF)
-                    value = INF + r.nextDouble();
+                    value = INF + options.r.nextDouble();
                 else
                     //value = t.nVisits;
                     // For MCTS solver (Though I still prefer to look at the visits (Tom))
@@ -349,12 +335,12 @@ public class TreeNode {
 
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
-        if (isLeaf() || !options.accelerated) {
+        if (isLeaf() || !options.auct) {
             totValue += value;
             avgValue = totValue / nVisits;
             stats.push(value);
         } else {
-            // Compute the accelerated win ratio
+            // Compute the auct win ratio
             double sum_v = 0., sum_v_r = 0.;
             for (TreeNode c : children) {
                 // Due to the solver, there may be loss-nodes,
@@ -382,7 +368,7 @@ public class TreeNode {
     public void discountValues(double discount) {
         if (Math.abs(avgValue) != INF) {
             // In auct we only need to update leafs or virtual nodes
-            if (!options.accelerated || (isVirtual() || isLeaf())) {
+            if (!options.auct || (isVirtual() || isLeaf())) {
                 totValue *= discount;
                 nVisits *= discount;
             }
@@ -392,7 +378,7 @@ public class TreeNode {
                 c.discountValues(discount);
             }
             // Due to velocities being reset
-            if (options.accelerated)
+            if (options.auct)
                 updateStats(0);
         }
     }
@@ -414,7 +400,7 @@ public class TreeNode {
     }
 
     public boolean isTerminal() {
-        if (!options.accelerated)
+        if (!options.auct)
             return children != null && children.size() == 0;
         else
             return children != null && children.size() == 1;

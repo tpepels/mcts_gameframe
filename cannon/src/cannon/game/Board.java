@@ -611,6 +611,6 @@ public class Board implements IBoard {
 
     @Override
     public boolean drawPossible() {
-        return false;
+        return true;
     }
 }

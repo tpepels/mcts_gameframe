@@ -64,7 +64,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true, true);
+            options1.enableRB(true);
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -84,7 +84,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(false, true);
+            options1.enableRB(false);
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -104,7 +104,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(false, false);
+            options1.enableRB(false);
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -124,7 +124,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true, false);
+            options1.enableRB(true);
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -141,6 +141,22 @@ public class AITests {
                 runGames("AI 1 RB +depth -oldStyle k="+i+"|| AI 2 MCTS");
             }
         } else if (which == 5) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.enableRB(true);
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options1.enableRB(true);
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            runGames("AI 1 RB new style || AI 2 RB old style");
         }
     }
 

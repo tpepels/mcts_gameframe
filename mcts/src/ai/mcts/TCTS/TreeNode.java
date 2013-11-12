@@ -177,7 +177,7 @@ public class TreeNode {
         MoveList moves = board.getExpandMoves();
         children = new ArrayList<TreeNode>(moves.size());
         // (AUCT) Add an extra virtual node
-        if (options.accelerated) {
+        if (options.auct) {
             TreeNode vNode = new TreeNode(nextPlayer, null, true, options);
             vNode.totValue = -totValue; // Switch wins / losses
             vNode.nVisits = nVisits;
@@ -226,7 +226,7 @@ public class TreeNode {
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // Skip virtual nodes
-            if (options.accelerated && c.isVirtual())
+            if (options.auct && c.isVirtual())
                 continue;
             // If the game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(c.getMove()))
@@ -255,7 +255,7 @@ public class TreeNode {
             }
         }
         // (AUCT) Update/decay the velocities
-        if (options.accelerated && selected != null) {
+        if (options.auct && selected != null) {
             double sel;
             for (TreeNode c1 : children) {
                 sel = (selected.equals(c1)) ? 1. : 0.;
@@ -322,7 +322,7 @@ public class TreeNode {
         TreeNode bestChild = null;
         for (TreeNode t : children) {
             // (AUCT) Skip virtual children
-            if (options.accelerated && t.isVirtual())
+            if (options.auct && t.isVirtual())
                 continue;
             // If the game is partial observable, moves in the tree may not be legal
             if (board.isPartialObservable() && !board.isLegal(t.getMove()))
@@ -353,12 +353,12 @@ public class TreeNode {
 
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
-        if (isLeaf() || !options.accelerated) {
+        if (isLeaf() || !options.auct) {
             totValue += value;
             avgValue = totValue / nVisits;
             stats.push(value);
         } else {
-            // Compute the accelerated win ratio
+            // Compute the auct win ratio
             double sum_v = 0., sum_v_r = 0.;
             for (TreeNode c : children) {
                 // Due to the solver, there may be loss-nodes,
@@ -386,7 +386,7 @@ public class TreeNode {
     public void discountValues(double discount) {
         if (Math.abs(avgValue) != INF) {
             // In auct we only need to update leafs or virtual nodes
-            if (!options.accelerated || (isVirtual() || isLeaf())) {
+            if (!options.auct || (isVirtual() || isLeaf())) {
                 totValue *= discount;
                 nVisits *= discount;
             }
@@ -396,7 +396,7 @@ public class TreeNode {
                 c.discountValues(discount);
             }
             // Due to velocities being reset
-            if (options.accelerated)
+            if (options.auct)
                 updateStats(0);
         }
     }
@@ -422,7 +422,7 @@ public class TreeNode {
     }
 
     public boolean isTerminal() {
-        if (!options.accelerated)
+        if (!options.auct)
             return children != null && children.size() == 0;
         else
             return children != null && children.size() == 1;
