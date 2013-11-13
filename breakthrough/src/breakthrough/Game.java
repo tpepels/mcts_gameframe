@@ -29,14 +29,15 @@ public class Game {
         while (b.checkWin() == Board.NONE_WIN) {
             int player = b.getPlayerToMove(); 
             System.out.println(b.toString());
-            if (m != null)
-                System.out.println("Player " + player + " played " + m);
 
             aiPlayer = (b.getPlayerToMove() == 1 ? aiPlayer1 : aiPlayer2); 
             System.gc();
             aiPlayer.getMove(b.copy(), null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
             b.doAIMove(m, player);
+            
+            if (m != null)
+                System.out.println("Player " + player + " played " + m);
         }
 
         System.out.println("Winner is " + b.checkWin());
