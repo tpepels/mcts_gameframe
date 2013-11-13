@@ -39,4 +39,11 @@ public class Move implements IMove {
       int digit2 = movearr[2]*8 + movearr[3]; 
       return (digit1*64 + digit2);
     }
+
+    public String toString() { 
+        String str = "(" + movearr[0] + "," + movearr[1] + ") -> (" 
+                     + movearr[2] + "," + movearr[3] + ")";
+        if (type == CAPTURE) return "Cap " + str; 
+        return "Mov " + str; 
+    }
 }

@@ -80,8 +80,8 @@ public class Board implements IBoard {
         board[r][c] = '.';
 
         // check for a win
-        if      (player == 1 && rp == 0) winner = 1; 
-        else if (player == 2 && rp == 7) winner = 2; 
+        if      (player == 1 && (rp == 0 || pieces2 == 0)) winner = 1; 
+        else if (player == 2 && (rp == 7 || pieces1 == 0)) winner = 2; 
 
         // check for a capture
         if (move.getType() == Move.CAPTURE) {
