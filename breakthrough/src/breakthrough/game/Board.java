@@ -13,13 +13,10 @@ public class Board implements IBoard {
     private static ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
 
     private char[][] board;
-    private int pieces1;
-    private int pieces2;
+    private int pieces1, pieces2;
     private int progress1;
     private int progress2;
-    private int nMoves;
-    private int winner;
-    private int curPlayer;
+    private int nMoves, winner, curPlayer;
     private Stack<IMove> pastMoves;
 
     @Override
@@ -128,7 +125,6 @@ public class Board implements IBoard {
 
     @Override
     public MoveList getExpandMoves() {
-
         static_moves.clear();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
