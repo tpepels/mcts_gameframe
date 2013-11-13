@@ -162,6 +162,7 @@ public class AITests {
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.useHeuristics = true;
+            options1.timeInterval = 1000;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -169,6 +170,7 @@ public class AITests {
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
             options2.useHeuristics = false;
+            options2.timeInterval = 1000;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
