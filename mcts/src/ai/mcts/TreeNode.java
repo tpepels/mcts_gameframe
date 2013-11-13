@@ -24,6 +24,7 @@ public class TreeNode {
     private StatCounter stats = new StatCounter();
     private double nVisits, totValue, avgValue, velocity = 1., age = 0.;
     private double nMoves = 0.;
+    private double imVal = 0.; // implicit minimax value (in view of parent)
 
     public TreeNode(int player, MCTSOptions options) {
         this.player = player;
@@ -160,6 +161,7 @@ public class TreeNode {
         }
         double value;
         int winner;
+        double best_imVal = -INF;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
@@ -180,6 +182,11 @@ public class TreeNode {
                 // Set the value of the child (0 = nothing, +/-INF win/loss)
                 child.totValue = value;
                 child.avgValue = value;
+                // implicit minimax
+                if (options.implicitMM) { 
+                  child.imVal = board.evaluate(player); 
+                  if (child.imVal > best_imVal) best_imVal = child.imVal;
+                }
                 children.add(child);
                 // reset the board
                 board.undoMove();
@@ -189,6 +196,9 @@ public class TreeNode {
                 children.add(new TreeNode(nextPlayer, moves.get(i), options));
             }
         }
+        // implicit minimax
+        if (options.implicitMM) this.imVal = -best_imVal;
+
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -216,7 +226,10 @@ public class TreeNode {
                 // Decay based on the age of the node, older node --> more exploration
                 if (options.ageDecay)
                     avgValue *= Math.pow(options.treeDiscount, age);
-                //
+                // Implicit minimax
+                if (options.implicitMM) 
+                    avgValue = c.avgValue + 0.2*c.imVal;
+
                 if (!options.ucbTuned) {
                     // Compute the uct value with the (new) average value
                     uctValue = avgValue + (options.uctC * Math.sqrt(l.log(nVisits) / c.nVisits));
@@ -364,6 +377,14 @@ public class TreeNode {
                 sum_v_r += c.velocity * c.avgValue;
             }
             avgValue = -1 * (sum_v_r / sum_v);
+        }
+
+        // implicit minimax backups
+        if (options.implicitMM && children != null) { 
+            double bestVal = -INF;
+            for (TreeNode c : children) 
+                if (c.imVal > bestVal) bestVal = c.imVal;
+            this.imVal = -bestVal;
         }
     }
 

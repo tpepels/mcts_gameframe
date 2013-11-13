@@ -11,7 +11,6 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Relative bonus!
     public boolean relativeBonus = false, includeDepth = true;
-    public boolean earlyEval = false;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true, ucbTuned = false, auct = false;
     // MCTS Specific values
@@ -20,8 +19,9 @@ public class MCTSOptions {
     public double lambda = .999999, depthD = 0.1, treeDiscount = 0.6;
     public int timeInterval = 2500;
     // Marc's stuff
-    public int pdepth = Integer.MAX_VALUE;
-    boolean imEnabled = false; // implicit minimax
+    public boolean earlyEval = false; // enable dropping down to evaluation function in playouts?
+    public int pdepth = Integer.MAX_VALUE; // number of moves in playout before dropping down to eval func
+    public boolean implicitMM = false; // implicit minimax
     // MAST stuff
     private double[][] mastValues, mastVisits;
 
