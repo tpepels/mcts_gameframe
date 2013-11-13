@@ -20,6 +20,9 @@ public class MCTSOptions {
     public int timeInterval = 2500;
     // MAST stuff
     private double[][] mastValues, mastVisits;
+    // Marc's stuff
+    //public int pdepth = 1000000;
+    //boolean imEnabled = false; // implicit minimax
 
     public void enableRB(boolean includeDepth) {
         maxVar = 1.;

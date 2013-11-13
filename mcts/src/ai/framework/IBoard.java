@@ -118,4 +118,6 @@ public interface IBoard {
     public int getMaxUniqueMoveId();
 
     public void initialize();
+
+    // public double evaluate(int player);
 }

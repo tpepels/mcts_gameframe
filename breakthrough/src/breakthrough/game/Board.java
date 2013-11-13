@@ -259,13 +259,4 @@ public class Board implements IBoard {
         return (r >= 0 && c >= 0 && r < 8 && c < 8);
     }
 
-    /*private void genAllMovesForPlayer(int player) {
-        moves.clear();
-        for (int r = 0; r < 8; r++) 
-            for (int c = 0; c < 8; c++) { 
-                if (player == 1 && board[r][c] == 'w') { 
-                }
-                else if (player == 2 && board.
-              
-    }*/
 }
