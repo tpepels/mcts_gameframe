@@ -95,8 +95,6 @@ public class Board implements IBoard {
         pastMoves.push(move);
         curPlayer = 3 - curPlayer;
 
-        // FIXME: modify progress1 and progress2, will be needed for evaluation function
-
         return true;
     }
 
@@ -284,11 +282,10 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player) {
         // inspired by evaluation function in Maarten's thesis
-        double delta = (pieces1 * 10 + progress1 * 3) - (pieces2 * 10 + progress2 * 3);
+        double delta = (pieces1*10 + progress1*3) - (pieces2*10 + progress2*3);
         if (delta < -100) delta = -100;
         if (delta > 100) delta = 100;
         // now pass it through tanh;  
-        // I think this is killing the speed
         double p1eval = FastTanh.tanh(delta / 60.0);
         return (player == 1 ? p1eval : -p1eval);
     }

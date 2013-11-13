@@ -15,7 +15,6 @@ public class Game {
         options1.pdepth = 0;
         options1.earlyEval = true;
         options1.useHeuristics = true;
-        options1.implicitMM = true; 
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
 
@@ -23,6 +22,7 @@ public class Game {
         options2.pdepth = 0;
         options2.earlyEval = true;
         options2.useHeuristics = true;
+        options2.implicitMM = true; 
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 
