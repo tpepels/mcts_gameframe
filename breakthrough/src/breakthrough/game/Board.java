@@ -1,9 +1,9 @@
 package breakthrough.game;
 
+import ai.FastTanh;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
-import ai.FastTanh;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,7 +12,6 @@ import java.util.Stack;
 public class Board implements IBoard {
     private static MoveList static_moves = new MoveList(384);  // 64*6
     private static ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
-
     private char[][] board;
     private int pieces1, pieces2;
     private int progress1;
@@ -89,8 +88,8 @@ public class Board implements IBoard {
         }
 
         // check for progress (furthest pawn)
-        if      (player == 1 && (7-rp) > progress1) progress1 = 7-rp;
-        else if (player == 2 && rp > progress2) progress2 = rp; 
+        if (player == 1 && (7 - rp) > progress1) progress1 = 7 - rp;
+        else if (player == 2 && rp > progress2) progress2 = rp;
 
         nMoves++;
         pastMoves.push(move);
@@ -128,7 +127,7 @@ public class Board implements IBoard {
         }
 
         // remove back the progress
-        if      (curPlayer == 1) progress1 = move.getOldProgress();
+        if (curPlayer == 1) progress1 = move.getOldProgress();
         else if (curPlayer == 2) progress2 = move.getOldProgress();
     }
 
@@ -140,32 +139,36 @@ public class Board implements IBoard {
                 if (curPlayer == 1 && board[r][c] == 'w') {
                     if (inBounds(r - 1, c - 1)) {
                         // northwest
-                        if      (board[r-1][c-1] == 'b') static_moves.add(new Move(r, c, r-1, c-1, Move.CAPTURE, progress1));
-                        else if (board[r-1][c-1] == '.') static_moves.add(new Move(r, c, r-1, c-1, Move.MOVE, progress1));
-                    }
-                    else if (inBounds(r-1,c+1)) {
+                        if (board[r - 1][c - 1] == 'b')
+                            static_moves.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1));
+                        else if (board[r - 1][c - 1] == '.')
+                            static_moves.add(new Move(r, c, r - 1, c - 1, Move.MOVE, progress1));
+                    } else if (inBounds(r - 1, c + 1)) {
                         // northeast
-                        if      (board[r-1][c+1] == 'b') static_moves.add(new Move(r, c, r-1, c+1, Move.CAPTURE, progress1));
-                        else if (board[r-1][c+1] == '.') static_moves.add(new Move(r, c, r-1, c+1, Move.MOVE, progress1));
-                    }
-                    else if (inBounds(r-1,c) && board[r-1][c] == '.') {
+                        if (board[r - 1][c + 1] == 'b')
+                            static_moves.add(new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1));
+                        else if (board[r - 1][c + 1] == '.')
+                            static_moves.add(new Move(r, c, r - 1, c + 1, Move.MOVE, progress1));
+                    } else if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
                         // north
-                        static_moves.add(new Move(r, c, r-1, c, Move.MOVE, progress1));
+                        static_moves.add(new Move(r, c, r - 1, c, Move.MOVE, progress1));
                     }
                 } else if (curPlayer == 2 && board[r][c] == 'b') {
                     if (inBounds(r + 1, c - 1)) {
                         // southwest
-                        if      (board[r+1][c-1] == 'w') static_moves.add(new Move(r, c, r+1, c-1, Move.CAPTURE, progress2));
-                        else if (board[r+1][c-1] == '.') static_moves.add(new Move(r, c, r+1, c-1, Move.MOVE, progress2));
-                    }
-                    else if (inBounds(r+1,c+1)) {
+                        if (board[r + 1][c - 1] == 'w')
+                            static_moves.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress2));
+                        else if (board[r + 1][c - 1] == '.')
+                            static_moves.add(new Move(r, c, r + 1, c - 1, Move.MOVE, progress2));
+                    } else if (inBounds(r + 1, c + 1)) {
                         // southeast
-                        if      (board[r+1][c+1] == 'w') static_moves.add(new Move(r, c, r+1, c+1, Move.CAPTURE, progress2));
-                        else if (board[r+1][c+1] == '.') static_moves.add(new Move(r, c, r+1, c+1, Move.MOVE, progress2));
-                    }
-                    else if (inBounds(r+1,c) && board[r+1][c] == '.') {
+                        if (board[r + 1][c + 1] == 'w')
+                            static_moves.add(new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress2));
+                        else if (board[r + 1][c + 1] == '.')
+                            static_moves.add(new Move(r, c, r + 1, c + 1, Move.MOVE, progress2));
+                    } else if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
                         // south
-                        static_moves.add(new Move(r, c, r+1, c, Move.MOVE, progress2));
+                        static_moves.add(new Move(r, c, r + 1, c, Move.MOVE, progress2));
                     }
                 }
             }
@@ -179,32 +182,55 @@ public class Board implements IBoard {
         poMoves.clear();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
+                Move move = null;
                 if (curPlayer == 1 && board[r][c] == 'w') {
                     if (inBounds(r - 1, c - 1)) {
                         // northwest
-                        if (board[r - 1][c - 1] == 'b') poMoves.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1));
-                        else if (board[r - 1][c - 1] == '.') poMoves.add(new Move(r, c, r - 1, c - 1, Move.MOVE, progress1));
+                        if (board[r - 1][c - 1] == 'b') move = new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1);
+                        else if (board[r - 1][c - 1] == '.') move = new Move(r, c, r - 1, c - 1, Move.MOVE, progress1);
                     } else if (inBounds(r - 1, c + 1)) {
                         // northeast
-                        if (board[r - 1][c + 1] == 'b') poMoves.add(new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1));
-                        else if (board[r - 1][c + 1] == '.') poMoves.add(new Move(r, c, r - 1, c + 1, Move.MOVE, progress1));
+                        if (board[r - 1][c + 1] == 'b') move = new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1);
+                        else if (board[r - 1][c + 1] == '.') move = new Move(r, c, r - 1, c + 1, Move.MOVE, progress1);
                     } else if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
                         // north
-                        poMoves.add(new Move(r, c, r - 1, c, Move.MOVE, progress1));
+                        move = new Move(r, c, r - 1, c, Move.MOVE, progress1);
                     }
                 } else if (curPlayer == 2 && board[r][c] == 'b') {
                     if (inBounds(r + 1, c - 1)) {
                         // southwest
-                        if (board[r + 1][c - 1] == 'w') poMoves.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress2));
-                        else if (board[r + 1][c - 1] == '.') poMoves.add(new Move(r, c, r + 1, c - 1, Move.MOVE, progress2));
+                        if (board[r + 1][c - 1] == 'w') move = new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress2);
+                        else if (board[r + 1][c - 1] == '.') move = new Move(r, c, r + 1, c - 1, Move.MOVE, progress2);
                     } else if (inBounds(r + 1, c + 1)) {
                         // southeast
-                        if (board[r + 1][c + 1] == 'w') poMoves.add(new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress2));
-                        else if (board[r + 1][c + 1] == '.') poMoves.add(new Move(r, c, r + 1, c + 1, Move.MOVE, progress2));
+                        if (board[r + 1][c + 1] == 'w') move = new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress2);
+                        else if (board[r + 1][c + 1] == '.') move = new Move(r, c, r + 1, c + 1, Move.MOVE, progress2);
                     } else if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
                         // south
-                        poMoves.add(new Move(r, c, r + 1, c, Move.MOVE, progress2));
+                        move = new Move(r, c, r + 1, c, Move.MOVE, progress2);
                     }
+                }
+                if (move == null)
+                    continue;
+                //
+                if (heuristics) {
+                    // Prefer capture moves
+                    if (move.getType() == Move.CAPTURE) {
+                        poMoves.add(move);
+                        poMoves.add(move);
+                    }
+                    // check for a win in 1
+                    if (curPlayer == 1 && (move.getMove()[2] == 0)) {
+                        poMoves.clear();
+                        poMoves.add(move);
+                        return poMoves;
+                    } else if (curPlayer == 2 && (move.getMove()[2] == 7)) {
+                        poMoves.clear();
+                        poMoves.add(move);
+                        return poMoves;
+                    }
+                } else {
+                    poMoves.add(move);
                 }
             }
         }
@@ -247,23 +273,23 @@ public class Board implements IBoard {
             }
 
         pieces1 = pieces2 = 16;
-        progress1 = progress2 = 1; 
+        progress1 = progress2 = 1;
         nMoves = 0;
         winner = NONE_WIN;
         curPlayer = 1;
 
         pastMoves = new Stack<IMove>();
     }
-    
+
     @Override
-    public double evaluate(int player) { 
+    public double evaluate(int player) {
         // inspired by evaluation function in Maarten's thesis
-        double delta = (pieces1*10 + progress1*3) - (pieces2*10 + progress2*3);
+        double delta = (pieces1 * 10 + progress1 * 3) - (pieces2 * 10 + progress2 * 3);
         if (delta < -100) delta = -100;
         if (delta > 100) delta = 100;
         // now pass it through tanh;  
         // I think this is killing the speed
-        double p1eval = FastTanh.tanh(delta/60.0);
+        double p1eval = FastTanh.tanh(delta / 60.0);
         return (player == 1 ? p1eval : -p1eval);
     }
 

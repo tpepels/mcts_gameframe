@@ -251,7 +251,7 @@ public class TreeNode {
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
-        while (!gameEnded && nMoves < options.pdepth) {
+        while (!gameEnded) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
@@ -275,6 +275,9 @@ public class TreeNode {
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
                     currentPlayer = board.getOpponent(currentPlayer);
+                    // Check if pdepth is reached
+                    if (options.earlyEval && nMoves < options.pdepth)
+                        break;
                 } else {
                     // The move was illegal, remove it from the list.
                     moveMade = false;
@@ -283,32 +286,30 @@ public class TreeNode {
             }
         }
 
-        double score = 0; 
+        double score = 0;
 
         if (gameEnded) {
-          // playout ended normally
+            // playout ended normally
+            int w = winner - 1;
+            // Keep track of the average number of moves per play-out
+            playOuts[w]++;
+            nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
 
-          int w = winner - 1;
-          // Keep track of the average number of moves per play-out
-          playOuts[w]++;
-          nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
-
-          if (winner == player) score = 1.0;
-          else if (winner == IBoard.DRAW) score = 0.0;
-          else score = -1; 
-        }
-        else {
+            if (winner == player) score = 1.0;
+            else if (winner == IBoard.DRAW) score = 0.0;
+            else score = -1;
+        } else if (options.earlyEval) {
             // playout terminated by nMoves surpassing pdepth
 
             // FIXME: relative bonus will not work with pdepth
-            score = board.evaluate(player); 
+            score = board.evaluate(player);
         }
 
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
 
-        return score; 
+        return score;
     }
 
     public TreeNode getBestChild(IBoard board) {

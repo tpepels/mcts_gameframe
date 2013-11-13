@@ -78,7 +78,7 @@ public class AITests {
             double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB +depth +oldStyle k="+i+" || AI 2 MCTS");
+                runGames("AI 1 RB +depth +oldStyle k=" + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
             // AI 1
@@ -98,7 +98,7 @@ public class AITests {
             double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB -depth +oldStyle k="+i+"|| AI 2 MCTS");
+                runGames("AI 1 RB -depth +oldStyle k=" + i + "|| AI 2 MCTS");
             }
         } else if (which == 3) {
             // AI 1
@@ -118,7 +118,7 @@ public class AITests {
             double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB -depth -oldStyle k="+i+"|| AI 2 MCTS");
+                runGames("AI 1 RB -depth -oldStyle k=" + i + "|| AI 2 MCTS");
             }
         } else if (which == 4) {
             // AI 1
@@ -138,7 +138,7 @@ public class AITests {
             double[] values = {1., .5, 1.5, .25, 2., 3., 4.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB +depth -oldStyle k="+i+"|| AI 2 MCTS");
+                runGames("AI 1 RB +depth -oldStyle k=" + i + "|| AI 2 MCTS");
             }
         } else if (which == 5) {
             // AI 1
@@ -157,6 +157,23 @@ public class AITests {
             aiPlayer2.setOptions(options2);
             //
             runGames("AI 1 RB new style || AI 2 RB old style");
+        } else if (which == 6) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.useHeuristics = true;
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.useHeuristics = false;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            runGames("AI 1 Heuristics || AI 2 No heuristics");
         }
     }
 
@@ -220,6 +237,8 @@ public class AITests {
                 clss = Class.forName("pentalath.game.Board");
             else if (game.equals("amazons"))
                 clss = Class.forName("amazons.game.Board");
+            else if (game.equals("breakthrough"))
+                clss = Class.forName("breakthrough.game.Board");
             // Instantiate the board for the chosen game and GO
             if (clss != null)
                 return (IBoard) clss.newInstance();
