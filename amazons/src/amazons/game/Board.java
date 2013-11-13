@@ -249,6 +249,11 @@ public class Board implements IBoard {
         }
     }
 
+    @Override
+    public double evaluate(int player) {
+        return 0.0;
+    }
+
     public int getPossibleMovesFrom(int from, int[] moves) {
         int count = 0, position;
         int col, row, direction, min, max;

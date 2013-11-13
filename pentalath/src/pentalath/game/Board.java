@@ -634,4 +634,10 @@ public class Board implements IBoard {
     public boolean drawPossible() {
         return true;
     }
+
+    @Override
+    public double evaluate(int player) {
+        return 0.0; 
+    }
+
 }

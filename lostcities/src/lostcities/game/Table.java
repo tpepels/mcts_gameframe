@@ -540,4 +540,10 @@ public class Table implements IBoard {
         // For this game, this method does not apply, since there will always be moves available
         return false;
     }
+
+    @Override
+    public double evaluate(int player) {
+        return 0.0;
+    }
+
 }

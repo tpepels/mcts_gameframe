@@ -371,4 +371,10 @@ public class Board implements IBoard {
     public boolean isLegal(IMove move) {
         return true;
     }
+
+    @Override
+    public double evaluate(int player) {
+        return 0.0;
+    }
+
 }

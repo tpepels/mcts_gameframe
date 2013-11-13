@@ -21,8 +21,8 @@ public class MCTSOptions {
     // MAST stuff
     private double[][] mastValues, mastVisits;
     // Marc's stuff
-    //public int pdepth = 1000000;
-    //boolean imEnabled = false; // implicit minimax
+    public int pdepth = Integer.MAX_VALUE;
+    boolean imEnabled = false; // implicit minimax
 
     public void enableRB(boolean includeDepth) {
         maxVar = 1.;

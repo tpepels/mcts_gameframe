@@ -87,6 +87,10 @@ public class Board implements IBoard {
             else if (player == 2) pieces1--;
         }
 
+        // check for progress (furthest pawn)
+        if      (player == 1 && (7-rp) > progress1) progress1 = 7-rp;
+        else if (player == 2 && rp > progress2) progress2 = rp; 
+
         nMoves++;
         pastMoves.push(move);
         curPlayer = 3 - curPlayer;
@@ -121,6 +125,10 @@ public class Board implements IBoard {
                 pieces1++;
             }
         }
+
+        // remove back the progress
+        if      (curPlayer == 1) progress1 = move.getOldProgress();
+        else if (curPlayer == 2) progress2 = move.getOldProgress();
     }
 
     @Override
@@ -131,6 +139,19 @@ public class Board implements IBoard {
                 if (curPlayer == 1 && board[r][c] == 'w') {
                     if (inBounds(r - 1, c - 1)) {
                         // northwest
+<<<<<<< HEAD
+                        if      (board[r-1][c-1] == 'b') static_moves.add(new Move(r, c, r-1, c-1, Move.CAPTURE, progress1));
+                        else if (board[r-1][c-1] == '.') static_moves.add(new Move(r, c, r-1, c-1, Move.MOVE, progress1));
+                    }
+                    else if (inBounds(r-1,c+1)) {
+                        // northeast
+                        if      (board[r-1][c+1] == 'b') static_moves.add(new Move(r, c, r-1, c+1, Move.CAPTURE, progress1));
+                        else if (board[r-1][c+1] == '.') static_moves.add(new Move(r, c, r-1, c+1, Move.MOVE, progress1));
+                    }
+                    else if (inBounds(r-1,c) && board[r-1][c] == '.') {
+                        // north
+                        static_moves.add(new Move(r, c, r-1, c, Move.MOVE, progress1));
+=======
                         if (board[r - 1][c - 1] == 'b') static_moves.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE));
                         else if (board[r - 1][c - 1] == '.') static_moves.add(new Move(r, c, r - 1, c - 1, Move.MOVE));
                     } else if (inBounds(r - 1, c + 1)) {
@@ -140,10 +161,24 @@ public class Board implements IBoard {
                     } else if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
                         // north
                         static_moves.add(new Move(r, c, r - 1, c, Move.MOVE));
+>>>>>>> aeb905e8617a373abcaf5150e7bc703ec545a630
                     }
                 } else if (curPlayer == 2 && board[r][c] == 'b') {
                     if (inBounds(r + 1, c - 1)) {
                         // southwest
+<<<<<<< HEAD
+                        if      (board[r+1][c-1] == 'w') static_moves.add(new Move(r, c, r+1, c-1, Move.CAPTURE, progress2));
+                        else if (board[r+1][c-1] == '.') static_moves.add(new Move(r, c, r+1, c-1, Move.MOVE, progress2));
+                    }
+                    else if (inBounds(r+1,c+1)) {
+                        // southeast
+                        if      (board[r+1][c+1] == 'w') static_moves.add(new Move(r, c, r+1, c+1, Move.CAPTURE, progress2));
+                        else if (board[r+1][c+1] == '.') static_moves.add(new Move(r, c, r+1, c+1, Move.MOVE, progress2));
+                    }
+                    else if (inBounds(r+1,c) && board[r+1][c] == '.') {
+                        // south
+                        static_moves.add(new Move(r, c, r+1, c, Move.MOVE, progress2));
+=======
                         if (board[r + 1][c - 1] == 'w') static_moves.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE));
                         else if (board[r + 1][c - 1] == '.') static_moves.add(new Move(r, c, r + 1, c - 1, Move.MOVE));
                     } else if (inBounds(r + 1, c + 1)) {
@@ -153,6 +188,7 @@ public class Board implements IBoard {
                     } else if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
                         // south
                         static_moves.add(new Move(r, c, r + 1, c, Move.MOVE));
+>>>>>>> aeb905e8617a373abcaf5150e7bc703ec545a630
                     }
                 }
             }
@@ -233,13 +269,27 @@ public class Board implements IBoard {
                 else board[r][c] = '.';
             }
 
-        pieces1 = pieces2 = 8;
-        progress1 = progress2 = 1;
+        pieces1 = pieces2 = 16;
+        progress1 = progress2 = 1; 
         nMoves = 0;
         winner = NONE_WIN;
         curPlayer = 1;
 
         pastMoves = new Stack<IMove>();
+    }
+    
+    @Override
+    public double evaluate(int player) { 
+        // inspired by evaluation function in Maarten's thesis
+        double delta = (pieces1*10 + progress1*3) - (pieces2*10 + progress2*3);
+        if (delta < -100) delta = -100;
+        if (delta > 100) delta = 100;
+        // now pass it through tanh;  
+        // I think this is killing the speed
+        // FIXME: Make a FastTanh
+        double exp = Math.exp(delta/60.0);
+        double p1eval = (exp-1.0) / (exp+1.0);
+        return (player == 1 ? p1eval : -p1eval);
     }
 
     public String toString() {
@@ -248,6 +298,7 @@ public class Board implements IBoard {
             for (int c = 0; c < 8; c++) str += board[r][c];
             str += "\n";
         }
+        str += "\nPieces: " + pieces1 + " " + pieces2 + "\n";
         return str;
     }
 

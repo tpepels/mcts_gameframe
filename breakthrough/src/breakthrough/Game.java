@@ -14,6 +14,8 @@ public class Game {
         b.initialize(); 
 
         MCTSOptions options1 = new MCTSOptions();
+        options1.pdepth = 0;
+
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
 

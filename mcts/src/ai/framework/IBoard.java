@@ -119,5 +119,9 @@ public interface IBoard {
 
     public void initialize();
 
-    // public double evaluate(int player);
+    /**
+     * Returns a value between -1 and 1 indicating the heuristic value of the 
+     * position with respect to the specified player.
+     */
+    public double evaluate(int player);
 }

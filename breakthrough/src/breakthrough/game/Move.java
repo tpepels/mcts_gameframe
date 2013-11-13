@@ -8,12 +8,19 @@ public class Move implements IMove {
 
     private int type;
     private int[] movearr; 
+    private int oldProgress;
 
-    public Move(int r, int c, int rp, int cp, int type) { 
+    public Move(int r, int c, int rp, int cp, int type, int oldProgress) { 
         movearr = new int[4];        
         movearr[0] = r;  movearr[1] = c;
         movearr[2] = rp; movearr[3] = cp;
+        
         this.type = type;
+        this.oldProgress = oldProgress;
+    }
+
+    public int getOldProgress() { 
+        return oldProgress; 
     }
 
     @Override
