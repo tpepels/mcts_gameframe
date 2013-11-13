@@ -128,47 +128,46 @@ public class Board implements IBoard {
 
     @Override
     public MoveList getExpandMoves() {
-        MoveList moves = static_moves.copy();
-        moves.clear();
 
+        static_moves.clear();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) { 
                 if (curPlayer == 1 && board[r][c] == 'w') { 
                     if (inBounds(r-1,c-1)) {
                         // northwest
-                        if      (board[r-1][c-1] == 'b') moves.add(new Move(r, c, r-1, c-1, Move.CAPTURE)); 
-                        else if (board[r-1][c-1] == '.') moves.add(new Move(r, c, r-1, c-1, Move.MOVE)); 
+                        if      (board[r-1][c-1] == 'b') static_moves.add(new Move(r, c, r-1, c-1, Move.CAPTURE));
+                        else if (board[r-1][c-1] == '.') static_moves.add(new Move(r, c, r-1, c-1, Move.MOVE));
                     }
                     else if (inBounds(r-1,c+1)) {
                         // northeast
-                        if      (board[r-1][c+1] == 'b') moves.add(new Move(r, c, r-1, c+1, Move.CAPTURE)); 
-                        else if (board[r-1][c+1] == '.') moves.add(new Move(r, c, r-1, c+1, Move.MOVE)); 
+                        if      (board[r-1][c+1] == 'b') static_moves.add(new Move(r, c, r-1, c+1, Move.CAPTURE));
+                        else if (board[r-1][c+1] == '.') static_moves.add(new Move(r, c, r-1, c+1, Move.MOVE));
                     }
                     else if (inBounds(r-1,c) && board[r-1][c] == '.') {
                         // north
-                        moves.add(new Move(r, c, r-1, c, Move.MOVE)); 
+                        static_moves.add(new Move(r, c, r-1, c, Move.MOVE));
                     }
                 }
                 else if (curPlayer == 2 && board[r][c] == 'b') { 
                     if (inBounds(r+1,c-1)) {
                         // southwest
-                        if      (board[r+1][c-1] == 'w') moves.add(new Move(r, c, r+1, c-1, Move.CAPTURE)); 
-                        else if (board[r+1][c-1] == '.') moves.add(new Move(r, c, r+1, c-1, Move.MOVE)); 
+                        if      (board[r+1][c-1] == 'w') static_moves.add(new Move(r, c, r+1, c-1, Move.CAPTURE));
+                        else if (board[r+1][c-1] == '.') static_moves.add(new Move(r, c, r+1, c-1, Move.MOVE));
                     }
                     else if (inBounds(r+1,c+1)) {
                         // southeast
-                        if      (board[r+1][c+1] == 'w') moves.add(new Move(r, c, r+1, c+1, Move.CAPTURE)); 
-                        else if (board[r+1][c+1] == '.') moves.add(new Move(r, c, r+1, c+1, Move.MOVE)); 
+                        if      (board[r+1][c+1] == 'w') static_moves.add(new Move(r, c, r+1, c+1, Move.CAPTURE));
+                        else if (board[r+1][c+1] == '.') static_moves.add(new Move(r, c, r+1, c+1, Move.MOVE));
                     }
                     else if (inBounds(r+1,c) && board[r+1][c] == '.') {
                         // south
-                        moves.add(new Move(r, c, r+1, c, Move.MOVE)); 
+                        static_moves.add(new Move(r, c, r+1, c, Move.MOVE));
                     }
                 }
             }
         }
 
-        return moves;
+        return static_moves.copy();
     }
 
     @Override
