@@ -228,7 +228,7 @@ public class TreeNode {
                     avgValue *= Math.pow(options.treeDiscount, age);
                 // Implicit minimax
                 if (options.implicitMM) 
-                    avgValue = c.avgValue + 0.2*c.imVal;
+                    avgValue = c.avgValue + 0.5*c.imVal;
 
                 if (!options.ucbTuned) {
                     // Compute the uct value with the (new) average value
