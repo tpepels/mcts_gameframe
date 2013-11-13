@@ -243,7 +243,7 @@ public class TreeNode {
         return selected;
     }
 
-    private int playOut(IBoard board) {
+    private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), moveIndex;
         nMoves = 0;
@@ -251,7 +251,7 @@ public class TreeNode {
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
-        while (!gameEnded) {
+        while (!gameEnded && nMoves < options.pdepth) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
@@ -282,21 +282,33 @@ public class TreeNode {
                 }
             }
         }
-        int w = winner - 1;
-        // Keep track of the average number of moves per play-out
-        playOuts[w]++;
-        nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
+
+        double score = 0; 
+
+        if (gameEnded) {
+          // playout ended normally
+
+          int w = winner - 1;
+          // Keep track of the average number of moves per play-out
+          playOuts[w]++;
+          nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
+
+          if (winner == player) score = 1.0;
+          else if (winner == IBoard.DRAW) score = 0.0;
+          else score = -1; 
+        }
+        else {
+            // playout terminated by nMoves surpassing pdepth
+
+            // FIXME: relative bonus will not work with pdepth
+            score = board.evaluate(player); 
+        }
+
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
-        // Return the winning player's score
-        if (winner == player) {
-            return 1;
-        } else if (winner == IBoard.DRAW) {
-            return 0;
-        } else {
-            return -1;
-        }
+
+        return score; 
     }
 
     public TreeNode getBestChild(IBoard board) {
