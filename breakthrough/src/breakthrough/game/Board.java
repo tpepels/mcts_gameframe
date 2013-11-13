@@ -218,6 +218,7 @@ public class Board implements IBoard {
                     if (move.getType() == Move.CAPTURE) {
                         poMoves.add(move);
                         poMoves.add(move);
+                        poMoves.add(move);
                     }
                     // check for a win in 1
                     if (curPlayer == 1 && (move.getMove()[2] == 0)) {
