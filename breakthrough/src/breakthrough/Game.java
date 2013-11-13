@@ -12,16 +12,17 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        // THIS TURNS ON EARLY EVAL
-//        options1.pdepth = 0;
-//        options1.earlyEval = true;
+        options1.pdepth = 0;
+        options1.earlyEval = true;
         options1.useHeuristics = true;
-        //
+        options1.implicitMM = true; 
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.useHeuristics = false;
+        options2.pdepth = 0;
+        options2.earlyEval = true;
+        options2.useHeuristics = true;
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 
