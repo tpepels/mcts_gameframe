@@ -289,7 +289,7 @@ public class TreeNode {
                     gameEnded = winner != IBoard.NONE_WIN;
                     currentPlayer = board.getOpponent(currentPlayer);
                     // Check if pdepth is reached
-                    if (options.earlyEval && nMoves < options.pdepth)
+                    if (options.earlyEval && nMoves >= options.pdepth)
                         break;
                 } else {
                     // The move was illegal, remove it from the list.
