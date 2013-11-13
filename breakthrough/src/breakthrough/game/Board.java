@@ -88,7 +88,7 @@ public class Board implements IBoard {
         }
 
         // check for progress (furthest pawn)
-        if (player == 1 && (7 - rp) > progress1) progress1 = 7 - rp;
+        if (player == 1 && (7-rp) > progress1) progress1 = 7-rp;
         else if (player == 2 && rp > progress2) progress2 = rp;
 
         nMoves++;
@@ -287,7 +287,7 @@ public class Board implements IBoard {
         if (progress1 == 7 || pieces2 == 0) p1eval = 1; 
         else if (progress2 == 7 || pieces1 == 0) p1eval = -1;
         else { 
-          double delta = (pieces1*10 + progress1*3) - (pieces2*10 + progress2*3);
+          double delta = (pieces1*10 + progress1*2.5) - (pieces2*10 + progress2*2.5);
           if (delta < -100) delta = -100;
           if (delta > 100) delta = 100;
           // now pass it through tanh;  

@@ -12,7 +12,7 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.pdepth = 3;
+        options1.pdepth = 4;
         options1.earlyEval = true;
         options1.useHeuristics = true;
         options1.timeInterval = 1000;
@@ -20,7 +20,7 @@ public class Game {
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.pdepth = 3;
+        options2.pdepth = 4;
         options2.earlyEval = true;
         options2.useHeuristics = true;
         options2.timeInterval = 1000;
