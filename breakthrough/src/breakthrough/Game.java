@@ -1,9 +1,9 @@
-package brakthrough;
+package breakthrough;
 
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import breakthrough.game.Move;
-import breakthrough.game.Table;
+import breakthrough.game.Board;
 
 import java.util.Scanner;
 
@@ -23,9 +23,9 @@ public class Game {
 
         MCTSPlayer aiPlayer;
         Move m = null;
-        int player = 1; 
 
-        while (t.checkWin() == Board.NONE_WIN) {
+        while (b.checkWin() == Board.NONE_WIN) {
+            int player = b.getPlayerToMove(); 
             System.out.println(b.toString());
             if (m != null)
                 System.out.println("Player " + player + " played " + m);
@@ -34,7 +34,7 @@ public class Game {
             System.gc();
             aiPlayer.getMove(b.copy(), null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
-            b.doAIMove(m);
+            b.doAIMove(m, player);
         }
 
         System.out.println("Winner is " + b.checkWin());

@@ -1,9 +1,10 @@
 #!/bin/sh
-dirs="cannon chinesecheckers lostcities mcts pentalath"
+dirs="cannon chinesecheckers lostcities mcts pentalath amazons Experiments breakthrough"
 
 for d in $dirs
 do
-  cp -r $d/src build/$d
+  mkdir -p build/$d
+  cp -r $d/src/* build/$d
 done
 
 files=`find build -name *.java`
