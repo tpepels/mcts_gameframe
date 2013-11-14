@@ -89,14 +89,12 @@ public class Board implements IBoard {
         }
 
         // check for progress (furthest pawn)
-        if (player == 1 && (7 - rp) > progress1) progress1 = 7 - rp;
+        if (player == 1 && (7-rp) > progress1) progress1 = 7-rp;
         else if (player == 2 && rp > progress2) progress2 = rp;
 
         nMoves++;
         pastMoves.push(move);
         curPlayer = 3 - curPlayer;
-
-        // FIXME: modify progress1 and progress2, will be needed for evaluation function
 
         return true;
     }
@@ -307,12 +305,16 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player) {
         // inspired by evaluation function in Maarten's thesis
-        double delta = (pieces1 * 10 + progress1 * 3) - (pieces2 * 10 + progress2 * 3);
-        if (delta < -100) delta = -100;
-        if (delta > 100) delta = 100;
-        // now pass it through tanh;  
-        // I think this is killing the speed
-        double p1eval = FastTanh.tanh(delta / 60.0);
+        double p1eval = 0; 
+        if (progress1 == 7 || pieces2 == 0) p1eval = 1; 
+        else if (progress2 == 7 || pieces1 == 0) p1eval = -1;
+        else { 
+          double delta = (pieces1*10 + progress1*2.5) - (pieces2*10 + progress2*2.5);
+          if (delta < -100) delta = -100;
+          if (delta > 100) delta = 100;
+          // now pass it through tanh;  
+          p1eval = FastTanh.tanh(delta / 60.0);
+        }
         return (player == 1 ? p1eval : -p1eval);
     }
 

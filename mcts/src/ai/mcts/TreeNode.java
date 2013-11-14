@@ -228,8 +228,8 @@ public class TreeNode {
                 if (options.ageDecay)
                     avgValue *= Math.pow(options.treeDiscount, age);
                 // Implicit minimax
-                if (options.implicitMM)
-                    avgValue = c.avgValue + 0.2 * c.imVal;
+                if (options.implicitMM) 
+                    avgValue = c.avgValue + c.imVal;
 
                 if (!options.ucbTuned) {
                     // Compute the uct value with the (new) average value
@@ -290,7 +290,7 @@ public class TreeNode {
                     gameEnded = winner != IBoard.NONE_WIN;
                     currentPlayer = board.getOpponent(currentPlayer);
                     // Check if pdepth is reached
-                    if (options.earlyEval && nMoves < options.pdepth)
+                    if (options.earlyEval && nMoves >= options.pdepth)
                         break;
                 } else {
                     // The move was illegal, remove it from the list.
