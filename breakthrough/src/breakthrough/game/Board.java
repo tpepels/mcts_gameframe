@@ -10,13 +10,14 @@ import java.util.List;
 import java.util.Stack;
 
 public class Board implements IBoard {
+    static final MoveList tempList = new MoveList(3);
     private static MoveList static_moves = new MoveList(384);  // 64*6
     private static ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
-    private char[][] board;
+    public char[][] board;
+    public int nMoves, winner, curPlayer;
     private int pieces1, pieces2;
     private int progress1;
     private int progress2;
-    private int nMoves, winner, curPlayer;
     private Stack<IMove> pastMoves;
 
     @Override
@@ -143,13 +144,15 @@ public class Board implements IBoard {
                             static_moves.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1));
                         else if (board[r - 1][c - 1] == '.')
                             static_moves.add(new Move(r, c, r - 1, c - 1, Move.MOVE, progress1));
-                    } else if (inBounds(r - 1, c + 1)) {
+                    }
+                    if (inBounds(r - 1, c + 1)) {
                         // northeast
                         if (board[r - 1][c + 1] == 'b')
                             static_moves.add(new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1));
                         else if (board[r - 1][c + 1] == '.')
                             static_moves.add(new Move(r, c, r - 1, c + 1, Move.MOVE, progress1));
-                    } else if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
+                    }
+                    if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
                         // north
                         static_moves.add(new Move(r, c, r - 1, c, Move.MOVE, progress1));
                     }
@@ -160,20 +163,21 @@ public class Board implements IBoard {
                             static_moves.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress2));
                         else if (board[r + 1][c - 1] == '.')
                             static_moves.add(new Move(r, c, r + 1, c - 1, Move.MOVE, progress2));
-                    } else if (inBounds(r + 1, c + 1)) {
+                    }
+                    if (inBounds(r + 1, c + 1)) {
                         // southeast
                         if (board[r + 1][c + 1] == 'w')
                             static_moves.add(new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress2));
                         else if (board[r + 1][c + 1] == '.')
                             static_moves.add(new Move(r, c, r + 1, c + 1, Move.MOVE, progress2));
-                    } else if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
+                    }
+                    if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
                         // south
                         static_moves.add(new Move(r, c, r + 1, c, Move.MOVE, progress2));
                     }
                 }
             }
         }
-
         return static_moves.copy();
     }
 
@@ -182,56 +186,74 @@ public class Board implements IBoard {
         poMoves.clear();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
-                Move move = null;
+                tempList.clear();
                 if (curPlayer == 1 && board[r][c] == 'w') {
                     if (inBounds(r - 1, c - 1)) {
                         // northwest
-                        if (board[r - 1][c - 1] == 'b') move = new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1);
-                        else if (board[r - 1][c - 1] == '.') move = new Move(r, c, r - 1, c - 1, Move.MOVE, progress1);
-                    } else if (inBounds(r - 1, c + 1)) {
+                        if (board[r - 1][c - 1] == 'b')
+                            tempList.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1));
+                        else if (board[r - 1][c - 1] == '.')
+                            tempList.add(new Move(r, c, r - 1, c - 1, Move.MOVE, progress1));
+                    }
+                    if (inBounds(r - 1, c + 1)) {
                         // northeast
-                        if (board[r - 1][c + 1] == 'b') move = new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1);
-                        else if (board[r - 1][c + 1] == '.') move = new Move(r, c, r - 1, c + 1, Move.MOVE, progress1);
-                    } else if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
+                        if (board[r - 1][c + 1] == 'b')
+                            tempList.add(new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1));
+                        else if (board[r - 1][c + 1] == '.')
+                            tempList.add(new Move(r, c, r - 1, c + 1, Move.MOVE, progress1));
+                    }
+                    if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
                         // north
-                        move = new Move(r, c, r - 1, c, Move.MOVE, progress1);
+                        tempList.add(new Move(r, c, r - 1, c, Move.MOVE, progress1));
                     }
                 } else if (curPlayer == 2 && board[r][c] == 'b') {
                     if (inBounds(r + 1, c - 1)) {
                         // southwest
-                        if (board[r + 1][c - 1] == 'w') move = new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress2);
-                        else if (board[r + 1][c - 1] == '.') move = new Move(r, c, r + 1, c - 1, Move.MOVE, progress2);
-                    } else if (inBounds(r + 1, c + 1)) {
+                        if (board[r + 1][c - 1] == 'w')
+                            tempList.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress2));
+                        else if (board[r + 1][c - 1] == '.')
+                            tempList.add(new Move(r, c, r + 1, c - 1, Move.MOVE, progress2));
+                    }
+                    if (inBounds(r + 1, c + 1)) {
                         // southeast
-                        if (board[r + 1][c + 1] == 'w') move = new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress2);
-                        else if (board[r + 1][c + 1] == '.') move = new Move(r, c, r + 1, c + 1, Move.MOVE, progress2);
-                    } else if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
+                        if (board[r + 1][c + 1] == 'w')
+                            tempList.add(new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress2));
+                        else if (board[r + 1][c + 1] == '.')
+                            tempList.add(new Move(r, c, r + 1, c + 1, Move.MOVE, progress2));
+                    }
+                    if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
                         // south
-                        move = new Move(r, c, r + 1, c, Move.MOVE, progress2);
+                        tempList.add(new Move(r, c, r + 1, c, Move.MOVE, progress2));
                     }
                 }
-                if (move == null)
+                if (tempList.size() == 0)
                     continue;
                 //
                 if (heuristics) {
-                    // Prefer capture moves
-                    if (move.getType() == Move.CAPTURE) {
-                        poMoves.add(move);
-                        poMoves.add(move);
-                        poMoves.add(move);
-                    }
-                    // check for a win in 1
-                    if (curPlayer == 1 && (move.getMove()[2] == 0)) {
-                        poMoves.clear();
-                        poMoves.add(move);
-                        return poMoves;
-                    } else if (curPlayer == 2 && (move.getMove()[2] == 7)) {
-                        poMoves.clear();
-                        poMoves.add(move);
-                        return poMoves;
+                    for (int i = 0; i < tempList.size(); i++) {
+                        IMove move = tempList.get(i);
+                        // Prefer capture moves
+                        if (move.getType() == Move.CAPTURE) {
+                            poMoves.add(move);
+                            poMoves.add(move);
+                            poMoves.add(move);
+                        }
+                        // check for a win in 1
+                        if (curPlayer == 1 && (move.getMove()[2] == 0)) {
+                            poMoves.clear();
+                            poMoves.add(move);
+                            return poMoves;
+                        } else if (curPlayer == 2 && (move.getMove()[2] == 7)) {
+                            poMoves.clear();
+                            poMoves.add(move);
+                            return poMoves;
+                        }
                     }
                 } else {
-                    poMoves.add(move);
+                    for (int i = 0; i < tempList.size(); i++) {
+                        IMove move = tempList.get(i);
+                        poMoves.add(move);
+                    }
                 }
             }
         }

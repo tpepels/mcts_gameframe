@@ -12,7 +12,8 @@ public class MCTSOptions {
     // Relative bonus!
     public boolean relativeBonus = false, includeDepth = true;
     //
-    public boolean debug = true, useHeuristics = true, solverFix = true, ucbTuned = false, auct = false;
+    public boolean debug = true, useHeuristics = true, solverFix = true;
+    public boolean ucbTuned = false, auct = false;
     // MCTS Specific values
     public double uctC = 1., k = 1., maxVar = .5;
     // Discounting values

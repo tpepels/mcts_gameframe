@@ -5,6 +5,7 @@ import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
+import pentalath.game.Board;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -183,9 +184,9 @@ public class TreeNode {
                 child.totValue = value;
                 child.avgValue = value;
                 // implicit minimax
-                if (options.implicitMM) { 
-                  child.imVal = board.evaluate(player); 
-                  if (child.imVal > best_imVal) best_imVal = child.imVal;
+                if (options.implicitMM) {
+                    child.imVal = board.evaluate(player);
+                    if (child.imVal > best_imVal) best_imVal = child.imVal;
                 }
                 children.add(child);
                 // reset the board
@@ -227,8 +228,8 @@ public class TreeNode {
                 if (options.ageDecay)
                     avgValue *= Math.pow(options.treeDiscount, age);
                 // Implicit minimax
-                if (options.implicitMM) 
-                    avgValue = c.avgValue + 0.2*c.imVal;
+                if (options.implicitMM)
+                    avgValue = c.avgValue + 0.2 * c.imVal;
 
                 if (!options.ucbTuned) {
                     // Compute the uct value with the (new) average value
@@ -302,12 +303,13 @@ public class TreeNode {
         double score = 0;
 
         if (gameEnded) {
-            // playout ended normally
-            int w = winner - 1;
-            // Keep track of the average number of moves per play-out
-            playOuts[w]++;
-            nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
-
+            if (winner != Board.DRAW) {
+                // playout ended normally
+                int w = winner - 1;
+                // Keep track of the average number of moves per play-out
+                playOuts[w]++;
+                nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
+            }
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
@@ -343,9 +345,9 @@ public class TreeNode {
                 if (t.avgValue == INF)
                     value = INF + options.r.nextDouble();
                 else
-                    //value = t.nVisits;
-                    // For MCTS solver (Though I still prefer to look at the visits (Tom))
-                    value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
+                    value = t.nVisits;
+                // For MCTS solver (Though I still prefer to look at the visits (Tom))
+                // value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
             }
             //
             if (value > max) {
@@ -380,9 +382,9 @@ public class TreeNode {
         }
 
         // implicit minimax backups
-        if (options.implicitMM && children != null) { 
+        if (options.implicitMM && children != null) {
             double bestVal = -INF;
-            for (TreeNode c : children) 
+            for (TreeNode c : children)
                 if (c.imVal > bestVal) bestVal = c.imVal;
             this.imVal = -bestVal;
         }

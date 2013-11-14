@@ -15,7 +15,7 @@ public class Game {
         options1.pdepth = 0;
         options1.earlyEval = true;
         options1.useHeuristics = true;
-        options1.implicitMM = true; 
+        options1.implicitMM = true;
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
 
@@ -28,7 +28,8 @@ public class Game {
 
         MCTSPlayer aiPlayer;
         Move m = null;
-
+        setupTestBoard(b);
+        b.curPlayer = 2;
         while (b.checkWin() == Board.NONE_WIN) {
             int player = b.getPlayerToMove();
             System.out.println(b.toString());
@@ -46,6 +47,21 @@ public class Game {
         System.out.println("Winner is " + b.checkWin());
     }
 
+    private static void setupTestBoard(Board b) {
+        String board = ".bbb....\n" +
+                "b...bbb.\n" +
+                "w.bb....\n" +
+                ".b.w.b..\n" +
+                "..bw.w..\n" +
+                "wwww....\n" +
+                "w.....w.\n" +
+                "..ww.w..";
+        String[] arr = board.split("\n");
+        b.board = new char[8][8];
+        for (int i = 0; i < 8; i++) {
+            b.board[i] = arr[i].toCharArray();
+        }
+    }
 }
 
 
