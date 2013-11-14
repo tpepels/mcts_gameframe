@@ -12,24 +12,24 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.pdepth = 0;
-        options1.earlyEval = true;
+//        options1.pdepth = 0;
+//        options1.earlyEval = true;
         options1.useHeuristics = true;
-        options1.implicitMM = true;
+//        options1.implicitMM = true;
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.pdepth = 0;
-        options2.earlyEval = true;
-        options2.useHeuristics = true;
+//        options2.pdepth = 0;
+//        options2.earlyEval = true;
+        options2.useHeuristics = false;
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 
         MCTSPlayer aiPlayer;
         Move m = null;
-        setupTestBoard(b);
-        b.curPlayer = 2;
+//        setupTestBoard(b);
+//        b.curPlayer = 2;
         while (b.checkWin() == Board.NONE_WIN) {
             int player = b.getPlayerToMove();
             System.out.println(b.toString());

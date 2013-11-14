@@ -6,7 +6,7 @@
     </artifacts-to-build>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="">
+    <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="Breakthrough heuristics and experiment">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/breakthrough/src/breakthrough/game/Board.java" afterPath="$PROJECT_DIR$/breakthrough/src/breakthrough/game/Board.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java" afterPath="$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java" />
@@ -18,7 +18,7 @@
     </list>
     <ignored path="mcts_gameframe.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384419678593" ignored="false" />
+    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384422928472" ignored="false" />
     <file path="/Table.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383922342799" ignored="false" />
     <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384422563488" ignored="false" />
     <file path="/fragment.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384341399778" ignored="false" />
@@ -30,7 +30,7 @@
     <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384368405526" ignored="false" />
     <file path="/IBoard.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383922389158" ignored="false" />
     <file path="/MCTSPlayer.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384265332355" ignored="false" />
-    <file path="/Game.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384421708201" ignored="false" />
+    <file path="/Game.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384422803804" ignored="false" />
     <file path="/Piece.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383318300633" ignored="false" />
     <file path="/Field.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1382452063829" ignored="false" />
     <file path="/MoveList.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381666482638" ignored="false" />
@@ -154,7 +154,7 @@
       <file leaf-file-name="Game.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="23" column="73" selection-start="656" selection-end="656" vertical-scroll-proportion="0.48681542">
+            <state line="32" column="104" selection-start="953" selection-end="953" vertical-scroll-proportion="0.7058824">
               <folding />
             </state>
           </provider>
@@ -1087,7 +1087,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="73" selection-start="656" selection-end="656" vertical-scroll-proportion="0.48681542">
+        <state line="32" column="104" selection-start="953" selection-end="953" vertical-scroll-proportion="0.7058824">
           <folding />
         </state>
       </provider>
