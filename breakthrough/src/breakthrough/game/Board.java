@@ -203,9 +203,9 @@ public class Board implements IBoard {
                 if (heuristics) {
                     for (int i = 0; i < tempList.size(); i++) {
                         IMove move = tempList.get(i);
+                        poMoves.add(move);
                         // Prefer capture moves
                         if (move.getType() == Move.CAPTURE) {
-                            poMoves.add(move);
                             poMoves.add(move);
                             poMoves.add(move);
                         }

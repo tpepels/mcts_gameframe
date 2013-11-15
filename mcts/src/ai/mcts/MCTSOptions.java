@@ -15,7 +15,7 @@ public class MCTSOptions {
     // Discount values based on their depth
     public boolean depthDiscount = false;
     // Relative bonus!
-    public boolean relativeBonus = false, includeDepth = true;
+    public boolean relativeBonus = false;
     public int function = 2;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true;
@@ -33,10 +33,9 @@ public class MCTSOptions {
     private double[][] mastValues, mastVisits;
 
 
-    public void enableRB(boolean includeDepth) {
+    public void enableRB() {
         maxVar = 1.;
         this.relativeBonus = true;
-        this.includeDepth = includeDepth;
     }
 
     /**

@@ -64,7 +64,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true);
+            options1.enableRB();
             options1.function = 1;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -85,7 +85,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true);
+            options1.enableRB();
             options1.function = 2;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -106,7 +106,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true);
+            options1.enableRB();
             options1.function = 3;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -127,7 +127,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(true);
+            options1.enableRB();
             options1.function = 4;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
