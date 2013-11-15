@@ -1,8 +1,13 @@
 package ai.mcts;
 
+import ai.FastLog;
+import ai.FastSqrt;
+
 import java.util.Random;
 
 public class MCTSOptions {
+    private static FastLog fastLog = new FastLog();
+    private static FastSqrt fastSqrt = new FastSqrt();
     // Initialize a random generator, separate for each MCTS player
     public final Random r = new Random();
     // Fields for enabling tree-reuse
@@ -11,6 +16,7 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Relative bonus!
     public boolean relativeBonus = false, includeDepth = true;
+    public int function = 2;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true;
     public boolean ucbTuned = false, auct = false;
@@ -25,6 +31,7 @@ public class MCTSOptions {
     public boolean implicitMM = false; // implicit minimax
     // MAST stuff
     private double[][] mastValues, mastVisits;
+
 
     public void enableRB(boolean includeDepth) {
         maxVar = 1.;
@@ -45,6 +52,20 @@ public class MCTSOptions {
         } else if (game.equals("amazons")) {
         } else if (game.equals("breakthrough")) {
         }
+    }
+
+    public double f(double x) {
+        switch (function) {
+            case 1:
+                return k * x;
+            case 2:
+                return k * fastLog.log(x + 1);
+            case 3:
+                return k * fastSqrt.sqrt(x);
+            case 4:
+                return k * (x*x);
+        }
+        return x;
     }
 
     public void resetMast(int maxId) {

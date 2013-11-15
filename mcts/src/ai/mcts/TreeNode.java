@@ -1,20 +1,21 @@
 package ai.mcts;
 
 import ai.FastLog;
+import ai.MovingAverage;
 import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
-import pentalath.game.Board;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class TreeNode {
     static final FastLog l = new FastLog();
+    static final MovingAverage ma = new MovingAverage(250);
     static final double epsilon = 1e-6;
     static final double INF = 999999;
-    public static double[] nMoveAvg = {0., 0.}, playOuts = {0., 0.};
+    public static StatCounter moveStats = new StatCounter();
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -78,15 +79,13 @@ public class TreeNode {
                 result = child.playOut(board);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
-                    int p = child.player - 1;
-                    if (child.nMoves < Math.floor(nMoveAvg[p])) {
-                        if (options.includeDepth)
-                            result += Math.signum(result) / (options.k * l.log(((double) depth + 1.) * (nMoveAvg[p] - child.nMoves + 1.)));
-                        else
-                            result += Math.signum(result) / (options.k * l.log(nMoveAvg[p] - child.nMoves + 1.));
+                    if (child.nMoves < Math.floor(moveStats.mean())) {
+                        int x = (int) ((moveStats.mean() - child.nMoves) / stats.stddev());
+                        if (x > 0) {
+                            result += Math.signum(result) / (options.f(x));
+                        }
                     }
                 }
-                //
                 child.nVisits++;
                 child.updateStats(-result);
             } else {
@@ -199,7 +198,6 @@ public class TreeNode {
         }
         // implicit minimax
         if (options.implicitMM) this.imVal = -best_imVal;
-
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -228,7 +226,7 @@ public class TreeNode {
                 if (options.ageDecay)
                     avgValue *= Math.pow(options.treeDiscount, age);
                 // Implicit minimax
-                if (options.implicitMM) 
+                if (options.implicitMM)
                     avgValue = c.avgValue + c.imVal;
 
                 if (!options.ucbTuned) {
@@ -303,13 +301,9 @@ public class TreeNode {
         double score = 0;
 
         if (gameEnded) {
-            if (winner != Board.DRAW) {
-                // playout ended normally
-                int w = winner - 1;
-                // Keep track of the average number of moves per play-out
-                playOuts[w]++;
-                nMoveAvg[w] += (nMoves - nMoveAvg[w]) / (playOuts[w]);
-            }
+            ma.add(nMoves);
+            // Keep track of the average number of moves per play-out
+            moveStats.push(nMoves);
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
@@ -345,9 +339,9 @@ public class TreeNode {
                 if (t.avgValue == INF)
                     value = INF + options.r.nextDouble();
                 else
-                    value = t.nVisits;
-                // For MCTS solver (Though I still prefer to look at the visits (Tom))
-                // value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
+                    // value = t.nVisits;
+                    // For MCTS solver (Though I still prefer to look at the visits (Tom))
+                    value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
             }
             //
             if (value > max) {

@@ -56,8 +56,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Create a new root
             root = new TreeNode(myPlayer, options);
         }
-        TreeNode.nMoveAvg = new double[]{0,0};
-        TreeNode.playOuts = new double[]{0,0};
+        TreeNode.moveStats.reset();
+        TreeNode.ma.reset();
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -113,10 +113,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         bestMove = bestChild.getMove();
         // show information on the best move
         if (options.debug) {
+            System.out.println("Player " + myPlayer);
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
-            System.out.println("Avg playout moves P1: " + TreeNode.nMoveAvg[0] + " P2: " + TreeNode.nMoveAvg[1]);
+            System.out.println("Avg playout moves: " + TreeNode.moveStats.mean() + " std dev: " + TreeNode.moveStats.stddev());
+            System.out.println("Moving Avg playout moves: " + TreeNode.ma.getAverage());
         }
         // Set the root to the best child, so in the next move
         // the opponent's move can become the new root

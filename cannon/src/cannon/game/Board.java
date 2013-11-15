@@ -18,7 +18,7 @@ public class Board implements IBoard {
     public final Stack<IMove> pastMoves = new Stack<IMove>();
     private final int[] capture = {-1, -11, -10, -9, 1};
     private final int[] move = {-11, -10, -9};
-    private final int[] retreat = {18, 20, 22};
+    private final int[] retreat = {18, 20, 22}, retrCheck = {-11, -1, +2, -10, +10, -9, +1, +11};
     private final int[] n = {-1, 0, 1};
     // Whether the towns have been placed or not determines the first moves
     public boolean whiteTownPlaced = false, blackTownPlaced = false;
@@ -292,7 +292,7 @@ public class Board implements IBoard {
             else
                 start += 2;
         }
-        boolean canRetreat = false;
+
         for (int i = start; i < end; i++) {
             to = from + (multipl * capture[i]);
             // Not outside the board, and not occupied
@@ -305,7 +305,22 @@ public class Board implements IBoard {
                         moves.add(testMove);
                     // Only movement can lead to mate positions
                     undoMove();
+                }
+            }
+        }
+        boolean canRetreat = false;
+        start = 0;
+        end = retrCheck.length;
+        if (from % WIDTH == 0) {
+            start += 3;
+        } else if (from % WIDTH == 9) {
+            end -= 3;
+        }
+        for (int i = start; i < end; i++) {
+            if(from + retrCheck[i] > 0 && from + retrCheck[i]  < 10) {
+                if(board[from + retrCheck[i]] == opp_soldier) {
                     canRetreat = true;
+                    break;
                 }
             }
         }

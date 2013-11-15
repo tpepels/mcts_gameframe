@@ -59,12 +59,13 @@ public class AITests {
         Date today = Calendar.getInstance().getTime();
         writeOutput(df.format(today), true);
         writeOutput("Running test # " + which + ", # of runs: " + games + ", on game: " + game, true);
-
+        // Run one of the defined experiments
         if (which == 1) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.enableRB(true);
+            options1.function = 1;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -75,16 +76,17 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1., .5, 1.5, .25};
+            double[] values = {1., .5, 2.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB newStyle [2] +depth k=" + i + " || AI 2 MCTS");
+                runGames("AI 1 RB function 1 k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(false);
+            options1.enableRB(true);
+            options1.function = 2;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -95,16 +97,17 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1., .5, 1.5, .25};
+            double[] values = {1., .5, 2.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB newStyle [2] -depth k=" + i + " || AI 2 MCTS");
+                runGames("AI 1 RB function 2 k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.enableRB(true);
+            options1.function = 3;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -115,16 +118,17 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {2., 3., 4.};
+            double[] values = {1., .5, 2.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB newStyle [2] +depth k=" + i + " || AI 2 MCTS");
+                runGames("AI 1 RB function 3 k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB(false);
+            options1.enableRB(true);
+            options1.function = 4;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -135,15 +139,11 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {2., 3., 4.};
+            double[] values = {1., .5, 2.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB newStyle [2] -depth k=" + i + " || AI 2 MCTS");
+                runGames("AI 1 RB function 4 k = " + i + " || AI 2 MCTS");
             }
-        } else if (which == 5) {
-
-        } else if (which == 6) {
-
         }
     }
 

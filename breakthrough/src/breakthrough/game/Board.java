@@ -10,41 +10,15 @@ import java.util.List;
 import java.util.Stack;
 
 public class Board implements IBoard {
-    static final MoveList tempList = new MoveList(3);
-    private static MoveList static_moves = new MoveList(384);  // 64*6
-    private static ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
+    private static final MoveList tempList = new MoveList(3);   // Temp move store for heuristic evaluation
+    private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
+    private static final MoveList static_moves = new MoveList(384);   // 64*6
+    //
     public char[][] board;
     public int nMoves, winner, curPlayer;
     private int pieces1, pieces2;
-    private int progress1;
-    private int progress2;
+    private int progress1, progress2;
     private Stack<IMove> pastMoves;
-
-    @Override
-    public void newDeterminization(int myPlayer) {
-        // only need this for imperfect information games
-    }
-
-    @Override
-    public boolean isPartialObservable() {
-        return false;
-    }
-
-    @Override
-    public int getNMovesMade() {
-        return nMoves;
-    }
-
-    @Override
-    public boolean isLegal(IMove move) {
-        // only used in imperfect information
-        return true;
-    }
-
-    @Override
-    public boolean drawPossible() {
-        return false;
-    }
 
     @Override
     public IBoard copy() {
@@ -71,7 +45,6 @@ public class Board implements IBoard {
 
     @Override
     public boolean doAIMove(IMove move, int player) {
-
         int[] movearr = move.getMove();
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
 
@@ -89,7 +62,7 @@ public class Board implements IBoard {
         }
 
         // check for progress (furthest pawn)
-        if (player == 1 && (7-rp) > progress1) progress1 = 7-rp;
+        if (player == 1 && (7 - rp) > progress1) progress1 = 7 - rp;
         else if (player == 2 && rp > progress2) progress2 = rp;
 
         nMoves++;
@@ -298,22 +271,21 @@ public class Board implements IBoard {
         nMoves = 0;
         winner = NONE_WIN;
         curPlayer = 1;
-
         pastMoves = new Stack<IMove>();
     }
 
     @Override
     public double evaluate(int player) {
         // inspired by evaluation function in Maarten's thesis
-        double p1eval = 0; 
-        if (progress1 == 7 || pieces2 == 0) p1eval = 1; 
+        double p1eval = 0;
+        if (progress1 == 7 || pieces2 == 0) p1eval = 1;
         else if (progress2 == 7 || pieces1 == 0) p1eval = -1;
-        else { 
-          double delta = (pieces1*10 + progress1*2.5) - (pieces2*10 + progress2*2.5);
-          if (delta < -100) delta = -100;
-          if (delta > 100) delta = 100;
-          // now pass it through tanh;  
-          p1eval = FastTanh.tanh(delta / 60.0);
+        else {
+            double delta = (pieces1 * 10 + progress1 * 2.5) - (pieces2 * 10 + progress2 * 2.5);
+            if (delta < -100) delta = -100;
+            if (delta > 100) delta = 100;
+            // now pass it through tanh;
+            p1eval = FastTanh.tanh(delta / 60.0);
         }
         return (player == 1 ? p1eval : -p1eval);
     }
@@ -332,4 +304,30 @@ public class Board implements IBoard {
         return (r >= 0 && c >= 0 && r < 8 && c < 8);
     }
 
+    @Override
+    public void newDeterminization(int myPlayer) {
+        // only need this for imperfect information games
+    }
+
+    @Override
+    public boolean isPartialObservable() {
+        return false;
+    }
+
+    @Override
+    public int getNMovesMade() {
+        return nMoves;
+    }
+
+    @Override
+    public boolean isLegal(IMove move) {
+        // only used in imperfect information
+        return true;
+    }
+
+    @Override
+    public boolean drawPossible() {
+        // TODO I think a draw is possible, if the only two pieces left are facing eachother
+        return false;
+    }
 }
