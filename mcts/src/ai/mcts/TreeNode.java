@@ -338,10 +338,13 @@ public class TreeNode {
                 // If there are children with INF value, choose on of them
                 if (t.avgValue == INF)
                     value = INF + options.r.nextDouble();
-                else
-                    // value = t.nVisits;
+                else if (t.avgValue == -INF)
+                    value = -INF + t.nVisits;
+                else { 
+                    value = t.nVisits;
                     // For MCTS solver (Though I still prefer to look at the visits (Tom))
-                    value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
+                    //value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
+                }
             }
             //
             if (value > max) {
