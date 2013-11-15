@@ -330,7 +330,8 @@ public class Board implements IBoard {
             for (int c = 0; c < 8; c++) str += board[r][c];
             str += "\n";
         }
-        str += "\nPieces: " + pieces1 + " " + pieces2 + "\n";
+        str +=  "\nPieces: " + pieces1 + " " + pieces2 + ", " 
+               + "Progresses: " + progress1 + " " + progress2 + "\n";
         return str;
     }
 
