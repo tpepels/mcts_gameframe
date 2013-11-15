@@ -44,14 +44,12 @@ public class Board implements IBoard {
     }
 
     private void recomputeProgress(int player) { 
-        int progress = 0;
-
         if (player == 1) { 
             // white, start from top
             for (int r = 0; r < 8; r++) {
                 for (int c = 0; c < 8; c++) { 
                     if (board[r][c] == 'w') { 
-                        progress = 7-r; 
+                        progress1 = 7-r; 
                         return;
                     }
                 }
@@ -62,7 +60,7 @@ public class Board implements IBoard {
             for (int r = 7; r >= 0; r--) {
                 for (int c = 0; c < 8; c++) { 
                     if (board[r][c] == 'b') { 
-                        progress = r; 
+                        progress2 = r; 
                         return;
                     }
                 }
