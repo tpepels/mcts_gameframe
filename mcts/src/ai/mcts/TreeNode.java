@@ -339,7 +339,7 @@ public class TreeNode {
                 if (t.avgValue == INF)
                     value = INF + options.r.nextDouble();
                 else if (t.avgValue == -INF)
-                    value = -INF + t.nVisits;
+                    value = -INF + t.nVisits + options.r.nextDouble();
                 else { 
                     value = t.nVisits;
                     // For MCTS solver (Though I still prefer to look at the visits (Tom))
