@@ -342,6 +342,7 @@ public class TreeNode {
                     value = -INF + t.nVisits + options.r.nextDouble();
                 else { 
                     value = t.nVisits;
+                    //value = t.avgValue;
                     // For MCTS solver (Though I still prefer to look at the visits (Tom))
                     //value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
                 }
