@@ -32,6 +32,7 @@ public class Board implements IBoard {
     // Move lists
     private static final MoveList moves = new MoveList(1000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>(100);
+    private static final ArrayList<IMove> homeComingMoves = new ArrayList<IMove>(20);
     private static final Random random = new Random();
     // List to keep track of positions seen for jumping
     private static final long[] seen = new long[SIZE];
@@ -161,6 +162,7 @@ public class Board implements IBoard {
 
     private void generateMovesForPlayer(int player, boolean closer) {
         moves.clear();
+        homeComingMoves.clear();
         int startI = (player == P1) ? 0 : N_PIECES;
         int endI = (player == P1) ? N_PIECES : pieces.length;
         for (int i = startI; i < endI; i++) {
@@ -201,6 +203,10 @@ public class Board implements IBoard {
             if (hops == 0 && n.occupant == null) {
                 if (!closerOnly || initDistance >= getDistanceToHome(n.position, target)) {
                     moves.add(new Move(initialPosition, n.position, hops));
+                    // Add the moves to the list of home coming moves
+                    if (!inHome && insideHome(currentPlayer, n.position)) {
+                        homeComingMoves.add(new Move(initialPosition, n.position, hops));
+                    }
                 }
             } else if (n.occupant != null && n.neighbours[i] != null && n.neighbours[i].occupant == null) {
                 // Mark as seen so we don't check it again
@@ -210,6 +216,11 @@ public class Board implements IBoard {
                 // Check if the move is closer to target, and the neighbour is not outside the home, if the piece is inside
                 if (!closerOnly || initDistance >= getDistanceToHome(n.position, target)) {
                     moves.add(new Move(initialPosition, n.neighbours[i].position, hops + 1));
+                    // Add the moves to the list of home coming moves
+                    if (!inHome && insideHome(currentPlayer, n.neighbours[i].position)) {
+                        for (int k = 0; k < hops + 1; k++)
+                            homeComingMoves.add(new Move(initialPosition, n.neighbours[i].position, hops + 1));
+                    }
                 }
                 // Search for a hop-over
                 generateMovesForPiece(colour, initialPosition, n.neighbours[i].position, hops + 1, inHome, closerOnly, initDistance);
@@ -256,6 +267,7 @@ public class Board implements IBoard {
         int piece = random.nextInt(N_PIECES);
         int c = 0;
         while (moves.size() == 0 && c < N_PIECES) {
+            homeComingMoves.clear();
             generateMovesForPiece(pieces[piece + startI].location, true);
             piece++;
             c++;
@@ -268,6 +280,10 @@ public class Board implements IBoard {
             return Arrays.asList(moves.getArrayCopy());
         } else if (heuristics) { // Don't do the hop-thing with reverse moves in the list
             playoutMoves.clear();
+            // Play moves that lead to the home first
+            if (homeComingMoves.size() > 0) {
+                return homeComingMoves;
+            }
             int hops;
             for (int i = 0; i < moves.size(); i++) {
                 playoutMoves.add(moves.get(i));

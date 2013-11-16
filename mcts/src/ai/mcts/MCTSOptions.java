@@ -6,8 +6,8 @@ import ai.FastSqrt;
 import java.util.Random;
 
 public class MCTSOptions {
-    private static FastLog fastLog = new FastLog();
-    private static FastSqrt fastSqrt = new FastSqrt();
+//    private static FastLog fastLog = new FastLog();
+//    private static FastSqrt fastSqrt = new FastSqrt();
     // Initialize a random generator, separate for each MCTS player
     public final Random r = new Random();
     // Fields for enabling tree-reuse
@@ -16,12 +16,11 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Relative bonus!
     public boolean relativeBonus = false;
-    public int function = 2;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true;
     public boolean ucbTuned = false, auct = false;
     // MCTS Specific values
-    public double uctC = 1., k = 1., maxVar = .5;
+    public double uctC = 1., k = .05, maxVar = .5;
     // Discounting values
     public double lambda = .999999, depthD = 0.1, treeDiscount = 0.6;
     public int timeInterval = 2500;
@@ -32,10 +31,9 @@ public class MCTSOptions {
     // MAST stuff
     private double[][] mastValues, mastVisits;
 
-
     public void enableRB() {
-        maxVar = 1.;
-        this.relativeBonus = true;
+        maxVar = .5;
+        relativeBonus = true;
     }
 
     /**
@@ -51,20 +49,6 @@ public class MCTSOptions {
         } else if (game.equals("amazons")) {
         } else if (game.equals("breakthrough")) {
         }
-    }
-
-    public double f(double x) {
-        switch (function) {
-            case 1:
-                return k * x;
-            case 2:
-                return k * fastLog.log(x + 1);
-            case 3:
-                return k * fastSqrt.sqrt(x);
-            case 4:
-                return k * (x*x);
-        }
-        return x;
     }
 
     public void resetMast(int maxId) {

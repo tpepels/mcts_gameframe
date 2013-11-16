@@ -13,7 +13,6 @@ import java.util.List;
 public class TreeNode {
     static final FastLog l = new FastLog();
     static final MovingAverage ma = new MovingAverage(250);
-    static final double epsilon = 1e-6;
     static final double INF = 999999;
     public static StatCounter moveStats = new StatCounter();
     //
@@ -79,12 +78,8 @@ public class TreeNode {
                 result = child.playOut(board);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
-                    if (child.nMoves < Math.floor(moveStats.mean())) {
-                        int x = (int) ((moveStats.mean() - child.nMoves) / stats.stddev());
-                        if (x > 0) {
-                            result += Math.signum(result) / (options.f(x));
-                        }
-                    }
+                    result += Math.signum(result) * ((2. / (1 + Math.exp(-options.k * (moveStats.mean() - child.nMoves)))) - 1);
+                    result *= .5;
                 }
                 child.nVisits++;
                 child.updateStats(-result);
@@ -340,9 +335,8 @@ public class TreeNode {
                     value = INF + options.r.nextDouble();
                 else if (t.avgValue == -INF)
                     value = -INF + t.nVisits + options.r.nextDouble();
-                else { 
+                else {
                     value = t.nVisits;
-                    //value = t.avgValue;
                     // For MCTS solver (Though I still prefer to look at the visits (Tom))
                     //value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
                 }

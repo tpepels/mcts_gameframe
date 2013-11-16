@@ -36,7 +36,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         options1.enableRB();
         options1.debug = true;
         aiPlayer1.setOptions(options1);
-        //
+
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.debug = true;
@@ -183,7 +183,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
                         } else if (board.checkWin() == Board.P2_WIN) {
                             System.out.println("White wins");
                         }
-                    } else if (board.getPlayerToMove() == Board.P2 || (board.getPlayerToMove() == Board.P1 && allAi)) {
+                    } else if ((board.getPlayerToMove() == Board.P2 && aiPlayer2 != null) || (board.getPlayerToMove() == Board.P1 && allAi)) {
                         if (board.getPlayerToMove() == Board.P2)
                             aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
                         else

@@ -65,7 +65,6 @@ public class AITests {
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.enableRB();
-            options1.function = 1;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -86,7 +85,6 @@ public class AITests {
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.enableRB();
-            options1.function = 2;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -107,7 +105,6 @@ public class AITests {
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.enableRB();
-            options1.function = 3;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -128,7 +125,6 @@ public class AITests {
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.enableRB();
-            options1.function = 4;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -144,6 +140,26 @@ public class AITests {
                 options1.k = i;
                 runGames("AI 1 RB function 4 k = " + i + " || AI 2 MCTS");
             }
+        } else if (which == 5) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.enableRB();
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            double[] values = {1., .75, .5};
+            for (double i : values) {
+                options1.uctC= i;
+                runGames("AI 1 RB c = " + i +" || AI 2 MCTS");
+            }
+
         }
     }
 

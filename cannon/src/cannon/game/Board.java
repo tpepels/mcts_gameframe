@@ -18,7 +18,7 @@ public class Board implements IBoard {
     public final Stack<IMove> pastMoves = new Stack<IMove>();
     private final int[] capture = {-1, -11, -10, -9, 1};
     private final int[] move = {-11, -10, -9};
-    private final int[] retreat = {18, 20, 22}, retrCheck = {-11, -1, +2, -10, +10, -9, +1, +11};
+    private final int[] retreat = {22, 20, 18}, retrCheck = {-11, -1, +2, -10, +10, -9, +1, +11};
     private final int[] n = {-1, 0, 1};
     // Whether the towns have been placed or not determines the first moves
     public boolean whiteTownPlaced = false, blackTownPlaced = false;
@@ -317,8 +317,8 @@ public class Board implements IBoard {
             end -= 3;
         }
         for (int i = start; i < end; i++) {
-            if(from + retrCheck[i] > 0 && from + retrCheck[i]  < 10) {
-                if(board[from + retrCheck[i]] == opp_soldier) {
+            if (from + retrCheck[i] >= 0 && from + retrCheck[i] < board.length) {
+                if (board[from + retrCheck[i]] == opp_soldier) {
                     canRetreat = true;
                     break;
                 }
@@ -330,24 +330,23 @@ public class Board implements IBoard {
             end = retreat.length;
             // Retreat moves
             if (from % WIDTH == 0) {
-                if (colour == P1)
+                if (colour == P2)
                     start++;
                 else
                     end--;
             } else if (from % WIDTH == 9) {
-                if (colour == P1)
+                if (colour == P2)
                     end--;
                 else
                     start++;
             }
-            to = -1;
-            int free = -1, inv_multipl = (multipl == 1) ? -1 : 1;
+            int free, inv_multipl = (multipl == 1) ? -1 : 1;
             for (int i = start; i < end; i++) {
                 to = from + (multipl * retreat[i]);
                 // This square needs to be free
                 free = from + inv_multipl * move[i];
                 // Not outside the board, and not occupied
-                if (to > 0 && to < board.length && board[to] == EMPTY && board[free] == EMPTY) {
+                if (to >= 0 && to < board.length && board[to] == EMPTY && board[free] == EMPTY) {
                     // System.out.println("retreat " + to);
                     testMove = new Move(Move.RETREAT, new int[]{from, to});
                     doMove(testMove, false);
@@ -523,6 +522,8 @@ public class Board implements IBoard {
                         simMoves.add(move);
                         simMoves.add(move);
                     }
+                } else if (heuristics && move.getType() != Move.RETREAT) {
+                    simMoves.add(move);
                 } else {
                     simMoves.add(move);
                 }
