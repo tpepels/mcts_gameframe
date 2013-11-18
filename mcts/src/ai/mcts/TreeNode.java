@@ -15,6 +15,7 @@ public class TreeNode {
     static final MovingAverage ma = new MovingAverage(250);
     static final double INF = 999999;
     public static StatCounter moveStats = new StatCounter();
+    public static double totalVisits = 0;
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -23,6 +24,7 @@ public class TreeNode {
     private List<TreeNode> children;
     private IMove move;
     private StatCounter stats = new StatCounter();
+    private double lastVisit = 0;
     private double nVisits, totValue, avgValue, velocity = 1., age = 0.;
     private double nMoves = 0.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
@@ -67,6 +69,7 @@ public class TreeNode {
             else
                 child = select(board, depth + 1);
         }
+        child.lastVisit = totalVisits;
         nVisits++;
         double result;
         // (Solver) Check for proven win / loss / draw
@@ -78,7 +81,11 @@ public class TreeNode {
                 result = child.playOut(board);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
-                    result += Math.signum(result) * ((2. / (1 + Math.exp(-options.k * (moveStats.mean() - child.nMoves)))) - 1);
+                    double x = moveStats.mean() - child.nMoves;
+                    if (options.stdDev && moveStats.variance() > 0) {
+                        x /= moveStats.stddev();
+                    }
+                    result += Math.signum(result) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
                     result *= .5;
                 }
                 child.nVisits++;
@@ -200,6 +207,7 @@ public class TreeNode {
     private TreeNode select(IBoard board, int depth) {
         TreeNode selected = null;
         double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar;
+
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // Skip virtual nodes
@@ -224,12 +232,16 @@ public class TreeNode {
                 if (options.implicitMM)
                     avgValue = c.avgValue + c.imVal;
 
+                if (options.nuct) {
+                    int n = (int) (totalVisits - c.lastVisit);
+                    avgValue *= Math.pow(options.lambda, n);
+                }
                 if (!options.ucbTuned) {
                     // Compute the uct value with the (new) average value
                     uctValue = avgValue + (options.uctC * Math.sqrt(l.log(nVisits) / c.nVisits));
                 } else {
                     ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(nVisits)) / c.nVisits);
-                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(nVisits)) / c.nVisits);
+                    uctValue = avgValue + Math.sqrt((Math.min(.25, ucbVar) * l.log(nVisits)) / c.nVisits);
                 }
             }
             // Remember the highest UCT value
@@ -456,7 +468,9 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tVisits: " + nVisits + "\tValue: " + avgValue + "\tVelocity: "
-                + velocity;
+        int n = (int) (totalVisits - lastVisit);
+        double avgValue = this.avgValue * Math.pow(options.lambda, n);
+        return move + "\tVisits: " + nVisits + "\tValue: " + avgValue + "\tLast visit vi: "
+                + avgValue;
     }
 }

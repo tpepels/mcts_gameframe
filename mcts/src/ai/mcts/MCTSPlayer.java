@@ -58,6 +58,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
         TreeNode.moveStats.reset();
         TreeNode.ma.reset();
+        TreeNode.totalVisits = 0;
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -87,6 +88,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
             //
             board.newDeterminization(myPlayer);
+            TreeNode.totalVisits++;
             // Make one simulation from root to leaf.
             root.MCTS(board, 0);
         }

@@ -56,7 +56,6 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         // Definition for player 2
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
-        options2.relativeBonus = true;
         aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);

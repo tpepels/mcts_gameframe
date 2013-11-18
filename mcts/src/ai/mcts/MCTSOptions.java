@@ -1,13 +1,8 @@
 package ai.mcts;
 
-import ai.FastLog;
-import ai.FastSqrt;
-
 import java.util.Random;
 
 public class MCTSOptions {
-//    private static FastLog fastLog = new FastLog();
-//    private static FastSqrt fastSqrt = new FastSqrt();
     // Initialize a random generator, separate for each MCTS player
     public final Random r = new Random();
     // Fields for enabling tree-reuse
@@ -15,12 +10,12 @@ public class MCTSOptions {
     // Discount values based on their depth
     public boolean depthDiscount = false;
     // Relative bonus!
-    public boolean relativeBonus = false;
+    public boolean relativeBonus = false, stdDev = false;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true;
-    public boolean ucbTuned = false, auct = false;
+    public boolean ucbTuned = false, auct = false, nuct = false;
     // MCTS Specific values
-    public double uctC = 1., k = .05, maxVar = .5;
+    public double uctC = 1., k = .05;
     // Discounting values
     public double lambda = .999999, depthD = 0.1, treeDiscount = 0.6;
     public int timeInterval = 2500;
@@ -32,8 +27,8 @@ public class MCTSOptions {
     private double[][] mastValues, mastVisits;
 
     public void enableRB() {
-        maxVar = .5;
         relativeBonus = true;
+        uctC = .5;
     }
 
     /**
