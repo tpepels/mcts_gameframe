@@ -1,5 +1,6 @@
 #!/bin/sh
 dirs="cannon chinesecheckers lostcities mcts pentalath amazons Experiments breakthrough"
+class=`shift`
 
 CP="."
 for d in $dirs
@@ -7,7 +8,7 @@ do
   CP="$CP:build/$d"
 done
 
-java -cp $CP $1
+java -cp $CP $class $@
 
 # Classes with main 
 #
