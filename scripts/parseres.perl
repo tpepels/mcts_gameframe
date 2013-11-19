@@ -211,7 +211,8 @@ foreach my $match (keys %matchmap) {
   printf("%3.2f  %3.2f  +/-  %3.2f\n", $lperc, $rperc, $ci95perc);
 }
 
-foreach my $key (sort {$totalpoints{$b} <=> $totalpoints{$a}} keys %totalpoints) {
-  print "total points for $key = " . $totalpoints{$key} . "\n";
-}
+# enable this if we want later
+#foreach my $key (sort {$totalpoints{$b} <=> $totalpoints{$a}} keys %totalpoints) {
+#  print "total points for $key = " . $totalpoints{$key} . "\n";
+#}
 
