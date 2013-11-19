@@ -7,17 +7,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="Breakthrough heuristics and experiment">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/ai/alphabeta/AlphaBeta.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/ai/alphabeta/AlphaBeta.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" afterPath="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="mcts_gameframe.iws" />
     <ignored path=".idea/workspace.xml" />
     <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384877045130" ignored="false" />
     <file path="/Table.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383922342799" ignored="false" />
-    <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384884631379" ignored="false" />
+    <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384885212609" ignored="false" />
     <file path="/fragment.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384441531843" ignored="false" />
     <file path="/Deck.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383595328609" ignored="false" />
     <file path="/Stack.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381337749886" ignored="false" />
@@ -127,7 +124,7 @@
       <file leaf-file-name="TreeNode.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="21" column="52" selection-start="579" selection-end="579" vertical-scroll-proportion="0.0">
+            <state line="22" column="52" selection-start="602" selection-end="602" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -136,7 +133,7 @@
       <file leaf-file-name="AlphaBeta.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/ai/alphabeta/AlphaBeta.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="22" column="29" selection-start="688" selection-end="695" vertical-scroll-proportion="-15.36">
+            <state line="412" column="40" selection-start="15687" selection-end="15695" vertical-scroll-proportion="-87.2">
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="e#2412#2419#0" expanded="true" />
@@ -148,10 +145,10 @@
       <file leaf-file-name="Board.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="829" column="67" selection-start="29869" selection-end="29869" vertical-scroll-proportion="-0.031149302">
+            <state line="664" column="0" selection-start="23346" selection-end="23346" vertical-scroll-proportion="-0.71443194">
               <folding>
                 <element signature="e#2184#2193#0" expanded="true" />
-                <element signature="e#3675#3682#0" expanded="true" />
+                <element signature="e#3709#3716#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -217,10 +214,10 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="683" />
-    <option name="y" value="41" />
-    <option name="width" value="1248" />
-    <option name="height" value="1153" />
+    <option name="x" value="-8" />
+    <option name="y" value="-8" />
+    <option name="width" value="1936" />
+    <option name="height" value="1186" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -255,7 +252,7 @@
     <ConfirmationsSetting value="0" id="Remove" />
   </component>
   <component name="ProjectReloadState">
-    <option name="STATE" value="0" />
+    <option name="STATE" value="1" />
   </component>
   <component name="ProjectStructureProblems">
     <ignored-problems>
@@ -948,7 +945,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="683" y="41" width="1248" height="1153" extended-state="0" />
+    <frame x="-8" y="-8" width="1936" height="1186" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32048458" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -964,7 +961,7 @@
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24799082" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.39967984" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.19139966" sideWeight="0.47670808" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.12113127" sideWeight="0.47670808" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="FLOATING" visible="true" weight="0.868677" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="1920" y="2" width="1112" height="1163" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1130,7 +1127,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="21" column="52" selection-start="579" selection-end="579" vertical-scroll-proportion="0.0">
+        <state line="22" column="52" selection-start="602" selection-end="602" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1144,7 +1141,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/ai/alphabeta/AlphaBeta.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="22" column="29" selection-start="688" selection-end="695" vertical-scroll-proportion="-15.36">
+        <state line="412" column="40" selection-start="15687" selection-end="15695" vertical-scroll-proportion="-87.2">
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="e#2412#2419#0" expanded="true" />
@@ -1154,10 +1151,10 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="829" column="67" selection-start="29869" selection-end="29869" vertical-scroll-proportion="-0.031149302">
+        <state line="664" column="0" selection-start="23346" selection-end="23346" vertical-scroll-proportion="-0.71443194">
           <folding>
             <element signature="e#2184#2193#0" expanded="true" />
-            <element signature="e#3675#3682#0" expanded="true" />
+            <element signature="e#3709#3716#0" expanded="true" />
           </folding>
         </state>
       </provider>

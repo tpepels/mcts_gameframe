@@ -50,7 +50,7 @@ public class Board implements IBoard {
     public ArrayList<int[]> captureList = new ArrayList<int[]>(SIZE);
     public double maxHistVal;
     public int startindex = 0; // Skip the first when getting a move to make
-    public int numCapture = 0;
+    public int numCapture = 0, p1_captures = 0, p2_captures = 0;
     // private void hashCurrentPlayer() {
     // if (currentPlayer == Board.P1) {
     // zobristHash ^= blackHash;
@@ -378,7 +378,6 @@ public class Board implements IBoard {
         }
         numCapture = 0;
         captureI = 0;
-        playerCaps = new int[2]; // Pieces captured per player COLOR-1.
         if (suicide && capture) { // Freedom suicide
             // Will now store all positions to be eliminated.
             seen = new boolean[SIZE];
@@ -436,6 +435,7 @@ public class Board implements IBoard {
         for (int i = 0; i < captures.length; i++) {
             color = isBlack(captures[i]) ? P2 : P1;
             position = getPosition(captures[i]);
+            playerCaps[color - 1]--;
             board[position].occupant = color;
             // return the stone to the hash
             // zobristHash ^= zobristPositions[position][color - 1];
@@ -661,6 +661,9 @@ public class Board implements IBoard {
         int minFreeOpp = P_INF, minFreeMe = P_INF, currentFree, count = 0, score = 0;
         int maxRowOpp = 0, maxRowMe = 0, currentMax, maxGroupMe = 0, maxGroupOpp = 0, maxTotalFreeMe = 0, maxTotalFreeOpp = 0;
         boolean isOpp, myTurn;
+        score += weights[0] * playerCaps[getOpponent(player) - 1];
+        // The number of my pieces captured by the opponent
+        score += weights[5] * playerCaps[player - 1];
         // Check minimal freedom, longest rows etc.
         for (int i = 0; i < board.length; i++) {
             // Check if position is part of the board
