@@ -35,6 +35,7 @@ public class Board implements IBoard {
             36};
     // set the bit in this position to 1 if a stone is black.
     private final int BLACK_BIT = 128;
+    private final int N_INF = -2000000, P_INF = 2000000;
     public Field[] board;
     // private final long[][] zobristPositions;
     // public final long zobristHash, whiteHash, blackHash;
@@ -67,6 +68,24 @@ public class Board implements IBoard {
     private int captureI = 0, firstCaptureI = 0, nMoves = 0;
     // For the win check, this array holds the positions that have been investigated
     private boolean[] seen;
+    private int opp, longestRow;
+    private boolean[] closedrow = new boolean[3], extrafreedom = new boolean[3];
+    private int[] rowLength = new int[3], freedom = new int[6], totFreedom = new int[6];
+    // Weights for the features
+    // [0] Captures  (not used yet, TODO)
+    // [1] my longest row,
+    // [2] min. freedom of my pieces,
+    // [3] min. freedom of opponent's pieces,
+    // [4] longest opponent's row,
+    // [5] pieces capped by opponent.
+    // [6] my largest group
+    // [7] opponent's largest group
+    private int[] weights = {800, 50, 5, -5, -50, -800, 10, -10, 5, -5};
+    private boolean[] seenFree, visited;
+    private ArrayList<Field> checkedFree = new ArrayList<Field>(Board.SIZE);
+    private int groupSize = 0;
+    // This value is set if there exists a row of length 4 and freedom 2
+    private int winByForce1 = 0, winByForce2 = 0, totalfreedom = 0;
 
     //
     public Board() {
@@ -637,7 +656,235 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player) {
-        return 0.0; 
+        //
+        boolean[] seenFree = new boolean[Board.SIZE];
+        int minFreeOpp = P_INF, minFreeMe = P_INF, currentFree, count = 0, score = 0;
+        int maxRowOpp = 0, maxRowMe = 0, currentMax, maxGroupMe = 0, maxGroupOpp = 0, maxTotalFreeMe = 0, maxTotalFreeOpp = 0;
+        boolean isOpp, myTurn;
+        // Check minimal freedom, longest rows etc.
+        for (int i = 0; i < board.length; i++) {
+            // Check if position is part of the board
+            if (board[i].occupant == Board.FREE)
+                continue;
+            isOpp = board[i].occupant != player;
+            myTurn = currentPlayer == board[i].occupant;
+            // Check if longest row.
+            currentMax = checkRowLength(board[i], currentPlayer == board[i].occupant);
+            // Check if row of 4 with 2 freedom
+            if (winByForce1 > 0) {
+                score = (isOpp) ? -5000 : 5000;
+                return score;
+            } else if (winByForce2 > 0) {
+                // System.out.println("Force move win for: " + board.board[i].occupant);
+                // good or bad :)
+                score = (isOpp) ? -6000 : 6000;
+                return score;
+            }
+            // Check if row length is higher than current highest
+            if (isOpp && currentMax > maxRowOpp) {
+                maxRowOpp = currentMax;
+            } else if (!isOpp && currentMax > maxRowMe) {
+                maxRowMe = currentMax;
+            }
+            // Check the maximum total freedom in every direction
+            if (isOpp && totalfreedom > maxTotalFreeOpp) {
+                maxTotalFreeOpp = totalfreedom;
+            } else if (!isOpp && totalfreedom > maxTotalFreeMe) {
+                maxTotalFreeMe = totalfreedom;
+            }
+            // Check for minimal freedom.
+            checkedFree.clear();
+            visited = new boolean[Board.SIZE];
+            if (myTurn) // Be pessimistic about group-size if not my turn
+                groupSize = 1;
+            else
+                groupSize = 0;
+            //
+            currentFree = checkFreedom(board[i], 0);
+            for (Field f : checkedFree) {
+                f.freedom = currentFree;
+            }
+            // Check the largest group
+            if (isOpp && groupSize > maxGroupOpp) {
+                maxGroupOpp = groupSize;
+            } else if (!isOpp && groupSize > maxGroupMe) {
+                maxGroupMe = groupSize;
+            }
+            // There should be at least two pieces on the board or no use to compare freedom
+            if (Board.REAL_SIZE - freeSquares > 2) {
+                // Check if freedom is lower than current lowest.
+                if (isOpp && currentFree < minFreeOpp) {
+                    minFreeOpp = currentFree;
+                } else if (!isOpp && currentFree < minFreeMe) {
+                    minFreeMe = currentFree;
+                }
+            }
+            count++;
+            if (count == Board.REAL_SIZE - freeSquares)
+                break;
+        }
+        // Final scoring
+        score += weights[1] * maxRowMe;
+        score += weights[2] * minFreeMe;
+        score += weights[3] * minFreeOpp;
+        score += weights[4] * maxRowOpp;
+        score += weights[8] * maxTotalFreeMe;
+        score += weights[9] * maxTotalFreeOpp;
+        return score;
     }
 
+    /**
+     * Set/get the freedom of a field
+     *
+     * @param f The current field
+     * @return The freedom of the field
+     */
+    private int checkFreedom(Field f, int current) {
+        // This field was checked before, return its freedom.
+        if (seenFree[f.position])
+            return f.freedom;
+
+        visited[f.position] = true;
+        //
+        Field[] nb = f.neighbours;
+        for (Field n : nb) {
+            if (n == null)
+                continue;
+            // For each free neighbor increase the current freedom.
+            if (n.occupant == Board.FREE && !visited[n.position]) {
+                current++;
+                // Count each free position only once!
+                visited[n.position] = true;
+            } else if (n.occupant == f.occupant && !visited[n.position]) {
+                // Check similarly occupied neighbors
+                groupSize++;
+                current = checkFreedom(n, current);
+                checkedFree.add(n);
+            }
+        }
+        seenFree[f.position] = true;
+        return current;
+    }
+
+    /**
+     * Check the longest row that this field is part of
+     *
+     * @param f The current field
+     * @return The length of the longest row
+     */
+    private int checkRowLength(Field f, boolean myTurn) {
+        winByForce1 = 0;
+        winByForce2 = 0;
+        totalfreedom = 0;
+        //
+        opp = (f.occupant == Board.P2) ? Board.P1 : Board.P2;
+        // Each row is of at least length 1 :)
+        for (int i = 0; i < rowLength.length; i++) {
+            // The current stone
+            rowLength[i] = 1;
+            closedrow[i] = true;
+            extrafreedom[i] = false;
+            //
+            freedom[i] = 0;
+            freedom[i + 3] = 0;
+            totFreedom[i] = 0;
+            totFreedom[i + 3] = 0;
+        }
+        longestRow = 0;
+        boolean prevFree = false, rowfinished = false;
+        Field currentField;
+        // Check once in each direction.
+        for (int j = 0; j < Board.NUM_NEIGHBOURS; j++) {
+            prevFree = false;
+            rowfinished = false;
+            currentField = f.neighbours[j];
+            // If we've already seen this position, the current row will not be longer than when
+            // we saw it before.
+            if (currentField == null)
+                continue;
+
+            // Check for a row of 5 in each direction.
+            while (currentField != null && currentField.occupant != opp) {
+                if (!rowfinished) {
+                    // Is part of the row, increase
+                    if (currentField.occupant == f.occupant) {
+                        if (prevFree) {
+                            closedrow[j % 3] = false; // a gap
+                        } else {
+                            prevFree = false;
+                            rowLength[j % 3]++;
+                        }
+                    } else if (!prevFree) {
+                        totalfreedom++;
+                        // The row has some freedom in this direction
+                        prevFree = true;
+                        freedom[j]++;
+                        totFreedom[j]++;
+                    } else if (prevFree) {
+                        extrafreedom[j % 3] = true;
+                        // Two free squares == no longer part of a row
+                        rowfinished = true;
+                        totalfreedom++;
+                        totFreedom[j]++;
+                        // Total freedom is not considered later in the game
+                        if (totFreedom[j % 3] + rowLength[j % 3] >= Board.ROW_SIZE)
+                            break;
+                    }
+                } else {
+                    // Keep counting the free squares in this direction
+                    totalfreedom++;
+                    totFreedom[j]++;
+                }
+                //
+                currentField = currentField.neighbours[j];
+            }
+        }
+        //
+        int longestrowi = -1;
+        for (int i = 0; i < rowLength.length; i++) {
+            // Check for the longest row, only if it can be extended to a row of 5
+            if (rowLength[i] > longestRow
+                    && rowLength[i] + totFreedom[i] + totFreedom[i + 3] >= Board.ROW_SIZE) {
+                longestRow = rowLength[i];
+                longestrowi = i;
+            }
+        }
+        // If not player's turn, be pessimistic about freedom
+        if (!myTurn) {
+            if (longestrowi >= 0) {
+                // Assume the opponent will block the longest row
+                freedom[longestrowi]--;
+                // Assume the opponent will cut of row with most freedom
+                if (totFreedom[longestrowi] > totFreedom[longestrowi + 3]) {
+                    totalfreedom -= totFreedom[longestrowi];
+                    totFreedom[longestrowi] = 0;
+                } else {
+                    totalfreedom -= totFreedom[longestrowi + 3];
+                    totFreedom[longestrowi + 3] = 0;
+                }
+                // Re-check if still the longest row.
+                for (int i = 0; i < rowLength.length; i++) {
+                    // Check for the longest row
+                    if (rowLength[i] > longestRow
+                            && rowLength[i] + totFreedom[i] + totFreedom[i + 3] >= Board.ROW_SIZE) {
+                        longestRow = rowLength[i];
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < rowLength.length; i++) {
+            // This condition always leads to a win, closed row of 4, freedom on both sides
+            // Or, if myTurn, closed row of three with freedom on both sides, and one extra freedom.
+            if (rowLength[i] == 4 && freedom[i] == 2 && closedrow[i]) {
+                winByForce1 = f.occupant;
+                return longestRow;
+            } else if (myTurn && rowLength[i] == 3 && freedom[i] == 2 && closedrow[i]
+                    && extrafreedom[i]) {
+                winByForce2 = f.occupant;
+            } else if (myTurn && rowLength[i] == 4 && freedom[i] >= 1 && closedrow[i]) {
+                winByForce2 = f.occupant;
+            }
+        }
+        return longestRow;// * numGoodRows;
+    }
 }
