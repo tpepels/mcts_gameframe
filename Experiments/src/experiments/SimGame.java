@@ -8,6 +8,8 @@ import ai.mcts.MCTSPlayer;
 
 import breakthrough.game.Board;
 
+import java.util.Random;
+
 
 /**
  * Runs a single experiment. Options are sent by command-line. 
@@ -23,6 +25,7 @@ public class SimGame {
     private AIPlayer player1; 
     private AIPlayer player2;
     private int timeLimit; 
+    private long seed; 
 
     SimGame() { 
         game = "none specified"; 
@@ -31,6 +34,8 @@ public class SimGame {
         player1 = null;
         player2 = null;
         timeLimit = 1000; 
+
+        seed = System.currentTimeMillis(); 
     }
 
     public static void main(String[] args) { 
@@ -56,6 +61,10 @@ public class SimGame {
             else if (args[i].equals("--timelimit")) { 
                 i++;
                 timeLimit = Integer.parseInt(args[i]); 
+            }
+            else if (args[i].equals("--seed")) { 
+                i++; 
+                seed = Long.parseLong(args[i]); 
             }
         }
     }
@@ -85,6 +94,7 @@ public class SimGame {
             playerRef = new MCTSPlayer();
             MCTSOptions options = new MCTSOptions(); 
             options.timeInterval = timeLimit;
+            options.r.setSeed(seed);
 
             // now, parse the tags
             for (int i = 1; i < parts.length; i++) { 
@@ -144,6 +154,8 @@ public class SimGame {
         loadPlayer(1); 
         loadPlayer(2); 
 
+
+
         while (board.checkWin() == Board.NONE_WIN) {
             int player = board.getPlayerToMove();
             System.out.println(board.toString());
@@ -160,7 +172,8 @@ public class SimGame {
                 System.out.println("Player " + player + " played " + m);
         }
 
-        System.out.println("Winner is " + board.checkWin());
+        // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
+        System.out.println("Game over. Winner is " + board.checkWin());
     }
 
 }

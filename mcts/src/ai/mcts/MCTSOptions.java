@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class MCTSOptions {
     // Initialize a random generator, separate for each MCTS player
-    public final Random r = new Random();
+    public static final Random r = new Random();
     // Fields for enabling tree-reuse
     public boolean treeReuse = false, treeDecay = false, ageDecay = false;
     // Discount values based on their depth

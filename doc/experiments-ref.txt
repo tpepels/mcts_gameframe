@@ -1,0 +1,45 @@
+
+To run experiments on Linux servers with many CPUs:
+
+To clean, run scripts/clean.sh
+To build, run scripts/make.sh
+
+An experiment uses two files and a directory:
+
+  scratch/
+  scripts/parallel.perl
+  scripts/parseres.perl
+
+First thing you'll want to do is make a local/personal copy of parallel.perl so that we're not
+constantly overwriting each other's stuff, and then you can customize it to your liking. I suggest
+scripts/parallel-tom.perl.
+
+scripts/parallel.perl is a perl-based job scheduler. It queues jobs which are organized into 
+"matchup". A match is a (swapped seat) experiment between two types of players. A type of player
+is identified by a name, i.e. 'mcts_h_pd4'. A matchip is a pairing of two types of players, 
+i.e. "mcts_h_pd4,mcts_h". There is a list of matchups in this file that will determine what 
+experiments are run; you'll have to change it each time. You can also make a loop, see the file 
+for how. 
+
+To run it: 
+
+  scripts/parallel.perl scratch 1000 breakthrough 45 500
+
+scratch is the directory that all the game log files will go
+1000 is the time limit
+breakthrough is the game
+45 is the number of CPUs to use at one time (go4natures have 48)
+500 is the number of matches for each matchup (this means 1000 games since each match is 2 games)
+
+To get the results of all experiments, run scripts/parseres.perl scratch 
+
+When running on the servers, you should run the script within a screen so you don't need to keep an 
+SSH window logged in all the time. Here's a quick tutorial on how to do that.
+
+To start a new screen: screen
+While in a screen, to detach it: Ctrl+a, then d
+To re-attach a detached screen: screen -r
+To kill a screen while it's attached: exit
+To scroll back into the history of the currently attached screen: Ctrl+a, then Esc .. then arrows
+
+

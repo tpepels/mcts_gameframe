@@ -470,7 +470,7 @@ public class TreeNode {
     public String toString() {
         int n = (int) (totalVisits - lastVisit);
         double avgValue = this.avgValue * Math.pow(options.lambda, n);
-        return move + "\tVisits: " + nVisits + "\tValue: " + avgValue + "\tLast visit vi: "
+        return move + "\tVisits: " + nVisits + "\tValue: " + avgValue + "\tLast visit vi: " 
                 + avgValue;
     }
 }
