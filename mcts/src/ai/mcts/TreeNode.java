@@ -33,6 +33,7 @@ public class TreeNode {
         this.player = player;
         this.virtual = false;
         this.options = options;
+        this.age = totalVisits;
     }
 
     public TreeNode(int player, IMove move, MCTSOptions options) {
@@ -40,6 +41,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = false;
         this.options = options;
+        this.age = totalVisits;
     }
 
     public TreeNode(int player, IMove move, final boolean virtual, MCTSOptions options) {
@@ -47,6 +49,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = virtual;
         this.options = options;
+        this.age = totalVisits;
     }
 
     /**
@@ -233,7 +236,7 @@ public class TreeNode {
                     avgValue = c.avgValue + c.imVal;
 
                 if (options.nuct) {
-                    int n = (int) (totalVisits - c.lastVisit);
+                    int n = (int) ((totalVisits - c.age) - c.lastVisit);
                     avgValue *= Math.pow(options.lambda, n);
                 }
                 if (!options.ucbTuned) {
@@ -468,7 +471,7 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        int n = (int) (totalVisits - lastVisit);
+        int n = (int) ((totalVisits - age) - lastVisit);
         double avgValue = this.avgValue * Math.pow(options.lambda, n);
         return move + "\tVisits: " + nVisits + "\tValue: " + avgValue + "\tLast visit vi: " 
                 + avgValue;

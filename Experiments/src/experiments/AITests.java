@@ -126,17 +126,19 @@ public class AITests {
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
             options1.nuct = true;
+            options1.timeInterval = 1000;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.timeInterval = 1000;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {0.999999, 0.9999999, 0.99999};
+            double[] values = {0.999999, 0.99999999, 0.9999999999};
             for (double i : values) {
                 options1.lambda = i;
                 runGames("AI 1 NUCT lambda = " + i + " || AI 2 MCTS");
