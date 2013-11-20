@@ -96,7 +96,7 @@ public class SimGame {
          */ 
         String label = (player == 1 ? p1label : p2label); 
         AIPlayer playerRef = null; 
-
+            
         String[] parts = label.split("_"); 
 
         if (parts[0].equals("mcts")) { 

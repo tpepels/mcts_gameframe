@@ -260,7 +260,9 @@ public class TreeNode {
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
-        while (!gameEnded) {
+        boolean terminateEarly = false; 
+         
+        while (!gameEnded && !terminateEarly) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
@@ -285,8 +287,10 @@ public class TreeNode {
                     gameEnded = winner != IBoard.NONE_WIN;
                     currentPlayer = board.getOpponent(currentPlayer);
                     // Check if pdepth is reached
-                    if (options.earlyEval && nMoves >= options.pdepth)
+                    if (options.earlyEval && nMoves >= options.pdepth) {
+                        terminateEarly = true;
                         break;
+                    }
                 } else {
                     // The move was illegal, remove it from the list.
                     moveMade = false;
@@ -294,6 +298,8 @@ public class TreeNode {
                 }
             }
         }
+
+
 
         double score = 0;
 
@@ -303,11 +309,14 @@ public class TreeNode {
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
-        } else if (options.earlyEval) {
+        } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
             // FIXME: relative bonus will not work with pdepth
             score = board.evaluate(player);
+        }
+        else { 
+            throw new RuntimeException("Game end error in playOut"); 
         }
 
         // Undo the moves done in the playout
