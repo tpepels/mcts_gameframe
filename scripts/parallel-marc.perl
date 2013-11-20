@@ -127,19 +127,18 @@ sub get_cmd
 my @jobs = (); 
 
 # here's an example of a loop to initialize matchups instead of a static list
-#my @matchups = (); 
-#my @pdepths = ( 1, 2, 3, 4, 5 ); 
-#for (my $i = 0; $i < scalar(@pdepths); $i++) { 
-#  for my ($j = $i+1; $j < scalar(@pdepths); $j++) { 
-#    my $tag = "mcts_pd$i,mcts_pd$j"; 
-#    push(@matchups, $tag); 
-#  }
-#}
+my @matchups = (); 
+my @pdepths = ( 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 30, 50, 1000 ); 
+for (my $i = 0; $i < scalar(@pdepths); $i++) { 
+  my $pd = $pdepths[$i];
+  my $tag = "mcts_h_pd$pd,mcts_h_pd${pd}_im"; 
+  push(@matchups, $tag); 
+}
 
 # this is a list of matchups 
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
-my @matchups = ( "mcts,mcts_h" );
+#my @matchups = ( "mcts,mcts_h" );
 
 print "queuing jobs... \n";
 

@@ -7,7 +7,7 @@ use vars qw( $debug );
 $debug = 1;
 
 if (not defined($ARGV[3])) { 
-  print "Usage: parallel.perl <scratch dir> <node limit per move> <game> <CPUs>\n";
+  print "Usage: parallel.perl <scratch dir> <node limit per move> <game> <CPUs> [gamespermatch]\n";
   exit;
 }
 
@@ -21,7 +21,7 @@ if (defined ($ARGV[4])) {
   $gamespermatch = $ARGV[4];  
 }
 
-my $algprefix = "mcts";
+my $algprefix = "mcts_h";
 if (defined ($ARGV[5])) { 
   $algprefix = $ARGV[5];  
 }
@@ -255,7 +255,7 @@ sub determine_winners {
   @players = @winners; 
 }
 
-if ("$algprefix" eq "mcts") { 
+if ("$algprefix" eq "mcts" or "$algprefix" eq "mcts_h") { 
   @parms1 = ( "0", "1", "2", "3", "4", "5", "8", "10", "20", "30", "50", "100", "1000" ); 
 }
 else { 
