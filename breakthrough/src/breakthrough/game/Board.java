@@ -76,10 +76,6 @@ public class Board implements IBoard {
         board[rp][cp] = board[r][c];
         board[r][c] = '.';
 
-        // check for a win
-        if (player == 1 && (rp == 0 || pieces2 == 0)) winner = 1;
-        else if (player == 2 && (rp == 7 || pieces1 == 0)) winner = 2;
-
         // check for a capture
         if (move.getType() == Move.CAPTURE) {
             if (player == 1) { 
@@ -94,6 +90,10 @@ public class Board implements IBoard {
                 recomputeProgress(1); 
             }
         }
+
+        // check for a win
+        if (player == 1 && (rp == 0 || pieces2 == 0)) winner = 1;
+        else if (player == 2 && (rp == 7 || pieces1 == 0)) winner = 2;
 
         // check for progress (furthest pawn)
         if (player == 1 && (7 - rp) > progress1) progress1 = 7 - rp;

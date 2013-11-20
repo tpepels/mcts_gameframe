@@ -128,24 +128,24 @@ my @jobs = ();
 my @matchups = (); 
 
 # here's an example of a loop to initialize matchups instead of a static list
-#my @pdepths = ( 0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 15, 30, 50, 1000 ); 
-#for (my $i = 0; $i < scalar(@pdepths); $i++) { 
-#  my $pd = $pdepths[$i];
-#  my $tag = "mcts_h_pd$pd,mcts_h_pd${pd}_im"; 
-#  push(@matchups, $tag); 
-#}
+my @pdepths = ( 2, 0, 1, 4, 5, 6, 7, 8, 3, 10, 12, 15, 30, 50, 1000 ); 
+for (my $i = 0; $i < scalar(@pdepths); $i++) { 
+  my $pd = $pdepths[$i];
+  my $tag = "mcts_h_pd$pd,mcts_h_pd${pd}_im"; 
+  push(@matchups, $tag); 
+}
 
 # this is a list of matchups 
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
-my @matchups = ( 
-  "mcts_h,mcts_h_pd0", 
-  "mcts_h,mcts_h_pd4",
-  "mcts_h,mcts_h_pd1", 
-  "mcts_h,mcts_h_pd3", 
-  "mcts_h,mcts_h_pd5", 
-  "mcts_h,mcts_h_pd2"
-);
+#my @matchups = ( 
+#  "mcts_h,mcts_h_pd0", 
+#  "mcts_h,mcts_h_pd4",
+#  "mcts_h,mcts_h_pd1", 
+#  "mcts_h,mcts_h_pd3", 
+#  "mcts_h,mcts_h_pd5", 
+#  "mcts_h,mcts_h_pd2"
+#);
 
 print "queuing jobs... \n";
 
