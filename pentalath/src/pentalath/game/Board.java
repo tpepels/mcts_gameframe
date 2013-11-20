@@ -1,5 +1,6 @@
 package pentalath.game;
 
+import ai.FastTanh;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -735,7 +736,9 @@ public class Board implements IBoard {
         score += weights[4] * maxRowOpp;
         score += weights[8] * maxTotalFreeMe;
         score += weights[9] * maxTotalFreeOpp;
-        return score;
+
+        double score_nt = FastTanh.tanh(score / 1000.0); 
+        return score_nt;
     }
 
     /**
