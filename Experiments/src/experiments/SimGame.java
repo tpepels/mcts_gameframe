@@ -6,7 +6,16 @@ import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 
+/*
+FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
+     by using their fully-qualified names. 
+import amazons.game.Board;
+import cannon.game.Board;
+import chinesecheckers.game.Board;
 import breakthrough.game.Board;
+import lostcities.game.Table;
+import pentalath.game.Board;
+*/
 
 import java.util.Random;
 
@@ -131,8 +140,23 @@ public class SimGame {
     }
 
     public void loadGame() {
-        if (game.equals("breakthrough")) {
+        if (game.equals("amazons")) {
+            board = new amazons.game.Board(); 
+        }
+        else if (game.equals("breakthrough")) {
             board = new breakthrough.game.Board(); 
+        }
+        else if (game.equals("cannon")) {
+            board = new cannon.game.Board(); 
+        }
+        else if (game.equals("chinesecheckers")) {
+            board = new chinesecheckers.game.Board(); 
+        }
+        else if (game.equals("lostcities")) {
+            board = new lostcities.game.Table(); 
+        }
+        else if (game.equals("pentalath")) {
+            board = new pentalath.game.Board(); 
         }
         else { 
             throw new RuntimeException("Unrecognized game: " + game);  
@@ -154,9 +178,7 @@ public class SimGame {
         loadPlayer(1); 
         loadPlayer(2); 
 
-
-
-        while (board.checkWin() == Board.NONE_WIN) {
+        while (board.checkWin() == IBoard.NONE_WIN) {
             int player = board.getPlayerToMove();
             System.out.println(board.toString());
 
