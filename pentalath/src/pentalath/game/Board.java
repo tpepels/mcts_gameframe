@@ -656,11 +656,12 @@ public class Board implements IBoard {
     public boolean drawPossible() {
         return true;
     }
+        
 
     @Override
     public double evaluate(int player) {
         //
-        boolean[] seenFree = new boolean[Board.SIZE];
+        seenFree = new boolean[Board.SIZE];
         int minFreeOpp = P_INF, minFreeMe = P_INF, currentFree, count = 0, score = 0;
         int maxRowOpp = 0, maxRowMe = 0, currentMax, maxGroupMe = 0, maxGroupOpp = 0, maxTotalFreeMe = 0, maxTotalFreeOpp = 0;
         boolean isOpp, myTurn;
@@ -670,7 +671,7 @@ public class Board implements IBoard {
         // Check minimal freedom, longest rows etc.
         for (int i = 0; i < board.length; i++) {
             // Check if position is part of the board
-            if (board[i].occupant == Board.FREE)
+            if (board[i] == null || board[i].occupant == Board.FREE)
                 continue;
             isOpp = board[i].occupant != player;
             myTurn = currentPlayer == board[i].occupant;
@@ -706,6 +707,7 @@ public class Board implements IBoard {
             else
                 groupSize = 0;
             //
+            assert(board[i] != null); 
             currentFree = checkFreedom(board[i], 0);
             for (Field f : checkedFree) {
                 f.freedom = currentFree;
