@@ -1,7 +1,6 @@
 package ai.mcts;
 
 import ai.FastLog;
-import ai.MovingAverage;
 import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -11,37 +10,37 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TreeNode {
-    static final FastLog l = new FastLog();
-    static final MovingAverage ma = new MovingAverage(250);
-    static final double INF = 999999;
-    public static StatCounter moveStats = new StatCounter();
-    public static double totalVisits = 0;
+    public static final double INF = 999999;
+    private static final FastLog l = new FastLog();
+    public static StatCounter moveStats = new StatCounter(250);
     //
     private final boolean virtual;
     private final MCTSOptions options;
     //
     public int player;
+    private StatCounter stats;
     private List<TreeNode> children;
     private IMove move;
-    private StatCounter stats = new StatCounter();
-    private double lastVisit = 0;
-    private double nVisits, totValue, avgValue, velocity = 1., age = 0.;
-    private double nMoves = 0.;
+    //    private double nVisits;
+    private double velocity = 1., nMoves = 0.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
 
     public TreeNode(int player, MCTSOptions options) {
         this.player = player;
         this.virtual = false;
         this.options = options;
-        this.age = totalVisits;
+        stats = new StatCounter();
     }
 
-    public TreeNode(int player, IMove move, MCTSOptions options) {
+    public TreeNode(int player, IMove move, MCTSOptions options, int depth) {
         this.player = player;
         this.move = move;
         this.virtual = false;
         this.options = options;
-        this.age = totalVisits;
+        if (options.window && depth < 4)
+            stats = new StatCounter(2500);
+        else
+            stats = new StatCounter();
     }
 
     public TreeNode(int player, IMove move, final boolean virtual, MCTSOptions options) {
@@ -49,7 +48,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = virtual;
         this.options = options;
-        this.age = totalVisits;
+        stats = new StatCounter();
     }
 
     /**
@@ -63,7 +62,7 @@ public class TreeNode {
         // First add some leafs if required
         if (isLeaf()) {
             // Expand returns any node that leads to a win
-            child = expand(board);
+            child = expand(board, depth + 1);
         }
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
@@ -72,15 +71,14 @@ public class TreeNode {
             else
                 child = select(board, depth + 1);
         }
-        child.lastVisit = totalVisits;
-        nVisits++;
+//        nVisits++;
         double result;
         // (Solver) Check for proven win / loss / draw
-        if (Math.abs(child.avgValue) != INF && !child.isTerminal()) {
+        if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
             // Execute the move represented by the child
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
-            if (child.nVisits == 0) {
+            if (child.getnVisits() == 0) {
                 result = child.playOut(board);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
@@ -91,7 +89,7 @@ public class TreeNode {
                     result += Math.signum(result) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
                     result *= .5;
                 }
-                child.nVisits++;
+//                child.nVisits++;
                 child.updateStats(-result);
             } else {
                 // The next child
@@ -100,12 +98,12 @@ public class TreeNode {
             // set the board back to its previous configuration
             board.undoMove();
         } else {
-            result = child.avgValue;
+            result = child.stats.mean();
         }
 
         // (Solver) If one of the children is a win, then I'm a win
         if (result == INF) {
-            avgValue = -INF;
+            stats.setValue(-INF);
             return result;
         } else if (result == -INF) {
             // (Solver) Check if all children are a loss
@@ -117,21 +115,20 @@ public class TreeNode {
                 if (options.solverFix && tn.isLeaf()) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
-                    TreeNode winner = tn.expand(board);
+                    TreeNode winner = tn.expand(board, depth + 2);
                     board.undoMove();
                     // We found a winning node below the child, this means the child is a loss.
                     if (winner != null) {
-                        tn.avgValue = -INF;
+                        tn.stats.setValue(-INF);
                     }
                 }
                 // Are all children a loss?
-                if (tn.avgValue != result) {
+                if (tn.stats.mean() != result) {
                     // (AUCT) Update the virtual node with a loss
                     if (options.auct && children.get(0).isVirtual()) {
                         TreeNode virtChild = children.get(0);
-                        virtChild.totValue--;
-                        virtChild.nVisits++;
-                        virtChild.avgValue = virtChild.totValue / virtChild.nVisits;
+                        virtChild.stats.push(-1);
+//                        virtChild.nVisits++;
                     }
                     // Return a single loss, if not all children are a loss
                     updateStats(1);
@@ -139,7 +136,7 @@ public class TreeNode {
                 }
             }
             // (Solver) If all children lead to a loss for the opponent, then I'm a win
-            avgValue = INF;
+            stats.setValue(INF);
             return result;
         }
         // Update the results for the current node
@@ -148,7 +145,7 @@ public class TreeNode {
         return result;
     }
 
-    private TreeNode expand(IBoard board) {
+    private TreeNode expand(IBoard board, int depth) {
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // If one of the nodes is a win, we don't have to select
         TreeNode winNode = null;
@@ -158,9 +155,7 @@ public class TreeNode {
         // (AUCT) Add an extra virtual node
         if (options.auct) {
             TreeNode vNode = new TreeNode(nextPlayer, null, true, options);
-            vNode.totValue = -totValue; // Switch wins / losses
-            vNode.nVisits = nVisits;
-            vNode.avgValue = vNode.totValue / vNode.nVisits;
+            vNode.stats = stats.copyInv();
             vNode.velocity = velocity;
             children.add(vNode);
         }
@@ -171,7 +166,7 @@ public class TreeNode {
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
-                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
+                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options, depth);
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 //
@@ -185,8 +180,7 @@ public class TreeNode {
                     value = 0.;
                 }
                 // Set the value of the child (0 = nothing, +/-INF win/loss)
-                child.totValue = value;
-                child.avgValue = value;
+                child.stats.setValue(value);
                 // implicit minimax
                 if (options.implicitMM) {
                     child.imVal = board.evaluate(player);
@@ -198,7 +192,7 @@ public class TreeNode {
             } else if (board.isPartialObservable()) {
                 // No move-checking for partial observable games
                 // Also, the legality of the move depends on the determinization
-                children.add(new TreeNode(nextPlayer, moves.get(i), options));
+                children.add(new TreeNode(nextPlayer, moves.get(i), options, depth));
             }
         }
         // implicit minimax
@@ -220,31 +214,24 @@ public class TreeNode {
             if (board.isPartialObservable() && !board.isLegal(c.getMove()))
                 continue;
 
-            if (c.nVisits == 0) {
+            if (c.getnVisits() == 0 && Math.abs(c.stats.mean()) != INF) {
                 // First, visit all children at least once
                 uctValue = INF + options.r.nextDouble();
             } else {
-                avgValue = c.avgValue;
+                avgValue = c.stats.mean();
                 // Depth discount changes the average value
-                if (options.depthDiscount && Math.abs(c.avgValue) != INF)
-                    avgValue = c.avgValue * (1. - Math.pow(options.depthD, depth));
-                // Decay based on the age of the node, older node --> more exploration
-                if (options.ageDecay)
-                    avgValue *= Math.pow(options.treeDiscount, age);
+                if (options.depthDiscount && Math.abs(avgValue) != INF)
+                    avgValue *= (1. - Math.pow(options.depthD, depth));
                 // Implicit minimax
                 if (options.implicitMM)
-                    avgValue = c.avgValue + c.imVal;
-
-                if (options.nuct) {
-                    int n = (int) ((totalVisits - c.age) - c.lastVisit);
-                    avgValue *= Math.pow(options.lambda, n);
-                }
+                    avgValue += c.imVal;
+                //
                 if (!options.ucbTuned) {
                     // Compute the uct value with the (new) average value
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(nVisits) / c.nVisits));
+                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(getnVisits()) / c.getnVisits()));
                 } else {
-                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(nVisits)) / c.nVisits);
-                    uctValue = avgValue + Math.sqrt((Math.min(.25, ucbVar) * l.log(nVisits)) / c.nVisits);
+                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
+                    uctValue = avgValue + Math.sqrt((Math.min(.25, ucbVar) * l.log(getnVisits())) / c.getnVisits());
                 }
             }
             // Remember the highest UCT value
@@ -311,7 +298,6 @@ public class TreeNode {
         double score = 0;
 
         if (gameEnded) {
-            ma.add(nMoves);
             // Keep track of the average number of moves per play-out
             moveStats.push(nMoves);
             if (winner == player) score = 1.0;
@@ -343,15 +329,15 @@ public class TreeNode {
                 continue;
             // For partial observable games, use the visit count, not the values.
             if (board.isPartialObservable()) {
-                value = t.nVisits;
+                value = t.getnVisits();
             } else {
                 // If there are children with INF value, choose on of them
-                if (t.avgValue == INF)
+                if (t.stats.mean() == INF)
                     value = INF + options.r.nextDouble();
-                else if (t.avgValue == -INF)
-                    value = -INF + t.nVisits + options.r.nextDouble();
+                else if (t.stats.mean() == -INF)
+                    value = -INF + t.getnVisits() + options.r.nextDouble();
                 else {
-                    value = t.nVisits;
+                    value = t.getnVisits();
                     // For MCTS solver (Though I still prefer to look at the visits (Tom))
                     //value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
                 }
@@ -371,8 +357,6 @@ public class TreeNode {
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
         if (isLeaf() || !options.auct) {
-            totValue += value;
-            avgValue = totValue / nVisits;
             stats.push(value);
         } else {
             // Compute the auct win ratio
@@ -380,12 +364,12 @@ public class TreeNode {
             for (TreeNode c : children) {
                 // Due to the solver, there may be loss-nodes,
                 // these should not be considered in the average node value
-                if (c.avgValue == -INF)
+                if (c.stats.mean() == -INF)
                     continue;
                 sum_v += c.velocity;
-                sum_v_r += c.velocity * c.avgValue;
+                sum_v_r += c.velocity * c.stats.mean();
             }
-            avgValue = -1 * (sum_v_r / sum_v);
+            stats.setValue(-1 * (sum_v_r / sum_v));
         }
 
         // implicit minimax backups
@@ -394,35 +378,6 @@ public class TreeNode {
             for (TreeNode c : children)
                 if (c.imVal > bestVal) bestVal = c.imVal;
             this.imVal = -bestVal;
-        }
-    }
-
-    public void ageSubtree() {
-        // Increase the age of this node
-        age++;
-        // And of its children
-        if (children != null) {
-            for (TreeNode c : children) {
-                c.ageSubtree();
-            }
-        }
-    }
-
-    public void discountValues(double discount) {
-        if (Math.abs(avgValue) != INF) {
-            // In auct we only need to update leafs or virtual nodes
-            if (!options.auct || (isVirtual() || isLeaf())) {
-                totValue *= discount;
-                nVisits *= discount;
-            }
-        }
-        if (children != null) {
-            for (TreeNode c : children) {
-                c.discountValues(discount);
-            }
-            // Due to velocities being reset
-            if (options.auct)
-                updateStats(0);
         }
     }
 
@@ -466,14 +421,12 @@ public class TreeNode {
     }
 
     public double getnVisits() {
-        return nVisits;
+//        return nVisits;
+        return stats.visits();
     }
 
     @Override
     public String toString() {
-        int n = (int) ((totalVisits - age) - lastVisit);
-        double avgValue = this.avgValue * Math.pow(options.lambda, n);
-        return move + "\tVisits: " + nVisits + "\tValue: " + avgValue + "\tLast visit vi: " 
-                + avgValue;
+        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean();
     }
 }

@@ -13,19 +13,6 @@ public class MovingAverage {
         samples = new double[maxSize];
     }
 
-    public static void main(String[] args) {
-        MovingAverage ma = new MovingAverage(10);
-        for (int i = 0; i < 10; i++) {
-            ma.add(i + 1);
-        }
-        System.out.println(ma.getAverage());
-        ma.reset();
-        for (int i = 0; i < 10; i++) {
-            ma.add(i + 1);
-        }
-        System.out.println(ma.getAverage());
-    }
-
     public void reset() {
         index = 0;
         size = 0;
@@ -47,6 +34,10 @@ public class MovingAverage {
         if (index == maxSize) {
             index = 0;
         }
+    }
+
+    public double getSize() {
+        return size;
     }
 
     public double getAverage() {

@@ -40,11 +40,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 //
                 if (t.getMove().equals(lastMove)) {
                     root = t;
-                    // Discount all values in the tree
-                    if (options.treeDecay)
-                        root.discountValues(options.treeDiscount);
-                    if (options.ageDecay)
-                        root.ageSubtree();
                     break;
                 }
             }
@@ -57,8 +52,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             root = new TreeNode(myPlayer, options);
         }
         TreeNode.moveStats.reset();
-        TreeNode.ma.reset();
-        TreeNode.totalVisits = 0;
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -88,9 +81,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
             //
             board.newDeterminization(myPlayer);
-            TreeNode.totalVisits++;
             // Make one simulation from root to leaf.
-            root.MCTS(board, 0);
+            if (root.MCTS(board, 0) == TreeNode.INF)
+                break; // Break if you find a winning move
         }
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);
@@ -119,8 +112,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
-            System.out.println("Avg playout moves: " + TreeNode.moveStats.mean() + " std dev: " + TreeNode.moveStats.stddev());
-            System.out.println("Moving Avg playout moves: " + TreeNode.ma.getAverage());
+            System.out.println("Avg playout moves: " + TreeNode.moveStats.true_mean() + " std dev: " + TreeNode.moveStats.stddev());
+            System.out.println("Moving Avg playout moves: " + TreeNode.moveStats.window_mean());
         }
         // Set the root to the best child, so in the next move
         // the opponent's move can become the new root

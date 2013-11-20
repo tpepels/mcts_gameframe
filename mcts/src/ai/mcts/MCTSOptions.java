@@ -6,19 +6,20 @@ public class MCTSOptions {
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
     // Fields for enabling tree-reuse
-    public boolean treeReuse = false, treeDecay = false, ageDecay = false;
+    public boolean treeReuse = false;
     // Discount values based on their depth
     public boolean depthDiscount = false;
+    public boolean window = false;
     // Relative bonus!
     public boolean relativeBonus = false, stdDev = false;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true;
-    public boolean ucbTuned = false, auct = false, nuct = false;
+    public boolean ucbTuned = false, auct = false;
     // MCTS Specific values
     public double uctC = 1., k = .05;
     // Discounting values
-    public double lambda = .999999, depthD = 0.1, treeDiscount = 0.6;
-    public int timeInterval = 2500;
+    public double lambda = .999999, depthD = 0.1;
+    public int timeInterval = 5000;
     // Marc's stuff
     public boolean earlyEval = false; // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE; // number of moves in playout before dropping down to eval func

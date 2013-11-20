@@ -8,13 +8,30 @@ package ai;
  *
  */
 
+import ai.mcts.TreeNode;
+
 public class StatCounter {
 
     private double m_sum, m_m2, m_mean;
     private int m_n;
+    private MovingAverage ma;
 
     public StatCounter() {
         this.reset();
+    }
+
+    public StatCounter(int window) {
+        ma = new MovingAverage(window);
+        this.reset();
+    }
+
+    public StatCounter copyInv() {
+        StatCounter newSc = new StatCounter();
+        newSc.m_sum = -m_sum;
+        newSc.m_mean = -m_mean;
+        newSc.m_m2 = -m_m2;
+        newSc.m_n = m_n;
+        return newSc;
     }
 
     public void reset() {
@@ -22,6 +39,8 @@ public class StatCounter {
         m_m2 = 0.0;
         m_mean = 0.0;
         m_n = 0;
+        if (ma != null)
+            ma.reset();
     }
 
     public void push(double num) {
@@ -31,6 +50,14 @@ public class StatCounter {
         double delta = num - m_mean;
         m_mean += delta / m_n;
         m_m2 += delta * (num - m_mean);
+
+        if (ma != null)
+            ma.add(num);
+    }
+
+    public void setValue(double val) {
+        m_sum = val;
+        m_mean = val;
     }
 
     public double variance() {
@@ -42,11 +69,25 @@ public class StatCounter {
     }
 
     public double mean() {
-        return m_sum / (double) m_n;
+        if (ma == null || Math.abs(m_mean) == TreeNode.INF)
+            return m_mean;
+        else
+            return ma.getAverage();
+    }
+
+    public double true_mean() {
+        return m_mean;
+    }
+
+    public double window_mean() {
+        return ma.getAverage();
     }
 
     public int visits() {
-        return m_n;
+        if (ma == null)
+            return m_n;
+        else
+            return (int) ma.getSize();
     }
 
     public double ci95() {
