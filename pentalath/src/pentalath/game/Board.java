@@ -549,6 +549,8 @@ public class Board implements IBoard {
      */
     @Override
     public int checkWin() {
+        if (moveList.size() == 0)
+            return NONE_WIN;
         Field lastPosition = board[moveList.get(moveList.size() - 1)];
         // No need to check if there are less than 8 pieces on the board
         if ((Board.REAL_SIZE - freeSquares) < (ROW_SIZE * 2) - 2)
