@@ -312,13 +312,13 @@ public class TreeNode {
                     break;
                 }
 
-                // Select a random move from the available ones
+                // Select a move from the available ones
                 if (options.epsGreedyEval) {
                     // If epsilon greedy playouts, choose the highest eval
                     moveIndex = chooseEGreedyEval(board, moves, currentPlayer); 
                 }
                 else {
-                    // Choose normally
+                    // Choose randomly
                     moveIndex = options.r.nextInt(moves.size());
                 }
 
