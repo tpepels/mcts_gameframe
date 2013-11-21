@@ -128,12 +128,12 @@ my @jobs = ();
 
 # here's an example of a loop to initialize matchups instead of a static list
 #my @matchups = (); 
-#my @pdepths = ( 1, 2, 3, 4, 5 ); 
-#for (my $i = 0; $i < scalar(@pdepths); $i++) { 
-#  for my ($j = $i+1; $j < scalar(@pdepths); $j++) { 
-#    my $tag = "mcts_pd$i,mcts_pd$j"; 
-#    push(@matchups, $tag); 
-#  }
+#my @parms = ( 0.1, 0.05, 0.2, 0.3, 0.4, 0.5, 0.6, 0.25, 0.7, 0.8 ); 
+#for (my $i = 0; $i < scalar(@parms); $i++) { 
+#  my $parm = $parms[$i];
+#  #my $tag = "mcts_h_pd$pd,mcts_h_pd${pd}_im"; 
+#  my $tag = "mcts_h_ege$parm,mcts_h_ege${parm}_im"; 
+#  push(@matchups, $tag); 
 #}
 
 # this is a list of matchups 
