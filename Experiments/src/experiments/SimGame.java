@@ -90,9 +90,10 @@ public class SimGame {
          *
          *  Index of tags:
          *
-         *    _h   = enable heuristics
-         *    _im  = enable implicit minimax
-         *    _pdX = enable early playout termination, pdedpth = X, where X is an integer         
+         *    _egeX  = epsilon-greedy playouts using the eval func, where X is a double
+         *    _h     = enable heuristics
+         *    _im    = enable implicit minimax
+         *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer         
          */ 
         String label = (player == 1 ? p1label : p2label); 
         AIPlayer playerRef = null; 
