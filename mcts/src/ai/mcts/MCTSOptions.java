@@ -10,6 +10,7 @@ public class MCTSOptions {
     // Discount values based on their depth
     public boolean depthDiscount = false;
     public boolean window = false;
+    public int windowSize = 1000;
     // Relative bonus!
     public boolean relativeBonus = false, stdDev = false;
     //
