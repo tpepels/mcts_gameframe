@@ -119,6 +119,10 @@ public class SimGame {
                 else if (tag.equals("im")) { 
                     options.implicitMM = true; 
                 }
+                else if (tag.startsWith("ege")) {
+                    options.epsGreedyEval = true;
+                    options.egeEpsilon = Double.parseDouble(tag.substring(3)); 
+                }
                 else { 
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag); 
                 }

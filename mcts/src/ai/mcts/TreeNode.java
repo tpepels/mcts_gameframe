@@ -252,6 +252,41 @@ public class TreeNode {
         return selected;
     }
 
+    private int chooseEGreedyEval(IBoard board, List<IMove> moves, int currentPlayer) { 
+        double roll = options.r.nextDouble(); 
+        double tolerance = 0.0001; 
+
+        if (roll < options.egeEpsilon) 
+            return options.r.nextInt(moves.size());
+        
+        ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
+        double bestValue = -INF-1; 
+
+        for (int i = 0; i < moves.size(); i++) { 
+            IMove move = moves.get(i);
+            board.doAIMove(move, currentPlayer); 
+            double eval = board.evaluate(currentPlayer); 
+            board.undoMove();
+
+            if (eval > bestValue+tolerance) { 
+                // a clearly better move
+                bestMoveIndices.clear();
+                bestMoveIndices.add(i); 
+                bestValue = eval;
+            }
+            else if (eval >= (bestValue - tolerance) && eval <= (bestValue + tolerance)) { 
+                // a tie
+                bestMoveIndices.add(i); 
+                if (eval > bestValue) 
+                    bestValue = eval; 
+            }
+        }
+
+        assert(bestMoveIndices.size() > 0); 
+        int idx = options.r.nextInt(bestMoveIndices.size());
+        return bestMoveIndices.get(idx); 
+    }
+
     private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), moveIndex;
@@ -276,8 +311,17 @@ public class TreeNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers
                     break;
                 }
+
                 // Select a random move from the available ones
-                moveIndex = options.r.nextInt(moves.size());
+                if (options.epsGreedyEval) {
+                    // If epsilon greedy playouts, choose the highest eval
+                    moveIndex = chooseEGreedyEval(board, moves, currentPlayer); 
+                }
+                else {
+                    // Choose normally
+                    moveIndex = options.r.nextInt(moves.size());
+                }
+
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
