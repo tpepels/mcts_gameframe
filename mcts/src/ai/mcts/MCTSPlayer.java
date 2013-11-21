@@ -114,6 +114,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Avg playout moves: " + TreeNode.moveStats.true_mean() + " std dev: " + TreeNode.moveStats.stddev());
             System.out.println("Moving Avg playout moves: " + TreeNode.moveStats.window_mean());
+            //
+//            for(TreeNode t: root.getChildren()) {
+//                System.out.println(t.stats.ma);
+//            }
         }
         // Set the root to the best child, so in the next move
         // the opponent's move can become the new root

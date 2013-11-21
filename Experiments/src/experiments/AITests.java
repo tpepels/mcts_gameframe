@@ -127,8 +127,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB();
-            options1.stdDev = true;
+            options1.window = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -139,10 +138,10 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.2, .1};
-            for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 RB stdDev, k = " + i + " || AI 2 MCTS");
+            int[] values = {500, 1000};
+            for (int i : values) {
+                options1.windowSize = i;
+                runGames("AI 1 windowed UCB || AI 2 MCTS");
             }
         } else if (which == 5) {
         }

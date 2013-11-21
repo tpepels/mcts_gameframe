@@ -12,16 +12,15 @@ import java.util.List;
 public class TreeNode {
     public static final double INF = 999999;
     private static final FastLog l = new FastLog();
-    public static StatCounter moveStats = new StatCounter(250);
+    public static StatCounter moveStats = new StatCounter(1000);
     //
     private final boolean virtual;
     private final MCTSOptions options;
     //
     public int player;
-    private StatCounter stats;
+    public StatCounter stats;
     private List<TreeNode> children;
     private IMove move;
-    //    private double nVisits;
     private double velocity = 1., nMoves = 0.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
 
@@ -37,8 +36,8 @@ public class TreeNode {
         this.move = move;
         this.virtual = false;
         this.options = options;
-        if (options.window && depth < 4)
-            stats = new StatCounter(2500);
+        if (options.window && depth == 1)
+            stats = new StatCounter(options.windowSize);
         else
             stats = new StatCounter();
     }
@@ -71,7 +70,6 @@ public class TreeNode {
             else
                 child = select(board, depth + 1);
         }
-//        nVisits++;
         double result;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
@@ -89,7 +87,6 @@ public class TreeNode {
                     result += Math.signum(result) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
                     result *= .5;
                 }
-//                child.nVisits++;
                 child.updateStats(-result);
             } else {
                 // The next child
@@ -128,7 +125,6 @@ public class TreeNode {
                     if (options.auct && children.get(0).isVirtual()) {
                         TreeNode virtChild = children.get(0);
                         virtChild.stats.push(-1);
-//                        virtChild.nVisits++;
                     }
                     // Return a single loss, if not all children are a loss
                     updateStats(1);
@@ -214,7 +210,7 @@ public class TreeNode {
             if (board.isPartialObservable() && !board.isLegal(c.getMove()))
                 continue;
 
-            if (c.getnVisits() == 0 && Math.abs(c.stats.mean()) != INF) {
+            if (c.getnVisits() == 0 || c.stats.mean() == INF) {
                 // First, visit all children at least once
                 uctValue = INF + options.r.nextDouble();
             } else {
@@ -260,8 +256,8 @@ public class TreeNode {
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
-        boolean terminateEarly = false; 
-         
+        boolean terminateEarly = false;
+
         while (!gameEnded && !terminateEarly) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
@@ -300,7 +296,6 @@ public class TreeNode {
         }
 
 
-
         double score = 0;
 
         if (gameEnded) {
@@ -314,9 +309,8 @@ public class TreeNode {
 
             // FIXME: relative bonus will not work with pdepth
             score = board.evaluate(player);
-        }
-        else { 
-            throw new RuntimeException("Game end error in playOut"); 
+        } else {
+            throw new RuntimeException("Game end error in playOut");
         }
 
         // Undo the moves done in the playout
@@ -346,9 +340,7 @@ public class TreeNode {
                 else if (t.stats.mean() == -INF)
                     value = -INF + t.getnVisits() + options.r.nextDouble();
                 else {
-                    value = t.getnVisits();
-                    // For MCTS solver (Though I still prefer to look at the visits (Tom))
-                    //value = t.avgValue + (1. / Math.sqrt(t.nVisits + epsilon));
+                    value = t.stats.totalVisits();
                 }
             }
             //
@@ -430,7 +422,6 @@ public class TreeNode {
     }
 
     public double getnVisits() {
-//        return nVisits;
         return stats.visits();
     }
 
