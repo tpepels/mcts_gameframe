@@ -188,6 +188,9 @@ public class Board implements IBoard {
 
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
+        //ArrayList<IMove> forced = new ArrayList<IMove>(); 
+        ArrayList<IMove> forced = null;
+
         poMoves.clear();
         for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
@@ -238,10 +241,26 @@ public class Board implements IBoard {
                     for (int i = 0; i < tempList.size(); i++) {
                         IMove move = tempList.get(i);
                         poMoves.add(move);
-                        // Prefer capture moves
+                        // Prefer defenseless capture moves
                         if (move.getType() == Move.CAPTURE) {
-                            poMoves.add(move);
-                            poMoves.add(move);
+                            int mr = move.getMove()[0]; int mc = move.getMove()[1];
+                            int mrp = move.getMove()[2]; int mcp = move.getMove()[3]; 
+                            int pl = board[mr][mc] == 'w' ? 1 : 2; 
+
+                            if (   pl == 1 
+                                && (!inBounds(mrp-1, mcp-1) || board[mrp-1][mcp-1] == '.')
+                                && (!inBounds(mrp-1, mcp+1) || board[mrp-1][mcp+1] == '.') )
+                            {
+                                poMoves.add(move);
+                                poMoves.add(move);
+                            }
+                            else if (   pl == 2
+                                     && (!inBounds(mrp+1, mcp-1) || board[mrp+1][mcp-1] == '.')
+                                     && (!inBounds(mrp+1, mcp+1) || board[mrp+1][mcp+1] == '.') )
+                            {
+                                poMoves.add(move);
+                                poMoves.add(move);
+                            } 
                         }
                         // check for a win in 1
                         if (curPlayer == 1 && (move.getMove()[2] == 0)) {
@@ -252,6 +271,12 @@ public class Board implements IBoard {
                             poMoves.clear();
                             poMoves.add(move);
                             return poMoves;
+                        } else if (move.getType() == Move.CAPTURE && (move.getMove()[0] == 7 || move.getMove()[0] == 0)) {
+                            //poMoves.clear();
+                            //poMoves.add(move);
+                            if (forced == null) 
+                                forced = new ArrayList<IMove>();
+                            forced.add(move);
                         }
                     }
                 } else {
@@ -262,6 +287,7 @@ public class Board implements IBoard {
                 }
             }
         }
+        if (forced != null && forced.size() > 0) return forced;
         return poMoves;
     }
 
