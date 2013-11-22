@@ -7,9 +7,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/SimGame.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/SimGame.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/MovingAverage.java" afterPath="$PROJECT_DIR$/mcts/src/ai/MovingAverage.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/StatCounter.java" afterPath="$PROJECT_DIR$/mcts/src/ai/StatCounter.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
     </list>
     <ignored path="mcts_gameframe.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -22,7 +22,7 @@
     <file path="/Move.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384268020856" ignored="false" />
     <file path="/CCPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383568643039" ignored="false" />
     <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385135524361" ignored="false" />
-    <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385127934772" ignored="false" />
+    <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385154024992" ignored="false" />
     <file path="/IBoard.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383922389158" ignored="false" />
     <file path="/MCTSPlayer.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385135637464" ignored="false" />
     <file path="/Game.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385128461759" ignored="false" />
@@ -43,10 +43,10 @@
     <file path="/CCGui.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383332058813" ignored="false" />
     <file path="/AIPlayer.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385135650584" ignored="false" />
     <file path="/AlphaBeta.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385135673088" ignored="false" />
-    <file path="/StatCounter.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384976658916" ignored="false" />
+    <file path="/StatCounter.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385153812672" ignored="false" />
     <file path="/FastSqrt.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384434499702" ignored="false" />
     <file path="/FastLog.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384434445029" ignored="false" />
-    <file path="/MovingAverage.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384976548937" ignored="false" />
+    <file path="/MovingAverage.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385153784713" ignored="false" />
     <file path="/SimGame.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385141563917" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -123,10 +123,55 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TreeNode.java" pinned="false" current="true" current-in-tab="true">
+      <file leaf-file-name="TreeNode.java" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="239" column="76" selection-start="9536" selection-end="9536" vertical-scroll-proportion="0.47874495">
+            <state line="237" column="48" selection-start="9393" selection-end="9393" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="StatCounter.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/StatCounter.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="12" column="13" selection-start="291" selection-end="291" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Game.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="7" column="13" selection-start="155" selection-end="155" vertical-scroll-proportion="0.104234524">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MovingAverage.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/MovingAverage.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="8" column="20" selection-start="200" selection-end="207" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MCTSPlayer.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="7" column="13" selection-start="151" selection-end="151" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MCTSOptions.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="13" column="27" selection-start="437" selection-end="437" vertical-scroll-proportion="0.0">
               <folding />
             </state>
           </provider>
@@ -153,8 +198,6 @@
       <list>
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
         <option value="$PROJECT_DIR$/amazons/src/amazons/gui/AmazonsBoard.java" />
-        <option value="$PROJECT_DIR$/mcts/src/ai/MovingAverage.java" />
-        <option value="$PROJECT_DIR$/mcts/src/ai/StatCounter.java" />
         <option value="$PROJECT_DIR$/cannon/src/cannon/gui/CannonPanel.java" />
         <option value="$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java" />
         <option value="$PROJECT_DIR$/cannon/src/cannon/game/Board.java" />
@@ -166,6 +209,8 @@
         <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
         <option value="$PROJECT_DIR$/Experiments/src/experiments/SimGame.java" />
         <option value="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/MovingAverage.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/StatCounter.java" />
         <option value="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
       </list>
     </option>
@@ -174,8 +219,10 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="width" value="1309" />
-    <option name="height" value="1170" />
+    <option name="x" value="444" />
+    <option name="y" value="73" />
+    <option name="width" value="1334" />
+    <option name="height" value="1105" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -440,7 +487,7 @@
       <recent name="ai.mcts.TCTS" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.AI Experiments">
+  <component name="RunManager" selected="Application.Breakthrough">
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
       <module name="" />
       <option name="VM_PARAMETERS" value="-Xmx512m -Xms256m -XX:MaxPermSize=250m" />
@@ -853,7 +900,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1309" height="1170" extended-state="1" />
+    <frame x="444" y="73" width="1334" height="1105" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32048458" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
@@ -864,16 +911,16 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30337077" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.13180363" sideWeight="0.3883495" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.52329195" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3151751" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31938326" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24799082" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.39967984" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.030473135" sideWeight="0.51361865" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2861635" sideWeight="0.51361865" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="FLOATING" visible="false" weight="0.868677" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="2371" y="251" width="1363" height="912" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32135922" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3151751" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -958,11 +1005,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/cannon/src/cannon/gui/CannonPanel.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="17" selection-start="878" selection-end="878" vertical-scroll-proportion="0.28742516" />
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/cannon/src/cannon/gui/CannonGui.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="28" column="66" selection-start="787" selection-end="787" vertical-scroll-proportion="0.5748503" />
@@ -980,19 +1022,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/chinesecheckers/src/chinesecheckers/game/Board.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="9" column="93" selection-start="270" selection-end="270" vertical-scroll-proportion="0.0" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="10" column="26" selection-start="234" selection-end="234" vertical-scroll-proportion="0.16766468">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/MovingAverage.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="13" selection-start="26" selection-end="26" vertical-scroll-proportion="0.0">
+        <state line="9" column="93" selection-start="270" selection-end="270" vertical-scroll-proportion="0.0">
           <folding />
         </state>
       </provider>
@@ -1030,20 +1060,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="13" selection-start="151" selection-end="151" vertical-scroll-proportion="0.12972973">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="30" column="34" selection-start="1325" selection-end="1325" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="72" column="16" selection-start="2557" selection-end="2557" vertical-scroll-proportion="0.0">
@@ -1051,9 +1067,44 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="13" selection-start="151" selection-end="151" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="13" column="27" selection-start="437" selection-end="437" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/MovingAverage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="8" column="20" selection-start="200" selection-end="207" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="239" column="76" selection-start="9536" selection-end="9536" vertical-scroll-proportion="0.47874495">
+        <state line="237" column="48" selection-start="9393" selection-end="9393" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/StatCounter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="12" column="13" selection-start="291" selection-end="291" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="7" column="13" selection-start="155" selection-end="155" vertical-scroll-proportion="0.104234524">
           <folding />
         </state>
       </provider>

@@ -12,9 +12,9 @@ import ai.mcts.TreeNode;
 
 public class StatCounter {
 
+    public MovingAverage ma;
     private double m_sum, m_m2, m_mean;
     private int m_n;
-    public MovingAverage ma;
 
     public StatCounter() {
         this.reset();
@@ -81,6 +81,10 @@ public class StatCounter {
 
     public double window_mean() {
         return ma.getAverage();
+    }
+
+    public double windowSize() {
+        return ma.getMaxSize();
     }
 
     public int visits() {

@@ -235,12 +235,14 @@ public class TreeNode {
                 if (options.implicitMM)
                     avgValue += c.imVal;
                 //
-                if (!options.ucbTuned) {
-                    // Compute the uct value with the (new) average value
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(getnVisits()) / c.getnVisits()));
-                } else {
+                if (options.swUCT && depth == 1) {
+                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
+                } else if (options.ucbTuned) {
                     ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
                     uctValue = avgValue + Math.sqrt((Math.min(.25, ucbVar) * l.log(getnVisits())) / c.getnVisits());
+                } else {
+                    // Compute the uct value with the (new) average value
+                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(getnVisits()) / c.getnVisits()));
                 }
             }
             // Remember the highest UCT value

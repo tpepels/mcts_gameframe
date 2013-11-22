@@ -39,6 +39,10 @@ public class MovingAverage {
         return size;
     }
 
+    public int getMaxSize() {
+        return maxSize;
+    }
+
     public double getAverage() {
         return total / (double) size;
     }
