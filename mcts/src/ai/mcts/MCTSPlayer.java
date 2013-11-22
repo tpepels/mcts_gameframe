@@ -145,8 +145,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     }
 
     @Override
-    public void newGame(int myPlayer) {
+    public void newGame(int myPlayer, String game) {
         root = new TreeNode(myPlayer, options);
+        options.resetSimulations(game);
     }
 
     @Override

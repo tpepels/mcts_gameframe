@@ -71,7 +71,7 @@ public class AlphaBeta implements AIPlayer, Runnable {
         bfboard = new int[2][Board.SIZE];
     }
 
-    public void newGame(int myPlayer) {
+    public void newGame(int myPlayer, String game) {
     }
 
     // private long MASK = TT_SIZE - 1;

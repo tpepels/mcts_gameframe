@@ -253,11 +253,15 @@ public class Board implements IBoard {
                             {
                                 poMoves.add(move);
                                 poMoves.add(move);
+                                poMoves.add(move);
+                                poMoves.add(move);
                             }
                             else if (   pl == 2
                                      && (!inBounds(mrp+1, mcp-1) || board[mrp+1][mcp-1] == '.')
                                      && (!inBounds(mrp+1, mcp+1) || board[mrp+1][mcp+1] == '.') )
                             {
+                                poMoves.add(move);
+                                poMoves.add(move);
                                 poMoves.add(move);
                                 poMoves.add(move);
                             } 

@@ -253,8 +253,8 @@ public class AITests {
         IBoard board = getBoard();
         board.initialize();
         int winner = IBoard.NONE_WIN;
-        aiPlayer1.newGame(ai1Color);
-        aiPlayer2.newGame(ai2Color);
+        aiPlayer1.newGame(ai1Color, game);
+        aiPlayer2.newGame(ai2Color, game);
         while (winner == IBoard.NONE_WIN) {
             //
             IMove move;

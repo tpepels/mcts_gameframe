@@ -45,6 +45,16 @@ public class MCTSOptions {
      */
     public void setGame(String game) {
         if (game.equals("cannon")) {
+        } else if (game.equals("chinesecheckers")) {
+        } else if (game.equals("lostcities")) {
+        } else if (game.equals("pentalath")) {
+        } else if (game.equals("amazons")) {
+        } else if (game.equals("breakthrough")) {
+        }
+    }
+
+    public void resetSimulations(String game) {
+        if (game.equals("cannon")) {
             if(fixedSimulations)
                 numSimulations = simulations;
             else

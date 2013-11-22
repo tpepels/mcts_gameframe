@@ -40,7 +40,6 @@ public class TreeNode {
         this.virtual = false;
         this.options = options;
         stats = new StatCounter(windowSize);
-        System.out.println("Window: " + windowSize);
     }
 
     public TreeNode(int player, IMove move, MCTSOptions options) {
