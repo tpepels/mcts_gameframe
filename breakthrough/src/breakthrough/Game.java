@@ -12,20 +12,22 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.pdepth = 0;
-        options1.earlyEval = true;
-        options1.useHeuristics = true;
-        options1.timeInterval = 1000;
+        options1.swUCT = true;
+//        options1.pdepth = 0;
+//        options1.earlyEval = true;
+//        options1.useHeuristics = true;
+//        options1.timeInterval = 1000;
+        options1.setGame("breakthrough");
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
 //        options2.relativeBonus = true;
-        options2.pdepth = 0;
-        options2.earlyEval = true;
-        options2.useHeuristics = true;
-        options2.timeInterval = 1000;
-        options2.implicitMM = true;
+//        options2.pdepth = 0;
+//        options2.earlyEval = true;
+//        options2.useHeuristics = true;
+//        options2.timeInterval = 1000;
+//        options2.implicitMM = true;
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 

@@ -31,15 +31,24 @@ public class TreeNode {
         stats = new StatCounter();
     }
 
-    public TreeNode(int player, IMove move, MCTSOptions options, int depth) {
+    /**
+     * Initialize a TreeNode with sliding swUCT UCT
+     */
+    public TreeNode(int player, IMove move, MCTSOptions options, int windowSize) {
         this.player = player;
         this.move = move;
         this.virtual = false;
         this.options = options;
-        if (options.window && depth == 1)
-            stats = new StatCounter(options.windowSize);
-        else
-            stats = new StatCounter();
+        stats = new StatCounter(windowSize);
+        System.out.println("Window: " + windowSize);
+    }
+
+    public TreeNode(int player, IMove move, MCTSOptions options) {
+        this.player = player;
+        this.move = move;
+        this.virtual = false;
+        this.options = options;
+        stats = new StatCounter();
     }
 
     public TreeNode(int player, IMove move, final boolean virtual, MCTSOptions options) {
@@ -162,7 +171,12 @@ public class TreeNode {
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
-                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options, depth);
+                TreeNode child;
+                // Initialize the child
+                if (options.swUCT && depth == 1)
+                    child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize(moves.size()));
+                else
+                    child = new TreeNode(nextPlayer, moves.get(i), options);
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 //
@@ -188,7 +202,7 @@ public class TreeNode {
             } else if (board.isPartialObservable()) {
                 // No move-checking for partial observable games
                 // Also, the legality of the move depends on the determinization
-                children.add(new TreeNode(nextPlayer, moves.get(i), options, depth));
+                children.add(new TreeNode(nextPlayer, moves.get(i), options));
             }
         }
         // implicit minimax
@@ -248,39 +262,38 @@ public class TreeNode {
         return selected;
     }
 
-    private int chooseEGreedyEval(IBoard board, List<IMove> moves, int currentPlayer) { 
-        double roll = options.r.nextDouble(); 
-        double tolerance = 0.0001; 
+    private int chooseEGreedyEval(IBoard board, List<IMove> moves, int currentPlayer) {
+        double roll = options.r.nextDouble();
+        double tolerance = 0.0001;
 
-        if (roll < options.egeEpsilon) 
+        if (roll < options.egeEpsilon)
             return options.r.nextInt(moves.size());
-        
-        ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
-        double bestValue = -INF-1; 
 
-        for (int i = 0; i < moves.size(); i++) { 
+        ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
+        double bestValue = -INF - 1;
+
+        for (int i = 0; i < moves.size(); i++) {
             IMove move = moves.get(i);
-            board.doAIMove(move, currentPlayer); 
-            double eval = board.evaluate(currentPlayer); 
+            board.doAIMove(move, currentPlayer);
+            double eval = board.evaluate(currentPlayer);
             board.undoMove();
 
-            if (eval > bestValue+tolerance) { 
+            if (eval > bestValue + tolerance) {
                 // a clearly better move
                 bestMoveIndices.clear();
-                bestMoveIndices.add(i); 
+                bestMoveIndices.add(i);
                 bestValue = eval;
-            }
-            else if (eval >= (bestValue - tolerance) && eval <= (bestValue + tolerance)) { 
+            } else if (eval >= (bestValue - tolerance) && eval <= (bestValue + tolerance)) {
                 // a tie
-                bestMoveIndices.add(i); 
-                if (eval > bestValue) 
-                    bestValue = eval; 
+                bestMoveIndices.add(i);
+                if (eval > bestValue)
+                    bestValue = eval;
             }
         }
 
-        assert(bestMoveIndices.size() > 0); 
+        assert (bestMoveIndices.size() > 0);
         int idx = options.r.nextInt(bestMoveIndices.size());
-        return bestMoveIndices.get(idx); 
+        return bestMoveIndices.get(idx);
     }
 
     private double playOut(IBoard board) {
@@ -311,9 +324,8 @@ public class TreeNode {
                 // Select a move from the available ones
                 if (options.epsGreedyEval) {
                     // If epsilon greedy playouts, choose the highest eval
-                    moveIndex = chooseEGreedyEval(board, moves, currentPlayer); 
-                }
-                else {
+                    moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
+                } else {
                     // Choose randomly
                     moveIndex = options.r.nextInt(moves.size());
                 }

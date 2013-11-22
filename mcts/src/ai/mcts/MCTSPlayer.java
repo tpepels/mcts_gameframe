@@ -70,20 +70,32 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         if (options.debug)
             System.out.println("Thinking for " + options.timeInterval + " ms");
 
-        // Search for timeInterval seconds
-        long endTime = System.currentTimeMillis() + options.timeInterval;
         int simulations = 0;
-        // Run the MCTS algorithm while time allows it
-        while (!interrupted) {
-            simulations++;
-            if (System.currentTimeMillis() >= endTime) {
-                break;
+        if (!options.fixedSimulations) {
+            // Search for timeInterval seconds
+            long endTime = System.currentTimeMillis() + options.timeInterval;
+            // Run the MCTS algorithm while time allows it
+            while (!interrupted) {
+                simulations++;
+                if (System.currentTimeMillis() >= endTime) {
+                    break;
+                }
+                board.newDeterminization(myPlayer);
+                // Make one simulation from root to leaf.
+                if (root.MCTS(board, 0) == TreeNode.INF)
+                    break; // Break if you find a winning move
             }
-            //
-            board.newDeterminization(myPlayer);
-            // Make one simulation from root to leaf.
-            if (root.MCTS(board, 0) == TreeNode.INF)
-                break; // Break if you find a winning move
+            // (SW-UCT) Remember the number of simulations for the next round
+            options.numSimulations = simulations;
+        } else {
+            // Run as many simulations as allowed
+            while(simulations < options.simulations) {
+                simulations++;
+                board.newDeterminization(myPlayer);
+                // Make one simulation from root to leaf.
+                if (root.MCTS(board, 0) == TreeNode.INF)
+                    break; // Break if you find a winning move
+            }
         }
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);
@@ -114,10 +126,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Avg playout moves: " + TreeNode.moveStats.true_mean() + " std dev: " + TreeNode.moveStats.stddev());
             System.out.println("Moving Avg playout moves: " + TreeNode.moveStats.window_mean());
-            //
-//            for(TreeNode t: root.getChildren()) {
-//                System.out.println(t.stats.ma);
-//            }
         }
         // Set the root to the best child, so in the next move
         // the opponent's move can become the new root

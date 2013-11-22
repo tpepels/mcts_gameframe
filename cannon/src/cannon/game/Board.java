@@ -9,7 +9,7 @@ import java.util.*;
 public class Board implements IBoard {
     // Board constants
     public static final int EMPTY = 0, W_SOLDIER = 1, W_TOWN = 2, B_SOLDIER = 3, B_TOWN = 4;
-    public static final int WIDTH = 10, HEIGHT = 10;
+    public static final int WIDTH = 10, HEIGHT = 10, MAX_MOVES = 1000;
     public static final MoveList moves = new MoveList(500);
     private static final List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
     private static final Random random = new Random();
@@ -444,6 +444,9 @@ public class Board implements IBoard {
         } else if (allMovesForPlayer != currentPlayer) {
             throw new RuntimeException("Wrong moves generated.");
         }
+        // Cut off games that take too long
+        if(nMoves > MAX_MOVES)
+            return DRAW;
         return winningPlayer;
     }
 

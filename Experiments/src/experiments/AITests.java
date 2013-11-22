@@ -66,17 +66,19 @@ public class AITests {
             options1.debug = false;
             options1.enableRB();
             options1.stdDev = true;
+            options1.ucbTuned = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.ucbTuned = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.2, .1};
+            double[] values = {1.2, 1.};
             for (double i : values) {
                 options1.k = i;
                 runGames("AI 1 RB stdDev, k = " + i + " || AI 2 MCTS");
@@ -87,12 +89,14 @@ public class AITests {
             options1.debug = false;
             options1.enableRB();
             options1.stdDev = true;
+            options1.ucbTuned = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.ucbTuned = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
@@ -108,12 +112,14 @@ public class AITests {
             options1.debug = false;
             options1.enableRB();
             options1.stdDev = true;
+            options1.ucbTuned = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.ucbTuned = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
@@ -127,7 +133,30 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.window = true;
+            options1.enableRB();
+            options1.stdDev = true;
+            options1.ucbTuned = true;
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.ucbTuned = true;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            double[] values = {.1, .05};
+            for (double i : values) {
+                options1.k = i;
+                runGames("AI 1 RB stdDev, k = " + i + " || AI 2 MCTS");
+            }
+        } else if (which == 5) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -138,12 +167,11 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            int[] values = {500, 1000};
-            for (int i : values) {
-                options1.windowSize = i;
-                runGames("AI 1 windowed UCB || AI 2 MCTS");
+            double[] values = {1.1, 1., 1.5, 2.};
+            for (double i : values) {
+                options1.windowC = i;
+                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
             }
-        } else if (which == 5) {
         }
     }
 
@@ -209,6 +237,7 @@ public class AITests {
                 clss = Class.forName("amazons.game.Board");
             else if (game.equals("breakthrough"))
                 clss = Class.forName("breakthrough.game.Board");
+
             // Instantiate the board for the chosen game and GO
             if (clss != null)
                 return (IBoard) clss.newInstance();

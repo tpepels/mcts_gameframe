@@ -9,22 +9,24 @@ public class MCTSOptions {
     public boolean treeReuse = false;
     // Discount values based on their depth
     public boolean depthDiscount = false;
-    public boolean window = false;
-    public int windowSize = 1000;
+    // Sliding-window UCT
+    public boolean swUCT = false;
+    public int numSimulations = 5000;
+    public double windowC = 1.1;
     // Relative bonus!
     public boolean relativeBonus = false, stdDev = false;
     //
-    public boolean debug = true, useHeuristics = true, solverFix = true;
+    public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false;
     public boolean ucbTuned = false, auct = false;
     // MCTS Specific values
     public double uctC = 1., k = .05;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 5000;
+    public int timeInterval = 2500, simulations = 5000;
     // Marc's stuff
-    public boolean earlyEval = false; // enable dropping down to evaluation function in playouts?
-    public int pdepth = Integer.MAX_VALUE; // number of moves in playout before dropping down to eval func
-    public boolean implicitMM = false; // implicit minimax
+    public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
+    public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
+    public boolean implicitMM = false;          // implicit minimax
     // Epsilon-greedy playouts, where greedy is the highest eval 
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
@@ -43,12 +45,40 @@ public class MCTSOptions {
      */
     public void setGame(String game) {
         if (game.equals("cannon")) {
+            if(fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 2 * timeInterval;
         } else if (game.equals("chinesecheckers")) {
+            if(fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 15 * timeInterval;
         } else if (game.equals("lostcities")) {
+            if(fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 7 * timeInterval;
         } else if (game.equals("pentalath")) {
+            if(fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 24 * timeInterval;
         } else if (game.equals("amazons")) {
+            if(fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 5 * timeInterval;
         } else if (game.equals("breakthrough")) {
+            if(fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 18 * timeInterval;
         }
+    }
+
+    public int getWindowSize(int branches) {
+        return (int) ((windowC * numSimulations) / branches);
     }
 
     public void resetMast(int maxId) {

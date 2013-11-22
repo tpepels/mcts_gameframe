@@ -7,7 +7,7 @@ import ai.framework.MoveList;
 import java.util.*;
 
 public class Board implements IBoard {
-    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13;
+    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13, MAX_MOVES = 1000;
     public static final int[] occupancy = new int[]
             {
                     0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
@@ -350,6 +350,9 @@ public class Board implements IBoard {
 
     @Override
     public int checkWin() {
+        // Cut off games that take too long
+        if(winner == NONE_WIN && nMoves > MAX_MOVES)
+            return DRAW;
         return winner;
     }
 
