@@ -167,7 +167,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.1, 1., 1.5, 2.};
+            double[] values = {1.5};
             for (double i : values) {
                 options1.windowC = i;
                 runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");

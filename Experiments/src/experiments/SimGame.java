@@ -93,7 +93,9 @@ public class SimGame {
          *    _egeX  = epsilon-greedy playouts using the eval func, where X is a double
          *    _h     = enable heuristics
          *    _im    = enable implicit minimax
-         *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer         
+         *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
+         *    _wX    = enable sliding window UCT with Wc = X, where X is a double
+         *    _rbX   = enable the relative bonus with K = X, where X is a double
          */ 
         String label = (player == 1 ? p1label : p2label); 
         AIPlayer playerRef = null; 
@@ -104,7 +106,7 @@ public class SimGame {
             playerRef = new MCTSPlayer();
             MCTSOptions options = new MCTSOptions(); 
             options.timeInterval = timeLimit;
-            options.r.setSeed(seed);
+            MCTSOptions.r.setSeed(seed);
 
             // now, parse the tags
             for (int i = 1; i < parts.length; i++) { 
@@ -123,6 +125,14 @@ public class SimGame {
                 else if (tag.startsWith("ege")) {
                     options.epsGreedyEval = true;
                     options.egeEpsilon = Double.parseDouble(tag.substring(3)); 
+                }
+                else if (tag.startsWith("w")) {
+                    options.swUCT = true;
+                    options.windowC = Double.parseDouble(tag.substring(1));
+                }
+                else if (tag.startsWith("rb")) {
+                    options.relativeBonus = true;
+                    options.k = Double.parseDouble(tag.substring(2));
                 }
                 else { 
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag); 
