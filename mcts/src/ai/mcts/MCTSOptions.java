@@ -10,6 +10,7 @@ public class MCTSOptions {
     // Discount values based on their depth
     public boolean depthDiscount = false;
     public boolean window = false;
+    public int windowSize = 1000;
     // Relative bonus!
     public boolean relativeBonus = false, stdDev = false;
     //
@@ -20,15 +21,13 @@ public class MCTSOptions {
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
     public int timeInterval = 5000;
-    // Enable dropping down to evaluation function in playouts
-    public boolean earlyEval = false; 
-    // Number of moves in playout before dropping down to eval func
-    public int pdepth = Integer.MAX_VALUE; 
-    // Implicit minimax backups
-    public boolean implicitMM = false; 
+    // Marc's stuff
+    public boolean earlyEval = false; // enable dropping down to evaluation function in playouts?
+    public int pdepth = Integer.MAX_VALUE; // number of moves in playout before dropping down to eval func
+    public boolean implicitMM = false; // implicit minimax
     // Epsilon-greedy playouts, where greedy is the highest eval 
     public boolean epsGreedyEval = false;
-    public double egeEpsilon = 0.1; 
+    public double egeEpsilon = 0.1;
     // MAST stuff
     private double[][] mastValues, mastVisits;
 

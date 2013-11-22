@@ -14,7 +14,7 @@ public class StatCounter {
 
     private double m_sum, m_m2, m_mean;
     private int m_n;
-    private MovingAverage ma;
+    public MovingAverage ma;
 
     public StatCounter() {
         this.reset();
@@ -39,6 +39,7 @@ public class StatCounter {
         m_m2 = 0.0;
         m_mean = 0.0;
         m_n = 0;
+        //
         if (ma != null)
             ma.reset();
     }
@@ -51,8 +52,7 @@ public class StatCounter {
         m_mean += delta / m_n;
         m_m2 += delta * (num - m_mean);
 
-        if (ma != null)
-            ma.add(num);
+        if (ma != null) ma.add(num);
     }
 
     public void setValue(double val) {
@@ -88,6 +88,10 @@ public class StatCounter {
             return m_n;
         else
             return (int) ma.getSize();
+    }
+
+    public int totalVisits() {
+        return m_n;
     }
 
     public double ci95() {

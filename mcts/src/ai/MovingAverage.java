@@ -2,13 +2,11 @@ package ai;
 
 public class MovingAverage {
     private double[] samples;
-    private double total = 0., size;
-    private int index, maxSize;
+    private double total = 0.;
+    private int index = 0, size = 0, maxSize;
 
     public MovingAverage(int size) {
         this.maxSize = size;
-        this.size = 0.;
-        this.index = 0;
         //
         samples = new double[maxSize];
     }
@@ -16,7 +14,8 @@ public class MovingAverage {
     public void reset() {
         index = 0;
         size = 0;
-        total = 0;
+        //
+        total = 0.;
     }
 
     public void add(double sample) {
@@ -41,7 +40,23 @@ public class MovingAverage {
     }
 
     public double getAverage() {
-        return total / size;
+        return total / (double) size;
     }
 
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        int tot = 0;
+        for (int i = 0; i < index; i++) {
+            tot += samples[i];
+            sb.append((int) samples[i]);
+            sb.append(", ");
+        }
+        for (int i = index; i < maxSize; i++) {
+            tot += samples[i];
+            sb.append((int) samples[i]);
+            sb.append(", ");
+        }
+        sb.insert(0, tot);
+        return sb.toString();
+    }
 }
