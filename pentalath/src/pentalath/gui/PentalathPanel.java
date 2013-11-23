@@ -53,8 +53,9 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         if (!p1Human) {
             aiPlayer1 = new MCTSPlayer();
             MCTSOptions options1 = new MCTSOptions();
-            options1.lambda = 0.99999999;
+            options1.swUCT = true;
             aiPlayer1.setOptions(options1);
+            aiPlayer1.newGame(1, "pentalath");
         }
         if (!p2Human) {
             aiPlayer2 = new MCTSPlayer();

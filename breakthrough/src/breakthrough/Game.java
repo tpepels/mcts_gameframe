@@ -20,6 +20,7 @@ public class Game {
         options1.setGame("breakthrough");
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
+        aiPlayer1.newGame(1, "breakthrough");
 
         MCTSOptions options2 = new MCTSOptions();
 //        options2.relativeBonus = true;

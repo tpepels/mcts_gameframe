@@ -236,7 +236,10 @@ public class TreeNode {
                     avgValue += c.imVal;
                 //
                 if (options.swUCT && depth == 1) {
+                    // TODO use window size of parent in recursive case!
                     uctValue = avgValue + (options.uctC * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
+                } else if (options.swUCT && depth == 2) {
+                    uctValue = avgValue + (options.uctC * (stats.totalVisits() / c.getnVisits()));
                 } else if (options.ucbTuned) {
                     ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
                     uctValue = avgValue + Math.sqrt((Math.min(.25, ucbVar) * l.log(getnVisits())) / c.getnVisits());
