@@ -64,95 +64,23 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB();
-            options1.stdDev = true;
-            options1.ucbTuned = true;
+            options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
-            options2.ucbTuned = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.2, 1.};
+            double[] values = {.9, 1.};
             for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 RB stdDev, k = " + i + " || AI 2 MCTS");
+                options1.windowC = i;
+                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.enableRB();
-            options1.stdDev = true;
-            options1.ucbTuned = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.ucbTuned = true;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            double[] values = {.8, .6};
-            for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 RB stdDev, k = " + i + " || AI 2 MCTS");
-            }
-        } else if (which == 3) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.enableRB();
-            options1.stdDev = true;
-            options1.ucbTuned = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.ucbTuned = true;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            double[] values = {.4, .3};
-            for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 RB stdDev, k = " + i + " || AI 2 MCTS");
-            }
-        } else if (which == 4) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.enableRB();
-            options1.stdDev = true;
-            options1.ucbTuned = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.ucbTuned = true;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            double[] values = {.1, .05};
-            for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 RB stdDev, k = " + i + " || AI 2 MCTS");
-            }
-        } else if (which == 5) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
@@ -167,7 +95,47 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.5};
+            double[] values = {1.2, 1.4};
+            for (double i : values) {
+                options1.windowC = i;
+                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
+            }
+        } else if (which == 3) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.swUCT = true;
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            double[] values = {1.6, 1.8};
+            for (double i : values) {
+                options1.windowC = i;
+                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
+            }
+        } else if (which == 4) {
+            // AI 1
+            MCTSOptions options1 = new MCTSOptions();
+            options1.debug = false;
+            options1.swUCT = true;
+            options1.setGame(game);
+            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1.setOptions(options1);
+            // AI 2
+            MCTSOptions options2 = new MCTSOptions();
+            options2.debug = false;
+            options2.setGame(game);
+            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2.setOptions(options2);
+            //
+            double[] values = {2., 2.2};
             for (double i : values) {
                 options1.windowC = i;
                 runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");

@@ -101,6 +101,7 @@ public class SimGame {
         if (parts[0].equals("mcts")) {
             playerRef = new MCTSPlayer();
             MCTSOptions options = new MCTSOptions();
+            options.useHeuristics = false;
             options.timeInterval = timeLimit;
             MCTSOptions.r.setSeed(seed);
 
