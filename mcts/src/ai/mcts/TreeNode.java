@@ -89,7 +89,7 @@ public class TreeNode {
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
                     double x = moveStats.mean() - child.nMoves;
-                    if (options.stdDev && moveStats.variance() > 0) {
+                    if (moveStats.variance() > 0) {
                         x /= moveStats.stddev();
                     }
                     result += Math.signum(result) * ((2. / (1 + Math.exp(-options.k * x)) - 1));

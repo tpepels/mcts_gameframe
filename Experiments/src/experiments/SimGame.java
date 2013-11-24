@@ -89,7 +89,7 @@ public class SimGame {
          *    _im    = enable implicit minimax
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
          *    _wX    = enable sliding window UCT with Wc = X, where X is a double
-         *    _rbX   = enable the relative bonus with K = X, where X is a double
+         *    _rbX   = enable the relative bonus with K = X, where X is a double, X is optional
          *    _uctX  = sets the UCT constant to X, where X is a double
          *    _ucb1t = enables UCB1-Tuned
          */
@@ -103,6 +103,7 @@ public class SimGame {
             MCTSOptions options = new MCTSOptions();
             options.useHeuristics = false;
             options.timeInterval = timeLimit;
+            options.setGame(game);
             MCTSOptions.r.setSeed(seed);
 
             // now, parse the tags
@@ -123,8 +124,10 @@ public class SimGame {
                     options.swUCT = true;
                     options.windowC = Double.parseDouble(tag.substring(1));
                 } else if (tag.startsWith("rb")) {
-                    options.relativeBonus = true;
-                    options.k = Double.parseDouble(tag.substring(2));
+                    options.enableRB();
+                    if (tryParseDouble(tag.substring(2))) {
+                        options.k = Double.parseDouble(tag.substring(2));
+                    }
                 } else if (tag.startsWith("ucb1t")) {
                     options.ucbTuned = true;
                 } else if (tag.startsWith("uct")) {
@@ -146,6 +149,15 @@ public class SimGame {
         } else if (player == 2) {
             player2 = playerRef;
             player2.newGame(2, game);
+        }
+    }
+
+    boolean tryParseDouble(String value) {
+        try {
+            Double.parseDouble(value);
+            return true;
+        } catch (NumberFormatException nfe) {
+            return false;
         }
     }
 

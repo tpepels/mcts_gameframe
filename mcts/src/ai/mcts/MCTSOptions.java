@@ -11,10 +11,10 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations = 5000;
+    public int numSimulations;
     public double windowC = 1.1;
     // Relative bonus!
-    public boolean relativeBonus = false, stdDev = false;
+    public boolean relativeBonus = false;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false;
     public boolean ucbTuned = false, auct = false;
@@ -35,7 +35,6 @@ public class MCTSOptions {
 
     public void enableRB() {
         relativeBonus = true;
-        uctC = .5;
     }
 
     /**
@@ -45,42 +44,52 @@ public class MCTSOptions {
      */
     public void setGame(String game) {
         if (game.equals("cannon")) {
+            uctC = .8;
+            k = .8;
         } else if (game.equals("chinesecheckers")) {
+            uctC = .8;
+            k = .6;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("pentalath")) {
+            uctC = .8;
+            k = .4;
         } else if (game.equals("amazons")) {
+            uctC = .5;
+            k = .8;
         } else if (game.equals("breakthrough")) {
+            k = 0.05;
         }
+        resetSimulations(game);
     }
 
     public void resetSimulations(String game) {
         if (game.equals("cannon")) {
-            if(fixedSimulations)
+            if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 2 * timeInterval;
         } else if (game.equals("chinesecheckers")) {
-            if(fixedSimulations)
+            if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 15 * timeInterval;
         } else if (game.equals("lostcities")) {
-            if(fixedSimulations)
+            if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 7 * timeInterval;
         } else if (game.equals("pentalath")) {
-            if(fixedSimulations)
+            if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 24 * timeInterval;
         } else if (game.equals("amazons")) {
-            if(fixedSimulations)
+            if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 5 * timeInterval;
         } else if (game.equals("breakthrough")) {
-            if(fixedSimulations)
+            if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 18 * timeInterval;

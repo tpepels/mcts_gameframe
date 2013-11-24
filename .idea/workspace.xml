@@ -7,14 +7,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/Experiments/src/experiments/SimGame.java" afterPath="$PROJECT_DIR$/Experiments/src/experiments/SimGame.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" afterPath="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="mcts_gameframe.iws" />
     <ignored path=".idea/workspace.xml" />
-    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385244029644" ignored="false" />
+    <file path="/Dummy.txt" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385282645553" ignored="false" />
     <file path="/Table.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383922342799" ignored="false" />
     <file path="/Board.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385129944338" ignored="false" />
     <file path="/fragment.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384973340024" ignored="false" />
@@ -22,7 +22,7 @@
     <file path="/Stack.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1381337749886" ignored="false" />
     <file path="/Move.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384268020856" ignored="false" />
     <file path="/CCPanel.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383568643039" ignored="false" />
-    <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385135524361" ignored="false" />
+    <file path="/MCTSOptions.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385284315516" ignored="false" />
     <file path="/TreeNode.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385208223098" ignored="false" />
     <file path="/IBoard.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1383922389158" ignored="false" />
     <file path="/MCTSPlayer.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385135637464" ignored="false" />
@@ -48,7 +48,7 @@
     <file path="/FastSqrt.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384434499702" ignored="false" />
     <file path="/FastLog.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1384434445029" ignored="false" />
     <file path="/MovingAverage.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385153784713" ignored="false" />
-    <file path="/SimGame.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385234054940" ignored="false" />
+    <file path="/SimGame.java" changelist="49fc16ba-4f94-4b4e-a4ab-f1fe8a1a9001" time="1385284044610" ignored="false" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -115,10 +115,30 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="TreeNode.java" pinned="false" current="true" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
+      <file leaf-file-name="SimGame.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/SimGame.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="247" column="31" selection-start="10182" selection-end="10182" vertical-scroll-proportion="0.7849003">
+            <state line="130" column="43" selection-start="4472" selection-end="4472" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="imports" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="AITests.java" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/AITests.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="17" column="13" selection-start="405" selection-end="405" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="MCTSOptions.java" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="53" column="14" selection-start="1942" selection-end="1942" vertical-scroll-proportion="0.8030019">
               <folding />
             </state>
           </provider>
@@ -150,15 +170,15 @@
         <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSPlayer.java" />
         <option value="$PROJECT_DIR$/mcts/src/ai/framework/AIPlayer.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/ai/alphabeta/AlphaBeta.java" />
-        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
         <option value="$PROJECT_DIR$/mcts/src/ai/MovingAverage.java" />
         <option value="$PROJECT_DIR$/mcts/src/ai/StatCounter.java" />
         <option value="$PROJECT_DIR$/breakthrough/src/breakthrough/Game.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java" />
         <option value="$PROJECT_DIR$/Experiments/src/experiments/AITests.java" />
-        <option value="$PROJECT_DIR$/Experiments/src/experiments/SimGame.java" />
         <option value="$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java" />
+        <option value="$PROJECT_DIR$/Experiments/src/experiments/SimGame.java" />
         <option value="$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java" />
+        <option value="$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java" />
       </list>
     </option>
   </component>
@@ -166,10 +186,10 @@
     <treeState />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-8" />
-    <option name="y" value="-8" />
-    <option name="width" value="1616" />
-    <option name="height" value="886" />
+    <option name="x" value="630" />
+    <option name="y" value="213" />
+    <option name="width" value="1093" />
+    <option name="height" value="728" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -224,59 +244,6 @@
       <sortByType />
     </navigator>
     <panes>
-      <pane id="ProjectPane">
-        <subPane>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pentalath" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pentalath" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pentalath" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="mcts_gameframe" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="pentalath" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-        </subPane>
-      </pane>
-      <pane id="Scope" />
       <pane id="PackagesPane">
         <subPane>
           <PATH>
@@ -325,6 +292,191 @@
             <PATH_ELEMENT>
               <option name="myItemId" value="mcts" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="experiments" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="experiments" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="experiments" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chinesecheckers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chinesecheckers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chinesecheckers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chinesecheckers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chinesecheckers" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="game" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cannon" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cannon" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="cannon" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="breakthrough" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="breakthrough" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="breakthrough" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="breakthrough" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageViewModuleNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="breakthrough" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="game" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PackageElementNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pentalath" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pentalath" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pentalath" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="mcts_gameframe" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pentalath" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
         </subPane>
@@ -771,8 +923,8 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1616" height="886" extended-state="6" />
-    <editor active="false" />
+    <frame x="630" y="213" width="1093" height="728" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32048458" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="JetGradle" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -782,16 +934,16 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.30337077" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.13180363" sideWeight="0.3883495" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.52329195" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3151751" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.31938326" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24799082" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32977587" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.39967984" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.116473615" sideWeight="0.51361865" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17943744" sideWeight="0.51361865" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="SLIDING" type="FLOATING" visible="false" weight="0.868677" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" x="2793" y="43" width="931" height="1036" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32135922" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="true" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3151751" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2497332" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
     </layout>
@@ -891,13 +1043,6 @@
         <state line="73" column="49" selection-start="2838" selection-end="2838" vertical-scroll-proportion="0.0" />
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="13" column="27" selection-start="437" selection-end="437" vertical-scroll-proportion="0.026373627">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/mcts/src/ai/MovingAverage.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="8" column="20" selection-start="200" selection-end="207" vertical-scroll-proportion="0.026002167" />
@@ -927,6 +1072,11 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="329" column="35" selection-start="12550" selection-end="12550" vertical-scroll-proportion="0.48247424" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/gui/PentalathPanel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="40" column="24" selection-start="1522" selection-end="1522" vertical-scroll-proportion="-1.6329896" />
@@ -944,16 +1094,18 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pentalath/src/pentalath/game/Board.java">
+    <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/SimGame.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="317" column="26" selection-start="12001" selection-end="12001" vertical-scroll-proportion="0.09943182">
-          <folding />
+        <state line="130" column="43" selection-start="4472" selection-end="4472" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/Experiments/src/experiments/SimGame.java">
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="13" selection-start="566" selection-end="566" vertical-scroll-proportion="0.33238637">
+        <state line="91" column="43" selection-start="3081" selection-end="3081" vertical-scroll-proportion="0.50199205">
           <folding />
         </state>
       </provider>
@@ -965,9 +1117,9 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/TreeNode.java">
+    <entry file="file://$PROJECT_DIR$/mcts/src/ai/mcts/MCTSOptions.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="247" column="31" selection-start="10182" selection-end="10182" vertical-scroll-proportion="0.7849003">
+        <state line="53" column="14" selection-start="1942" selection-end="1942" vertical-scroll-proportion="0.8030019">
           <folding />
         </state>
       </provider>
