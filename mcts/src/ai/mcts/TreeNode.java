@@ -19,17 +19,21 @@ public class TreeNode {
     private final boolean virtual;
     private final MCTSOptions options;
     //
-    public int player;
+    public int player, siblings;
     public StatCounter stats;
     private List<TreeNode> children;
     private IMove move;
     private double velocity = 1., nMoves = 0.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
 
+    /**
+     * Constructor for the rootnode
+     */
     public TreeNode(int player, MCTSOptions options) {
         this.player = player;
         this.virtual = false;
         this.options = options;
+        this.siblings = 1;
         stats = new StatCounter();
     }
 
@@ -177,10 +181,12 @@ public class TreeNode {
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child;
                 // Initialize the child
-                if (options.swUCT && depth == 1)
-                    child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize(moves.size()));
+                if (options.swUCT && depth <= 3)
+                    child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize(siblings));
                 else
                     child = new TreeNode(nextPlayer, moves.get(i), options);
+
+                child.siblings = moves.size() * siblings;
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 //
@@ -240,10 +246,10 @@ public class TreeNode {
                 if (options.implicitMM)
                     avgValue += c.imVal;
                 //
-                if (options.swUCT && depth == 1) {
+                if (options.swUCT && depth <=3) {
                     // TODO use window size of parent in recursive case!
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
-                } else if (options.swUCT && depth == 2) {
+                    uctValue = avgValue + ((options.uctC/2.) * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
+                } else if (options.swUCT && depth == 4) {
                     uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits() / c.getnVisits())));
                 } else if (options.ucbTuned) {
                     ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());

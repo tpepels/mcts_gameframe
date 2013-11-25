@@ -12,7 +12,7 @@ public class MCTSOptions {
     // Sliding-window UCT
     public boolean swUCT = false;
     public int numSimulations;
-    public double windowC = 1.1;
+    public double windowC = 4.;
     // Relative bonus!
     public boolean relativeBonus = false;
     //
@@ -57,12 +57,18 @@ public class MCTSOptions {
         } else if (game.equals("pentalath")) {
             uctC = .8;
             k = .4;
+            MAST = true;
+            mastEps = .975;
         } else if (game.equals("amazons")) {
             uctC = .5;
             k = .8;
+            MAST = true;
+            mastEps = .3;
         } else if (game.equals("breakthrough")) {
             k = .05;
             uctC = 1.;
+            MAST = true;
+            mastEps = .7;
         }
         resetSimulations(game);
     }
@@ -101,8 +107,9 @@ public class MCTSOptions {
         }
     }
 
-    public int getWindowSize(int branches) {
-        return (int) (windowC * Math.sqrt(numSimulations * Math.log(numSimulations)));
+    public int getWindowSize(int siblings) {
+        int sims = Math.max(numSimulations / siblings, 100);
+        return (int) (windowC * Math.sqrt(sims * Math.log(sims)));
     }
 
     public void resetMast(int maxId) {

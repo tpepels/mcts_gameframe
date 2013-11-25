@@ -55,9 +55,9 @@ public class StatCounter {
         m_sum += num;
         m_n++;
 
-        if (num > 0.999) 
+        if (Math.signum(num) > 0)
             m_wins++;
-        else if (num < -0.999) 
+        else if (num != 0)
             m_losses++;
 
         double delta = num - m_mean;
