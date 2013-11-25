@@ -89,7 +89,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             options.numSimulations = simulations;
         } else {
             // Run as many simulations as allowed
-            while(simulations < options.simulations) {
+            while (simulations < options.simulations) {
                 simulations++;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
@@ -126,6 +126,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Avg playout moves: " + TreeNode.moveStats.true_mean() + " std dev: " + TreeNode.moveStats.stddev());
             System.out.println("Moving Avg playout moves: " + TreeNode.moveStats.window_mean());
+            if (options.swUCT) {
+                System.out.println("Ply 1 window size: " + bestChild.stats.windowSize());
+            }
         }
         // Set the root to the best child, so in the next move
         // the opponent's move can become the new root

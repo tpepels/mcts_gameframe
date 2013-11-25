@@ -225,7 +225,7 @@ public class TreeNode {
 
             if (c.getnVisits() == 0 || c.stats.mean() == INF) {
                 // First, visit all children at least once
-                uctValue = INF + options.r.nextDouble();
+                uctValue = INF + MCTSOptions.r.nextDouble();
             } else {
                 avgValue = c.stats.mean();
                 // Depth discount changes the average value
@@ -267,11 +267,11 @@ public class TreeNode {
     }
 
     private int chooseEGreedyEval(IBoard board, List<IMove> moves, int currentPlayer) {
-        double roll = options.r.nextDouble();
+        double roll = MCTSOptions.r.nextDouble();
         double tolerance = 0.0001;
 
         if (roll < options.egeEpsilon)
-            return options.r.nextInt(moves.size());
+            return MCTSOptions.r.nextInt(moves.size());
 
         ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
         double bestValue = -INF - 1;
@@ -296,7 +296,7 @@ public class TreeNode {
         }
 
         assert (bestMoveIndices.size() > 0);
-        int idx = options.r.nextInt(bestMoveIndices.size());
+        int idx = MCTSOptions.r.nextInt(bestMoveIndices.size());
         return bestMoveIndices.get(idx);
     }
 
@@ -331,7 +331,7 @@ public class TreeNode {
                     moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
                 } else {
                     // Choose randomly
-                    moveIndex = options.r.nextInt(moves.size());
+                    moveIndex = MCTSOptions.r.nextInt(moves.size());
                 }
 
                 currentMove = moves.get(moveIndex);
@@ -396,9 +396,9 @@ public class TreeNode {
             } else {
                 // If there are children with INF value, choose on of them
                 if (t.stats.mean() == INF)
-                    value = INF + options.r.nextDouble();
+                    value = INF + MCTSOptions.r.nextDouble();
                 else if (t.stats.mean() == -INF)
-                    value = -INF + t.getnVisits() + options.r.nextDouble();
+                    value = -INF + t.getnVisits() + MCTSOptions.r.nextDouble();
                 else {
                     value = t.stats.totalVisits();
                 }
@@ -417,7 +417,7 @@ public class TreeNode {
 
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
-        if (isLeaf() || !options.auct) {
+        if (!options.auct || isLeaf()) {
             stats.push(value);
         } else {
             // Compute the auct win ratio

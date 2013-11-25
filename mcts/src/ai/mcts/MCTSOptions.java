@@ -22,7 +22,7 @@ public class MCTSOptions {
     public double uctC = 1., k = .05;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 2500, simulations = 5000;
+    public int timeInterval = 2000, simulations = 5000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -35,6 +35,7 @@ public class MCTSOptions {
 
     public void enableRB() {
         relativeBonus = true;
+        uctC /= 2.;
     }
 
     /**
@@ -57,7 +58,8 @@ public class MCTSOptions {
             uctC = .5;
             k = .8;
         } else if (game.equals("breakthrough")) {
-            k = 0.05;
+            k = .05;
+            uctC = 1.;
         }
         resetSimulations(game);
     }
@@ -97,7 +99,8 @@ public class MCTSOptions {
     }
 
     public int getWindowSize(int branches) {
-        return (int) ((windowC * numSimulations) / branches);
+        return (int) (windowC * Math.sqrt(numSimulations * Math.log(numSimulations)));
+//        return (int) ((windowC * numSimulations) / branches);
     }
 
     public void resetMast(int maxId) {

@@ -23,7 +23,7 @@ public class MovingAverage {
         if (size < maxSize) {
             size++;
         } else {
-            // Number of samples > swUCT size
+            // Number of samples > window size
             // Index is at the position to be overwritten
             total -= samples[index];
         }
