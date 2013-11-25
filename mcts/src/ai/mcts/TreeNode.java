@@ -8,9 +8,11 @@ import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Stack;
 
 public class TreeNode {
     public static final double INF = 999999;
+    private static final Stack<IMove> movesMade = new Stack<IMove>();
     private static final FastLog l = new FastLog();
     public static StatCounter moveStats = new StatCounter(1000);
     //
@@ -100,6 +102,9 @@ public class TreeNode {
                 // The next child
                 result = -child.MCTS(board, depth + 1);
             }
+            // Update the mastEnabled value for the move
+            if (options.MAST)
+                options.updateMast(player, child.getMove().getUniqueId(), -result); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
         } else {
@@ -302,7 +307,8 @@ public class TreeNode {
 
     private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
-        int currentPlayer = board.getPlayerToMove(), moveIndex;
+        int currentPlayer = board.getPlayerToMove(), moveIndex = -1;
+        double mastMax, mastVal;
         nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
@@ -329,14 +335,26 @@ public class TreeNode {
                 if (options.epsGreedyEval) {
                     // If epsilon greedy playouts, choose the highest eval
                     moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
+                } else if (options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
+                    mastMax = Double.NEGATIVE_INFINITY;
+                    // Select the move with the highest MAST value
+                    for (int i = 0; i < moves.size(); i++) {
+                        mastVal = options.getMastValue(currentPlayer, moves.get(i).getUniqueId());
+                        // If bigger, we have a winner, if equal, flip a coin
+                        if (mastVal > mastMax || (mastVal == mastMax && MCTSOptions.r.nextDouble() < .5)) {
+                            mastMax = mastVal;
+                            moveIndex = i;
+                        }
+                    }
                 } else {
                     // Choose randomly
                     moveIndex = MCTSOptions.r.nextInt(moves.size());
                 }
-
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
+                    if (options.MAST)
+                        movesMade.push(currentMove);
                     nMoves++;
                     moveMade = true;
                     winner = board.checkPlayoutWin();
@@ -355,15 +373,24 @@ public class TreeNode {
             }
         }
 
-
-        double score = 0;
-
+        double score;
         if (gameEnded) {
             // Keep track of the average number of moves per play-out
             moveStats.push(nMoves);
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
+
+            // Update the mast values for the moves made during playout
+            if (options.MAST) {
+                double value;
+                while (!movesMade.empty()) {
+                    currentMove = movesMade.pop();
+                    currentPlayer = board.getOpponent(currentPlayer);
+                    value = (currentPlayer == player) ? score : -score;
+                    options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
+                }
+            }
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
@@ -487,6 +514,6 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean();
+        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tvar: " + stats.variance();
     }
 }

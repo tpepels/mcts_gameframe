@@ -34,6 +34,9 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = true;
+        options1.enableRB();
+        options1.mapping = true;
+        options1.setGame("cannon");
         aiPlayer1.setOptions(options1);
 
         aiPlayer2 = new MCTSPlayer();

@@ -12,8 +12,6 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.swUCT = true;
-        options1.windowC = .1;
 //        options1.pdepth = 0;
 //        options1.earlyEval = true;
 //        options1.useHeuristics = true;

@@ -5,8 +5,13 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+
 public class MCTSPlayer implements AIPlayer, Runnable {
 
+    ArrayList<double[]> allData = new ArrayList<double[]>(1000);
     private boolean interrupted = false, parallel = true, retry = false;
     private TreeNode root;
     private IBoard board;
@@ -26,6 +31,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
+
+        // Reset the mastEnabled arrays
+        if (options.MAST)
+            options.resetMast(board.getMaxUniqueMoveId());
 
         // Create a new root, or reuse the old tree
         if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
@@ -84,6 +93,16 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
+                // Map the data
+                if (options.mapping && simulations % 10 == 0) {
+                    double[] data = new double[root.getChildren().size()];
+                    int i = 0;
+                    for (TreeNode t : root.getChildren()) {
+                        data[i] = t.stats.mean();
+                        i++;
+                    }
+                    allData.add(data);
+                }
             }
             // (SW-UCT) Remember the number of simulations for the next round
             options.numSimulations = simulations;
@@ -118,6 +137,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
         }
         bestMove = bestChild.getMove();
+        if (options.mapping) {
+            plotArms();
+        }
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
@@ -141,6 +163,55 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         // Make the move in the GUI, if parallel
         if (!interrupted && parallel)
             callback.makeMove(bestChild.getMove());
+    }
+
+    private void plotArms() {
+        int[] maxI = new int[5];
+        StringBuilder[] sbs = new StringBuilder[maxI.length];
+        for (int j = 0; j < maxI.length; j++) {
+            double max = -100;
+            for (int i = 0; i < root.getChildren().size(); i++) {
+                boolean ok = true;
+                for (int k = 0; k < maxI.length; k++) {
+                    if (i == maxI[k]) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (ok && root.getChildren().get(i).stats.mean() > max) {
+                    max = root.getChildren().get(i).stats.mean();
+                    maxI[j] = i;
+                }
+            }
+        }
+        int j = 10;
+        for (double[] d : allData) {
+            int k = 0;
+            for (int i : maxI) {
+                if (sbs[k] == null)
+                    sbs[k] = new StringBuilder();
+                sbs[k].append(j);
+                sbs[k].append(" ");
+                sbs[k].append(d[i]);
+                sbs[k].append(" ");
+                sbs[k].append(k);
+                sbs[k].append('\n');
+                k++;
+            }
+            j += 10;
+        }
+        try {
+            PrintWriter out = new PrintWriter(options.plotOutFile);
+            for (StringBuilder sb : sbs) {
+                out.println(sb.toString());
+                out.println();
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        allData.clear();
     }
 
     public void setOptions(MCTSOptions options) {

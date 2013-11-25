@@ -16,13 +16,14 @@ public class MCTSOptions {
     // Relative bonus!
     public boolean relativeBonus = false;
     //
-    public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false;
+    public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
     public boolean ucbTuned = false, auct = false;
+    public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms.dat";
     // MCTS Specific values
     public double uctC = 1., k = .05;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 2000, simulations = 5000;
+    public int timeInterval = 2500, simulations = 5000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -31,7 +32,9 @@ public class MCTSOptions {
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
     // MAST stuff
+    public boolean MAST = false;
     private double[][] mastValues, mastVisits;
+    public double mastEps = 0.8;
 
     public void enableRB() {
         relativeBonus = true;
@@ -100,7 +103,6 @@ public class MCTSOptions {
 
     public int getWindowSize(int branches) {
         return (int) (windowC * Math.sqrt(numSimulations * Math.log(numSimulations)));
-//        return (int) ((windowC * numSimulations) / branches);
     }
 
     public void resetMast(int maxId) {
