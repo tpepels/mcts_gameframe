@@ -92,6 +92,7 @@ public class SimGame {
          *    _rbX   = enable the relative bonus with K = X, where X is a double, X is optional
          *    _uctX  = sets the UCT constant to X, where X is a double
          *    _ucb1t = enables UCB1-Tuned
+         *    _mastX = Plays highest MAST move with probability X, X is double
          */
         String label = (player == 1 ? p1label : p2label);
         AIPlayer playerRef = null;
@@ -125,13 +126,15 @@ public class SimGame {
                     options.windowC = Double.parseDouble(tag.substring(1));
                 } else if (tag.startsWith("rb")) {
                     options.enableRB();
-                    if (tryParseDouble(tag.substring(2))) {
+                    if (tryParseDouble(tag.substring(2)))
                         options.k = Double.parseDouble(tag.substring(2));
-                    }
                 } else if (tag.startsWith("ucb1t")) {
                     options.ucbTuned = true;
                 } else if (tag.startsWith("uct")) {
-                    options.uctC = options.k = Double.parseDouble(tag.substring(3));
+                    options.uctC = Double.parseDouble(tag.substring(3));
+                } else if (tag.startsWith("mast")) {
+                    options.MAST = true;
+                    options.mastEps = Double.parseDouble(tag.substring(4));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
