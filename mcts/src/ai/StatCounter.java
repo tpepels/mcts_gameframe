@@ -16,6 +16,9 @@ public class StatCounter {
     private double m_sum, m_m2, m_mean;
     private int m_n;
 
+    private int m_wins;
+    private int m_losses; 
+
     public StatCounter() {
         this.reset();
     }
@@ -35,6 +38,10 @@ public class StatCounter {
     }
 
     public void reset() {
+
+        m_losses = 0;
+        m_wins = 0;
+        
         m_sum = 0.0;
         m_m2 = 0.0;
         m_mean = 0.0;
@@ -48,11 +55,20 @@ public class StatCounter {
         m_sum += num;
         m_n++;
 
+        if (num > 0.999) 
+            m_wins++;
+        else if (num < -0.999) 
+            m_losses++;
+
         double delta = num - m_mean;
         m_mean += delta / m_n;
         m_m2 += delta * (num - m_mean);
 
         if (ma != null) ma.add(num);
+    }
+
+    public String wlString() { 
+        return "W:" + m_wins + " L:" + m_losses;
     }
 
     public void setValue(double val) {

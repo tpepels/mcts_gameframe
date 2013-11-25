@@ -514,6 +514,6 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tvar: " + stats.variance();
+        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tvar: " + stats.variance() + "\t\t" + stats.wlString();
     }
 }
