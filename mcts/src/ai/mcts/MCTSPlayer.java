@@ -94,15 +94,15 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
                 // Map the data
-                if (options.mapping && simulations % 10 == 0) {
-                    double[] data = new double[root.getChildren().size()];
-                    int i = 0;
-                    for (TreeNode t : root.getChildren()) {
-                        data[i] = t.stats.mean();
-                        i++;
-                    }
-                    allData.add(data);
-                }
+//                if (options.mapping && simulations % 10 == 0) {
+//                    double[] data = new double[root.getChildren().size()];
+//                    int i = 0;
+//                    for (TreeNode t : root.getChildren()) {
+//                        data[i] = t.stats.mean();
+//                        i++;
+//                    }
+//                    allData.add(data);
+//                }
             }
             // (SW-UCT) Remember the number of simulations for the next round
             options.numSimulations = simulations;
@@ -138,7 +138,11 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
         bestMove = bestChild.getMove();
         if (options.mapping) {
-            plotArms();
+            double[] data = new double[2];
+            data[0] = TreeNode.moveStats.true_mean();
+            data[1] = TreeNode.moveStats.stddev();
+            allData.add(data);
+            plotAllData();
         }
         // show information on the best move
         if (options.debug) {
@@ -165,8 +169,40 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             callback.makeMove(bestChild.getMove());
     }
 
-    private void plotArms() {
-        int[] maxI = new int[5];
+    private void plotAllData() {
+        StringBuilder[] sbs = new StringBuilder[2];
+        int i = 0;
+        for (double[] d : allData) {
+            int k = 0;
+            for (double da : d) {
+                if (sbs[k] == null)
+                    sbs[k] = new StringBuilder();
+                sbs[k].append(i);
+                sbs[k].append(" ");
+                sbs[k].append(da);
+                sbs[k].append(" ");
+                sbs[k].append(k);
+                sbs[k].append('\n');
+                k++;
+            }
+            i++;
+        }
+
+        try {
+            PrintWriter out = new PrintWriter(options.plotOutFile);
+            for (StringBuilder sb : sbs) {
+                out.println(sb.toString());
+                out.println();
+            }
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void plotTopArms(int top) {
+        int[] maxI = new int[top];
         StringBuilder[] sbs = new StringBuilder[maxI.length];
         for (int j = 0; j < maxI.length; j++) {
             double max = -100;

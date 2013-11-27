@@ -73,7 +73,7 @@ public class TreeNode {
     public double MCTS(IBoard board, int depth) {
         TreeNode child = null;
         // First add some leafs if required
-        if (isLeaf()) {
+        if (isLeaf(()) {
             // Expand returns any node that leads to a win
             child = expand(board, depth + 1);
         }
@@ -91,7 +91,7 @@ public class TreeNode {
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
             if (child.getnVisits() == 0) {
-                result = child.playOut(board);
+                result = child.playOut(board, depth + 1);
                 // Apply the relative bonus
                 if (options.relativeBonus && child.nMoves > 0) {
                     double x = moveStats.mean() - child.nMoves;
@@ -126,7 +126,7 @@ public class TreeNode {
                 if (options.auct && tn.isVirtual())
                     continue;
                 // If the child is not expanded, make sure it is
-                if (options.solverFix && tn.isLeaf()) {
+                if (options.solverFix && tn.isLeaf(()) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
                     TreeNode winner = tn.expand(board, depth + 2);
@@ -248,12 +248,12 @@ public class TreeNode {
                 //
                 if (options.swUCT && depth <=3) {
                     // TODO use window size of parent in recursive case!
-                    uctValue = avgValue + ((options.uctC/2.) * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
-                } else if (options.swUCT && depth == 4) {
+                    uctValue = avgValue + ((options.uctC *.5) * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
+                }  else if (options.swUCT && depth == 4) {
                     uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits() / c.getnVisits())));
                 } else if (options.ucbTuned) {
                     ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
-                    uctValue = avgValue + Math.sqrt((Math.min(.25, ucbVar) * l.log(getnVisits())) / c.getnVisits());
+                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(getnVisits())) / c.getnVisits());
                 } else {
                     // Compute the uct value with the (new) average value
                     uctValue = avgValue + (options.uctC * Math.sqrt(l.log(getnVisits()) / c.getnVisits()));
@@ -311,7 +311,7 @@ public class TreeNode {
         return bestMoveIndices.get(idx);
     }
 
-    private double playOut(IBoard board) {
+    private double playOut(IBoard board, int depth) {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), moveIndex = -1;
         double mastMax, mastVal;
@@ -382,7 +382,7 @@ public class TreeNode {
         double score;
         if (gameEnded) {
             // Keep track of the average number of moves per play-out
-            moveStats.push(nMoves);
+            moveStats.push(nMoves + depth);
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
@@ -450,7 +450,7 @@ public class TreeNode {
 
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
-        if (!options.auct || isLeaf()) {
+        if (!options.auct || isLeaf(()) {
             stats.push(value);
         } else {
             // Compute the auct win ratio
@@ -482,7 +482,7 @@ public class TreeNode {
                 c.resetVelocities();
             }
             // Due to velocities being reset
-            if (!isLeaf())
+            if (!isLeaf(())
                 updateStats(0);
         }
     }

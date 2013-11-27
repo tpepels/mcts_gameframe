@@ -316,27 +316,44 @@ public class Board implements IBoard {
 
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
-        int count = 0;
-        count = (!firstMove) ? freeSquares : REAL_SIZE;
+        int count = (!firstMove) ? freeSquares : REAL_SIZE;
         poMoves.clear();
-        int c = 0;
+        int c = 0, opp = getOpponent(currentPlayer), cp = currentPlayer;
+        IMove move;
         // Add the moves from the spiral ordering
         for (int i = 0; i < SIZE; i++) {
             if (board[i] == null)
                 continue;
             // Check if position is free and add it to the free moves
-            if (firstMove || board[i].occupant == 0 && !(dontAdd == i && dontAddPlayer == currentPlayer)) {
-                poMoves.add(new Move(i));
+            if (firstMove || board[i].occupant == 0) {
+                move = new Move(i);
+                poMoves.add(move);
                 if (heuristics) {
+//                    if (doAIMove(move, currentPlayer)) {
+//                        if (checkWin() == currentPlayer) {
+//                            undoMove();
+//                            poMoves.clear();
+//                            poMoves.add(move);
+//                            return poMoves;
+//                        }
+//                        board[i].occupant = opp;
+//                        if (checkWin() == opp) {
+//                            board[i].occupant = cp;
+//                            undoMove();
+//                            poMoves.clear();
+//                            poMoves.add(move);
+//                            return poMoves;
+//                        }
+//                        board[i].occupant = cp;
+//                        undoMove();
+//                    }
                     // Prefer the highly connected positions
                     if (board[i].numNeighbours > 4)
-                        poMoves.add(new Move(i));
+                        poMoves.add(move);
                 }
                 c++;
                 // No need to look further
                 if (c == count) {
-                    dontAdd = -1;
-                    dontAddPlayer = -1;
                     return poMoves;
                 }
             }
@@ -422,20 +439,14 @@ public class Board implements IBoard {
     @Override
     public void undoMove() {
         int moveIndex = moveList.size() - 1;
-        // No moves left!
-        if (moveIndex < 0) {
-            System.err.println("No moves to undo!");
-            return;
-        }
         isEnd = false;
-        //
         int move = moveList.get(moveIndex);
         // return the captured stones
         int[] captures = captureList.get(moveIndex);
         int color, position;
-        for (int i = 0; i < captures.length; i++) {
-            color = isBlack(captures[i]) ? P2 : P1;
-            position = getPosition(captures[i]);
+        for (int capture : captures) {
+            color = isBlack(capture) ? P2 : P1;
+            position = getPosition(capture);
             playerCaps[color - 1]--;
             board[position].occupant = color;
             // return the stone to the hash
@@ -656,7 +667,6 @@ public class Board implements IBoard {
     public boolean drawPossible() {
         return true;
     }
-        
 
     @Override
     public double evaluate(int player) {
@@ -707,7 +717,7 @@ public class Board implements IBoard {
             else
                 groupSize = 0;
             //
-            assert(board[i] != null); 
+            assert (board[i] != null);
             currentFree = checkFreedom(board[i], 0);
             for (Field f : checkedFree) {
                 f.freedom = currentFree;
@@ -739,7 +749,7 @@ public class Board implements IBoard {
         score += weights[8] * maxTotalFreeMe;
         score += weights[9] * maxTotalFreeOpp;
 
-        double score_nt = FastTanh.tanh(score / 1000.0); 
+        double score_nt = FastTanh.tanh(score / 1000.0);
         return score_nt;
     }
 
@@ -788,7 +798,7 @@ public class Board implements IBoard {
         totalfreedom = 0;
         //
         opp = (f.occupant == Board.P2) ? Board.P1 : Board.P2;
-        // Each row is of at least length 1 :)
+        // Each row is of at least length 1
         for (int i = 0; i < rowLength.length; i++) {
             // The current stone
             rowLength[i] = 1;
@@ -801,7 +811,7 @@ public class Board implements IBoard {
             totFreedom[i + 3] = 0;
         }
         longestRow = 0;
-        boolean prevFree = false, rowfinished = false;
+        boolean prevFree, rowfinished;
         Field currentField;
         // Check once in each direction.
         for (int j = 0; j < Board.NUM_NEIGHBOURS; j++) {
@@ -895,6 +905,6 @@ public class Board implements IBoard {
                 winByForce2 = f.occupant;
             }
         }
-        return longestRow;// * numGoodRows;
+        return longestRow;
     }
 }

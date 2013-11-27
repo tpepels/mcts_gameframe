@@ -90,6 +90,7 @@ public class SimGame {
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
          *    _wX    = enable sliding window UCT with Wc = X, where X is a double
          *    _rbX   = enable the relative bonus with K = X, where X is a double, X is optional
+         *    _swX   = enable sliding window UCT, with Wc = X, where X is double
          *    _uctX  = sets the UCT constant to X, where X is a double
          *    _ucb1t = enables UCB1-Tuned
          *    _mastX = Plays highest MAST move with probability X, X is double
@@ -135,6 +136,9 @@ public class SimGame {
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
+                } else if (tag.startsWith("sw")) {
+                    options.swUCT = true;
+                    options.windowC = Double.parseDouble(tag.substring(2));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

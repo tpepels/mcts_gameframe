@@ -3,8 +3,10 @@ package ai.mcts;
 import java.util.Random;
 
 public class MCTSOptions {
+    private static int instances = 0;
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
+    private int instance = 0;
     // Fields for enabling tree-reuse
     public boolean treeReuse = false;
     // Discount values based on their depth
@@ -18,9 +20,9 @@ public class MCTSOptions {
     //
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
     public boolean ucbTuned = false, auct = false;
-    public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms.dat";
+    public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
     // MCTS Specific values
-    public double uctC = 1., k = .05;
+    public double uctC = 1., k = .05, maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
     public int timeInterval = 2500, simulations = 5000;
@@ -36,9 +38,20 @@ public class MCTSOptions {
     private double[][] mastValues, mastVisits;
     public double mastEps = 0.8;
 
+    public MCTSOptions() {
+        this.instance = ++instances;
+        plotOutFile = String.format(plotOutFile, instance);
+    }
+
+    public MCTSOptions(String dataName) {
+        this.instance = ++instances;
+        plotOutFile = String.format(plotOutFile, instance + "-" + dataName);
+    }
+
     public void enableRB() {
         relativeBonus = true;
         uctC /= 2.;
+        maxVar = .35;
     }
 
     /**
@@ -58,7 +71,7 @@ public class MCTSOptions {
             uctC = .8;
             k = .4;
             MAST = true;
-            mastEps = .975;
+            mastEps = .9;
         } else if (game.equals("amazons")) {
             uctC = .5;
             k = .8;

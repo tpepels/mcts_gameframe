@@ -264,9 +264,11 @@ public class Board implements IBoard {
                                 poMoves.add(move);
                                 poMoves.add(move);
                                 poMoves.add(move);
-                            } 
+                            } else {
+                                poMoves.add(move);
+                            }
                         }
-                        // check for a win in 1
+                        // Decisive / anti-decisive moves
                         if (curPlayer == 1 && (move.getMove()[2] == 0)) {
                             poMoves.clear();
                             poMoves.add(move);
@@ -276,8 +278,6 @@ public class Board implements IBoard {
                             poMoves.add(move);
                             return poMoves;
                         } else if (move.getType() == Move.CAPTURE && (move.getMove()[0] == 7 || move.getMove()[0] == 0)) {
-                            //poMoves.clear();
-                            //poMoves.add(move);
                             if (forced == null) 
                                 forced = new ArrayList<IMove>();
                             forced.add(move);
