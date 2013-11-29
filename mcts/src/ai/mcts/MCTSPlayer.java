@@ -32,9 +32,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         this.parallel = parallel;
         this.myPlayer = myPlayer;
 
-        // Reset the mastEnabled arrays
+        // Reset the MAST arrays
         if (options.MAST)
             options.resetMast(board.getMaxUniqueMoveId());
+
+        if (options.multiplier)
+            options.multi = 1;
 
         // Create a new root, or reuse the old tree
         if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
@@ -61,6 +64,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             root = new TreeNode(myPlayer, options);
         }
         TreeNode.moveStats.reset();
+        TreeNode.qualityStats[0].reset();
+        TreeNode.qualityStats[1].reset();
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -86,6 +91,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
                 simulations++;
+                // Just a test
+                if (options.multiplier && simulations > (options.numSimulations * .75))
+                    options.multi = 2;
+
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
@@ -98,7 +107,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 //                    double[] data = new double[root.getChildren().size()];
 //                    int i = 0;
 //                    for (TreeNode t : root.getChildren()) {
-//                        data[i] = t.stats.mean();
+//                        data[i] = t.stats.variance();
 //                        i++;
 //                    }
 //                    allData.add(data);
@@ -121,7 +130,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         // This sometimes happens in experiments
         if (bestChild == null) {
             options.debug = true;
-
             // Print the root's children
             root.getBestChild(board);
             options.debug = false;
@@ -139,8 +147,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         bestMove = bestChild.getMove();
         if (options.mapping) {
             double[] data = new double[2];
-            data[0] = TreeNode.moveStats.true_mean();
-            data[1] = TreeNode.moveStats.stddev();
+            for (TreeNode t : root.getChildren()) {
+                data[0] += t.stats.true_mean();
+                data[1] += t.stats.variance();
+            }
+            data[0] /= root.getChildren().size();
+            data[1] /= root.getChildren().size();
             allData.add(data);
             plotAllData();
         }
@@ -152,6 +164,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Avg playout moves: " + TreeNode.moveStats.true_mean() + " std dev: " + TreeNode.moveStats.stddev());
             System.out.println("Moving Avg playout moves: " + TreeNode.moveStats.window_mean());
+            System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " std dev: " + TreeNode.qualityStats[0].stddev());
+            System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " std dev: " + TreeNode.qualityStats[1].stddev());
             if (options.swUCT) {
                 System.out.println("Ply 1 window size: " + bestChild.stats.windowSize());
             }
@@ -162,10 +176,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             root = bestChild;
         else
             root = null;
-
         board = null;
         // Make the move in the GUI, if parallel
-        if (!interrupted && parallel)
+        if (!interrupted && parallel && callback != null)
             callback.makeMove(bestChild.getMove());
     }
 
@@ -230,7 +243,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 sbs[k].append(" ");
                 sbs[k].append(d[i]);
                 sbs[k].append(" ");
-                sbs[k].append(k);
+                sbs[k].append(i);
                 sbs[k].append('\n');
                 k++;
             }
@@ -270,3 +283,4 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         return bestMove;
     }
 }
+

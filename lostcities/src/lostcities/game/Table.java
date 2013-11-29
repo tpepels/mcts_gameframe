@@ -546,4 +546,13 @@ public class Table implements IBoard {
         return 0.0;
     }
 
+    @Override
+    public double getQuality() {
+        if (winner == P1_WIN)
+            return ((double) (scores[0] - scores[1]) / (double) (scores[0] + scores[1]));
+        else if (winner == P2_WIN)
+            return ((double) (scores[1] - scores[0]) / (double) (scores[0] + scores[1]));
+        return 1.;
+    }
+
 }

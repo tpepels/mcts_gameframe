@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Stack;
 
 public class Board implements IBoard {
+    private static final int N_PIECES = 16;
     private static final MoveList tempList = new MoveList(3);   // Temp move store for heuristic evaluation
     private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
     private static final MoveList static_moves = new MoveList(384);   // 64*6
@@ -330,7 +331,7 @@ public class Board implements IBoard {
                 else board[r][c] = '.';
             }
 
-        pieces1 = pieces2 = 16;
+        pieces1 = pieces2 = N_PIECES;
         progress1 = progress2 = 1;
         nMoves = 0;
         winner = NONE_WIN;
@@ -352,6 +353,15 @@ public class Board implements IBoard {
             p1eval = FastTanh.tanh(delta / 60.0);
         }
         return (player == 1 ? p1eval : -p1eval);
+    }
+
+    @Override
+    public double getQuality() {
+        if(winner == P1_WIN)
+            return ((double)(N_PIECES - pieces2 - pieces1) / (double)(2 * N_PIECES));
+        else if (winner == P2_WIN)
+            return ((double)(N_PIECES - pieces1 - pieces2) / (double)(2 * N_PIECES));
+        return 1;
     }
 
     public String toString() {

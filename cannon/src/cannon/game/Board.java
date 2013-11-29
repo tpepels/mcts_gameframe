@@ -8,17 +8,17 @@ import java.util.*;
 
 public class Board implements IBoard {
     // Board constants
-    public static final int EMPTY = 0, W_SOLDIER = 1, W_TOWN = 2, B_SOLDIER = 3, B_TOWN = 4;
+    public static final int EMPTY = 0, W_SOLDIER = 1, W_TOWN = 2, B_SOLDIER = 3, B_TOWN = 4, N_PIECES = 15;
     public static final int WIDTH = 10, HEIGHT = 10, MAX_MOVES = 1000;
-    public static final MoveList moves = new MoveList(500);
-    private static final List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
     private static final Random random = new Random();
+    public final MoveList moves = new MoveList(500);
     //
     public final int[] board = new int[WIDTH * HEIGHT];
     public final Stack<IMove> pastMoves = new Stack<IMove>();
+    private final List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
     private final int[] capture = {-1, -11, -10, -9, 1};
     private final int[] move = {-11, -10, -9};
-    private final int[] retreat = {22, 20, 18}, retrCheck = {-11, -1, +2, -10, +10, -9, +1, +11};
+    private final int[] retreat = {22, 20, 18}, retrCheck = {-11, -1, +1, -10, +10, -9, +1, +11};
     private final int[] n = {-1, 0, 1};
     // Whether the towns have been placed or not determines the first moves
     public boolean whiteTownPlaced = false, blackTownPlaced = false;
@@ -445,7 +445,7 @@ public class Board implements IBoard {
             throw new RuntimeException("Wrong moves generated.");
         }
         // Cut off games that take too long
-        if(nMoves > MAX_MOVES)
+        if (nMoves > MAX_MOVES)
             return DRAW;
         return winningPlayer;
     }
@@ -518,16 +518,20 @@ public class Board implements IBoard {
             for (int i = 0; i < moves.size(); i++) {
                 move = moves.get(i);
                 // Heuristic: capture and fire whenever possible
-                if (heuristics && random.nextDouble() < 0.95) {
+                if (heuristics) {
                     if (move.getType() == Move.CAPTURE) {
                         simMoves.add(move);
                     } else if (move.getType() == Move.FIRE) {
                         simMoves.add(move);
                         simMoves.add(move);
+                        simMoves.add(move);
+                        simMoves.add(move);
                     }
-                } else if (heuristics && move.getType() != Move.RETREAT) {
-                    simMoves.add(move);
-                } else {
+                }
+//                else if (heuristics && move.getType() != Move.RETREAT) {
+//                    simMoves.add(move);
+//                }
+                else {
                     simMoves.add(move);
                 }
             }
@@ -638,4 +642,12 @@ public class Board implements IBoard {
         return 0.0;
     }
 
+    @Override
+    public double getQuality() {
+        if (winningPlayer == P1_WIN)
+            return ((double) (N_PIECES - numWhitePcs - numBlackPcs) / (double) (2 * N_PIECES));
+        else if (winningPlayer == P2_WIN)
+            return ((double) (N_PIECES - numBlackPcs - numWhitePcs) / (double) (2 * N_PIECES));
+        return 1.;
+    }
 }

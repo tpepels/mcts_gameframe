@@ -90,6 +90,7 @@ public class SimGame {
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
          *    _wX    = enable sliding window UCT with Wc = X, where X is a double
          *    _rbX   = enable the relative bonus with K = X, where X is a double, X is optional
+         *    _rbqX  = enable the relative bonus with quality bonus, K = X, where X is a double, X is optional
          *    _swX   = enable sliding window UCT, with Wc = X, where X is double
          *    _uctX  = sets the UCT constant to X, where X is a double
          *    _ucb1t = enables UCB1-Tuned
@@ -129,6 +130,11 @@ public class SimGame {
                     options.enableRB();
                     if (tryParseDouble(tag.substring(2)))
                         options.k = Double.parseDouble(tag.substring(2));
+                } else if (tag.startsWith("rbq")) {
+                    options.enableRB();
+                    options.rb_quality = true;
+                    if (tryParseDouble(tag.substring(3)))
+                        options.k = Double.parseDouble(tag.substring(3));
                 } else if (tag.startsWith("ucb1t")) {
                     options.ucbTuned = true;
                 } else if (tag.startsWith("uct")) {

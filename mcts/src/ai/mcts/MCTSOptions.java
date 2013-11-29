@@ -13,10 +13,10 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations;
+    public int numSimulations, maxSWDepth = 2, minSWDepth = 0;
     public double windowC = 4.;
     // Relative bonus!
-    public boolean relativeBonus = false;
+    public boolean relativeBonus = false, rb_quality = false;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
     public boolean ucbTuned = false, auct = false;
@@ -25,7 +25,7 @@ public class MCTSOptions {
     public double uctC = 1., k = .05, maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 2500, simulations = 5000;
+    public int timeInterval = 1000, simulations = 5000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -37,6 +37,9 @@ public class MCTSOptions {
     public boolean MAST = false;
     private double[][] mastValues, mastVisits;
     public double mastEps = 0.8;
+    //
+    public boolean multiplier = false;
+    public int multi = 1;
 
     public MCTSOptions() {
         this.instance = ++instances;
@@ -50,8 +53,6 @@ public class MCTSOptions {
 
     public void enableRB() {
         relativeBonus = true;
-        uctC /= 2.;
-        maxVar = .35;
     }
 
     /**
@@ -120,9 +121,8 @@ public class MCTSOptions {
         }
     }
 
-    public int getWindowSize(int siblings) {
-        int sims = Math.max(numSimulations / siblings, 100);
-        return (int) (windowC * Math.sqrt(sims * Math.log(sims)));
+    public int getWindowSize() {
+        return (int) (windowC * Math.sqrt(numSimulations * Math.log(numSimulations)));
     }
 
     public void resetMast(int maxId) {

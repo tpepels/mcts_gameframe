@@ -124,4 +124,12 @@ public interface IBoard {
      * position with respect to the specified player.
      */
     public double evaluate(int player);
+
+    /**
+     * Returns a value between -1 and 1 representing the quality of the game
+     * after the game has ended, e.g. rate of pieces remaining, score ratio etc.
+     *
+     * If this is not applicable to your game, return 1
+     */
+    public double getQuality();
 }

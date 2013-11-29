@@ -36,11 +36,11 @@ public class Board implements IBoard {
             36};
     // set the bit in this position to 1 if a stone is black.
     private final int BLACK_BIT = 128;
-    private final int N_INF = -2000000, P_INF = 2000000;
+    private final int P_INF = 2000000;
     public Field[] board;
     // private final long[][] zobristPositions;
     // public final long zobristHash, whiteHash, blackHash;
-    public int freeSquares;
+    public int freeSquares, winner;
     public boolean firstMoveBeforePass = false;
     public boolean firstMove = true;
     public int currentPlayer = P1;
@@ -50,8 +50,7 @@ public class Board implements IBoard {
     public ArrayList<Integer> moveList = new ArrayList<Integer>(SIZE);
     public ArrayList<int[]> captureList = new ArrayList<int[]>(SIZE);
     public double maxHistVal;
-    public int startindex = 0; // Skip the first when getting a move to make
-    public int numCapture = 0, p1_captures = 0, p2_captures = 0;
+    public int startindex = 0, numCapture = 0;
     // private void hashCurrentPlayer() {
     // if (currentPlayer == Board.P1) {
     // zobristHash ^= blackHash;
@@ -175,6 +174,7 @@ public class Board implements IBoard {
         newBoard.isEnd = isEnd;
         newBoard.currentPlayer = currentPlayer;
         newBoard.nMoves = nMoves;
+        newBoard.winner = winner;
         if (moveList.size() > 0)
             newBoard.moveList.add(moveList.get(moveList.size() - 1));
         if (captureList.size() > 0)
@@ -443,6 +443,7 @@ public class Board implements IBoard {
         int move = moveList.get(moveIndex);
         // return the captured stones
         int[] captures = captureList.get(moveIndex);
+        winner = NONE_WIN;
         int color, position;
         for (int capture : captures) {
             color = isBlack(capture) ? P2 : P1;
@@ -561,6 +562,7 @@ public class Board implements IBoard {
      */
     @Override
     public int checkWin() {
+        winner = NONE_WIN;
         if (moveList.size() == 0)
             return NONE_WIN;
         Field lastPosition = board[moveList.get(moveList.size() - 1)];
@@ -588,6 +590,7 @@ public class Board implements IBoard {
                 // One of the players has won!
                 if (rowLength[j % 3] == ROW_SIZE) {
                     isEnd = true;
+                    winner = player;
                     return player;
                 }
                 currentField = currentField.neighbours[j];
@@ -596,6 +599,7 @@ public class Board implements IBoard {
         // There are fewer free squares on the board than needed to build a row
         if (freeSquares == 0) {
             isEnd = true;
+            winner = DRAW;
             return DRAW;
         }
         // None of the players win, continue the game
@@ -751,6 +755,32 @@ public class Board implements IBoard {
 
         double score_nt = FastTanh.tanh(score / 1000.0);
         return score_nt;
+    }
+
+    @Override
+    public double getQuality() {
+        if (winner == P1_WIN)
+            return ((double)(ROW_SIZE - getRowScore(P2)) / (double) ROW_SIZE);
+        else if (winner == P2_WIN)
+            return ((double)(ROW_SIZE - getRowScore(P1)) / (double) ROW_SIZE);
+        return 1;
+    }
+
+    public double getRowScore(int player) {
+        double currentMax, maxRow = -10;
+        // Check minimal freedom, longest rows etc.
+        for (int i = 0; i < board.length; i++) {
+            // Check if position is part of the board
+            if (board[i] == null || board[i].occupant != player)
+                continue;
+            // Check if longest row.
+            currentMax = checkRowLength(board[i], false);
+            // Check if row length is higher than current highest
+            if (currentMax > maxRow) {
+                maxRow = currentMax;
+            }
+        }
+        return maxRow;
     }
 
     /**

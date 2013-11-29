@@ -15,9 +15,8 @@ public class StatCounter {
     public MovingAverage ma;
     private double m_sum, m_m2, m_mean;
     private int m_n;
-
     private int m_wins;
-    private int m_losses; 
+    private int m_losses;
 
     public StatCounter() {
         this.reset();
@@ -41,7 +40,7 @@ public class StatCounter {
 
         m_losses = 0;
         m_wins = 0;
-        
+
         m_sum = 0.0;
         m_m2 = 0.0;
         m_mean = 0.0;
@@ -67,7 +66,7 @@ public class StatCounter {
         if (ma != null) ma.add(num);
     }
 
-    public String wlString() { 
+    public String wlString() {
         return "W:" + m_wins + " L:" + m_losses;
     }
 
@@ -100,7 +99,10 @@ public class StatCounter {
     }
 
     public double windowSize() {
-        return ma.getMaxSize();
+        if (ma != null)
+            return ma.getMaxSize();
+        else
+            return -1;
     }
 
     public int visits() {

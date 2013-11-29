@@ -15,15 +15,17 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     private static final FastLog l = new FastLog();
     public static StatCounter moveStats = new StatCounter(1000);
+    public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     //
     private final boolean virtual;
     private final MCTSOptions options;
-    //
-    public int player, siblings;
+    public int player;
     public StatCounter stats;
+    //
+    private boolean expanded = false;
     private List<TreeNode> children;
     private IMove move;
-    private double velocity = 1., nMoves = 0.;
+    private double velocity = 1.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
 
     /**
@@ -33,7 +35,6 @@ public class TreeNode {
         this.player = player;
         this.virtual = false;
         this.options = options;
-        this.siblings = 1;
         stats = new StatCounter();
     }
 
@@ -73,7 +74,7 @@ public class TreeNode {
     public double MCTS(IBoard board, int depth) {
         TreeNode child = null;
         // First add some leafs if required
-        if (isLeaf(()) {
+        if (isLeaf()) {
             // Expand returns any node that leads to a win
             child = expand(board, depth + 1);
         }
@@ -92,15 +93,6 @@ public class TreeNode {
             // When a leaf is reached return the result of the playout
             if (child.getnVisits() == 0) {
                 result = child.playOut(board, depth + 1);
-                // Apply the relative bonus
-                if (options.relativeBonus && child.nMoves > 0) {
-                    double x = moveStats.mean() - child.nMoves;
-                    if (moveStats.variance() > 0) {
-                        x /= moveStats.stddev();
-                    }
-                    result += Math.signum(result) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
-                    result *= .5;
-                }
                 child.updateStats(-result);
             } else {
                 // The next child
@@ -126,7 +118,7 @@ public class TreeNode {
                 if (options.auct && tn.isVirtual())
                     continue;
                 // If the child is not expanded, make sure it is
-                if (options.solverFix && tn.isLeaf(()) {
+                if (options.solverFix && tn.isLeaf()) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
                     TreeNode winner = tn.expand(board, depth + 2);
@@ -159,12 +151,14 @@ public class TreeNode {
     }
 
     private TreeNode expand(IBoard board, int depth) {
+        expanded = true;
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // If one of the nodes is a win, we don't have to select
         TreeNode winNode = null;
         // Generate all moves
         MoveList moves = board.getExpandMoves();
-        children = new ArrayList<TreeNode>(moves.size());
+        if (children == null)
+            children = new ArrayList<TreeNode>(moves.size());
         // (AUCT) Add an extra virtual node
         if (options.auct) {
             TreeNode vNode = new TreeNode(nextPlayer, null, true, options);
@@ -172,21 +166,22 @@ public class TreeNode {
             vNode.velocity = velocity;
             children.add(vNode);
         }
-        double value;
+
         int winner;
-        double best_imVal = -INF;
+        double value, best_imVal = -INF;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child;
                 // Initialize the child
-                if (options.swUCT && depth <= 3)
-                    child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize(siblings));
-                else
+                if (options.swUCT) {
+                    if (depth <= options.maxSWDepth && depth >= options.minSWDepth)
+                        child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize());
+                    else
+                        child = new TreeNode(nextPlayer, moves.get(i), options);
+                } else
                     child = new TreeNode(nextPlayer, moves.get(i), options);
-
-                child.siblings = moves.size() * siblings;
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 //
@@ -246,11 +241,10 @@ public class TreeNode {
                 if (options.implicitMM)
                     avgValue += c.imVal;
                 //
-                if (options.swUCT && depth <=3) {
-                    // TODO use window size of parent in recursive case!
-                    uctValue = avgValue + ((options.uctC *.5) * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
-                }  else if (options.swUCT && depth == 4) {
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits() / c.getnVisits())));
+                if (options.swUCT && c.stats.windowSize() != -1) {
+                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
+                } else if (options.swUCT && c.stats.windowSize() == -1) {
+                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits()) / c.getnVisits()));
                 } else if (options.ucbTuned) {
                     ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
                     uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(getnVisits())) / c.getnVisits());
@@ -314,14 +308,12 @@ public class TreeNode {
     private double playOut(IBoard board, int depth) {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), moveIndex = -1;
-        double mastMax, mastVal;
-        nMoves = 0;
+        double mastMax, mastVal, nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
         boolean terminateEarly = false;
-
         while (!gameEnded && !terminateEarly) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
@@ -381,12 +373,9 @@ public class TreeNode {
 
         double score;
         if (gameEnded) {
-            // Keep track of the average number of moves per play-out
-            moveStats.push(nMoves + depth);
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
-
             // Update the mast values for the moves made during playout
             if (options.MAST) {
                 double value;
@@ -397,6 +386,30 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
+            // Alter the score using the relative bonus
+            if (options.relativeBonus && (nMoves + depth) > 0) {
+                double x = moveStats.mean() - (nMoves + depth);
+                if (moveStats.variance() > 0) {
+                    x /= moveStats.stddev();
+                }
+                double rb = Math.signum(score) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
+                rb *= .5;
+                if (options.rb_quality && winner != IBoard.DRAW) {
+                    double q = board.getQuality();
+                    x = qualityStats[winner - 1].mean() - q;
+                    qualityStats[winner - 1].push(q);
+                    if (qualityStats[winner - 1].variance() > 0) {
+                        x /= qualityStats[winner - 1].stddev();
+                    }
+                    double qx = Math.signum(score) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
+                    qx *= .25;
+                    rb *= .5;
+                    rb += qx;
+                }
+                score += rb;
+            }
+            // Keep track of the average number of moves per play-out
+            moveStats.push(nMoves + depth);
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
@@ -405,7 +418,6 @@ public class TreeNode {
         } else {
             throw new RuntimeException("Game end error in playOut");
         }
-
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
@@ -450,8 +462,9 @@ public class TreeNode {
 
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
-        if (!options.auct || isLeaf(()) {
-            stats.push(value);
+        if (!options.auct || isLeaf()) {
+            for (int i = 0; i < options.multi; i++)
+                stats.push(value);
         } else {
             // Compute the auct win ratio
             double sum_v = 0., sum_v_r = 0.;
@@ -482,13 +495,13 @@ public class TreeNode {
                 c.resetVelocities();
             }
             // Due to velocities being reset
-            if (!isLeaf(())
+            if (!isLeaf())
                 updateStats(0);
         }
     }
 
     public boolean isLeaf() {
-        return children == null;
+        return children == null || !expanded;
     }
 
     public boolean isTerminal() {

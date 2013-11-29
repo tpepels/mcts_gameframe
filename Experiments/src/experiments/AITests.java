@@ -64,7 +64,6 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB();
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -79,13 +78,12 @@ public class AITests {
             double[] values = {.5};
             for (double i : values) {
                 options1.windowC = i;
-                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
+                runGames("AI 1 SW = " + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB();
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -100,13 +98,12 @@ public class AITests {
             double[] values = {1.};
             for (double i : values) {
                 options1.windowC = i;
-                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
+                runGames("AI 1 SW = " + i + " || AI 2 MCTS");
             }
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB();
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -121,13 +118,12 @@ public class AITests {
             double[] values = {1.5};
             for (double i : values) {
                 options1.windowC = i;
-                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
+                runGames("AI 1 SW = " + i + " || AI 2 MCTS");
             }
         } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.enableRB();
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -142,7 +138,7 @@ public class AITests {
             double[] values = {2.};
             for (double i : values) {
                 options1.windowC = i;
-                runGames("AI 1 sw-uct Wc " + i + " || AI 2 MCTS");
+                runGames("AI 1 SW = " + i + " || AI 2 MCTS");
             }
         }
     }
