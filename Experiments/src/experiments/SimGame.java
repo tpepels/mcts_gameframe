@@ -127,14 +127,13 @@ public class SimGame {
                     options.swUCT = true;
                     options.windowC = Double.parseDouble(tag.substring(1));
                 } else if (tag.startsWith("rb")) {
-                    options.enableRB();
+                    options.relativeBonus = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.k = Double.parseDouble(tag.substring(2));
-                } else if (tag.startsWith("rbq")) {
-                    options.enableRB();
-                    options.rb_quality = true;
-                    if (tryParseDouble(tag.substring(3)))
-                        options.k = Double.parseDouble(tag.substring(3));
+                } else if (tag.startsWith("qb")) {
+                    options.qualityBonus = true;
+                    if (tryParseDouble(tag.substring(2)))
+                        options.k = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("ucb1t")) {
                     options.ucbTuned = true;
                 } else if (tag.startsWith("uct")) {

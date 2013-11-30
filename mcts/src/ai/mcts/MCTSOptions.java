@@ -13,10 +13,10 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations, maxSWDepth = 3, minSWDepth = 2;
+    public int numSimulations, maxSWDepth = 2, minSWDepth = 2;
     public double windowC = 4.;
     // Relative bonus!
-    public boolean relativeBonus = false, rb_quality = false;
+    public boolean relativeBonus = false, qualityBonus = false;
     //
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
     public boolean ucbTuned = false, auct = false;
@@ -25,7 +25,7 @@ public class MCTSOptions {
     public double uctC = 1., k = .05, maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 3000, simulations = 5000;
+    public int timeInterval = 3000, simulations = 10000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -49,10 +49,6 @@ public class MCTSOptions {
     public MCTSOptions(String dataName) {
         this.instance = ++instances;
         plotOutFile = String.format(plotOutFile, instance + "-" + dataName);
-    }
-
-    public void enableRB() {
-        relativeBonus = true;
     }
 
     /**

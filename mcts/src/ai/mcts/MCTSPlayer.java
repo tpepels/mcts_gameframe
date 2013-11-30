@@ -116,8 +116,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // (SW-UCT) Remember the number of simulations for the next round
             options.numSimulations = simulations;
         } else {
+            options.numSimulations = options.simulations;
             // Run as many simulations as allowed
-            while (simulations < options.simulations) {
+            while (simulations <= options.simulations) {
                 simulations++;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
@@ -181,6 +182,28 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         if (!interrupted && parallel && callback != null)
             callback.makeMove(bestChild.getMove());
     }
+
+    public void setOptions(MCTSOptions options) {
+        this.options = options;
+    }
+
+    @Override
+    public void newGame(int myPlayer, String game) {
+        root = new TreeNode(myPlayer, options);
+        if (!options.fixedSimulations)
+            options.resetSimulations(game);
+    }
+
+    @Override
+    public void stop() {
+        interrupted = true;
+    }
+
+    @Override
+    public IMove getBestMove() {
+        return bestMove;
+    }
+
 
     private void plotAllData() {
         StringBuilder[] sbs = new StringBuilder[2];
@@ -261,26 +284,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             e.printStackTrace();
         }
         allData.clear();
-    }
-
-    public void setOptions(MCTSOptions options) {
-        this.options = options;
-    }
-
-    @Override
-    public void newGame(int myPlayer, String game) {
-        root = new TreeNode(myPlayer, options);
-        options.resetSimulations(game);
-    }
-
-    @Override
-    public void stop() {
-        interrupted = true;
-    }
-
-    @Override
-    public IMove getBestMove() {
-        return bestMove;
     }
 }
 

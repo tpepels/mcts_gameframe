@@ -386,28 +386,28 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
+            double x = 0;
             // Alter the score using the relative bonus
             if (options.relativeBonus && (nMoves + depth) > 0) {
-                double x = moveStats.mean() - (nMoves + depth);
+                x = moveStats.mean() - (nMoves + depth);
                 if (moveStats.variance() > 0) {
                     x /= moveStats.stddev();
                 }
-                double rb = Math.signum(score) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
-                rb *= .5;
-                if (options.rb_quality && winner != IBoard.DRAW) {
-                    double q = board.getQuality();
-                    x = qualityStats[winner - 1].mean() - q;
-                    qualityStats[winner - 1].push(q);
-                    if (qualityStats[winner - 1].variance() > 0) {
-                        x /= qualityStats[winner - 1].stddev();
-                    }
-                    double qx = Math.signum(score) * ((2. / (1 + Math.exp(-options.k * x)) - 1));
-                    qx *= .25;
-                    rb *= .5;
-                    rb += qx;
-                }
-                score += rb;
             }
+            // Alter the score using the quality bonus
+            if (options.qualityBonus && winner != IBoard.DRAW) {
+                double q = board.getQuality();
+                int w = winner - 1;
+                double qb = qualityStats[w].mean() - q;
+                if (qualityStats[w].variance() > 0) {
+                    qb /= qualityStats[w].stddev();
+                }
+                x += qb;
+                qualityStats[winner - 1].push(q);
+            }
+            if (options.relativeBonus || options.qualityBonus)
+                score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
+
             // Keep track of the average number of moves per play-out
             moveStats.push(nMoves + depth);
         } else if (options.earlyEval && terminateEarly) {
@@ -421,7 +421,6 @@ public class TreeNode {
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
-
         return score;
     }
 

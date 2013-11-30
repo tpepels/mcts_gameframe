@@ -64,6 +64,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
+            options1.fixedSimulations = true;
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -71,6 +72,7 @@ public class AITests {
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.fixedSimulations = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
@@ -84,6 +86,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
+            options1.fixedSimulations = true;
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -91,6 +94,7 @@ public class AITests {
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.fixedSimulations = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
@@ -104,6 +108,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
+            options1.fixedSimulations = true;
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -111,6 +116,7 @@ public class AITests {
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.fixedSimulations = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
@@ -124,6 +130,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
+            options1.fixedSimulations = true;
             options1.swUCT = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
@@ -131,6 +138,7 @@ public class AITests {
             // AI 2
             MCTSOptions options2 = new MCTSOptions();
             options2.debug = false;
+            options2.fixedSimulations = true;
             options2.setGame(game);
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
