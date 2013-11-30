@@ -177,7 +177,7 @@ public class TreeNode {
                 // Initialize the child
                 if (options.swUCT) {
                     if (depth <= options.maxSWDepth && depth >= options.minSWDepth)
-                        child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize());
+                        child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize(depth));
                     else
                         child = new TreeNode(nextPlayer, moves.get(i), options);
                 } else

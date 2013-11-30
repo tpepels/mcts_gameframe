@@ -75,7 +75,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.5};
+            double[] values = {1.};
             for (double i : values) {
                 options1.windowC = i;
                 runGames("AI 1 SW = " + i + " || AI 2 MCTS");
@@ -95,7 +95,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.};
+            double[] values = {2.};
             for (double i : values) {
                 options1.windowC = i;
                 runGames("AI 1 SW = " + i + " || AI 2 MCTS");
@@ -115,7 +115,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.5};
+            double[] values = {3.};
             for (double i : values) {
                 options1.windowC = i;
                 runGames("AI 1 SW = " + i + " || AI 2 MCTS");
@@ -135,7 +135,7 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {2.};
+            double[] values = {4.};
             for (double i : values) {
                 options1.windowC = i;
                 runGames("AI 1 SW = " + i + " || AI 2 MCTS");
