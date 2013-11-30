@@ -644,7 +644,7 @@ public class Board implements IBoard {
 
     @Override
     public double getQuality() {
-        return (double) (N_PIECES - (numBlackPcs + numWhitePcs)) / (2. * N_PIECES);
+        return (double) (numBlackPcs + numWhitePcs) / (2. * N_PIECES);
 //        if (winningPlayer == P1_WIN)
 //            return ((double) (numBlackPcs - numWhitePcs)) / (double) (N_PIECES);
 //        else if (winningPlayer == P2_WIN)

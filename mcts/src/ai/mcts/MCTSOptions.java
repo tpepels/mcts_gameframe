@@ -13,8 +13,8 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations, maxSWDepth = 2, minSWDepth = 2;
-    public double windowC = 4.;
+    public int numSimulations, maxSWDepth = 3, minSWDepth = 2;
+    public double windowC = 2.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
     //
@@ -22,10 +22,10 @@ public class MCTSOptions {
     public boolean ucbTuned = false, auct = false;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
     // MCTS Specific values
-    public double uctC = 1., k = .05, maxVar = 1.;
+    public double uctC = 1., k = 1.25, maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 3000, simulations = 10000;
+    public int timeInterval = 1000, simulations = 10000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -59,23 +59,18 @@ public class MCTSOptions {
     public void setGame(String game) {
         if (game.equals("cannon")) {
             uctC = .8;
-            k = .8;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
-            k = .6;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("pentalath")) {
             uctC = .8;
-            k = .4;
             MAST = true;
             mastEps = .9;
         } else if (game.equals("amazons")) {
             uctC = .5;
-            k = .8;
             MAST = true;
             mastEps = .3;
         } else if (game.equals("breakthrough")) {
-            k = .05;
             uctC = 1.;
             MAST = true;
             mastEps = .7;

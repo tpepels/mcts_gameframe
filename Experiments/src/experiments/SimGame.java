@@ -95,6 +95,7 @@ public class SimGame {
          *    _uctX  = sets the UCT constant to X, where X is a double
          *    _ucb1t = enables UCB1-Tuned
          *    _mastX = Plays highest MAST move with probability X, X is double
+         *    _sl    = Use a fixed simulation limit as opposed to time
          */
         String label = (player == 1 ? p1label : p2label);
         AIPlayer playerRef = null;
@@ -106,6 +107,7 @@ public class SimGame {
             MCTSOptions options = new MCTSOptions();
             options.useHeuristics = false;
             options.timeInterval = timeLimit;
+            options.simulations = timeLimit;
             options.setGame(game);
             MCTSOptions.r.setSeed(seed);
 
@@ -123,9 +125,6 @@ public class SimGame {
                 } else if (tag.startsWith("ege")) {
                     options.epsGreedyEval = true;
                     options.egeEpsilon = Double.parseDouble(tag.substring(3));
-                } else if (tag.startsWith("w")) {
-                    options.swUCT = true;
-                    options.windowC = Double.parseDouble(tag.substring(1));
                 } else if (tag.startsWith("rb")) {
                     options.relativeBonus = true;
                     if (tryParseDouble(tag.substring(2)))
@@ -144,6 +143,8 @@ public class SimGame {
                 } else if (tag.startsWith("sw")) {
                     options.swUCT = true;
                     options.windowC = Double.parseDouble(tag.substring(2));
+                } else if (tag.startsWith("sl")) {
+                    options.fixedSimulations = true;
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
