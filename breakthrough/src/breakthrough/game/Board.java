@@ -44,24 +44,23 @@ public class Board implements IBoard {
         return b;
     }
 
-    private void recomputeProgress(int player) { 
-        if (player == 1) { 
+    private void recomputeProgress(int player) {
+        if (player == 1) {
             // white, start from top
             for (int r = 0; r < 8; r++) {
-                for (int c = 0; c < 8; c++) { 
-                    if (board[r][c] == 'w') { 
-                        progress1 = 7-r; 
+                for (int c = 0; c < 8; c++) {
+                    if (board[r][c] == 'w') {
+                        progress1 = 7 - r;
                         return;
                     }
                 }
             }
-        }
-        else if (player == 2) { 
+        } else if (player == 2) {
             // black, start from bottom
             for (int r = 7; r >= 0; r--) {
-                for (int c = 0; c < 8; c++) { 
-                    if (board[r][c] == 'b') { 
-                        progress2 = r; 
+                for (int c = 0; c < 8; c++) {
+                    if (board[r][c] == 'b') {
+                        progress2 = r;
                         return;
                     }
                 }
@@ -79,16 +78,15 @@ public class Board implements IBoard {
 
         // check for a capture
         if (move.getType() == Move.CAPTURE) {
-            if (player == 1) { 
-              pieces2--;
-              // wiping out this piece could reduce the player's progress
-              if (progress2 == rp && pieces2 > 0) 
-                recomputeProgress(2); 
-            }
-            else if (player == 2) {
-              pieces1--;
-              if (progress1 == 7 - rp && pieces1 > 0) 
-                recomputeProgress(1); 
+            if (player == 1) {
+                pieces2--;
+                // wiping out this piece could reduce the player's progress
+                if (progress2 == rp && pieces2 > 0)
+                    recomputeProgress(2);
+            } else if (player == 2) {
+                pieces1--;
+                if (progress1 == 7 - rp && pieces1 > 0)
+                    recomputeProgress(1);
             }
         }
 
@@ -244,23 +242,22 @@ public class Board implements IBoard {
                         poMoves.add(move);
                         // Prefer defenseless capture moves
                         if (move.getType() == Move.CAPTURE) {
-                            int mr = move.getMove()[0]; int mc = move.getMove()[1];
-                            int mrp = move.getMove()[2]; int mcp = move.getMove()[3]; 
-                            int pl = board[mr][mc] == 'w' ? 1 : 2; 
+                            int mr = move.getMove()[0];
+                            int mc = move.getMove()[1];
+                            int mrp = move.getMove()[2];
+                            int mcp = move.getMove()[3];
+                            int pl = board[mr][mc] == 'w' ? 1 : 2;
 
-                            if (   pl == 1 
-                                && (!inBounds(mrp-1, mcp-1) || board[mrp-1][mcp-1] == '.')
-                                && (!inBounds(mrp-1, mcp+1) || board[mrp-1][mcp+1] == '.') )
-                            {
+                            if (pl == 1
+                                    && (!inBounds(mrp - 1, mcp - 1) || board[mrp - 1][mcp - 1] == '.')
+                                    && (!inBounds(mrp - 1, mcp + 1) || board[mrp - 1][mcp + 1] == '.')) {
                                 poMoves.add(move);
                                 poMoves.add(move);
                                 poMoves.add(move);
                                 poMoves.add(move);
-                            }
-                            else if (   pl == 2
-                                     && (!inBounds(mrp+1, mcp-1) || board[mrp+1][mcp-1] == '.')
-                                     && (!inBounds(mrp+1, mcp+1) || board[mrp+1][mcp+1] == '.') )
-                            {
+                            } else if (pl == 2
+                                    && (!inBounds(mrp + 1, mcp - 1) || board[mrp + 1][mcp - 1] == '.')
+                                    && (!inBounds(mrp + 1, mcp + 1) || board[mrp + 1][mcp + 1] == '.')) {
                                 poMoves.add(move);
                                 poMoves.add(move);
                                 poMoves.add(move);
@@ -279,7 +276,7 @@ public class Board implements IBoard {
                             poMoves.add(move);
                             return poMoves;
                         } else if (move.getType() == Move.CAPTURE && (move.getMove()[0] == 7 || move.getMove()[0] == 0)) {
-                            if (forced == null) 
+                            if (forced == null)
                                 forced = new ArrayList<IMove>();
                             forced.add(move);
                         }
@@ -357,10 +354,10 @@ public class Board implements IBoard {
 
     @Override
     public double getQuality() {
-        if(winner == P1_WIN)
-            return ((double)(N_PIECES - pieces2 - pieces1) / (double)(2 * N_PIECES));
+        if (winner == P1_WIN)
+            return ((double) (pieces1 - pieces2)) / (double) (N_PIECES);
         else if (winner == P2_WIN)
-            return ((double)(N_PIECES - pieces1 - pieces2) / (double)(2 * N_PIECES));
+            return ((double) (pieces2 - pieces1)) / (double) (N_PIECES);
         return 1;
     }
 
@@ -370,8 +367,8 @@ public class Board implements IBoard {
             for (int c = 0; c < 8; c++) str += board[r][c];
             str += "\n";
         }
-        str +=  "\nPieces: " + pieces1 + " " + pieces2 + ", " 
-               + "Progresses: " + progress1 + " " + progress2 + "\n";
+        str += "\nPieces: " + pieces1 + " " + pieces2 + ", "
+                + "Progresses: " + progress1 + " " + progress2 + "\n";
         return str;
     }
 
