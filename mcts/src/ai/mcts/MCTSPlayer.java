@@ -63,7 +63,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Create a new root
             root = new TreeNode(myPlayer, options);
         }
-        TreeNode.moveStats.reset();
+        TreeNode.moveStats[0].reset();
+        TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
         interrupted = false;
@@ -163,10 +164,15 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
-            System.out.println("Avg playout moves: " + TreeNode.moveStats.true_mean() + " std dev: " + TreeNode.moveStats.stddev());
-            System.out.println("Moving Avg playout moves: " + TreeNode.moveStats.window_mean());
-            System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " std dev: " + TreeNode.qualityStats[0].stddev());
-            System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " std dev: " + TreeNode.qualityStats[1].stddev());
+            //
+            if (options.relativeBonus) {
+                System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].stddev());
+                System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].stddev());
+            }
+            if (options.qualityBonus) {
+                System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].stddev());
+                System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].stddev());
+            }
             if (options.swUCT) {
                 System.out.println("Ply 1 window size: " + bestChild.stats.windowSize());
             }
@@ -203,7 +209,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     public IMove getBestMove() {
         return bestMove;
     }
-
 
     private void plotAllData() {
         StringBuilder[] sbs = new StringBuilder[2];

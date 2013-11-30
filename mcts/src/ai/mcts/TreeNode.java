@@ -14,7 +14,7 @@ public class TreeNode {
     public static final double INF = 999999;
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     private static final FastLog l = new FastLog();
-    public static StatCounter moveStats = new StatCounter(1000);
+    public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     //
     private final boolean virtual;
@@ -387,29 +387,30 @@ public class TreeNode {
                 }
             }
             double x = 0;
+            int w = winner - 1;
             // Alter the score using the relative bonus
             if (options.relativeBonus && (nMoves + depth) > 0) {
-                x = moveStats.mean() - (nMoves + depth);
-                if (moveStats.variance() > 0) {
-                    x /= moveStats.stddev();
+                x = moveStats[w].mean() - (nMoves + depth);
+                if (moveStats[w].variance() > 0) {
+                    x /= moveStats[w].stddev();
                 }
             }
             // Alter the score using the quality bonus
             if (options.qualityBonus && winner != IBoard.DRAW) {
+                // Only compute the quality if QB is active, since it may be costly to do so
                 double q = board.getQuality();
-                int w = winner - 1;
                 double qb = qualityStats[w].mean() - q;
                 if (qualityStats[w].variance() > 0) {
                     qb /= qualityStats[w].stddev();
                 }
                 x += qb;
-                qualityStats[winner - 1].push(q);
+                qualityStats[w].push(q);
             }
             if (options.relativeBonus || options.qualityBonus)
                 score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
 
             // Keep track of the average number of moves per play-out
-            moveStats.push(nMoves + depth);
+            moveStats[w].push(nMoves + depth);
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
