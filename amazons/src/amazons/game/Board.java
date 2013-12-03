@@ -19,14 +19,15 @@ public class Board implements IBoard {
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>();
     // Initial queen positions
     private static final int[][] initPositions = {{58, 61, 40, 47}, {2, 5, 16, 23}};
-    private int nMoves = 0;
     public final int[][] queens = new int[2][4];
     // Board is public for fast access
     public final int[] board;
     private final int[] ALL_MOVE_INT = {9, -9, 7, -7, 8, -8, -1, 1};
     private final int[] possibleMoves = new int[40], possibleShots = new int[40];
     private final Stack<IMove> pastMoves = new Stack<IMove>();
+    private int nMoves = 0;
     private int lastFrom, lastTo, currentPlayer;
+    private int winner = NONE_WIN;
 
     /**
      * Initialise the board using the default size
@@ -76,6 +77,7 @@ public class Board implements IBoard {
                 queens[1].length);
         newBoard.currentPlayer = currentPlayer;
         newBoard.nMoves = nMoves;
+        newBoard.winner = winner;
         return newBoard;
     }
 
@@ -160,6 +162,7 @@ public class Board implements IBoard {
             board[move.getMove()[1]] = EMPTY;
             queens[currentPlayer - 1][board[move.getMove()[0]] % 10] = move.getMove()[0];
             nMoves--;
+            winner = NONE_WIN;
         }
     }
 
@@ -211,12 +214,16 @@ public class Board implements IBoard {
                 }
             }
         }
-        if (!can[0])
+        if (!can[0]) {
+            winner = P2_WIN;
             return P2_WIN;
-        if (!can[1])
+        }
+        if (!can[1]) {
+            winner = P1_WIN;
             return P1_WIN;
-        else
-            return NONE_WIN;
+        }
+        winner = NONE_WIN;
+        return NONE_WIN;
     }
 
     @Override
@@ -256,7 +263,29 @@ public class Board implements IBoard {
 
     @Override
     public double getQuality() {
-        return 1;
+        double count = getFreedom(winner);
+        // The more available moves the winning player has, the better
+        return count / (N_QUEENS * 16.);
+    }
+
+    private int getFreedom(int player) {
+        int from, moveCount, shotCount, total = 0;
+        for (int i = 0; i < queens[player - 1].length; i++) {
+            // Select the location to move from, ie the queen to move
+            from = queens[player - 1][i];
+            moveCount = getPossibleMovesFrom(from, possibleMoves);
+            // Move count holds the possible number of moves possible from this position
+            for (int j = 0; j < moveCount; j++) {
+                moveQueen(from, possibleMoves[j]);
+                // Iterate through the possible shots
+                shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
+                for (int k = 0; k < shotCount; k++) {
+                    total++;
+                }
+                undoQueenMove();
+            }
+        }
+        return total;
     }
 
     public int getPossibleMovesFrom(int from, int[] moves) {

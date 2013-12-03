@@ -64,7 +64,7 @@ public class AITests {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.relativeBonus = true;
+            options1.qualityBonus = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -75,16 +75,16 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.};
+            double[] values = {3., 2.25};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
+                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.relativeBonus = true;
+            options1.qualityBonus = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -95,16 +95,16 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.25};
+            double[] values = {.8, 1.};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
+                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 3) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.relativeBonus = true;
+            options1.qualityBonus = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -115,16 +115,16 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {1.5};
+            double[] values = {1.25, 1.5};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
+                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 4) {
             // AI 1
             MCTSOptions options1 = new MCTSOptions();
             options1.debug = false;
-            options1.relativeBonus = true;
+            options1.qualityBonus = true;
             options1.setGame(game);
             aiPlayer1 = new MCTSPlayer();
             aiPlayer1.setOptions(options1);
@@ -135,10 +135,10 @@ public class AITests {
             aiPlayer2 = new MCTSPlayer();
             aiPlayer2.setOptions(options2);
             //
-            double[] values = {.8};
+            double[] values = {2., 2.5};
             for (double i : values) {
                 options1.k = i;
-                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
+                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
             }
         }
     }

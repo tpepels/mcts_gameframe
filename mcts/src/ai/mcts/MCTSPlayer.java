@@ -11,9 +11,9 @@ import java.util.ArrayList;
 
 public class MCTSPlayer implements AIPlayer, Runnable {
 
-    ArrayList<double[]> allData = new ArrayList<double[]>(1000);
+    private ArrayList<double[]> allData = new ArrayList<double[]>(1000);
     private boolean interrupted = false, parallel = true, retry = false;
-    private TreeNode root;
+    public TreeNode root;
     private IBoard board;
     private MoveCallback callback;
     private IMove bestMove;
@@ -63,10 +63,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Create a new root
             root = new TreeNode(myPlayer, options);
         }
+        // Reset the nodes' stats
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
+
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -82,9 +84,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
 
-        if (options.debug)
-            System.out.println("Thinking for " + options.timeInterval + " ms");
-
         int simulations = 0;
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
@@ -92,18 +91,19 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
                 simulations++;
-                // Just a test
+                // This is just a test
                 if (options.multiplier && simulations > (options.numSimulations * .75))
                     options.multi = 2;
 
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
+
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
-                // Map the data
+
 //                if (options.mapping && simulations % 10 == 0) {
 //                    double[] data = new double[root.getChildren().size()];
 //                    int i = 0;
@@ -147,17 +147,17 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
         }
         bestMove = bestChild.getMove();
-        if (options.mapping) {
-            double[] data = new double[2];
-            for (TreeNode t : root.getChildren()) {
-                data[0] += t.stats.true_mean();
-                data[1] += t.stats.variance();
-            }
-            data[0] /= root.getChildren().size();
-            data[1] /= root.getChildren().size();
-            allData.add(data);
-            plotAllData();
-        }
+//        if (options.mapping) {
+//            double[] data = new double[2];
+//            for (TreeNode t : root.getChildren()) {
+//                data[0] += t.stats.true_mean();
+//                data[1] += t.stats.variance();
+//            }
+//            data[0] /= root.getChildren().size();
+//            data[1] /= root.getChildren().size();
+//            allData.add(data);
+//            plotAllData();
+//        }
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
@@ -166,15 +166,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Root visits: " + root.getnVisits());
             //
             if (options.relativeBonus) {
-                System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].stddev());
-                System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].stddev());
+                System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].variance());
+                System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
             }
             if (options.qualityBonus) {
-                System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].stddev());
-                System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].stddev());
-            }
-            if (options.swUCT) {
-                System.out.println("Ply 1 window size: " + bestChild.stats.windowSize());
+                System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
+                System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
             }
         }
         // Set the root to the best child, so in the next move
@@ -183,6 +180,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             root = bestChild;
         else
             root = null;
+        // Release the board's memory
         board = null;
         // Make the move in the GUI, if parallel
         if (!interrupted && parallel && callback != null)
@@ -196,6 +194,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     @Override
     public void newGame(int myPlayer, String game) {
         root = new TreeNode(myPlayer, options);
+        //
         if (!options.fixedSimulations)
             options.resetSimulations(game);
     }

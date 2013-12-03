@@ -3,17 +3,16 @@ package ai.mcts;
 import java.util.Random;
 
 public class MCTSOptions {
-    private static int instances = 0;
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
-    private int instance = 0;
+    private static int instances = 0;
     // Fields for enabling tree-reuse
     public boolean treeReuse = false;
     // Discount values based on their depth
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations, maxSWDepth = 3, minSWDepth = 2;
+    public int numSimulations, maxSWDepth = 4, minSWDepth = 1;
     public double windowC = 2.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
@@ -30,16 +29,17 @@ public class MCTSOptions {
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
-    // Epsilon-greedy playouts, where greedy is the highest eval 
+    // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
     // MAST stuff
     public boolean MAST = false;
-    private double[][] mastValues, mastVisits;
     public double mastEps = 0.8;
     //
     public boolean multiplier = false;
     public int multi = 1;
+    private int instance = 0;
+    private double[][] mastValues, mastVisits;
 
     public MCTSOptions() {
         this.instance = ++instances;
@@ -113,8 +113,8 @@ public class MCTSOptions {
     }
 
     public int getWindowSize(int depth) {
-        double sims = numSimulations * Math.pow(.9, depth);
-        return (int) (windowC * Math.sqrt(sims * Math.log(sims)));
+        double sims = numSimulations * Math.pow(.8, depth - 1);
+        return (int) (windowC * Math.sqrt((sims * Math.log(sims))));
     }
 
     public void resetMast(int maxId) {

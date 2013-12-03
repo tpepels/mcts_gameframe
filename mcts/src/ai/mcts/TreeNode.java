@@ -242,7 +242,7 @@ public class TreeNode {
                     avgValue += c.imVal;
                 //
                 if (options.swUCT && c.stats.windowSize() != -1) {
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(Math.min(getnVisits(), c.stats.windowSize())) / c.getnVisits()));
+                    uctValue = avgValue + (options.uctC * Math.sqrt((l.log(Math.min(getnVisits(), c.stats.windowSize()))) / c.getnVisits()));
                 } else if (options.swUCT && c.stats.windowSize() == -1) {
                     uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits()) / c.getnVisits()));
                 } else if (options.ucbTuned) {
@@ -400,7 +400,7 @@ public class TreeNode {
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
-                    double qb = qualityStats[w].mean() - q;
+                    double qb = q - qualityStats[w].mean();
                     if (qualityStats[w].variance() > 0) {
                         qb /= qualityStats[w].stddev();
                     }
@@ -441,11 +441,11 @@ public class TreeNode {
             if (board.isPartialObservable()) {
                 value = t.getnVisits();
             } else {
-                // If there are children with INF value, choose on of them
+                // If there are children with INF value, choose one of them
                 if (t.stats.mean() == INF)
                     value = INF + MCTSOptions.r.nextDouble();
                 else if (t.stats.mean() == -INF)
-                    value = -INF + t.getnVisits() + MCTSOptions.r.nextDouble();
+                    value = -INF + t.stats.totalVisits() + MCTSOptions.r.nextDouble();
                 else {
                     value = t.stats.totalVisits();
                 }

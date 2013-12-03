@@ -142,7 +142,8 @@ public class SimGame {
                     options.mastEps = Double.parseDouble(tag.substring(4));
                 } else if (tag.startsWith("sw")) {
                     options.swUCT = true;
-                    options.windowC = Double.parseDouble(tag.substring(2));
+                    if (tryParseDouble(tag.substring(2)))
+                        options.windowC = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("sl")) {
                     options.fixedSimulations = true;
                 } else {
