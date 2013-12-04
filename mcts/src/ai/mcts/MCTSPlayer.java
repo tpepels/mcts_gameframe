@@ -36,9 +36,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         if (options.MAST)
             options.resetMast(board.getMaxUniqueMoveId());
 
-        if (options.multiplier)
-            options.multi = 1;
-
         // Create a new root, or reuse the old tree
         if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
             root = new TreeNode(myPlayer, options);
@@ -68,6 +65,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
+        TreeNode.poDepth = 1;
 
         interrupted = false;
         if (parallel) {
@@ -91,9 +89,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
                 simulations++;
-                // This is just a test
-                if (options.multiplier && simulations > (options.numSimulations * .75))
-                    options.multi = 2;
 
                 if (System.currentTimeMillis() >= endTime) {
                     break;

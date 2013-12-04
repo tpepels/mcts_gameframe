@@ -143,9 +143,11 @@ public class SimGame {
                 } else if (tag.startsWith("sw")) {
                     options.swUCT = true;
                     if (tryParseDouble(tag.substring(2)))
-                        options.windowC = Double.parseDouble(tag.substring(2));
+                        options.switches = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("sl")) {
                     options.fixedSimulations = true;
+                } else if (tag.startsWith("mp")) {
+                    options.multiplier = true;
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

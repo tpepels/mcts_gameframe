@@ -59,86 +59,48 @@ public class AITests {
         Date today = Calendar.getInstance().getTime();
         writeOutput(df.format(today), true);
         writeOutput("Running test # " + which + ", # of runs: " + games + ", on game: " + game, true);
+
+        // AI 1
+        MCTSOptions options1 = new MCTSOptions();
+        options1.debug = false;
+        options1.swUCT = true;
+        options1.fixedSimulations = true;
+        options1.setGame(game);
+        aiPlayer1 = new MCTSPlayer();
+        aiPlayer1.setOptions(options1);
+        // AI 2
+        MCTSOptions options2 = new MCTSOptions();
+        options2.debug = false;
+        options2.fixedSimulations = true;
+        options2.setGame(game);
+        aiPlayer2 = new MCTSPlayer();
+        aiPlayer2.setOptions(options2);
+
         // Run one of the defined experiments
         if (which == 1) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.qualityBonus = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
             //
-            double[] values = {3., 2.25};
+            double[] values = {1.};
             for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
+                options1.switches = i;
+                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.qualityBonus = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            double[] values = {.8, 1.};
+            double[] values = {2.};
             for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
+                options1.switches = i;
+                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
             }
         } else if (which == 3) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.qualityBonus = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            double[] values = {1.25, 1.5};
+            double[] values = {3.};
             for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
+                options1.switches = i;
+                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
             }
         } else if (which == 4) {
-            // AI 1
-            MCTSOptions options1 = new MCTSOptions();
-            options1.debug = false;
-            options1.qualityBonus = true;
-            options1.setGame(game);
-            aiPlayer1 = new MCTSPlayer();
-            aiPlayer1.setOptions(options1);
-            // AI 2
-            MCTSOptions options2 = new MCTSOptions();
-            options2.debug = false;
-            options2.setGame(game);
-            aiPlayer2 = new MCTSPlayer();
-            aiPlayer2.setOptions(options2);
-            //
-            double[] values = {2., 2.5};
+            double[] values = {4.};
             for (double i : values) {
-                options1.k = i;
-                runGames("AI 1 QB k = " + i + " || AI 2 MCTS");
+                options1.switches = i;
+                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
             }
         }
     }

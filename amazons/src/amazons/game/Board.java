@@ -91,13 +91,13 @@ public class Board implements IBoard {
             moveCount = getPossibleMovesFrom(from, possibleMoves);
             // Move count holds the possible number of moves possible from this position
             for (int j = 0; j < moveCount; j++) {
-                moveQueen(from, possibleMoves[j]);
+                moveQueen(from, possibleMoves[j], currentPlayer);
                 // Iterate through the possible shots
                 shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
                 for (int k = 0; k < shotCount; k++) {
                     moves.add(new Move(from, possibleMoves[j], possibleShots[k]));
                 }
-                undoQueenMove();
+                undoQueenMove(currentPlayer);
             }
         }
         return moves.copy();
@@ -116,13 +116,13 @@ public class Board implements IBoard {
                 moveCount = getPossibleMovesFrom(from, possibleMoves);
                 // Move count holds the possible number of moves possible from this position
                 for (int j = 0; j < moveCount; j++) {
-                    moveQueen(from, possibleMoves[j]);
+                    moveQueen(from, possibleMoves[j], currentPlayer);
                     // Iterate through the possible shots
                     shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
                     for (int k = 0; k < shotCount; k++) {
                         playoutMoves.add(new Move(from, possibleMoves[j], possibleShots[k]));
                     }
-                    undoQueenMove();
+                    undoQueenMove(currentPlayer);
                 }
                 // Next queen, in case of no moves
                 start = (start == N_QUEENS - 1) ? 0 : start + 1;
@@ -137,13 +137,13 @@ public class Board implements IBoard {
                 moveCount = getPossibleMovesFrom(from, possibleMoves);
                 // Move count holds the possible number of moves possible from this position
                 for (int j = 0; j < moveCount; j++) {
-                    moveQueen(from, possibleMoves[j]);
+                    moveQueen(from, possibleMoves[j], currentPlayer);
                     // Iterate through the possible shots
                     shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
                     for (int k = 0; k < shotCount; k++) {
                         playoutMoves.add(new Move(from, possibleMoves[j], possibleShots[k]));
                     }
-                    undoQueenMove();
+                    undoQueenMove(currentPlayer);
                 }
             }
         }
@@ -180,21 +180,21 @@ public class Board implements IBoard {
         return true;
     }
 
-    private void undoQueenMove() {
+    private void undoQueenMove(int player) {
         //
         board[lastFrom] = board[lastTo];
         board[lastTo] = EMPTY;
-        queens[currentPlayer - 1][board[lastFrom] % 10] = lastFrom;
+        queens[player - 1][board[lastFrom] % 10] = lastFrom;
     }
 
-    private void moveQueen(int from, int to) {
+    private void moveQueen(int from, int to, int player) {
         // Store the move, so it can be undone later
         lastFrom = from;
         lastTo = to;
         //
         board[to] = board[from];
         board[from] = EMPTY;
-        queens[currentPlayer - 1][board[to] % 10] = to;
+        queens[player - 1][board[to] % 10] = to;
     }
 
     @Override
@@ -276,13 +276,13 @@ public class Board implements IBoard {
             moveCount = getPossibleMovesFrom(from, possibleMoves);
             // Move count holds the possible number of moves possible from this position
             for (int j = 0; j < moveCount; j++) {
-                moveQueen(from, possibleMoves[j]);
+                moveQueen(from, possibleMoves[j], player);
                 // Iterate through the possible shots
                 shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
                 for (int k = 0; k < shotCount; k++) {
                     total++;
                 }
-                undoQueenMove();
+                undoQueenMove(currentPlayer);
             }
         }
         return total;

@@ -2,6 +2,7 @@ package ai.mcts;
 
 import ai.FastLog;
 import ai.StatCounter;
+import ai.StatCounterSorted;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -16,11 +17,12 @@ public class TreeNode {
     private static final FastLog l = new FastLog();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
+    public static int poDepth = 0;
     //
     private final boolean virtual;
     private final MCTSOptions options;
     public int player;
-    public StatCounter stats;
+    public StatCounterSorted stats;
     //
     private boolean expanded = false;
     private List<TreeNode> children;
@@ -35,7 +37,7 @@ public class TreeNode {
         this.player = player;
         this.virtual = false;
         this.options = options;
-        stats = new StatCounter();
+        stats = new StatCounterSorted();
     }
 
     /**
@@ -46,7 +48,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = false;
         this.options = options;
-        stats = new StatCounter(windowSize);
+        stats = new StatCounterSorted(windowSize);
     }
 
     public TreeNode(int player, IMove move, MCTSOptions options) {
@@ -54,7 +56,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = false;
         this.options = options;
-        stats = new StatCounter();
+        stats = new StatCounterSorted();
     }
 
     public TreeNode(int player, IMove move, final boolean virtual, MCTSOptions options) {
@@ -62,7 +64,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = virtual;
         this.options = options;
-        stats = new StatCounter();
+        stats = new StatCounterSorted();
     }
 
     /**
@@ -93,6 +95,7 @@ public class TreeNode {
             // When a leaf is reached return the result of the playout
             if (child.getnVisits() == 0) {
                 result = child.playOut(board, depth + 1);
+                poDepth = depth + 1;
                 child.updateStats(-result);
             } else {
                 // The next child
@@ -133,7 +136,7 @@ public class TreeNode {
                     // (AUCT) Update the virtual node with a loss
                     if (options.auct && children.get(0).isVirtual()) {
                         TreeNode virtChild = children.get(0);
-                        virtChild.stats.push(-1);
+                        virtChild.stats.push(-1, 1);
                     }
                     // Return a single loss, if not all children are a loss
                     updateStats(1);
@@ -376,6 +379,7 @@ public class TreeNode {
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
+
             // Update the mast values for the moves made during playout
             if (options.MAST) {
                 double value;
@@ -386,6 +390,7 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
+
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
@@ -395,6 +400,7 @@ public class TreeNode {
                     if (moveStats[w].variance() > 0) {
                         x /= moveStats[w].stddev();
                     }
+                    score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                 }
                 // Alter the score using the quality bonus
                 if (options.qualityBonus) {
@@ -406,13 +412,15 @@ public class TreeNode {
                     }
                     x += qb;
                     qualityStats[w].push(q);
-                }
-                if (options.relativeBonus || options.qualityBonus)
                     score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
+                }
+//                if (options.relativeBonus || options.qualityBonus)
+//                    score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
 
                 // Keep track of the average number of moves per play-out
                 moveStats[w].push(nMoves + depth);
             }
+
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
@@ -421,9 +429,11 @@ public class TreeNode {
         } else {
             throw new RuntimeException("Game end error in playOut");
         }
+
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
+
         return score;
     }
 
@@ -465,8 +475,7 @@ public class TreeNode {
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
         if (!options.auct || isLeaf()) {
-            for (int i = 0; i < options.multi; i++)
-                stats.push(value);
+            stats.push(value, poDepth);
         } else {
             // Compute the auct win ratio
             double sum_v = 0., sum_v_r = 0.;
