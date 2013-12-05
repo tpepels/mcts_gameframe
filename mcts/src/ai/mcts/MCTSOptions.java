@@ -13,7 +13,7 @@ public class MCTSOptions {
     // Sliding-window UCT
     public boolean swUCT = false;
     public int numSimulations, maxSWDepth = 5, minSWDepth = 2;
-    public double switches = 2.;
+    public double switches = 8.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
     //
@@ -112,7 +112,7 @@ public class MCTSOptions {
     }
 
     public int getWindowSize(int depth) {
-        double sims = numSimulations * Math.pow(.8, depth - minSWDepth);
+        double sims = numSimulations * Math.pow(.4, depth - minSWDepth);
         return (int) Math.sqrt((sims * Math.log(sims)) / switches);
     }
 
