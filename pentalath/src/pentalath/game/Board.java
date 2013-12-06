@@ -674,6 +674,8 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player) {
+        // early termination (mcts_pd0 and mcts_pd3) is losing by a lot against vanilla mcts
+        // I suspect something is still wrong with this
         //
         seenFree = new boolean[Board.SIZE];
         int minFreeOpp = P_INF, minFreeMe = P_INF, currentFree, count = 0, score = 0;

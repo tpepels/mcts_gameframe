@@ -16,7 +16,7 @@ public class MCTSOptions {
     public double switches = 8.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
-    //
+    // note: useHeuristics uses a different default (false) when using SimGame
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
     public boolean ucbTuned = false, auct = false;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
