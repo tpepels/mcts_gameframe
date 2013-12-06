@@ -127,7 +127,7 @@ sub get_cmd
 my @jobs = (); 
 
 my @matchups = (); 
-push(@matchups, "mcts,mcts_h");
+push(@matchups, "mcts_pb_ege0.1,mcts_im_ege0.1");
 #push(@matchups, "mcts_ege0.1,mcts_pd3");
 
 # here's an example of a loop to initialize matchups instead of a static list

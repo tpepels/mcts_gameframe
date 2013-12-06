@@ -251,8 +251,10 @@ public class TreeNode {
                 if (options.implicitMM)
                     avgValue += c.imVal;
                 // Progressive bias
-                if (options.progBias) 
-                    avgValue += c.heval / (c.getnVisits() + 1); 
+                if (options.progBias) { 
+                    /// avgValue += c.heval / (c.getnVisits() + 1); 
+                    avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
+                }
                 //
                 if (options.swUCT && c.stats.windowSize() != -1) {
                     uctValue = avgValue + (options.uctC * Math.sqrt((l.log(Math.min(getnVisits(), c.stats.windowSize()))) / c.getnVisits()));
