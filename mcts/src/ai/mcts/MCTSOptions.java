@@ -25,13 +25,15 @@ public class MCTSOptions {
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
     public int timeInterval = 2000, simulations = 10000;
-    // Marc's stuff
+    // Early evaluation + implicit minimax
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
+    // Progressive bias; H_i is the evaluation function value
+    public boolean progBias = false;
     // MAST stuff
     public boolean MAST = false;
     public double mastEps = 0.8;

@@ -29,6 +29,7 @@ public class TreeNode {
     private IMove move;
     private double velocity = 1.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
+    private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
 
     /**
      * Constructor for the rootnode
@@ -204,6 +205,10 @@ public class TreeNode {
                     child.imVal = board.evaluate(player);
                     if (child.imVal > best_imVal) best_imVal = child.imVal;
                 }
+                // prog. bias
+                if (options.progBias) { 
+                    child.heval = board.evaluate(player); 
+                }
                 children.add(child);
                 // reset the board
                 board.undoMove();
@@ -215,6 +220,8 @@ public class TreeNode {
         }
         // implicit minimax
         if (options.implicitMM) this.imVal = -best_imVal;
+        // prog. bias
+        if (options.progBias) this.heval = -board.evaluate(player);
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -243,6 +250,9 @@ public class TreeNode {
                 // Implicit minimax
                 if (options.implicitMM)
                     avgValue += c.imVal;
+                // Progressive bias
+                if (options.progBias) 
+                    avgValue += c.heval / (c.getnVisits() + 1); 
                 //
                 if (options.swUCT && c.stats.windowSize() != -1) {
                     uctValue = avgValue + (options.uctC * Math.sqrt((l.log(Math.min(getnVisits(), c.stats.windowSize()))) / c.getnVisits()));
