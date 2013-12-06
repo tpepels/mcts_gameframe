@@ -290,17 +290,34 @@ public class TreeNode {
         double roll = MCTSOptions.r.nextDouble();
         double tolerance = 0.0001;
 
-        if (roll < options.egeEpsilon)
+        if (roll < options.egeEpsilon) { 
             return MCTSOptions.r.nextInt(moves.size());
+        }
+
+        /*
+        // this is needed in cannon; can't operate on the state directly it seems 
+        // don't know exactly why but I think it's because the "doAIMove" and "undoMove" below 
+        // might change a the (static?) list of moves .. ?
+        // Problem is, it's super slow :(
+        IBoard bcopy = board.copy(); 
+        List<IMove> myMoves = new ArrayList<IMove>(); 
+        myMoves.addAll(moves); 
+        */
+        IBoard bcopy = board;
+        List<IMove> myMoves = moves;
 
         ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
         double bestValue = -INF - 1;
 
-        for (int i = 0; i < moves.size(); i++) {
-            IMove move = moves.get(i);
-            board.doAIMove(move, currentPlayer);
-            double eval = board.evaluate(currentPlayer);
-            board.undoMove();
+        for (int i = 0; i < myMoves.size(); i++) {
+            IMove move = myMoves.get(i);
+            boolean success = bcopy.doAIMove(move, currentPlayer);
+
+            if (!success) 
+                continue; 
+
+            double eval = bcopy.evaluate(currentPlayer);
+            bcopy.undoMove();
 
             if (eval > bestValue + tolerance) {
                 // a clearly better move
