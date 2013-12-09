@@ -149,8 +149,12 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.startsWith("mp")) {
                     options.multiplier = true;
-                } else if (tag.equals("pb")) { 
+                } else if (tag.startsWith("pb")) { 
                     options.progBias = true; 
+                    if (tryParseDouble(tag.substring(2)))
+                        options.progBiasWeight = Double.parseDouble(tag.substring(2));
+                    else
+                        throw new RuntimeException("Unable to parse prog bias weight"); 
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

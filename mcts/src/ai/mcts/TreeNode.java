@@ -203,6 +203,7 @@ public class TreeNode {
                 }
                 // prog. bias
                 if (options.progBias) { 
+                    // must be strictly a bonus
                     child.heval = board.evaluate(player); 
                 }
                 children.add(child);
@@ -259,8 +260,8 @@ public class TreeNode {
                 }
                 // Progressive bias
                 if (options.progBias) { 
-                    /// avgValue += c.heval / (c.getnVisits() + 1); 
-                    avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
+                    avgValue += options.progBiasWeight * c.heval / (c.getnVisits() + 1); 
+                    //avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
                 }
                 //
                 if (options.ucbTuned) {
