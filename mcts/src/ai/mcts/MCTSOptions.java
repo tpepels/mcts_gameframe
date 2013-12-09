@@ -16,7 +16,7 @@ public class MCTSOptions {
     public double switches = 4.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
-    //
+    // note: useHeuristics uses a different default (false) when using SimGame
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
     public boolean ucbTuned = false, auct = false;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
@@ -24,14 +24,21 @@ public class MCTSOptions {
     public double uctC = 1., k = 1.25, maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
+<<<<<<< HEAD
     public int timeInterval = 2000, simulations = 10000, simsLeft = 10000;
     // Marc's stuff
+=======
+    public int timeInterval = 2000, simulations = 10000;
+    // Early evaluation + implicit minimax
+>>>>>>> 7a4db7c7c544a458dfb3e289ddd3dcf46eef7218
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
+    // Progressive bias; H_i is the evaluation function value
+    public boolean progBias = false;
     // MAST stuff
     public boolean MAST = false;
     public double mastEps = 0.8;

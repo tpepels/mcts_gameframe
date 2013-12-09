@@ -1,5 +1,6 @@
 package amazons.game;
 
+import ai.FastTanh;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -258,7 +259,12 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player) {
-        return 0.0;
+        double diff = getFreedom(1) - getFreedom(2); 
+        double p1eval = FastTanh.tanh(diff); 
+        if (player == 1) 
+            return p1eval; 
+        else
+            return -p1eval;
     }
 
     @Override

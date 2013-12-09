@@ -82,20 +82,21 @@ public class SimGame {
          *
          *  i.e. "mcts_pd4_im" = mcts player, early playout enabled (pdepth 4), implicit minimax enabled
          *
-         *  Index of tags:
+         *  Index of tags (please keep alphabetically ordered):
          *
          *    _egeX  = epsilon-greedy playouts using the eval func, where X is a double
          *    _h     = enable heuristics
          *    _im    = enable implicit minimax
+         *    _mastX = Plays highest MAST move with probability X, X is double
+         *    _pb    = progressive bias
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
-         *    _wX    = enable sliding window UCT with Wc = X, where X is a double
          *    _rbX   = enable the relative bonus with K = X, where X is a double, X is optional
          *    _rbqX  = enable the relative bonus with quality bonus, K = X, where X is a double, X is optional
+         *    _sl    = Use a fixed simulation limit as opposed to time
          *    _swX   = enable sliding window UCT, with Wc = X, where X is double
          *    _uctX  = sets the UCT constant to X, where X is a double
          *    _ucb1t = enables UCB1-Tuned
-         *    _mastX = Plays highest MAST move with probability X, X is double
-         *    _sl    = Use a fixed simulation limit as opposed to time
+         *    _wX    = enable sliding window UCT with Wc = X, where X is a double
          */
         String label = (player == 1 ? p1label : p2label);
         AIPlayer playerRef = null;
@@ -148,6 +149,8 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.startsWith("mp")) {
                     options.multiplier = true;
+                } else if (tag.equals("pb")) { 
+                    options.progBias = true; 
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

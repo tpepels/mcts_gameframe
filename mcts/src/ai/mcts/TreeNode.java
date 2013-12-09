@@ -28,6 +28,7 @@ public class TreeNode {
     private IMove move;
     private double velocity = 1.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
+    private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
 
     /**
      * Constructor for the rootnode
@@ -200,6 +201,10 @@ public class TreeNode {
                     child.imVal = board.evaluate(player);
                     if (child.imVal > best_imVal) best_imVal = child.imVal;
                 }
+                // prog. bias
+                if (options.progBias) { 
+                    child.heval = board.evaluate(player); 
+                }
                 children.add(child);
                 // reset the board
                 board.undoMove();
@@ -211,6 +216,8 @@ public class TreeNode {
         }
         // implicit minimax
         if (options.implicitMM) this.imVal = -best_imVal;
+        // prog. bias
+        if (options.progBias) this.heval = -board.evaluate(player);
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -239,6 +246,7 @@ public class TreeNode {
                 // Implicit minimax
                 if (options.implicitMM)
                     avgValue += c.imVal;
+<<<<<<< HEAD
 
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
@@ -255,6 +263,21 @@ public class TreeNode {
                 if (options.ucbTuned) {
                     ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(Np)) / Nc);
                     uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(Np)) / Nc);
+=======
+                // Progressive bias
+                if (options.progBias) { 
+                    /// avgValue += c.heval / (c.getnVisits() + 1); 
+                    avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
+                }
+                //
+                if (options.swUCT && c.stats.windowSize() != -1) {
+                    uctValue = avgValue + (options.uctC * Math.sqrt((l.log(Math.min(getnVisits(), c.stats.windowSize()))) / c.getnVisits()));
+                } else if (options.swUCT && c.stats.windowSize() == -1) {
+                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits()) / c.getnVisits()));
+                } else if (options.ucbTuned) {
+                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
+                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(getnVisits())) / c.getnVisits());
+>>>>>>> 7a4db7c7c544a458dfb3e289ddd3dcf46eef7218
                 } else {
                     // Compute the uct value with the (new) average value
                     uctValue = avgValue + options.uctC * Math.sqrt(l.log(Np) / Nc);
@@ -282,17 +305,34 @@ public class TreeNode {
         double roll = MCTSOptions.r.nextDouble();
         double tolerance = 0.0001;
 
-        if (roll < options.egeEpsilon)
+        if (roll < options.egeEpsilon) { 
             return MCTSOptions.r.nextInt(moves.size());
+        }
+
+        /*
+        // this is needed in cannon; can't operate on the state directly it seems 
+        // don't know exactly why but I think it's because the "doAIMove" and "undoMove" below 
+        // might change a the (static?) list of moves .. ?
+        // Problem is, it's super slow :(
+        IBoard bcopy = board.copy(); 
+        List<IMove> myMoves = new ArrayList<IMove>(); 
+        myMoves.addAll(moves); 
+        */
+        IBoard bcopy = board;
+        List<IMove> myMoves = moves;
 
         ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
         double bestValue = -INF - 1;
 
-        for (int i = 0; i < moves.size(); i++) {
-            IMove move = moves.get(i);
-            board.doAIMove(move, currentPlayer);
-            double eval = board.evaluate(currentPlayer);
-            board.undoMove();
+        for (int i = 0; i < myMoves.size(); i++) {
+            IMove move = myMoves.get(i);
+            boolean success = bcopy.doAIMove(move, currentPlayer);
+
+            if (!success) 
+                continue; 
+
+            double eval = bcopy.evaluate(currentPlayer);
+            bcopy.undoMove();
 
             if (eval > bestValue + tolerance) {
                 // a clearly better move

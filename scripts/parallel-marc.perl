@@ -127,8 +127,10 @@ sub get_cmd
 my @jobs = (); 
 
 my @matchups = (); 
-push(@matchups, "mcts,mcts_h");
-#push(@matchups, "mcts_ege0.1,mcts_pd3");
+#push(@matchups, "mcts_h_pb,mcts_h");
+#push(@matchups, "mcts_h_pb_ege0.1,mcts_h_im_ege0.1");
+#push(@matchups, "mcts_h_pd0,mcts_h");
+push(@matchups, "mcts_h_pd3,mcts_h_ege0.1");
 
 # here's an example of a loop to initialize matchups instead of a static list
 #my @pdepths = ( 3, 2, 0, 1, 4, 5, 6, 7, 8, 10, 12, 15, 30, 50, 1000 ); 
@@ -187,6 +189,19 @@ for (my $i = 0; $i < scalar(@matchups); $i++)
     push(@jobs, $fullcmd); 
   }
 }
+
+sub fisher_yates_shuffle
+{
+    my $array = shift;
+    my $i = scalar(@$array);
+    while ( --$i )
+    {
+        my $j = int rand( $i+1 );
+        @$array[$i,$j] = @$array[$j,$i];
+    }
+}
+
+fisher_yates_shuffle( \@jobs );
 
 print "queued " . scalar(@jobs) . " jobs\n";
 sleep 1;
