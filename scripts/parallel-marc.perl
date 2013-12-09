@@ -130,7 +130,15 @@ my @matchups = ();
 #push(@matchups, "mcts_h_pb,mcts_h");
 #push(@matchups, "mcts_h_pb_ege0.1,mcts_h_im_ege0.1");
 #push(@matchups, "mcts_h_pd0,mcts_h");
-push(@matchups, "mcts_h_pd3,mcts_h_ege0.1");
+push(@matchups, "mcts_h_ege0.1_im0.5,mcts_h_ege0.1_pb0.5");
+push(@matchups, "mcts_h_ege0.1_im0.1,mcts_h_ege0.1_pb0.1");
+push(@matchups, "mcts_h_ege0.1_im0.8,mcts_h_ege0.1_pb0.8");
+push(@matchups, "mcts_h_ege0.1_im0.4,mcts_h_ege0.1_pb0.4");
+push(@matchups, "mcts_h_ege0.1_im0.2,mcts_h_ege0.1_pb0.2");
+push(@matchups, "mcts_h_ege0.1_im0.3,mcts_h_ege0.1_pb0.3");
+push(@matchups, "mcts_h_ege0.1_im0.6,mcts_h_ege0.1_pb0.6");
+push(@matchups, "mcts_h_ege0.1_im0.7,mcts_h_ege0.1_pb0.7");
+push(@matchups, "mcts_h_ege0.1_im0.9,mcts_h_ege0.1_pb0.9");
 
 # here's an example of a loop to initialize matchups instead of a static list
 #my @pdepths = ( 3, 2, 0, 1, 4, 5, 6, 7, 8, 10, 12, 15, 30, 50, 1000 ); 

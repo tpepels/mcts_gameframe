@@ -29,6 +29,7 @@ public class MCTSOptions {
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
+    public double imAlpha = 0.0;
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
