@@ -34,6 +34,7 @@ public class MCTSOptions {
     public double egeEpsilon = 0.1;
     // Progressive bias; H_i is the evaluation function value
     public boolean progBias = false;
+    public double progBiasWeight = 0.0;
     // MAST stuff
     public boolean MAST = false;
     public double mastEps = 0.8;
