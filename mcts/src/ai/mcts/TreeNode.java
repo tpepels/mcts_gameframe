@@ -286,6 +286,13 @@ public class TreeNode {
                 c1.velocity = c1.velocity * options.lambda + sel;
             }
         }
+        // (swUCT) Move the windows of the not-selected children
+        if (options.swUCT && selected != null) {
+            for (TreeNode c1 : children) {
+                if(!selected.equals(c1))
+                    c1.stats.moveWindow();
+            }
+        }
         return selected;
     }
 
