@@ -8,22 +8,29 @@ package ai;
  *
  */
 
+import ai.mcts.MCTSOptions;
 import ai.mcts.TreeNode;
 
 public class StatCounter {
-
-    public MovingAverage ma;
+    public static int MIN_W_VISITS = 1; // Only after this many visits, initialize the window
+    private MovingAverage ma;
+    private boolean windowed = false;
+    //
     private double m_sum, m_m2, m_mean;
     private int m_n;
-    private int m_wins;
-    private int m_losses;
+    private int m_wins, m_losses;
+    private final MCTSOptions options;
 
     public StatCounter() {
         this.reset();
+        // options are only required for getting the window-size
+        this.options = null;
+        this.windowed = false;
     }
 
-    public StatCounter(int window) {
-        ma = new MovingAverage(window);
+    public StatCounter(boolean windowed, MCTSOptions options) {
+        this.options = options;
+        this.windowed = windowed;
         this.reset();
     }
 
@@ -37,7 +44,6 @@ public class StatCounter {
     }
 
     public void reset() {
-
         m_losses = 0;
         m_wins = 0;
 
@@ -63,10 +69,22 @@ public class StatCounter {
         m_mean += delta / m_n;
         m_m2 += delta * (num - m_mean);
 
+        // If the node is visited a few times, create the window
+        if (windowed && m_n == MIN_W_VISITS) {
+            // The size of the window is based on the number of simulations remaining
+            int size = options.getWindowSize();
+            if (size > 0) {
+                ma = new MovingAverage(size);
+            } else {
+                // Make sure no new window is created
+                windowed = false;
+            }
+        }
+        //
         if (ma != null) ma.add(num);
     }
 
-    public String wlString() {
+    public String toString() {
         return "W:" + m_wins + " L:" + m_losses;
     }
 
@@ -96,6 +114,10 @@ public class StatCounter {
 
     public double window_mean() {
         return ma.getAverage();
+    }
+
+    public boolean hasWindow() {
+        return ma != null;
     }
 
     public double windowSize() {

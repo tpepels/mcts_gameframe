@@ -188,7 +188,7 @@ foreach my $match (sort keys %matchmap) {
     }
   }
 
-  print "matchup summary: $gm-$p1-$p2 " . $wins{$p1} . " " . $wins{$p2} . " " . $ties;
+  print "$gm-$p1-$p2 " . $wins{$p1} . " " . $wins{$p2} . " " . $ties;
   my $diff = ($wins{$p1} - $wins{$p2});
   my $games = ($wins{$p1} + $wins{$p2} + $ties);
   print "  (diff $diff, games $games)  ";

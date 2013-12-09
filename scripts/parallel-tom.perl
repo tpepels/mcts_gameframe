@@ -6,16 +6,16 @@ use Time::HiRes qw/ time sleep /;
 use vars qw( $debug );
 $debug = 1;
 
-if (not defined($ARGV[4])) { 
-  print "Usage: parallel.perl <scratch dir> <timelimit (ms)> <game> <CPUs> <games per match>\n";
+if (not defined($ARGV[3])) { 
+  print "Usage: parallel.perl <scratch dir> <timelimit (ms)> <CPUs> <games per match>\n";
   exit;
 }
 
 my $scratchdir = $ARGV[0];
 my $tl = $ARGV[1];
-my $game = $ARGV[2];
-my $CPUS = $ARGV[3];
-my $gamespermatch = $ARGV[4];
+my $game = "";
+my $CPUS = $ARGV[2];
+my $gamespermatch = $ARGV[3];
 
 if (not -d "$scratchdir") { 
   print "Need a subdirectory called scratch. Running from base directory recommended.\n";
@@ -140,19 +140,21 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = ( 
-	"mcts_h,mcts_h_w1.0", 
-	"mcts_h,mcts_h_w1.2",
-	"mcts_h,mcts_h_w1.5",
-	"mcts_h,mcts_h_w1.8",
-	"mcts_h,mcts_h_w2.0",
-	);
+	"mcts_h_sl,mcts_h_sl_sw02.0",
+	"mcts_h_sl,mcts_h_sl_sw03.0",
+	"mcts_h_sl,mcts_h_sl_sw04.0",
+	"mcts_h_sl,mcts_h_sl_sw05.0",
+	"mcts_h_sl,mcts_h_sl_sw06.0",
+	"mcts_h_sl,mcts_h_sl_sw08.0",
+	#"mcts_h_sl,mcts_h_sl_sw10.0"
+);
 
 my @games = (
-    "breakthrough",
-    "pentalath",
-    "cannon",
-    "chinesecheckers",
-    "amazons"
+	"breakthrough"
+	#"pentalath",
+	#"cannon",
+	#"chinesecheckers"
+	#"amazons"
   );
 
 print "queuing jobs... \n";

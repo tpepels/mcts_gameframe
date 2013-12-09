@@ -2,7 +2,6 @@ package ai.mcts;
 
 import ai.FastLog;
 import ai.StatCounter;
-import ai.StatCounterSorted;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -22,7 +21,7 @@ public class TreeNode {
     private final boolean virtual;
     private final MCTSOptions options;
     public int player;
-    public StatCounterSorted stats;
+    public StatCounter stats;
     //
     private boolean expanded = false;
     private List<TreeNode> children;
@@ -37,18 +36,18 @@ public class TreeNode {
         this.player = player;
         this.virtual = false;
         this.options = options;
-        stats = new StatCounterSorted();
+        stats = new StatCounter();
     }
 
     /**
      * Initialize a TreeNode with sliding swUCT UCT
      */
-    public TreeNode(int player, IMove move, MCTSOptions options, int windowSize) {
+    public TreeNode(int player, IMove move, MCTSOptions options, boolean windowed) {
         this.player = player;
         this.move = move;
         this.virtual = false;
         this.options = options;
-        stats = new StatCounterSorted(windowSize);
+        stats = new StatCounter(windowed, options);
     }
 
     public TreeNode(int player, IMove move, MCTSOptions options) {
@@ -56,7 +55,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = false;
         this.options = options;
-        stats = new StatCounterSorted();
+        stats = new StatCounter();
     }
 
     public TreeNode(int player, IMove move, final boolean virtual, MCTSOptions options) {
@@ -64,7 +63,7 @@ public class TreeNode {
         this.move = move;
         this.virtual = virtual;
         this.options = options;
-        stats = new StatCounterSorted();
+        stats = new StatCounter();
     }
 
     /**
@@ -136,7 +135,7 @@ public class TreeNode {
                     // (AUCT) Update the virtual node with a loss
                     if (options.auct && children.get(0).isVirtual()) {
                         TreeNode virtChild = children.get(0);
-                        virtChild.stats.push(-1, 1);
+                        virtChild.stats.push(-1);
                     }
                     // Return a single loss, if not all children are a loss
                     updateStats(1);
@@ -178,12 +177,9 @@ public class TreeNode {
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child;
                 // Initialize the child
-                if (options.swUCT) {
-                    if (depth <= options.maxSWDepth && depth >= options.minSWDepth)
-                        child = new TreeNode(nextPlayer, moves.get(i), options, options.getWindowSize(depth));
-                    else
-                        child = new TreeNode(nextPlayer, moves.get(i), options);
-                } else
+                if (options.swUCT && depth >= options.minSWDepth)// && depth <= options.maxSWDepth)
+                    child = new TreeNode(nextPlayer, moves.get(i), options, true);
+                else
                     child = new TreeNode(nextPlayer, moves.get(i), options);
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
@@ -221,7 +217,7 @@ public class TreeNode {
 
     private TreeNode select(IBoard board, int depth) {
         TreeNode selected = null;
-        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar;
+        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc;
 
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
@@ -243,17 +239,25 @@ public class TreeNode {
                 // Implicit minimax
                 if (options.implicitMM)
                     avgValue += c.imVal;
-                //
-                if (options.swUCT && c.stats.windowSize() != -1) {
-                    uctValue = avgValue + (options.uctC * Math.sqrt((l.log(Math.min(getnVisits(), c.stats.windowSize()))) / c.getnVisits()));
-                } else if (options.swUCT && c.stats.windowSize() == -1) {
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits()) / c.getnVisits()));
-                } else if (options.ucbTuned) {
-                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
-                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(getnVisits())) / c.getnVisits());
+
+                // Parent visits can be altered for windowed UCT
+                Np = getnVisits();
+                Nc = c.getnVisits();
+                if (options.swUCT) {
+                    if (c.stats.hasWindow() && !stats.hasWindow()) {
+                        Np = Math.min(Np, c.stats.windowSize());
+                    } else if (!c.stats.hasWindow() && stats.hasWindow()) {
+//                        Np = stats.totalVisits();
+                        Nc = Math.min(Nc, stats.windowSize());
+                    }
+                }
+                // Compute the UCT value of the child
+                if (options.ucbTuned) {
+                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(Np)) / Nc);
+                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(Np)) / Nc);
                 } else {
                     // Compute the uct value with the (new) average value
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(getnVisits()) / c.getnVisits()));
+                    uctValue = avgValue + options.uctC * Math.sqrt(l.log(Np) / Nc);
                 }
             }
             // Remember the highest UCT value
@@ -475,7 +479,7 @@ public class TreeNode {
     private void updateStats(double value) {
         // If we are not using AUCT simply add the total value
         if (!options.auct || isLeaf()) {
-            stats.push(value, poDepth);
+            stats.push(value);
         } else {
             // Compute the auct win ratio
             double sum_v = 0., sum_v_r = 0.;
@@ -544,6 +548,6 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tvar: " + stats.variance() + "\t\t" + stats.wlString();
+        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tvar: " + stats.variance() + "\t\t" + stats.toString();
     }
 }

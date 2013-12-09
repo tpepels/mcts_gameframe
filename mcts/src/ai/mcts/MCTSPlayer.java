@@ -89,7 +89,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
                 simulations++;
-
+                options.simsLeft--;
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
@@ -111,11 +111,14 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
             // (SW-UCT) Remember the number of simulations for the next round
             options.numSimulations = simulations;
+            options.simsLeft = options.numSimulations;
         } else {
             options.numSimulations = options.simulations;
+            options.simsLeft = options.numSimulations;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
                 simulations++;
+                options.simsLeft--;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)

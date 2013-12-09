@@ -4,6 +4,16 @@
       <root url="jar://$PROJECT_DIR$/out/artifacts/experiments_jar/experiments.jar!/" />
     </CLASSES>
     <JAVADOC />
-    <SOURCES />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/mcts/src" />
+      <root url="file://$PROJECT_DIR$/cannon/src" />
+      <root url="file://$PROJECT_DIR$/amazons/src" />
+      <root url="file://$PROJECT_DIR$/checkers/src" />
+      <root url="file://$PROJECT_DIR$/pentalath/src" />
+      <root url="file://$PROJECT_DIR$/lostcities/src" />
+      <root url="file://$PROJECT_DIR$/Experiments/src" />
+      <root url="file://$PROJECT_DIR$/breakthrough/src" />
+      <root url="file://$PROJECT_DIR$/chinesecheckers/src" />
+    </SOURCES>
   </library>
 </component>
