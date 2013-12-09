@@ -537,9 +537,12 @@ public class Board implements IBoard {
                 }
             }
         } else {
-            simMoves = new ArrayList<IMove>(mateMoves);
+            // Play mate-moves whenever you can
+            //simMoves.resize(simMoves.size()); 
+            simMoves = new ArrayList<IMove>(mateMoves);  
+            //Collections.copy(simMoves, mateMoves);
         }
-        //
+        
         if (simMoves.size() > 1)
             return simMoves;
         else // This will not happen very often

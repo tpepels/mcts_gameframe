@@ -246,7 +246,7 @@ public class TreeNode {
                     avgValue *= (1. - Math.pow(options.depthD, depth));
                 // Implicit minimax
                 if (options.implicitMM)
-                    avgValue += c.imVal;
+                    avgValue += (options.imAlpha*c.imVal);
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
@@ -260,7 +260,8 @@ public class TreeNode {
                 }
                 // Progressive bias
                 if (options.progBias) { 
-                    avgValue += options.progBiasWeight * c.heval / (c.getnVisits() + 1); 
+                    avgValue += options.progBiasWeight * c.heval;
+                    //avgValue += options.progBiasWeight * c.heval / (c.getnVisits() + 1); 
                     //avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
                 }
                 //
@@ -311,11 +312,12 @@ public class TreeNode {
         // might change a the (static?) list of moves .. ?
         // Problem is, it's super slow :(
         IBoard bcopy = board.copy(); 
+        */
         List<IMove> myMoves = new ArrayList<IMove>(); 
         myMoves.addAll(moves); 
-        */
+
         IBoard bcopy = board;
-        List<IMove> myMoves = moves;
+        //List<IMove> myMoves = moves;
 
         ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
         double bestValue = -INF - 1;

@@ -121,8 +121,12 @@ public class SimGame {
                     options.pdepth = Integer.parseInt(tag.substring(2));
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
-                } else if (tag.equals("im")) {
+                } else if (tag.startsWith("im")) {
                     options.implicitMM = true;
+                    if (tryParseDouble(tag.substring(2)))
+                        options.imAlpha = Double.parseDouble(tag.substring(2));
+                    else
+                        throw new RuntimeException("IM: problem parsing alpha"); 
                 } else if (tag.startsWith("ege")) {
                     options.epsGreedyEval = true;
                     options.egeEpsilon = Double.parseDouble(tag.substring(3));
