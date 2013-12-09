@@ -24,13 +24,8 @@ public class MCTSOptions {
     public double uctC = 1., k = 1.25, maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-<<<<<<< HEAD
     public int timeInterval = 2000, simulations = 10000, simsLeft = 10000;
     // Marc's stuff
-=======
-    public int timeInterval = 2000, simulations = 10000;
-    // Early evaluation + implicit minimax
->>>>>>> 7a4db7c7c544a458dfb3e289ddd3dcf46eef7218
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax

@@ -246,8 +246,6 @@ public class TreeNode {
                 // Implicit minimax
                 if (options.implicitMM)
                     avgValue += c.imVal;
-<<<<<<< HEAD
-
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
@@ -259,25 +257,15 @@ public class TreeNode {
                         Nc = Math.min(Nc, stats.windowSize());
                     }
                 }
-                // Compute the UCT value of the child
-                if (options.ucbTuned) {
-                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(Np)) / Nc);
-                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(Np)) / Nc);
-=======
                 // Progressive bias
                 if (options.progBias) { 
                     /// avgValue += c.heval / (c.getnVisits() + 1); 
                     avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
                 }
                 //
-                if (options.swUCT && c.stats.windowSize() != -1) {
-                    uctValue = avgValue + (options.uctC * Math.sqrt((l.log(Math.min(getnVisits(), c.stats.windowSize()))) / c.getnVisits()));
-                } else if (options.swUCT && c.stats.windowSize() == -1) {
-                    uctValue = avgValue + (options.uctC * Math.sqrt(l.log(stats.totalVisits()) / c.getnVisits()));
-                } else if (options.ucbTuned) {
-                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(getnVisits())) / c.getnVisits());
-                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(getnVisits())) / c.getnVisits());
->>>>>>> 7a4db7c7c544a458dfb3e289ddd3dcf46eef7218
+                if (options.ucbTuned) {
+                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(Np)) / Nc);
+                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(Np)) / Nc);
                 } else {
                     // Compute the uct value with the (new) average value
                     uctValue = avgValue + options.uctC * Math.sqrt(l.log(Np) / Nc);
