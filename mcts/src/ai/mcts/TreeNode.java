@@ -304,11 +304,12 @@ public class TreeNode {
         // might change a the (static?) list of moves .. ?
         // Problem is, it's super slow :(
         IBoard bcopy = board.copy(); 
+        */
         List<IMove> myMoves = new ArrayList<IMove>(); 
         myMoves.addAll(moves); 
-        */
+
         IBoard bcopy = board;
-        List<IMove> myMoves = moves;
+        //List<IMove> myMoves = moves;
 
         ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
         double bestValue = -INF - 1;
