@@ -246,7 +246,7 @@ public class TreeNode {
                     avgValue *= (1. - Math.pow(options.depthD, depth));
                 // Implicit minimax
                 if (options.implicitMM)
-                    avgValue += c.imVal;
+                    avgValue += (options.imAlpha*c.imVal);
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
@@ -260,7 +260,8 @@ public class TreeNode {
                 }
                 // Progressive bias
                 if (options.progBias) { 
-                    avgValue += options.progBiasWeight * c.heval / (c.getnVisits() + 1); 
+                    avgValue += options.progBiasWeight * c.heval;
+                    //avgValue += options.progBiasWeight * c.heval / (c.getnVisits() + 1); 
                     //avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
                 }
                 //
@@ -285,6 +286,13 @@ public class TreeNode {
                 sel = (selected.equals(c1)) ? 1. : 0.;
                 // Update the node's velocity
                 c1.velocity = c1.velocity * options.lambda + sel;
+            }
+        }
+        // (swUCT) Move the windows of the not-selected children
+        if (options.swUCT && selected != null) {
+            for (TreeNode c1 : children) {
+                if(!selected.equals(c1))
+                    c1.stats.moveWindow();
             }
         }
         return selected;
