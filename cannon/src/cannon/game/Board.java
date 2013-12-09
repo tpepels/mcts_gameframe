@@ -16,7 +16,7 @@ public class Board implements IBoard {
     //
     public final int[] board = new int[WIDTH * HEIGHT];
     public final Stack<IMove> pastMoves = new Stack<IMove>();
-    private final List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
+    private List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
     private final int[] capture = {-1, -11, -10, -9, 1};
     private final int[] move = {-11, -10, -9};
     private final int[] retreat = {22, 20, 18}, retrCheck = {-11, -1, +1, -10, +10, -9, +1, +11};
@@ -537,8 +537,7 @@ public class Board implements IBoard {
                 }
             }
         } else {
-            // Play mate-moves whenever you can
-            return mateMoves;
+            simMoves = new ArrayList<IMove>(mateMoves);
         }
         //
         if (simMoves.size() > 1)
