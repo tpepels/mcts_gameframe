@@ -65,6 +65,7 @@ public class AITests {
         options1.debug = false;
         options1.swUCT = true;
         options1.fixedSimulations = true;
+        options1.simulations = 10000;
         options1.setGame(game);
         aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
@@ -72,6 +73,7 @@ public class AITests {
         MCTSOptions options2 = new MCTSOptions();
         options2.debug = false;
         options2.fixedSimulations = true;
+        options2.simulations = 10000;
         options2.setGame(game);
         aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
@@ -79,25 +81,25 @@ public class AITests {
         // Run one of the defined experiments
         if (which == 1) {
             //
-            double[] values = {1.};
-            for (double i : values) {
-                options1.switches = i;
-                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
-            }
-        } else if (which == 2) {
             double[] values = {2.};
             for (double i : values) {
                 options1.switches = i;
                 runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
             }
+        } else if (which == 2) {
+            double[] values = {4.};
+            for (double i : values) {
+                options1.switches = i;
+                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
+            }
         } else if (which == 3) {
-            double[] values = {3.};
+            double[] values = {5.};
             for (double i : values) {
                 options1.switches = i;
                 runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
             }
         } else if (which == 4) {
-            double[] values = {4.};
+            double[] values = {6.};
             for (double i : values) {
                 options1.switches = i;
                 runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
