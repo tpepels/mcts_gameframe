@@ -451,4 +451,8 @@ public class Board implements IBoard {
             return ((double) (N_PIECES - homePieces[0]) / (double) N_PIECES);
         return 1;
     }
+
+    public String toString() { 
+      return ("toString mostly unimplemented.. :(  nMoves = " + nMoves);
+    }
 }
