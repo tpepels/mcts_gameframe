@@ -28,6 +28,8 @@ public class TreeNode {
     private IMove move;
     private double velocity = 1.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
+    private double imAlpha = -INF-1; // implicit lower bound (in view of me)
+    private double imBeta = +INF+1;  // implicit upper bound (in view of me)
     private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
 
     /**
@@ -171,7 +173,8 @@ public class TreeNode {
         }
 
         int winner;
-        double value, best_imVal = -INF;
+        double value, best_imVal = -INF; 
+
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
@@ -198,8 +201,9 @@ public class TreeNode {
                 child.stats.setValue(value);
                 // implicit minimax
                 if (options.implicitMM) {
-                    child.imVal = board.evaluate(player);
-                    if (child.imVal > best_imVal) best_imVal = child.imVal;
+                    child.imVal = board.evaluate(player); // view of parent
+                    child.imAlpha = -INF-1;
+                    child.imBeta = +INF+1;
                 }
                 // prog. bias
                 if (options.progBias) { 
@@ -216,7 +220,11 @@ public class TreeNode {
             }
         }
         // implicit minimax
-        if (options.implicitMM) this.imVal = -best_imVal;
+        if (options.implicitMM) {
+            this.imVal = -best_imVal;
+            this.imAlpha = -INF-1;
+            this.imBeta = +INF+1;
+        }
         // prog. bias
         if (options.progBias) this.heval = -board.evaluate(player);
         // If one of the nodes is a win, return it.
@@ -245,8 +253,14 @@ public class TreeNode {
                 if (options.depthDiscount && Math.abs(avgValue) != INF)
                     avgValue *= (1. - Math.pow(options.depthD, depth));
                 // Implicit minimax
-                if (options.implicitMM)
+                if (options.implicitMM) {
                     avgValue += (options.imAlpha*c.imVal);
+                    // pruning: if the child tree is wasteful (according to the bound info), add a large negative value
+                    if (options.imPruning && c.imAlpha > c.imBeta) { 
+                        double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 
+                        avgValue += penalty;
+                    }
+                }
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
@@ -534,10 +548,19 @@ public class TreeNode {
 
         // implicit minimax backups
         if (options.implicitMM && children != null) {
-            double bestVal = -INF;
-            for (TreeNode c : children)
+            double bestAlpha = -INF-1;
+            double bestBeta = -INF-1; 
+            double bestVal = -INF-1;
+
+            for (TreeNode c : children) {
                 if (c.imVal > bestVal) bestVal = c.imVal;
-            this.imVal = -bestVal;
+                if ((-c.imBeta) > bestAlpha) bestAlpha = (-c.imBeta); 
+                if ((-c.imAlpha) > bestBeta) bestBeta = (-c.imAlpha); 
+            }
+
+            this.imVal = -bestVal;       // view of parent
+            this.imAlpha = bestAlpha;    // view of me
+            this.imBeta = bestBeta;      // view of me
         }
     }
 

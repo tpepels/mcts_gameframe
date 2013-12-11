@@ -87,6 +87,7 @@ public class SimGame {
          *    _egeX  = epsilon-greedy playouts using the eval func, where X is a double
          *    _h     = enable heuristics
          *    _im    = enable implicit minimax
+         *    _ip    = enable implicit pruning
          *    _mastX = Plays highest MAST move with probability X, X is double
          *    _pb    = progressive bias
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
@@ -159,8 +160,10 @@ public class SimGame {
                         options.progBiasWeight = Double.parseDouble(tag.substring(2));
                     else
                         throw new RuntimeException("Unable to parse prog bias weight"); 
+                } else if (tag.equals("ip")) {
+                    options.imPruning = true;
                 } else {
-                    throw new RuntimeException("Unrecognized MCTS tag: " + tag);
+                    throw new RuntimeException("Unrecognized MCTS tag: " + tag);    
                 }
             }
 
