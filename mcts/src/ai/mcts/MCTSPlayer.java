@@ -66,7 +66,19 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
         TreeNode.poDepth = 1;
-
+        if(options.swUCT) {
+            switch (board.getNMovesMade()) {
+                case 0:
+                    options.cs = options.switches;
+                    break;
+                case 20:
+                    options.cs = 0.;
+                    break;
+                case 40:
+                    options.cs = 0.;
+                    break;
+            }
+        }
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -83,6 +95,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             throw new RuntimeException("MCTS Options not set.");
 
         int simulations = 0;
+
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
             long endTime = System.currentTimeMillis() + options.timeInterval;

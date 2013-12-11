@@ -127,11 +127,6 @@ public class StatCounter {
             return -1;
     }
 
-    public void moveWindow() {
-        if (ma != null)
-            ma.moveWindow();
-    }
-
     public int visits() {
         if (ma == null)
             return m_n;

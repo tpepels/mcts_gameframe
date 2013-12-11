@@ -13,7 +13,7 @@ public class MCTSOptions {
     // Sliding-window UCT
     public boolean swUCT = false;
     public int numSimulations, minSWDepth = 2;
-    public double switches = 4.;
+    public double switches = 4., cs = switches;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
     // note: useHeuristics uses a different default (false) when using SimGame
@@ -117,7 +117,9 @@ public class MCTSOptions {
     }
 
     public int getWindowSize() {
-        return (int) Math.sqrt((simsLeft * Math.log(simsLeft)) / switches);
+        if (cs > 0)
+            return (int) Math.sqrt((simsLeft * Math.log(simsLeft)) / cs);
+        return -1;
     }
 
     public void resetMast(int maxId) {

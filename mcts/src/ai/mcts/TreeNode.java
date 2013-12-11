@@ -206,9 +206,9 @@ public class TreeNode {
                     child.imBeta = +INF+1;
                 }
                 // prog. bias
-                if (options.progBias) { 
+                if (options.progBias) {
                     // must be strictly a bonus
-                    child.heval = board.evaluate(player); 
+                    child.heval = board.evaluate(player);
                 }
                 children.add(child);
                 // reset the board
@@ -268,12 +268,11 @@ public class TreeNode {
                     if (c.stats.hasWindow() && !stats.hasWindow()) {
                         Np = Math.min(Np, c.stats.windowSize());
                     } else if (!c.stats.hasWindow() && stats.hasWindow()) {
-//                        Np = stats.totalVisits();
                         Nc = Math.min(Nc, stats.windowSize());
                     }
                 }
                 // Progressive bias
-                if (options.progBias) { 
+                if (options.progBias) {
                     avgValue += options.progBiasWeight * c.heval;
                     //avgValue += options.progBiasWeight * c.heval / (c.getnVisits() + 1); 
                     //avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
@@ -302,13 +301,6 @@ public class TreeNode {
                 c1.velocity = c1.velocity * options.lambda + sel;
             }
         }
-        // (swUCT) Move the windows of the not-selected children
-        if (options.swUCT && selected != null) {
-            for (TreeNode c1 : children) {
-                if(!selected.equals(c1))
-                    c1.stats.moveWindow();
-            }
-        }
         return selected;
     }
 
@@ -316,7 +308,7 @@ public class TreeNode {
         double roll = MCTSOptions.r.nextDouble();
         double tolerance = 0.0001;
 
-        if (roll < options.egeEpsilon) { 
+        if (roll < options.egeEpsilon) {
             return MCTSOptions.r.nextInt(moves.size());
         }
 
@@ -327,8 +319,8 @@ public class TreeNode {
         // Problem is, it's super slow :(
         IBoard bcopy = board.copy(); 
         */
-        List<IMove> myMoves = new ArrayList<IMove>(); 
-        myMoves.addAll(moves); 
+        List<IMove> myMoves = new ArrayList<IMove>();
+        myMoves.addAll(moves);
 
         IBoard bcopy = board;
         //List<IMove> myMoves = moves;
@@ -340,8 +332,8 @@ public class TreeNode {
             IMove move = myMoves.get(i);
             boolean success = bcopy.doAIMove(move, currentPlayer);
 
-            if (!success) 
-                continue; 
+            if (!success)
+                continue;
 
             double eval = bcopy.evaluate(currentPlayer);
             bcopy.undoMove();

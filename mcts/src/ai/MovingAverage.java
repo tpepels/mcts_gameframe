@@ -35,24 +35,6 @@ public class MovingAverage {
         }
     }
 
-    public void moveWindow() {
-        // Number of samples < swUCT size
-        if (size < maxSize) {
-            size++;
-        } else {
-            // Number of samples > window size
-            // Index is at the position to be overwritten
-            total -= samples[index];
-            if(size > 0 && samples[index] != 0)
-                size--;
-        }
-        samples[index++] = 0;
-        // Reset the index to start at the beginning of the array
-        if (index == maxSize) {
-            index = 0;
-        }
-    }
-
     public double getSize() {
         return size;
     }
