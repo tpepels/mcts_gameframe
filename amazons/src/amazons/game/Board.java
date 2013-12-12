@@ -260,7 +260,7 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player) {
         double diff = getFreedom(1) - getFreedom(2); 
-        double p1eval = FastTanh.tanh(diff); 
+        double p1eval = FastTanh.tanh(diff/100.0); 
         if (player == 1) 
             return p1eval; 
         else

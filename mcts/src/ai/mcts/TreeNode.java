@@ -256,8 +256,10 @@ public class TreeNode {
                 if (options.implicitMM) {
                     avgValue += (options.imAlpha*c.imVal);
                     // pruning: if the child tree is wasteful (according to the bound info), add a large negative value
-                    if (options.imPruning && c.imAlpha > c.imBeta) { 
-                        double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 
+                    if (options.imPruning && c.imAlpha >= (c.imBeta-0.000001)) { 
+                        //double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 
+                        //double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 
+                        double penalty = MCTSOptions.r.nextDouble()*(-0.5); 
                         avgValue += penalty;
                     }
                 }
