@@ -762,9 +762,9 @@ public class Board implements IBoard {
     @Override
     public double getQuality() {
         if (winner == P1_WIN)
-            return ((double)(ROW_SIZE - getRowScore(P2)) / (double) ROW_SIZE);
+            return ((double) (ROW_SIZE - getRowScore(P2)) / (double) ROW_SIZE);
         else if (winner == P2_WIN)
-            return ((double)(ROW_SIZE - getRowScore(P1)) / (double) ROW_SIZE);
+            return ((double) (ROW_SIZE - getRowScore(P1)) / (double) ROW_SIZE);
         return 1;
     }
 

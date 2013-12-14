@@ -8,7 +8,7 @@ do
   CP="$CP:build/$d"
 done
 
-java -cp $CP $class $@
+java -XX:+UseSerialGC -cp $CP $class $@
 
 # Classes with main 
 #

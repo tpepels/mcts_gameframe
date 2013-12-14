@@ -12,7 +12,7 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations, minSWDepth = 2;
+    public int numSimulations, minSWDepth = 3;
     public double switches = 4.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
@@ -29,6 +29,8 @@ public class MCTSOptions {
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
+    public double imAlpha = 0.0;
+    public boolean imPruning = false;
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
@@ -64,10 +66,14 @@ public class MCTSOptions {
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
         } else if (game.equals("lostcities")) {
+        } else if (game.equals("checkers")) {
+            MAST = true;
+            mastEps = .3;
+            uctC = .8;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
-            mastEps = .9;
+            mastEps = .95;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
@@ -112,10 +118,14 @@ public class MCTSOptions {
             else
                 numSimulations = 18 * timeInterval;
         }
+        simsLeft = numSimulations;
     }
 
     public int getWindowSize() {
-        return (int) Math.sqrt((simsLeft * Math.log(simsLeft)) / switches);
+        if (simsLeft > 100)
+            return (int) Math.sqrt((simsLeft * Math.log(simsLeft)) / switches);
+        else
+            return -1;
     }
 
     public void resetMast(int maxId) {

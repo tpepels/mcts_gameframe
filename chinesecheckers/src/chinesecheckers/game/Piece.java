@@ -11,6 +11,6 @@ public class Piece {
     }
 
     public Piece copy() {
-       return new Piece(id, location, colour);
+        return new Piece(id, location, colour);
     }
 }

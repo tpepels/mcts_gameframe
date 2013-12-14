@@ -1,5 +1,6 @@
 package chinesecheckers.game;
 
+import ai.FastTanh;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -326,6 +327,25 @@ public class Board implements IBoard {
         }
     }
 
+    // Gets the closest distance to the home base from this position
+    private int getDistClosestToHome(int from) {
+        if (board[from] == null)
+            return 0;
+
+        int colour = board[from].occupant.colour;
+        targets = (colour == BLACK) ? B_TARGET : W_TARGET;
+        target = targets[0];
+
+        if (homePieces[colour - 1] != N_PIECES) {
+            int c = 0;
+            while (c < targets.length && board[target[0] + (target[1] * WIDTH)].occupant != null) {
+                target = targets[++c];
+            }
+        }
+
+        return getDistanceToHome(from, target);
+    }
+
     private int getDistanceToHome(int from, int[] target) {
         return Math.abs((from % WIDTH) - target[0]) + Math.abs((from / WIDTH) - target[1]);
     }
@@ -351,7 +371,7 @@ public class Board implements IBoard {
     @Override
     public int checkWin() {
         // Cut off games that take too long
-        if(winner == NONE_WIN && nMoves > MAX_MOVES)
+        if (winner == NONE_WIN && nMoves > MAX_MOVES)
             return DRAW;
         return winner;
     }
@@ -393,15 +413,46 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player) {
-        return 0.0;
+
+        // Adds up the distance to closest home base for all pieces
+        // Compares that to the opponent's 
+        // As used by Nathan in his MCTS players
+
+        int colour = (player == P1 ? WHITE : BLACK);
+        if (homePieces[colour - 1] == N_PIECES)
+            return 1;
+
+        int startI = (player == P1) ? 0 : N_PIECES;
+        int endI = (player == P1) ? N_PIECES : pieces.length;
+
+        int startO = (player == P1) ? N_PIECES : 0;
+        int endO = (player == P1) ? pieces.length : N_PIECES;
+
+        int mydist = 0;
+        for (int i = startI; i < endI; i++) {
+            mydist += getDistClosestToHome(pieces[i].location);
+        }
+
+        int oppdist = 0;
+        for (int i = startO; i < endO; i++) {
+            oppdist += getDistClosestToHome(pieces[i].location);
+        }
+
+        double distDiff = (oppdist - mydist);
+        double score_th = FastTanh.tanh(distDiff / 10.0);
+        return score_th;
     }
 
     @Override
     public double getQuality() {
-        if(winner == P1_WIN)
+        if (winner == P1_WIN)
             return ((double) (N_PIECES - homePieces[1]) / (double) N_PIECES);
-        else if(winner == P2_WIN)
+        else if (winner == P2_WIN)
             return ((double) (N_PIECES - homePieces[0]) / (double) N_PIECES);
         return 1;
+    }
+
+    public String toString() {
+        return ("toString mostly unimplemented.. :(  nMoves = " + nMoves);
     }
 }

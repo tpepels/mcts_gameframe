@@ -24,7 +24,7 @@ public class Move implements IMove {
     public int getOldProgress1() {
         return oldProgress1;
     }
-    
+
     public int getOldProgress2() {
         return oldProgress2;
     }

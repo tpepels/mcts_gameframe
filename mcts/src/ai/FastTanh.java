@@ -14,7 +14,7 @@ public class FastTanh {
 
     public static double tanh(double x) {
         if (x >= -100.000 && x < 100.000) {
-            int index = (int)Math.round(x * 1000 + 100000);
+            int index = (int) Math.round(x * 1000 + 100000);
             return tanhs[index];
         } else {
             return Math.tanh(x);
