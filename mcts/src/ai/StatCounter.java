@@ -12,13 +12,12 @@ import ai.mcts.MCTSOptions;
 import ai.mcts.TreeNode;
 
 public class StatCounter {
-    public static int MIN_W_VISITS = 1; // Only after this many visits, initialize the window
+    public static int MIN_W_VISITS = 2; // Only after this many visits, initialize the window
     private MovingAverage ma;
     private boolean windowed = false;
     //
     private double m_sum, m_m2, m_mean;
-    private int m_n;
-    private int m_wins, m_losses;
+    private int m_n, m_wins, m_losses;
     private final MCTSOptions options;
 
     public StatCounter() {
@@ -75,6 +74,7 @@ public class StatCounter {
             int size = options.getWindowSize();
             if (size > 0) {
                 ma = new MovingAverage(size);
+                ma.add(m_sum);     // Store the current value (Works for MIN_W_VISITS = 2)
             } else {
                 // Make sure no new window is created
                 windowed = false;
@@ -84,6 +84,7 @@ public class StatCounter {
         if (ma != null) ma.add(num);
     }
 
+    @Override
     public String toString() {
         return "W:" + m_wins + " L:" + m_losses;
     }

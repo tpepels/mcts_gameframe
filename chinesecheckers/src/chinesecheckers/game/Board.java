@@ -343,7 +343,7 @@ public class Board implements IBoard {
             }
         }
 
-        return getDistanceToHome(from, target); 
+        return getDistanceToHome(from, target);
     }
 
     private int getDistanceToHome(int from, int[] target) {
@@ -371,7 +371,7 @@ public class Board implements IBoard {
     @Override
     public int checkWin() {
         // Cut off games that take too long
-        if(winner == NONE_WIN && nMoves > MAX_MOVES)
+        if (winner == NONE_WIN && nMoves > MAX_MOVES)
             return DRAW;
         return winner;
     }
@@ -418,41 +418,41 @@ public class Board implements IBoard {
         // Compares that to the opponent's 
         // As used by Nathan in his MCTS players
 
-        int colour = (player == P1 ? WHITE : BLACK); 
-        if (homePieces[colour - 1] == N_PIECES) 
-          return 1;
+        int colour = (player == P1 ? WHITE : BLACK);
+        if (homePieces[colour - 1] == N_PIECES)
+            return 1;
 
         int startI = (player == P1) ? 0 : N_PIECES;
         int endI = (player == P1) ? N_PIECES : pieces.length;
 
-        int startO = (player == P1) ? N_PIECES : 0; 
+        int startO = (player == P1) ? N_PIECES : 0;
         int endO = (player == P1) ? pieces.length : N_PIECES;
 
         int mydist = 0;
         for (int i = startI; i < endI; i++) {
             mydist += getDistClosestToHome(pieces[i].location);
         }
-        
+
         int oppdist = 0;
         for (int i = startO; i < endO; i++) {
             oppdist += getDistClosestToHome(pieces[i].location);
         }
 
-        double distDiff = (oppdist - mydist); 
-        double score_th = FastTanh.tanh(distDiff / 10.0); 
+        double distDiff = (oppdist - mydist);
+        double score_th = FastTanh.tanh(distDiff / 10.0);
         return score_th;
     }
 
     @Override
     public double getQuality() {
-        if(winner == P1_WIN)
+        if (winner == P1_WIN)
             return ((double) (N_PIECES - homePieces[1]) / (double) N_PIECES);
-        else if(winner == P2_WIN)
+        else if (winner == P2_WIN)
             return ((double) (N_PIECES - homePieces[0]) / (double) N_PIECES);
         return 1;
     }
 
-    public String toString() { 
-      return ("toString mostly unimplemented.. :(  nMoves = " + nMoves);
+    public String toString() {
+        return ("toString mostly unimplemented.. :(  nMoves = " + nMoves);
     }
 }

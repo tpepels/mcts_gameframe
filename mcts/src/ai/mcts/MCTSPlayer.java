@@ -65,20 +65,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
-        TreeNode.poDepth = 1;
-        if(options.swUCT) {
-            switch (board.getNMovesMade()) {
-                case 0:
-                    options.cs = options.switches;
-                    break;
-                case 20:
-                    options.cs = 0.;
-                    break;
-                case 40:
-                    options.cs = 0.;
-                    break;
-            }
-        }
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.

@@ -2,16 +2,19 @@ package checkers.game;
 
 import ai.framework.IMove;
 
-/**
- * Created by tom on 08/12/13.
- */
 public class Move implements IMove {
-    public int[] move;
+    public int[] move, captures;
     public int hops = 0;
+    public boolean promotion = false;
 
-    public Move(int[] move) {
+    public Move(int[] move, int[] captures) {
         this.move = move;
         this.hops = move.length / 2;
+        this.captures = captures;
+    }
+
+    public int[] getCaptures() {
+        return captures;
     }
 
     @Override
@@ -27,11 +30,11 @@ public class Move implements IMove {
     @Override
     public boolean equals(IMove mv) {
 
-        if(mv.getMove().length != move.length)
+        if (mv.getMove().length != move.length)
             return false;
 
-        for(int i = 0; i < move.length; i++) {
-            if(mv.getMove()[i]!=move[i])
+        for (int i = 0; i < move.length; i++) {
+            if (mv.getMove()[i] != move[i])
                 return false;
         }
 
@@ -40,7 +43,11 @@ public class Move implements IMove {
 
     @Override
     public int getUniqueId() {
-        // TODO
-        return 0;
+        return ((move[1] * 8) + move[0]) + 100 * ((move[3] * 8) + move[2]);
+    }
+
+    @Override
+    public String toString() {
+        return "(" + (move[1] * 8 + move[0]) + ") -> (" + (move[3] * 8 + move[2]) + ")";
     }
 }

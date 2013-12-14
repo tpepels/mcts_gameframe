@@ -19,7 +19,7 @@ public class MovingAverage {
     }
 
     public void add(double sample) {
-        // Number of samples < swUCT size
+        // Number of samples < sliding window size
         if (size < maxSize) {
             size++;
         } else {

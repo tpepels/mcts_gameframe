@@ -1,8 +1,6 @@
 <component name="libraryTable">
   <library name="experiments">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/out/artifacts/experiments_jar/experiments.jar!/" />
-    </CLASSES>
+    <CLASSES />
     <JAVADOC />
     <SOURCES>
       <root url="file://$PROJECT_DIR$/mcts/src" />

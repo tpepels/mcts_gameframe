@@ -126,7 +126,7 @@ public class SimGame {
                     if (tryParseDouble(tag.substring(2)))
                         options.imAlpha = Double.parseDouble(tag.substring(2));
                     else
-                        throw new RuntimeException("IM: problem parsing alpha"); 
+                        throw new RuntimeException("IM: problem parsing alpha");
                 } else if (tag.startsWith("ege")) {
                     options.epsGreedyEval = true;
                     options.egeEpsilon = Double.parseDouble(tag.substring(3));
@@ -153,12 +153,12 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.startsWith("mp")) {
                     options.multiplier = true;
-                } else if (tag.startsWith("pb")) { 
-                    options.progBias = true; 
+                } else if (tag.startsWith("pb")) {
+                    options.progBias = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.progBiasWeight = Double.parseDouble(tag.substring(2));
                     else
-                        throw new RuntimeException("Unable to parse prog bias weight"); 
+                        throw new RuntimeException("Unable to parse prog bias weight");
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

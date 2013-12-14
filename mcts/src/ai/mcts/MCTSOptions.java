@@ -12,8 +12,8 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations, minSWDepth = 2;
-    public double switches = 4., cs = switches;
+    public int numSimulations, minSWDepth = 3;
+    public double switches = 4.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
     // note: useHeuristics uses a different default (false) when using SimGame
@@ -65,10 +65,14 @@ public class MCTSOptions {
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
         } else if (game.equals("lostcities")) {
+        } else if (game.equals("checkers")) {
+            MAST = true;
+            mastEps = .3;
+            uctC = .8;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
-            mastEps = .9;
+            mastEps = .95;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
@@ -113,12 +117,14 @@ public class MCTSOptions {
             else
                 numSimulations = 18 * timeInterval;
         }
+        simsLeft = numSimulations;
     }
 
     public int getWindowSize() {
-        if (cs > 0)
-            return (int) Math.sqrt((simsLeft * Math.log(simsLeft)) / cs);
-        return -1;
+        if (simsLeft > 100)
+            return (int) Math.sqrt((simsLeft * Math.log(simsLeft)) / switches);
+        else
+            return -1;
     }
 
     public void resetMast(int maxId) {

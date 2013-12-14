@@ -6,6 +6,7 @@
       <module fileurl="file://$PROJECT_DIR$/amazons/amazons.iml" filepath="$PROJECT_DIR$/amazons/amazons.iml" />
       <module fileurl="file://$PROJECT_DIR$/breakthrough/breakthrough.iml" filepath="$PROJECT_DIR$/breakthrough/breakthrough.iml" />
       <module fileurl="file://$PROJECT_DIR$/cannon/cannon.iml" filepath="$PROJECT_DIR$/cannon/cannon.iml" />
+      <module fileurl="file://$PROJECT_DIR$/checkers/checkers.iml" filepath="$PROJECT_DIR$/checkers/checkers.iml" />
       <module fileurl="file://$PROJECT_DIR$/chinesecheckers/chinesecheckers.iml" filepath="$PROJECT_DIR$/chinesecheckers/chinesecheckers.iml" />
       <module fileurl="file://$PROJECT_DIR$/lostcities/lostcities.iml" filepath="$PROJECT_DIR$/lostcities/lostcities.iml" />
       <module fileurl="file://$PROJECT_DIR$/mcts/mcts.iml" filepath="$PROJECT_DIR$/mcts/mcts.iml" />

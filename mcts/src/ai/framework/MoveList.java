@@ -14,6 +14,13 @@ public class MoveList {
         moves[size++] = move;
     }
 
+    public MoveList addAll(MoveList list) {
+        for (int i = 0; i < list.size(); i++) {
+            add(list.get(i));
+        }
+        return this;
+    }
+
     public void clear() {
         size = 0;
     }

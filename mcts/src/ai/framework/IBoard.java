@@ -19,12 +19,14 @@ public interface IBoard {
 
     /**
      * Should return true if the game is not fully observable
+     *
      * @return true if not fully observable
      */
     public boolean isPartialObservable();
 
     /**
      * Should return the number of moves made in the current game
+     *
      * @return The number of moves made so far
      */
     public int getNMovesMade();
@@ -120,7 +122,7 @@ public interface IBoard {
     public void initialize();
 
     /**
-     * Returns a value between -1 and 1 indicating the heuristic value of the 
+     * Returns a value between -1 and 1 indicating the heuristic value of the
      * position with respect to the specified player.
      */
     public double evaluate(int player);
@@ -128,7 +130,7 @@ public interface IBoard {
     /**
      * Returns a value between -1 and 1 representing the quality of the game
      * after the game has ended, e.g. rate of pieces remaining, score ratio etc.
-     *
+     * <p/>
      * If this is not applicable to your game, return 1
      */
     public double getQuality();

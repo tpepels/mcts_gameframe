@@ -5,13 +5,15 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Stack;
 
 public class Board implements IBoard {
     // Board constants
     public static final int EMPTY = 0, W_SOLDIER = 1, W_TOWN = 2, B_SOLDIER = 3, B_TOWN = 4, N_PIECES = 15;
     public static final int WIDTH = 10, HEIGHT = 10, MAX_MOVES = 1000;
-    private static final Random random = new Random();
     public final MoveList moves = new MoveList(500);
     //
     public final int[] board = new int[WIDTH * HEIGHT];
@@ -539,10 +541,10 @@ public class Board implements IBoard {
         } else {
             // Play mate-moves whenever you can
             //simMoves.resize(simMoves.size()); 
-            simMoves = new ArrayList<IMove>(mateMoves);  
+            simMoves = new ArrayList<IMove>(mateMoves);
             //Collections.copy(simMoves, mateMoves);
         }
-        
+
         if (simMoves.size() > 1)
             return simMoves;
         else // This will not happen very often
@@ -643,8 +645,8 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player) {
         double p1score = ((double) (numBlackPcs - numWhitePcs)) / (double) (N_PIECES);
-        double p1eval = FastTanh.tanh(p1score); 
-        return (player == 1 ? p1eval : -p1eval); 
+        double p1eval = FastTanh.tanh(p1score);
+        return (player == 1 ? p1eval : -p1eval);
     }
 
     @Override

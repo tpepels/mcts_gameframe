@@ -16,7 +16,6 @@ public class TreeNode {
     private static final FastLog l = new FastLog();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static int poDepth = 0;
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -95,7 +94,6 @@ public class TreeNode {
             // When a leaf is reached return the result of the playout
             if (child.getnVisits() == 0) {
                 result = child.playOut(board, depth + 1);
-                poDepth = depth + 1;
                 child.updateStats(-result);
             } else {
                 // The next child
@@ -178,7 +176,7 @@ public class TreeNode {
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child;
                 // Initialize the child
-                if (options.swUCT && depth >= options.minSWDepth)// && depth <= options.maxSWDepth)
+                if (options.swUCT && depth >= options.minSWDepth)
                     child = new TreeNode(nextPlayer, moves.get(i), options, true);
                 else
                     child = new TreeNode(nextPlayer, moves.get(i), options);
@@ -247,6 +245,7 @@ public class TreeNode {
                 // Implicit minimax
                 if (options.implicitMM)
                     avgValue += (options.imAlpha * c.imVal);
+
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
@@ -254,7 +253,7 @@ public class TreeNode {
                     if (c.stats.hasWindow() && !stats.hasWindow()) {
                         Np = Math.min(Np, c.stats.windowSize());
                     } else if (!c.stats.hasWindow() && stats.hasWindow()) {
-                        Nc = Math.min(Nc, stats.windowSize());
+                        Np = stats.totalVisits();
                     }
                 }
                 // Progressive bias
