@@ -155,16 +155,16 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.startsWith("mp")) {
                     options.multiplier = true;
-                } else if (tag.startsWith("pb")) { 
-                    options.progBias = true; 
+                } else if (tag.startsWith("pb")) {
+                    options.progBias = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.progBiasWeight = Double.parseDouble(tag.substring(2));
                     else
-                        throw new RuntimeException("Unable to parse prog bias weight"); 
+                        throw new RuntimeException("Unable to parse prog bias weight");
                 } else if (tag.equals("ip")) {
                     options.imPruning = true;
                 } else {
-                    throw new RuntimeException("Unrecognized MCTS tag: " + tag);    
+                    throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
             }
 
@@ -205,7 +205,7 @@ public class SimGame {
             board = new lostcities.game.Table();
         } else if (game.equals("pentalath")) {
             board = new pentalath.game.Board();
-        }else if(game.equals("checkers")) {
+        } else if (game.equals("checkers")) {
             board = new checkers.game.Board();
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
