@@ -398,7 +398,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public boolean drawPossible() {
+    public boolean noMovesIsDraw() {
         // TODO I think a draw is possible, if the only two pieces left are facing eachother
         return false;
     }

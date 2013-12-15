@@ -45,7 +45,7 @@ public interface IBoard {
      *
      * @return True, if draws are possible, false otherwise
      */
-    public boolean drawPossible();
+    public boolean noMovesIsDraw();
 
     /**
      * Copy the current state of the board to a new board.

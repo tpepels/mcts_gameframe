@@ -18,7 +18,7 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
     private static final long serialVersionUID = 1L;
     private final JFrame frame;
     private MoveList moves;
-    private int squareSize = 40, boardx = -1, boardy = -1, clickNum = 0, movec = 0;
+    private int squareSize = 40, boardX = -1, boardY = -1, clickNum = 0;
     private int[] clickPos = {-1, -1, -1};
     //
     private Board board;
@@ -45,13 +45,12 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("checkers");
-        options1.treeReuse = true;
+        options1.relativeBonus = true;
         aiPlayer1.setOptions(options1);
         // Definition for player 2
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("checkers");
-        options2.treeReuse = true;
         aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
@@ -77,7 +76,7 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
                     g.setColor(Color.decode("#BDFF60"));
                 } else if (boardPos == clickPos[2]) {
                     g.setColor(Color.decode("#FF4762"));
-                } else if (col == boardx && row == boardy) {
+                } else if (col == boardX && row == boardY) {
                     g.setColor(Color.GRAY);
                 } else if ((row % 2) == (col % 2)) {
                     g.setColor(Color.decode("#8B4500"));
@@ -106,12 +105,12 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
                         g.setColor(Color.WHITE);
                         g.fillOval(x + 5, y + 5, squareSize - 10, squareSize - 10);
                         g.setColor(Color.BLACK);
-                        g.drawString("K", x + 5, y + 5);
+                        g.drawString("K", x + 25, y + 25);
                     } else if (boardPiece == Board.B_KING) {
                         g.setColor(Color.BLACK);
                         g.fillOval(x + 5, y + 5, squareSize - 10, squareSize - 10);
                         g.setColor(Color.WHITE);
-                        g.drawString("K", x + 20, y + 20);
+                        g.drawString("K", x + 25, y + 25);
                     }
                 }
             }
@@ -152,8 +151,8 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
 
     @Override
     public void mouseMoved(MouseEvent arg0) {
-        boardx = arg0.getX() / squareSize;
-        boardy = arg0.getY() / squareSize;
+        boardX = arg0.getX() / squareSize;
+        boardY = arg0.getY() / squareSize;
         repaint();
     }
 
@@ -173,13 +172,13 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
             board.initialize();
         }
         //
-        int boardPos = boardy * 8 + boardx;
+        int boardPos = boardY * 8 + boardX;
         if (clickNum == 0) {
-            if (board.board[boardy][boardx] != board.getPlayerToMove() && board.board[boardy][boardx] / 10 != board.getPlayerToMove()) {
+            if (board.board[boardY][boardX] != board.getPlayerToMove() && board.board[boardY][boardX] / 10 != board.getPlayerToMove()) {
                 return;
             }
         } else if (clickNum == 1) {
-            if (board.board[boardy][boardx] != Board.EMPTY || !isAvailMove(clickPos[0] / 8, clickPos[0] % 8, boardy, boardx)) {
+            if (board.board[boardY][boardX] != Board.EMPTY || !isAvailMove(clickPos[0] / 8, clickPos[0] % 8, boardY, boardX)) {
                 clickNum--;
                 return;
             }
@@ -210,8 +209,8 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
 
     @Override
     public void mouseExited(MouseEvent arg0) {
-        boardx = -1;
-        boardy = -1;
+        boardX = -1;
+        boardY = -1;
     }
 
     @Override
@@ -236,7 +235,11 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
         } else if (winner == Board.P1_WIN) {
             frame.setTitle("Checkers - White wins.");
             return;
+        } else if (winner == Board.DRAW) {
+            frame.setTitle("Checkers - Draw!");
+            return;
         }
+
         repaint();
         clickNum = 0;
         clickPos = new int[]{-1, -1, -1};
@@ -245,11 +248,12 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
         //
         if (board.getPlayerToMove() == Board.P2) {
             aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
-            frame.setTitle("Checkers - Black's move.");
+            //aiPlayer2.getMove(board, this, Board.P2, true, lastMove);
+            frame.setTitle("Checkers - Black's move - " + board.kingMoves);
         } else {
-            System.out.println("LastMove in GUI: " + lastMove);
-            frame.setTitle("Checkers - White's move.");
+            frame.setTitle("Checkers - White's move - " + board.kingMoves);
             aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
+            //aiPlayer1.getMove(board, this, Board.P1, true, lastMove);
         }
     }
 }

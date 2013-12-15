@@ -107,6 +107,7 @@ public class SimGame {
         if (parts[0].equals("mcts")) {
             playerRef = new MCTSPlayer();
             MCTSOptions options = new MCTSOptions();
+            options.debug = false;
             options.useHeuristics = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
@@ -204,6 +205,8 @@ public class SimGame {
             board = new lostcities.game.Table();
         } else if (game.equals("pentalath")) {
             board = new pentalath.game.Board();
+        }else if(game.equals("checkers")) {
+            board = new checkers.game.Board();
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
         }

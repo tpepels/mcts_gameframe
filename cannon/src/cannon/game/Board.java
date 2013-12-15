@@ -638,7 +638,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public boolean drawPossible() {
+    public boolean noMovesIsDraw() {
         return true;
     }
 

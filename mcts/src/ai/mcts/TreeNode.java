@@ -373,10 +373,10 @@ public class TreeNode {
                 if (moves.size() == 0) {
                     gameEnded = true;
                     // The current player has no moves left
-                    if (board.drawPossible())
+                    if (board.noMovesIsDraw())
                         winner = IBoard.DRAW;                                   // Pentalath, Lost Cities
                     else                                                        // Last player to move:
-                        winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers
+                        winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
 

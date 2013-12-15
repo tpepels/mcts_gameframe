@@ -536,7 +536,7 @@ public class Table implements IBoard {
     }
 
     @Override
-    public boolean drawPossible() {
+    public boolean noMovesIsDraw() {
         // For this game, this method does not apply, since there will always be moves available
         return false;
     }

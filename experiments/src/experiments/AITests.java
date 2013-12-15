@@ -63,17 +63,12 @@ public class AITests {
         // AI 1
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = false;
-        options1.swUCT = true;
-        options1.fixedSimulations = true;
-        options1.simulations = 10000;
         options1.setGame(game);
         aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
         // AI 2
         MCTSOptions options2 = new MCTSOptions();
         options2.debug = false;
-        options2.fixedSimulations = true;
-        options2.simulations = 10000;
         options2.setGame(game);
         aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
@@ -81,28 +76,28 @@ public class AITests {
         // Run one of the defined experiments
         if (which == 1) {
             //
-            double[] values = {2.};
+            double[] values = {.6};
             for (double i : values) {
-                options1.switches = i;
-                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
+                options1.uctC = i;
+                runGames("AI 1 UCTC = " + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
-            double[] values = {4.};
+            double[] values = {.8};
             for (double i : values) {
-                options1.switches = i;
-                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
+                options1.uctC = i;
+                runGames("AI 1 UCTC = " + i + " || AI 2 MCTS");
             }
         } else if (which == 3) {
-            double[] values = {5.};
+            double[] values = {1.1};
             for (double i : values) {
-                options1.switches = i;
-                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
+                options1.uctC = i;
+                runGames("AI 1 UCTC = " + i + " || AI 2 MCTS");
             }
         } else if (which == 4) {
-            double[] values = {6.};
+            double[] values = {1.2};
             for (double i : values) {
-                options1.switches = i;
-                runGames("AI 1 swUCT Wc = " + i + " || AI 2 MCTS");
+                options1.uctC = i;
+                runGames("AI 1 UCTC = " + i + " || AI 2 MCTS");
             }
         }
     }
@@ -155,30 +150,26 @@ public class AITests {
     }
 
     private IBoard getBoard() {
-        Class<?> clss = null;
-        try {
-            if (game.equals("cannon"))
-                clss = Class.forName("cannon.game.Board");
-            else if (game.equals("chinesecheckers"))
-                clss = Class.forName("chinesecheckers.game.Board");
-            else if (game.equals("lostcities"))
-                clss = Class.forName("lostcities.game.Table");
-            else if (game.equals("pentalath"))
-                clss = Class.forName("pentalath.game.Board");
-            else if (game.equals("amazons"))
-                clss = Class.forName("amazons.game.Board");
-            else if (game.equals("breakthrough"))
-                clss = Class.forName("breakthrough.game.Board");
+        IBoard board = null;
 
-            // Instantiate the board for the chosen game and GO
-            if (clss != null)
-                return (IBoard) clss.newInstance();
-            else
-                return null;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+        if (game.equals("amazons")) {
+            board = new amazons.game.Board();
+        } else if (game.equals("breakthrough")) {
+            board = new breakthrough.game.Board();
+        } else if (game.equals("cannon")) {
+            board = new cannon.game.Board();
+        } else if (game.equals("chinesecheckers")) {
+            board = new chinesecheckers.game.Board();
+        } else if (game.equals("lostcities")) {
+            board = new lostcities.game.Table();
+        } else if (game.equals("pentalath")) {
+            board = new pentalath.game.Board();
+        }else if(game.equals("checkers")) {
+            board = new checkers.game.Board();
+        } else {
+            throw new RuntimeException("Unrecognized game: " + game);
         }
+        return board;
     }
 
     public void runGame() {
