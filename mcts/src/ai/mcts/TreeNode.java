@@ -437,10 +437,10 @@ public class TreeNode {
                 int w = winner - 1;
                 // Relative bonus applied
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    double x = moveStats[w].mean() - (nMoves + depth);
+                    double x = moveStats[0].mean() - (nMoves + depth);
                     //
-                    if (moveStats[w].variance() > 0) {
-                        x /= moveStats[w].stddev();
+                    if (moveStats[0].variance() > 0) {
+                        x /= moveStats[0].stddev();
                         score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                     }
                 }
@@ -463,14 +463,9 @@ public class TreeNode {
 //                } else {
 //                    covariance.push(-1., -q);
 //                }
-
-                // Maintain the average number of moves per play-out
-                moveStats[w].push(nMoves + depth);
-            } else {
-                // Update both averages in case of a draw
-                moveStats[0].push(nMoves + depth);
-                moveStats[1].push(nMoves + depth);
             }
+            // Maintain the average number of moves per play-out
+            moveStats[0].push(nMoves + depth);
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
