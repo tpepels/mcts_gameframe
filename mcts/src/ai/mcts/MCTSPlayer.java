@@ -65,6 +65,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
+        TreeNode.covariance.reset();
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -170,6 +171,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
             }
+            System.out.printf("Correlation: %f\n", TreeNode.covariance.getCorrelation());
         }
         // Set the root to the best child, so in the next move
         // the opponent's move can become the new root

@@ -1,5 +1,6 @@
 package ai.mcts;
 
+import ai.Covariance;
 import ai.FastLog;
 import ai.StatCounter;
 import ai.framework.IBoard;
@@ -16,6 +17,7 @@ public class TreeNode {
     private static final FastLog l = new FastLog();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
+    public static Covariance covariance = new Covariance(100000);
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -312,31 +314,21 @@ public class TreeNode {
             return MCTSOptions.r.nextInt(moves.size());
         }
 
-        /*
-        // this is needed in cannon; can't operate on the state directly it seems 
-        // don't know exactly why but I think it's because the "doAIMove" and "undoMove" below 
-        // might change a the (static?) list of moves .. ?
-        // Problem is, it's super slow :(
-        IBoard bcopy = board.copy(); 
-        */
         List<IMove> myMoves = new ArrayList<IMove>();
         myMoves.addAll(moves);
-
-        IBoard bcopy = board;
-        //List<IMove> myMoves = moves;
 
         ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
         double bestValue = -INF - 1;
 
         for (int i = 0; i < myMoves.size(); i++) {
             IMove move = myMoves.get(i);
-            boolean success = bcopy.doAIMove(move, currentPlayer);
+            boolean success = board.doAIMove(move, currentPlayer);
 
             if (!success)
                 continue;
 
-            double eval = bcopy.evaluate(currentPlayer);
-            bcopy.undoMove();
+            double eval = board.evaluate(currentPlayer);
+            board.undoMove();
 
             if (eval > bestValue + tolerance) {
                 // a clearly better move
@@ -356,6 +348,7 @@ public class TreeNode {
         return bestMoveIndices.get(idx);
     }
 
+    @SuppressWarnings("ConstantConditions")
     private double playOut(IBoard board, int depth) {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), moveIndex = -1;
@@ -442,33 +435,42 @@ public class TreeNode {
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
-                double x = 0;
+                // Relative bonus applied
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    x = moveStats[0].mean() - (nMoves + depth);
-                    if (moveStats[0].variance() > 0) {
-                        x /= moveStats[0].stddev();
+                    double x = moveStats[w].mean() - (nMoves + depth);
+                    //
+                    if (moveStats[w].variance() > 0) {
+                        x /= moveStats[w].stddev();
+                        score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                     }
-                    score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                 }
                 // Alter the score using the quality bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
                     double qb = q - qualityStats[w].mean();
+                    //
                     if (qualityStats[w].variance() > 0) {
                         qb /= qualityStats[w].stddev();
+                        score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * qb)) - .25));
                     }
-                    x += qb;
                     qualityStats[w].push(q);
-                    score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                 }
-//                if (options.relativeBonus || options.qualityBonus)
-//                    score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
 
-                // Keep track of the average number of moves per play-out
+                // Keep track of the covariance between certain values
+//                if(winner == IBoard.P1_WIN) {
+//                    covariance.push(1., q);
+//                } else {
+//                    covariance.push(-1., -q);
+//                }
+
+                // Maintain the average number of moves per play-out
+                moveStats[w].push(nMoves + depth);
+            } else {
+                // Update both averages in case of a draw
                 moveStats[0].push(nMoves + depth);
+                moveStats[1].push(nMoves + depth);
             }
-
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 

@@ -12,8 +12,6 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.swUCT = true;
-        options1.fixedSimulations = true;
 //        options1.swUCT = true;
 //        options1.pdepth = 0;
 //        options1.earlyEval = true;
@@ -24,7 +22,6 @@ public class Game {
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.fixedSimulations = true;
 //        options2.mapping = true;
 //        options2.relativeBonus = true;
 //        options2.pdepth = 0;
