@@ -64,6 +64,7 @@ public class AITests {
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = false;
         options1.MAST = true;
+        options1.TO_MAST = true;
         options1.setGame(game);
         aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);

@@ -38,7 +38,7 @@ public class MCTSOptions {
     public boolean progBias = false;
     public double progBiasWeight = 0.0;
     // MAST stuff
-    public boolean MAST = false;
+    public boolean MAST = false, TO_MAST = false;
     public double mastEps = 0.8;
     //
     public boolean multiplier = false;

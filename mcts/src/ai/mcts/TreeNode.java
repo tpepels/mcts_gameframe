@@ -101,9 +101,9 @@ public class TreeNode {
                 // The next child
                 result = -child.MCTS(board, depth + 1);
             }
-            // Update the mastEnabled value for the move
+            // Update the mastEnabled value for the move, use original value, not the altered reward
             if (options.MAST)
-                options.updateMast(player, child.getMove().getUniqueId(), -result); // It's the child's reward that counts, hence -result
+                options.updateMast(player, child.getMove().getUniqueId(), -Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
         } else {
@@ -402,7 +402,7 @@ public class TreeNode {
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
-                    if (options.MAST)
+                    if (options.MAST && !options.TO_MAST)
                         movesMade.push(currentMove);
                     nMoves++;
                     moveMade = true;
@@ -429,7 +429,7 @@ public class TreeNode {
             else score = -1;
 
             // Update the mast values for the moves made during playout
-            if (options.MAST) {
+            if (options.MAST && !options.TO_MAST) {
                 double value;
                 while (!movesMade.empty()) {
                     currentMove = movesMade.pop();
