@@ -63,8 +63,7 @@ public class AITests {
         // AI 1
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = false;
-        options1.MAST = true;
-        options1.TO_MAST = true;
+        options1.relativeBonus = true;
         options1.setGame(game);
         aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
@@ -78,28 +77,28 @@ public class AITests {
         // Run one of the defined experiments
         if (which == 1) {
             //
-            double[] values = {.3, .1};
+            double[] values = {2.};
             for (double i : values) {
-                options1.mastEps = i;
-                runGames("AI 1 MAST eps = " + i + " || AI 2 MCTS");
+                options1.k = i;
+                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 2) {
-            double[] values = {.5, .4};
+            double[] values = {1.};
             for (double i : values) {
-                options1.mastEps = i;
-                runGames("AI 1 MAST eps = " + i + " || AI 2 MCTS");
+                options1.k = i;
+                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 3) {
-            double[] values = {.7, .6};
+            double[] values = {0.5};
             for (double i : values) {
-                options1.mastEps = i;
-                runGames("AI 1 MAST eps = " + i + " || AI 2 MCTS");
+                options1.k = i;
+                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
             }
         } else if (which == 4) {
-            double[] values = {.9, .8};
+            double[] values = {2.};
             for (double i : values) {
-                options1.mastEps = i;
-                runGames("AI 1 MAST eps = " + i + " || AI 2 MCTS");
+                options1.k = i;
+                runGames("AI 1 RB k = " + i + " || AI 2 MCTS");
             }
         }
     }
