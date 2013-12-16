@@ -27,8 +27,8 @@ public class TreeNode {
     private IMove move;
     private double velocity = 1.;
     private double imVal = 0.; // implicit minimax value (in view of parent)
-    private double imAlpha = -INF-1; // implicit lower bound (in view of me)
-    private double imBeta = +INF+1;  // implicit upper bound (in view of me)
+    private double imAlpha = -INF - 1; // implicit lower bound (in view of me)
+    private double imBeta = +INF + 1;  // implicit upper bound (in view of me)
     private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
 
     /**
@@ -102,7 +102,7 @@ public class TreeNode {
                 result = -child.MCTS(board, depth + 1);
             }
             // Update the mastEnabled value for the move, use original value, not the altered reward
-            if (options.MAST)
+            if (options.useHeuristics && options.MAST)
                 options.updateMast(player, child.getMove().getUniqueId(), -Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
@@ -171,7 +171,7 @@ public class TreeNode {
         }
 
         int winner;
-        double value, best_imVal = -INF; 
+        double value, best_imVal = -INF;
 
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
@@ -200,8 +200,8 @@ public class TreeNode {
                 // implicit minimax
                 if (options.implicitMM) {
                     child.imVal = board.evaluate(player); // view of parent
-                    child.imAlpha = -INF-1;
-                    child.imBeta = +INF+1;
+                    child.imAlpha = -INF - 1;
+                    child.imBeta = +INF + 1;
                 }
                 // prog. bias
                 if (options.progBias) {
@@ -220,8 +220,8 @@ public class TreeNode {
         // implicit minimax
         if (options.implicitMM) {
             this.imVal = -best_imVal;
-            this.imAlpha = -INF-1;
-            this.imBeta = +INF+1;
+            this.imAlpha = -INF - 1;
+            this.imBeta = +INF + 1;
         }
         // prog. bias
         if (options.progBias) this.heval = -board.evaluate(player);
@@ -252,12 +252,12 @@ public class TreeNode {
                     avgValue *= (1. - Math.pow(options.depthD, depth));
                 // Implicit minimax
                 if (options.implicitMM) {
-                    avgValue += (options.imAlpha*c.imVal);
+                    avgValue += (options.imAlpha * c.imVal);
                     // pruning: if the child tree is wasteful (according to the bound info), add a large negative value
-                    if (options.imPruning && c.imAlpha >= (c.imBeta-0.000001)) { 
+                    if (options.imPruning && c.imAlpha >= (c.imBeta - 0.000001)) {
                         //double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 
                         //double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 
-                        double penalty = MCTSOptions.r.nextDouble()*(-0.5); 
+                        double penalty = MCTSOptions.r.nextDouble() * (-0.5);
                         avgValue += penalty;
                     }
                 }
@@ -384,7 +384,7 @@ public class TreeNode {
                 if (options.epsGreedyEval) {
                     // If epsilon greedy playouts, choose the highest eval
                     moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
-                } else if (options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
+                } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
                     mastMax = Double.NEGATIVE_INFINITY;
                     // Select the move with the highest MAST value
                     for (int i = 0; i < moves.size(); i++) {
@@ -402,7 +402,7 @@ public class TreeNode {
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
-                    if (options.MAST && !options.TO_MAST)
+                    if (options.useHeuristics && options.MAST && !options.TO_MAST)
                         movesMade.push(currentMove);
                     nMoves++;
                     moveMade = true;
@@ -429,7 +429,7 @@ public class TreeNode {
             else score = -1;
 
             // Update the mast values for the moves made during playout
-            if (options.MAST && !options.TO_MAST) {
+            if (options.useHeuristics && options.MAST && !options.TO_MAST) {
                 double value;
                 while (!movesMade.empty()) {
                     currentMove = movesMade.pop();
@@ -444,9 +444,9 @@ public class TreeNode {
                 int w = winner - 1;
                 double x = 0;
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    x = moveStats[w].mean() - (nMoves + depth);
-                    if (moveStats[w].variance() > 0) {
-                        x /= moveStats[w].stddev();
+                    x = moveStats[0].mean() - (nMoves + depth);
+                    if (moveStats[0].variance() > 0) {
+                        x /= moveStats[0].stddev();
                     }
                     score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                 }
@@ -466,7 +466,7 @@ public class TreeNode {
 //                    score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
 
                 // Keep track of the average number of moves per play-out
-                moveStats[w].push(nMoves + depth);
+                moveStats[0].push(nMoves + depth);
             }
 
         } else if (options.earlyEval && terminateEarly) {
@@ -540,14 +540,14 @@ public class TreeNode {
 
         // implicit minimax backups
         if (options.implicitMM && children != null) {
-            double bestAlpha = -INF-1;
-            double bestBeta = -INF-1; 
-            double bestVal = -INF-1;
+            double bestAlpha = -INF - 1;
+            double bestBeta = -INF - 1;
+            double bestVal = -INF - 1;
 
             for (TreeNode c : children) {
                 if (c.imVal > bestVal) bestVal = c.imVal;
-                if ((-c.imBeta) > bestAlpha) bestAlpha = (-c.imBeta); 
-                if ((-c.imAlpha) > bestBeta) bestBeta = (-c.imAlpha); 
+                if ((-c.imBeta) > bestAlpha) bestAlpha = (-c.imBeta);
+                if ((-c.imAlpha) > bestBeta) bestBeta = (-c.imAlpha);
             }
 
             this.imVal = -bestVal;       // view of parent

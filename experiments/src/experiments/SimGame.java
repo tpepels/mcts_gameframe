@@ -229,7 +229,7 @@ public class SimGame {
 
         while (board.checkWin() == IBoard.NONE_WIN) {
             int player = board.getPlayerToMove();
-            System.out.println(board.toString());
+            // System.out.println(board.toString());
 
             AIPlayer aiPlayer = (board.getPlayerToMove() == 1 ? player1 : player2);
             System.gc();
