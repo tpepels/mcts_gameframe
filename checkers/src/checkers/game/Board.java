@@ -403,18 +403,6 @@ public class Board implements IBoard {
         return newBoard;
     }
 
-    public int getPieceCount() {
-        return nPieces1 + nPieces2;
-    }
-
-    public int getCurrentPlayerPieceCount() {
-        return (currentPlayer == P1) ? nPieces1 : nPieces2;
-    }
-
-    public int getKingCount() {
-        return nKings1 + nKings2;
-    }
-
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 8; i++) {

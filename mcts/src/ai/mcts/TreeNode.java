@@ -397,8 +397,11 @@ public class TreeNode {
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
+
+                    // Keep track of moves made for MAST
                     if (options.useHeuristics && options.MAST && !options.TO_MAST)
                         movesMade.push(currentMove);
+
                     nMoves++;
                     moveMade = true;
                     winner = board.checkPlayoutWin();
@@ -440,12 +443,13 @@ public class TreeNode {
                 int w = winner - 1;
                 // Relative bonus
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-
                     double x = moveStats[w].mean() - (nMoves + depth);
                     if (moveStats[w].variance() > 0) {
                         x /= moveStats[w].stddev();
                         score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                     }
+                    // Maintain the average number of moves per play-out
+                    moveStats[w].push(nMoves + depth);
                 }
                 // Qualitative bonus
                 if (options.qualityBonus) {
@@ -458,9 +462,7 @@ public class TreeNode {
                     }
                     qualityStats[w].push(q);
                 }
-                // Maintain the average number of moves per play-out
-                moveStats[w].push(nMoves + depth);
-            } else {
+            } else if (options.relativeBonus && winner == IBoard.DRAW) {
                 // In case of a draw, update for both players
                 moveStats[0].push(nMoves + depth);
                 moveStats[1].push(nMoves + depth);
@@ -488,7 +490,7 @@ public class TreeNode {
             // (AUCT) Skip virtual children
             if (options.auct && t.isVirtual())
                 continue;
-            // If the game is partial observable, moves in the tree may not be legal
+            // If the game is partial observable, moves in the tree may not be illegal
             if (board.isPartialObservable() && !board.isLegal(t.getMove()))
                 continue;
             // For partial observable games, use the visit count, not the values.
