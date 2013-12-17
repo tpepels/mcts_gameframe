@@ -13,5 +13,5 @@ public interface AIPlayer {
     public void setOptions(MCTSOptions options);
 
     public IMove getBestMove();
-
 }
+

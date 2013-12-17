@@ -33,6 +33,8 @@ public class SimGame {
     private AIPlayer player2;
     private int timeLimit;
     private long seed;
+    private boolean printBoard; 
+    private boolean mctsDebug;
 
     SimGame() {
         game = "none specified";
@@ -41,6 +43,8 @@ public class SimGame {
         player1 = null;
         player2 = null;
         timeLimit = 1000;
+        printBoard = false;
+        mctsDebug = false; 
 
         seed = System.currentTimeMillis();
     }
@@ -68,7 +72,11 @@ public class SimGame {
             } else if (args[i].equals("--seed")) {
                 i++;
                 seed = Long.parseLong(args[i]);
-            }
+            } else if (args[i].equals("--printboard")) { 
+                printBoard = true; 
+            } else if (args[i].equals("--mctsdebug")) { 
+                mctsDebug = true; 
+            } 
         }
     }
 
@@ -107,7 +115,7 @@ public class SimGame {
         if (parts[0].equals("mcts")) {
             playerRef = new MCTSPlayer();
             MCTSOptions options = new MCTSOptions();
-            options.debug = false;
+            options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
@@ -229,7 +237,9 @@ public class SimGame {
 
         while (board.checkWin() == IBoard.NONE_WIN) {
             int player = board.getPlayerToMove();
-            // System.out.println(board.toString());
+
+            if (printBoard)
+                System.out.println(board.toString());
 
             AIPlayer aiPlayer = (board.getPlayerToMove() == 1 ? player1 : player2);
             System.gc();
