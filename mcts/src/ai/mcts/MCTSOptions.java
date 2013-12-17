@@ -16,12 +16,13 @@ public class MCTSOptions {
     public double switches = 4.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
+    public double k = 2.0;
     // note: useHeuristics uses a different default (false) when using SimGame
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
     public boolean ucbTuned = false, auct = false;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
     // MCTS Specific values
-    public double uctC = 1., k = 2.0, maxVar = 1.;
+    public double uctC = 1., maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
     public int timeInterval = 1000, simulations = 10000, simsLeft = 10000;

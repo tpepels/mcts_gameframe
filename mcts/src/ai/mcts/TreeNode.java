@@ -17,7 +17,7 @@ public class TreeNode {
     private static final FastLog l = new FastLog();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static Covariance covariance = new Covariance(100000);
+    // public static Covariance covariance = new Covariance();
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -103,9 +103,9 @@ public class TreeNode {
                 // The next child
                 result = -child.MCTS(board, depth + 1);
             }
-            // Update the mastEnabled value for the move, use original value, not the altered reward
+            // Update the MAST value for the move, use original value not the altered reward (signum)
             if (options.useHeuristics && options.MAST)
-                options.updateMast(player, child.getMove().getUniqueId(), -Math.signum(result)); // It's the child's reward that counts, hence -result
+                options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
         } else {
@@ -359,8 +359,10 @@ public class TreeNode {
         IMove currentMove;
         boolean terminateEarly = false;
         while (!gameEnded && !terminateEarly) {
+
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
+
             while (!moveMade) {
                 // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
@@ -375,7 +377,7 @@ public class TreeNode {
 
                 // Select a move from the available ones
                 if (options.epsGreedyEval) {
-                    // If epsilon greedy playouts, choose the highest eval
+                    // If epsilon greedy play-outs, choose the highest eval
                     moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
                 } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
                     mastMax = Double.NEGATIVE_INFINITY;
@@ -417,6 +419,7 @@ public class TreeNode {
 
         double score;
         if (gameEnded) {
+
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
@@ -435,37 +438,33 @@ public class TreeNode {
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
-                // Relative bonus applied
+                // Relative bonus
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    double x = moveStats[0].mean() - (nMoves + depth);
-                    //
-                    if (moveStats[0].variance() > 0) {
-                        x /= moveStats[0].stddev();
+
+                    double x = moveStats[w].mean() - (nMoves + depth);
+                    if (moveStats[w].variance() > 0) {
+                        x /= moveStats[w].stddev();
                         score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
                     }
                 }
-                // Alter the score using the quality bonus
+                // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
                     double qb = q - qualityStats[w].mean();
-                    //
                     if (qualityStats[w].variance() > 0) {
                         qb /= qualityStats[w].stddev();
                         score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * qb)) - .25));
                     }
                     qualityStats[w].push(q);
                 }
-
-                // Keep track of the covariance between certain values
-//                if(winner == IBoard.P1_WIN) {
-//                    covariance.push(1., q);
-//                } else {
-//                    covariance.push(-1., -q);
-//                }
+                // Maintain the average number of moves per play-out
+                moveStats[w].push(nMoves + depth);
+            } else {
+                // In case of a draw, update for both players
+                moveStats[0].push(nMoves + depth);
+                moveStats[1].push(nMoves + depth);
             }
-            // Maintain the average number of moves per play-out
-            moveStats[0].push(nMoves + depth);
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 

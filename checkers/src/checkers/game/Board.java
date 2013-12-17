@@ -76,16 +76,23 @@ public class Board implements IBoard {
     }
 
     private boolean canPlayerMakeMove(int player) {
-        int piece, opp = getOpponent(player);
+        int piece, opp = getOpponent(player), seen = 0;
+        int maxSeen = (player == P1) ? nPieces1 : nPieces2;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
                 piece = board[i][j];
                 if (piece == player || piece == (10 * player)) {
                     if (canPieceMakeMove(j, i, player, opp, piece == (10 * player)))
                         return true;
+                    seen++;
+                    if (seen == maxSeen)
+                        break;
                 }
+                if (seen == maxSeen)
+                    break;
             }
         }
+
         return false;
     }
 
@@ -116,7 +123,8 @@ public class Board implements IBoard {
     public MoveList getExpandMoves() {
         jumpMoves.clear();
         slideMoves.clear();
-        int piece, opp = getOpponent(currentPlayer);
+        int piece, opp = getOpponent(currentPlayer), seen = 0;
+        int maxSeen = (currentPlayer == P1) ? nPieces1 : nPieces2;
         boolean captureFound = false;
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board.length; j++) {
@@ -127,7 +135,12 @@ public class Board implements IBoard {
                     if (generateMovesForPiece(j, i, j, i, currentPlayer, 0, piece == (10 * currentPlayer), captureFound, opp)) {
                         captureFound = true;
                     }
+                    seen++;
+                    if (seen == maxSeen)
+                        break;
                 }
+                if (seen == maxSeen)
+                    break;
             }
         }
         //
@@ -264,8 +277,8 @@ public class Board implements IBoard {
                 winner = DRAW;
         }
         // Tournament rule: 25 consecutive king moves without capture = draw
-        if(winner == NONE_WIN) {
-            if(kingMoves >= 25) {
+        if (winner == NONE_WIN) {
+            if (kingMoves >= 25) {
                 winner = DRAW;
             }
         }
@@ -388,6 +401,18 @@ public class Board implements IBoard {
         newBoard.kingMoves = kingMoves;
 
         return newBoard;
+    }
+
+    public int getPieceCount() {
+        return nPieces1 + nPieces2;
+    }
+
+    public int getCurrentPlayerPieceCount() {
+        return (currentPlayer == P1) ? nPieces1 : nPieces2;
+    }
+
+    public int getKingCount() {
+        return nKings1 + nKings2;
     }
 
     public String toString() {
