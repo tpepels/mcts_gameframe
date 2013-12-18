@@ -18,7 +18,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
     private static final long serialVersionUID = 1L;
     private final JFrame frame;
     private MoveList moves;
-    private int squareSize = 40, boardX = -1, boardY = -1, clickNum = 0;
+    private int squareSize = 40, boardCol = -1, boardRow = -1, clickNum = 0;
     private int[] clickPos = {-1, -1, -1};
     //
     private Board board;
@@ -41,18 +41,25 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         this.addMouseMotionListener(this);
         // Moves need to be generated
         moves = board.getExpandMoves();
+        //System.out.println(moves.toArray());
+        for (int i = 0; i < moves.size(); i++) 
+            System.out.println(moves.get(i));
         // Definition for player 1
-        aiPlayer1 = new MCTSPlayer();
-        MCTSOptions options1 = new MCTSOptions();
-        options1.setGame("checkers");
-        aiPlayer1.setOptions(options1);
+       
+        aiPlayer1 = null;
+        MCTSOptions options1 = null;
+        //aiPlayer1 = new MCTSPlayer();
+        //MCTSOptions options1 = new MCTSOptions();
+        //options1.setGame("breakthrough");
+        //aiPlayer1.setOptions(options1);
+
         // Definition for player 2
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
-        options2.setGame("checkers");
+        options2.setGame("breakthrough");
         aiPlayer2.setOptions(options2);
         //
-        aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
+        //aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
     }
 
     public void paint(Graphics g) {
@@ -75,7 +82,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
                     g.setColor(Color.decode("#BDFF60"));
                 } else if (boardPos == clickPos[2]) {
                     g.setColor(Color.decode("#FF4762"));
-                } else if (col == boardX && row == boardY) {
+                } else if (col == boardCol && row == boardRow) {
                     g.setColor(Color.GRAY);
                 } else if ((row % 2) == (col % 2)) {
                     g.setColor(Color.decode("#8B4500"));
@@ -110,11 +117,11 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
 
     public boolean isAvailMove(int frow, int fcol, int row, int col) {
         for (int i = 0; i < moves.size(); i++) {
-            if (moves.get(i).getMove()[0] == fcol &&
-                    moves.get(i).getMove()[1] == frow &&
-                    moves.get(i).getMove()[2] == col &&
-                    moves.get(i).getMove()[3] == row) {
-                // System.out.println("from : " + fcol + " " + frow + " to: " + col + " " + row);
+            //System.out.println("from : " + fcol + " " + frow + " to: " + col + " " + row);
+            if (moves.get(i).getMove()[0] == frow &&
+                    moves.get(i).getMove()[1] == fcol &&
+                    moves.get(i).getMove()[2] == row &&
+                    moves.get(i).getMove()[3] == col) {
                 return true;
             }
         }
@@ -123,10 +130,10 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
 
     public Move getMove(int frow, int fcol, int row, int col) {
         for (int i = 0; i < moves.size(); i++) {
-            if (moves.get(i).getMove()[0] == fcol &&
-                    moves.get(i).getMove()[1] == frow &&
-                    moves.get(i).getMove()[2] == col &&
-                    moves.get(i).getMove()[3] == row) {
+            if (moves.get(i).getMove()[0] == frow &&
+                    moves.get(i).getMove()[1] == fcol &&
+                    moves.get(i).getMove()[2] == row &&
+                    moves.get(i).getMove()[3] == col) {
                 // System.out.println("from : " + fcol + " " + frow + " to: " + col + " " + row);
                 return (Move) moves.get(i);
             }
@@ -141,8 +148,8 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
 
     @Override
     public void mouseMoved(MouseEvent arg0) {
-        boardX = arg0.getX() / squareSize;
-        boardY = arg0.getY() / squareSize;
+        boardCol = arg0.getX() / squareSize;
+        boardRow = arg0.getY() / squareSize;
         repaint();
     }
 
@@ -161,24 +168,40 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
             board = new Board();
             board.initialize();
         }
-        //
-        int boardPos = boardY * 8 + boardX;
+        // clickPos[0] / 8  is the old row
+        // clickPos[0] % 8  is the old col
+        // boardRow; the row we're going to, set in mouseover
+        // boardCol; the col we're going to, set in mouseover
+        int boardPos = boardRow * 8 + boardCol;
+        System.out.println("clicked " + boardRow + " " + boardCol);
+        char playerToMoveChar = board.getPlayerToMove() == 1 ? 'w' : 'b'; 
         if (clickNum == 0) {
-            if (board.board[boardY][boardX] != board.getPlayerToMove() && board.board[boardY][boardX] / 10 != board.getPlayerToMove()) {
+            if (board.board[boardRow][boardCol] != playerToMoveChar) {
+                System.out.println("fail 1");
                 return;
             }
         } else if (clickNum == 1) {
-            if (board.board[boardY][boardX] != '.' || !isAvailMove(clickPos[0] / 8, clickPos[0] % 8, boardY, boardX)) {
+            if (board.board[boardRow][boardCol] != '.' || !isAvailMove(clickPos[0] / 8, clickPos[0] % 8, boardRow, boardCol)) {
+                System.out.println(board.board[boardRow][boardCol] + " " + (clickPos[0] / 8) + " " + (clickPos[0] % 8));
+                System.out.println("fail 2: " + (clickPos[0] / 8) + " " + (clickPos[0] % 8) + " " + boardRow + " " + boardCol);
                 clickNum--;
                 return;
             }
         }
+        System.out.println("clicked here");
         //
         clickPos[clickNum] = boardPos;
         clickNum++;
         if (clickNum == 2) {
+            System.out.println("Executing move!!!");
             lastMove = getMove(clickPos[0] / 8, clickPos[0] % 8, clickPos[1] / 8, clickPos[1] % 8);
-            board.doAIMove(lastMove, board.getPlayerToMove());
+
+            clickNum = 0;
+            clickPos = new int[]{-1, -1, -1};
+            
+            makeMove(lastMove); 
+
+            /*board.doAIMove(lastMove, board.getPlayerToMove());
             //
             if (board.getPlayerToMove() == Board.P2) {
                 frame.setTitle("Breakthrough - Black's move.");
@@ -188,7 +211,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
             moves = board.getExpandMoves();
             repaint();
             clickNum = 0;
-            clickPos = new int[]{-1, -1, -1};
+            clickPos = new int[]{-1, -1, -1};*/
         }
     }
 
@@ -199,8 +222,8 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
 
     @Override
     public void mouseExited(MouseEvent arg0) {
-        boardX = -1;
-        boardY = -1;
+        boardCol = -1;
+        boardRow = -1;
     }
 
     @Override
@@ -233,16 +256,20 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         repaint();
         clickNum = 0;
         clickPos = new int[]{-1, -1, -1};
+        moves = board.getExpandMoves();
+
         // Run the GC in between moves, to limit the runs during search
         System.gc();
         //
         if (board.getPlayerToMove() == Board.P2) {
-            aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
-            //aiPlayer2.getMove(board, this, Board.P2, true, lastMove);
             frame.setTitle("Breakthrough - Black's move");
+            if (aiPlayer2 != null)
+                aiPlayer2.getMove(board.copy(), this, Board.P2, true, lastMove);
+            //aiPlayer2.getMove(board, this, Board.P2, true, lastMove);
         } else {
             frame.setTitle("Breakthrough - White's move");
-            aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
+            if (aiPlayer1 != null)
+                aiPlayer1.getMove(board.copy(), this, Board.P1, true, lastMove);
             //aiPlayer1.getMove(board, this, Board.P1, true, lastMove);
         }
     }
