@@ -161,8 +161,6 @@ public class SimGame {
                         options.switches = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("sl")) {
                     options.fixedSimulations = true;
-                } else if (tag.startsWith("mp")) {
-                    options.multiplier = true;
                 } else if (tag.startsWith("pb")) {
                     options.progBias = true;
                     if (tryParseDouble(tag.substring(2)))
