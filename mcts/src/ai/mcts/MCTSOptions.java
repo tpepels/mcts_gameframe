@@ -42,7 +42,6 @@ public class MCTSOptions {
     public boolean MAST = false, TO_MAST = false; // Turning off heuristics also disables MAST
     public double mastEps = 0.8;
     //
-    public boolean multiplier = false;
     private int instance = 0;
     private double[][] mastValues, mastVisits;
 
@@ -64,22 +63,28 @@ public class MCTSOptions {
     public void setGame(String game) {
         if (game.equals("cannon")) {
             uctC = .8;
+            k = 2.2;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
+            k = 1.4;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
+            k = 1.4;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
+            k = 1.4;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
+            k = 2.2;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
+            k = 0.4;
         }
         resetSimulations(game);
     }
