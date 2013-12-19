@@ -21,7 +21,7 @@ public class Board implements IBoard {
     private List<IMove> simMoves = new ArrayList<IMove>(500), mateMoves = new ArrayList<IMove>(100);
     private final int[] capture = {-1, -11, -10, -9, 1};
     private final int[] move = {-11, -10, -9};
-    private final int[] retreat = {22, 20, 18}, retrCheck = {-11, -1, +1, -10, +10, -9, +1, +11};
+    private final int[] retreat = {22, 20, 18}, retrCheck = {-11, -10, -9, -1, 1, 9, 10, 11};
     private final int[] n = {-1, 0, 1};
     // Whether the towns have been placed or not determines the first moves
     public boolean whiteTownPlaced = false, blackTownPlaced = false;
@@ -85,7 +85,7 @@ public class Board implements IBoard {
             int from = move.getMove()[0], to = move.getMove()[1];
             // Town was previously placed, move a soldier
             if (board[from] == mySoldier) {
-                if (move.getType() == Move.MOVE || move.getType() == Move.RETREAT) {
+                if (move.getType() == Move.MOVE || move.getType() == Move.RETREAT || move.getType() == Move.C_MOVE) {
                     board[from] = EMPTY;
                     board[to] = mySoldier;
                     moveMade = true;
@@ -315,9 +315,9 @@ public class Board implements IBoard {
         start = 0;
         end = retrCheck.length;
         if (from % WIDTH == 0) {
-            start += 3;
+            start += 4;
         } else if (from % WIDTH == 9) {
-            end -= 3;
+            end -= 4;
         }
         for (int i = start; i < end; i++) {
             if (from + retrCheck[i] >= 0 && from + retrCheck[i] < board.length) {
@@ -392,7 +392,7 @@ public class Board implements IBoard {
                         // Movement is possible if the square is empty
                         if (board[nextPos] == EMPTY) {
                             // System.out.println("move cannon " + nextPos);
-                            testMove = new Move(Move.MOVE, new int[]{from, nextPos});
+                            testMove = new Move(Move.C_MOVE, new int[]{from, nextPos});
                             doMove(testMove, false);
                             if (!checkMates(colour)) // Check if this move results in a mate for my town
                                 moves.add(testMove);
@@ -510,42 +510,35 @@ public class Board implements IBoard {
 
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
+        // Make sure the moves for the correct player are generated
         if (allMovesForPlayer != currentPlayer) {
-            //
             getAllMovesForPlayer(currentPlayer, true);
         }
-        // Favour capturing and shooting :)
         simMoves.clear();
-        if (mateMoves.isEmpty()) {
+        // Play mate-moves whenever you can
+        if (heuristics && mateMoves.isEmpty()) {
             IMove move;
             for (int i = 0; i < moves.size(); i++) {
                 move = moves.get(i);
                 // Heuristic: capture and fire whenever possible
-                if (heuristics) {
-                    if (move.getType() == Move.CAPTURE) {
+                if (move.getType() == Move.CAPTURE) {
+                    for (int k = 0; k < 6; k++)
                         simMoves.add(move);
-                    } else if (move.getType() == Move.FIRE) {
+                } else if (move.getType() == Move.FIRE) {
+                    for (int k = 0; k < 12; k++)
                         simMoves.add(move);
+                } else if (move.getType() == Move.C_MOVE) {
+                    for (int k = 0; k < 3; k++)
                         simMoves.add(move);
-                        simMoves.add(move);
-                        simMoves.add(move);
-                    }
-                }
-//                else if (heuristics && move.getType() != Move.RETREAT) {
-//                    simMoves.add(move);
-//                }
-                else {
+                } else if (move.getType() == Move.MOVE) {
                     simMoves.add(move);
                 }
             }
-        } else {
-            // Play mate-moves whenever you can
-            //simMoves.resize(simMoves.size()); 
+        } else if (heuristics) {
             simMoves = new ArrayList<IMove>(mateMoves);
-            //Collections.copy(simMoves, mateMoves);
         }
-
-        if (simMoves.size() > 1)
+        // If no heuristic moves were found, return all the moves
+        if (!simMoves.isEmpty())
             return simMoves;
         else // This will not happen very often
             return Arrays.asList(moves.getArrayCopy());
@@ -571,6 +564,10 @@ public class Board implements IBoard {
                     }
                     break;
                 case (Move.MOVE):
+                    board[move.getMove()[0]] = soldier;
+                    board[move.getMove()[1]] = EMPTY;
+                    break;
+                case (Move.C_MOVE):
                     board[move.getMove()[0]] = soldier;
                     board[move.getMove()[1]] = EMPTY;
                     break;

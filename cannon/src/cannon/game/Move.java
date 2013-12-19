@@ -4,7 +4,7 @@ import ai.framework.IMove;
 
 public class Move implements IMove {
 
-    public static final int MOVE = 1, CAPTURE = 2, FIRE = 3, RETREAT = 4, CASTLE = 5;
+    public static final int MOVE = 1, CAPTURE = 2, FIRE = 3, RETREAT = 4, CASTLE = 5, C_MOVE = 6;
 
     private int[] move = new int[2];
     private int type;
@@ -52,6 +52,9 @@ public class Move implements IMove {
                 break;
             case CASTLE:
                 typeString = "castle";
+                break;
+            case C_MOVE:
+                typeString = "cannon move";
                 break;
         }
         return typeString + " from: " + move[0] + " to " + move[1];

@@ -447,7 +447,7 @@ public class TreeNode {
                     double x = moveStats[w].mean() - (nMoves + depth);
                     if (moveStats[w].variance() > 0) {
                         x /= moveStats[w].stddev();
-                        score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * x)) - .25));
+                        score += Math.signum(score) * - .25 + (.5 / (1 + Math.exp(-options.k * x)));
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
@@ -459,7 +459,7 @@ public class TreeNode {
                     double qb = q - qualityStats[w].mean();
                     if (qualityStats[w].variance() > 0) {
                         qb /= qualityStats[w].stddev();
-                        score += Math.signum(score) * ((.5 / (1 + Math.exp(-options.k * qb)) - .25));
+                        score += Math.signum(score) * - .25 + (.5 / (1 + Math.exp(-options.k * qb)));
                     }
                     qualityStats[w].push(q);
                 }
