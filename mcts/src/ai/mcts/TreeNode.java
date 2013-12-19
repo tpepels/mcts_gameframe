@@ -18,8 +18,6 @@ public class TreeNode {
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     // public static Covariance covariance = new Covariance();
-    // Test
-    public static StatCounter[] myMoveStats;
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -92,9 +90,6 @@ public class TreeNode {
             else
                 child = select(board, depth + 1);
         }
-        // Test
-        if(depth == 1)
-            moveStats = myMoveStats;
         //
         double result;
         // (Solver) Check for proven win / loss / draw
@@ -215,10 +210,6 @@ public class TreeNode {
                 if (options.progBias) {
                     // must be strictly a bonus
                     child.heval = board.evaluate(player);
-                }
-                // Test
-                if(depth == 1) {
-                    child.myMoveStats = new StatCounter[]{new StatCounter(), new StatCounter()};
                 }
                 children.add(child);
                 // reset the board
@@ -472,10 +463,6 @@ public class TreeNode {
                     }
                     qualityStats[w].push(q);
                 }
-            } else if (options.relativeBonus && winner == IBoard.DRAW) {
-                // In case of a draw, update for both players
-                moveStats[0].push(nMoves + depth);
-                moveStats[1].push(nMoves + depth);
             }
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
