@@ -13,13 +13,14 @@ public class Board implements IBoard {
     private static long seenI = Long.MIN_VALUE;
     //
     public final MoveList slideMoves = new MoveList(1000), jumpMoves = new MoveList(1000);
+    private MoveList moves;
     private final Stack<Move> pastMoves = new Stack<Move>();
     private final List<Integer> captures = new ArrayList<Integer>();
+    private final List<IMove> promotions = new ArrayList<IMove>();
     //
     public int[][] board = new int[8][8];
     private int nMoves, currentPlayer, nPieces1, nPieces2, nKings1, nKings2, winner = NONE_WIN;
     public int kingMoves = 0; // For the 25 move draw-rule
-
 
     @Override
     public boolean doAIMove(IMove move, int player) {
@@ -53,12 +54,10 @@ public class Board implements IBoard {
         // Check for promotion
         if (player == P1 && toY == 0 && board[toY][toX] < 10) {
             board[toY][toX] = W_KING;
-            mv.promotion = true;
             nKings1++;
         }
         if (player == P2 && toY == 7 && board[toY][toX] < 10) {
             board[toY][toX] = B_KING;
-            mv.promotion = true;
             nKings2++;
         }
         // Remember the number of king-moves before this one
@@ -123,6 +122,7 @@ public class Board implements IBoard {
     public MoveList getExpandMoves() {
         jumpMoves.clear();
         slideMoves.clear();
+        promotions.clear();
         int piece, opp = getOpponent(currentPlayer), seen = 0;
         int maxSeen = (currentPlayer == P1) ? nPieces1 : nPieces2;
         boolean captureFound = false;
@@ -145,14 +145,23 @@ public class Board implements IBoard {
         }
         //
         if (captureFound)
-            return jumpMoves;
+            moves = jumpMoves;
         else
-            return slideMoves;
+            moves = slideMoves;
+        return moves;
     }
 
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
-        return Arrays.asList(getExpandMoves().getArrayCopy());
+        // Generate all moves first
+        getExpandMoves();
+        if (heuristics) {
+            // Select promotions first
+            if (!promotions.isEmpty()) {
+                return promotions;
+            }
+        }
+        return Arrays.asList(moves.getArrayCopy());
     }
 
     private boolean generateMovesForPiece(int initX, int initY, int x, int y, int colour, int hops, boolean king, boolean captureOnly, int opp) {
@@ -163,13 +172,18 @@ public class Board implements IBoard {
             dir = n;
         boolean hopMove = false;
         int location;
+        Move mv;
         for (int j : dir) {
             for (int k : n) {
                 location = (8 * (y + j)) + (x + k);
                 if (inBounds(y + j, x + k)) {
                     if (!captureOnly && hops == 0 && board[y + j][x + k] == Board.EMPTY) {
                         //
-                        slideMoves.add(new Move(new int[]{x, y, x + k, y + j}, null, king, false));
+                        mv = new Move(new int[]{x, y, x + k, y + j}, null, king, false);
+                        mv.promotion = board[initY][initX] < 10 && ((currentPlayer == P1 && y + j == 0) || (currentPlayer == P2 && y + j == 7));
+                        if (mv.promotion)
+                            promotions.add(mv);
+                        slideMoves.add(mv);
                     } else if (seen[location] != seenI &&
                             (board[y + j][x + k] == opp || board[y + j][x + k] == (opp * 10)) &&
                             inBounds(y + (j * 2), x + (k * 2)) &&
@@ -185,8 +199,14 @@ public class Board implements IBoard {
                         captures.add(new Integer(location));
                         //
                         if (!generateMovesForPiece(initX, initY, x + (k * 2), y + (j * 2), colour, hops + 1, king, captureOnly, opp)) {
+
+                            mv = new Move(new int[]{initX, initY, x + (k * 2), y + (j * 2)}, convertIntegers(captures), king, true);
+                            mv.promotion = board[initY][initX] < 10 && ((currentPlayer == P1 && y + (j * 2) == 0) || (currentPlayer == P2 && y + (j * 2) == 7));
+
+                            if (mv.promotion)
+                                promotions.add(mv);
                             // Add accordingly to the number of captures
-                            jumpMoves.add(new Move(new int[]{initX, initY, x + (k * 2), y + (j * 2)}, convertIntegers(captures), king, true));
+                            jumpMoves.add(mv);
                         }
                         captures.remove(captures.size() - 1);
                     }
