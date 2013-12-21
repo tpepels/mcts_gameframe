@@ -16,7 +16,6 @@ public class Board implements IBoard {
     private MoveList moves;
     private final Stack<Move> pastMoves = new Stack<Move>();
     private final List<Integer> captures = new ArrayList<Integer>();
-    private final List<IMove> promotions = new ArrayList<IMove>();
     //
     public int[][] board = new int[8][8];
     private int nMoves, currentPlayer, nPieces1, nPieces2, nKings1, nKings2, winner = NONE_WIN;
@@ -122,7 +121,6 @@ public class Board implements IBoard {
     public MoveList getExpandMoves() {
         jumpMoves.clear();
         slideMoves.clear();
-        promotions.clear();
         int piece, opp = getOpponent(currentPlayer), seen = 0;
         int maxSeen = (currentPlayer == P1) ? nPieces1 : nPieces2;
         boolean captureFound = false;
@@ -155,12 +153,6 @@ public class Board implements IBoard {
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         // Generate all moves first
         getExpandMoves();
-        if (heuristics) {
-            // Select promotions first
-            if (!promotions.isEmpty()) {
-                return promotions;
-            }
-        }
         return Arrays.asList(moves.getArrayCopy());
     }
 
@@ -181,8 +173,6 @@ public class Board implements IBoard {
                         //
                         mv = new Move(new int[]{x, y, x + k, y + j}, null, king, false);
                         mv.promotion = board[initY][initX] < 10 && ((currentPlayer == P1 && y + j == 0) || (currentPlayer == P2 && y + j == 7));
-                        if (mv.promotion)
-                            promotions.add(mv);
                         slideMoves.add(mv);
                     } else if (seen[location] != seenI &&
                             (board[y + j][x + k] == opp || board[y + j][x + k] == (opp * 10)) &&
@@ -202,9 +192,6 @@ public class Board implements IBoard {
 
                             mv = new Move(new int[]{initX, initY, x + (k * 2), y + (j * 2)}, convertIntegers(captures), king, true);
                             mv.promotion = board[initY][initX] < 10 && ((currentPlayer == P1 && y + (j * 2) == 0) || (currentPlayer == P2 && y + (j * 2) == 7));
-
-                            if (mv.promotion)
-                                promotions.add(mv);
                             // Add accordingly to the number of captures
                             jumpMoves.add(mv);
                         }
