@@ -238,7 +238,7 @@ public class SimGame {
 
         // Initialize the fast... stuff
         FastTanh.tanh(1.);
-        FastSigm.exp(1.);
+        FastSigm.sigm(1.);
         FastLog.log(1.);
 
         while (board.checkWin() == IBoard.NONE_WIN) {
