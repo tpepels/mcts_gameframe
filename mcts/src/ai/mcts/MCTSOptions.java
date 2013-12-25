@@ -63,10 +63,10 @@ public class MCTSOptions {
     public void setGame(String game) {
         if (game.equals("cannon")) {
             uctC = .8;
-            k = 1.8;
+            k = 2.0;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
-            k = 1.4;
+            k = 2.0;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             k = 1.4;

@@ -1,5 +1,8 @@
 package experiments;
 
+import ai.FastExp;
+import ai.FastLog;
+import ai.FastTanh;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -111,6 +114,12 @@ public class AITests {
         ai1Wins = 0;
         ai2Wins = 0;
         draws = 0;
+
+        // Initialize the fast... stuff
+        FastTanh.tanh(1.);
+        FastExp.exp(1.);
+        FastLog.log(1.);
+
         while (totalGames < games) {
             runGame();
             // Switch the colors so 50% is played as black/white
@@ -179,6 +188,7 @@ public class AITests {
         int winner = IBoard.NONE_WIN;
         aiPlayer1.newGame(ai1Color, game);
         aiPlayer2.newGame(ai2Color, game);
+
         while (winner == IBoard.NONE_WIN) {
             //
             IMove move;
