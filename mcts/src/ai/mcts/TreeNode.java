@@ -1,6 +1,6 @@
 package ai.mcts;
 
-import ai.FastExp;
+import ai.FastSigm;
 import ai.FastLog;
 import ai.StatCounter;
 import ai.framework.IBoard;
@@ -445,7 +445,7 @@ public class TreeNode {
                     double x = moveStats[w].mean() - (nMoves + depth);
                     if (moveStats[w].variance() > 0) {
                         x /= moveStats[w].stddev();
-                        score += Math.signum(score) * (-.25 + (.5 / (1 + FastExp.exp(-options.k * x))));
+                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
@@ -457,7 +457,7 @@ public class TreeNode {
                     double qb = q - qualityStats[w].mean();
                     if (qualityStats[w].variance() > 0) {
                         qb /= qualityStats[w].stddev();
-                        score += Math.signum(score) * (-.25 + (.5 / (1 + FastExp.exp(-options.k * qb))));
+                        score += Math.signum(score) * FastSigm.sigm(-options.k * qb);
                     }
                     qualityStats[w].push(q);
                 }
