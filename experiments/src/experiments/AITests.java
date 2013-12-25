@@ -1,6 +1,6 @@
 package experiments;
 
-import ai.FastExp;
+import ai.FastSigm;
 import ai.FastLog;
 import ai.FastTanh;
 import ai.framework.AIPlayer;
@@ -117,7 +117,7 @@ public class AITests {
 
         // Initialize the fast... stuff
         FastTanh.tanh(1.);
-        FastExp.exp(1.);
+        FastSigm.exp(1.);
         FastLog.log(1.);
 
         while (totalGames < games) {
