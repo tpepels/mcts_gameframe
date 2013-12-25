@@ -10,7 +10,7 @@ public class FastLog {
             logs[i] = Math.log(i);
     }
 
-    public double log(double i) {
+    public static double log(double i) {
         if (i >= N_LOGS)
             return Math.log(i);
         return logs[(int) i];

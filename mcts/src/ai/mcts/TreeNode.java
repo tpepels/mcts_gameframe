@@ -1,5 +1,6 @@
 package ai.mcts;
 
+import ai.FastExp;
 import ai.FastLog;
 import ai.StatCounter;
 import ai.framework.IBoard;
@@ -13,7 +14,6 @@ import java.util.Stack;
 public class TreeNode {
     public static final double INF = 999999;
     private static final Stack<IMove> movesMade = new Stack<IMove>();
-    private static final FastLog l = new FastLog();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     // public static Covariance covariance = new Covariance();
@@ -280,11 +280,11 @@ public class TreeNode {
                 }
                 //
                 if (options.ucbTuned) {
-                    ucbVar = c.stats.variance() + Math.sqrt((2. * l.log(Np)) / Nc);
-                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * l.log(Np)) / Nc);
+                    ucbVar = c.stats.variance() + Math.sqrt((2. * FastLog.log(Np)) / Nc);
+                    uctValue = avgValue + Math.sqrt((Math.min(options.maxVar, ucbVar) * FastLog.log(Np)) / Nc);
                 } else {
                     // Compute the uct value with the (new) average value
-                    uctValue = avgValue + options.uctC * Math.sqrt(l.log(Np) / Nc);
+                    uctValue = avgValue + options.uctC * Math.sqrt(FastLog.log(Np) / Nc);
                 }
             }
             // Remember the highest UCT value
@@ -445,7 +445,7 @@ public class TreeNode {
                     double x = moveStats[w].mean() - (nMoves + depth);
                     if (moveStats[w].variance() > 0) {
                         x /= moveStats[w].stddev();
-                        score += Math.signum(score) * (-.25 + (.5 / (1 + Math.exp(-options.k * x))));
+                        score += Math.signum(score) * (-.25 + (.5 / (1 + FastExp.exp(-options.k * x))));
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
@@ -457,7 +457,7 @@ public class TreeNode {
                     double qb = q - qualityStats[w].mean();
                     if (qualityStats[w].variance() > 0) {
                         qb /= qualityStats[w].stddev();
-                        score += Math.signum(score) * (-.25 + (.5 / (1 + Math.exp(-options.k * qb))));
+                        score += Math.signum(score) * (-.25 + (.5 / (1 + FastExp.exp(-options.k * qb))));
                     }
                     qualityStats[w].push(q);
                 }

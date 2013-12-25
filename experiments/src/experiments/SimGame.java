@@ -1,5 +1,8 @@
 package experiments;
 
+import ai.FastExp;
+import ai.FastLog;
+import ai.FastTanh;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -232,6 +235,11 @@ public class SimGame {
         loadGame();
         loadPlayer(1);
         loadPlayer(2);
+
+        // Initialize the fast... stuff
+        FastTanh.tanh(1.);
+        FastExp.exp(1.);
+        FastLog.log(1.);
 
         while (board.checkWin() == IBoard.NONE_WIN) {
             int player = board.getPlayerToMove();
