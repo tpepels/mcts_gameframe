@@ -522,16 +522,10 @@ public class Board implements IBoard {
                 move = moves.get(i);
                 // Heuristic: capture and fire whenever possible
                 if (move.getType() == Move.CAPTURE) {
-                    for (int k = 0; k < 6; k++)
-                        simMoves.add(move);
-                } else if (move.getType() == Move.FIRE) {
-                    for (int k = 0; k < 12; k++)
-                        simMoves.add(move);
-                } else if (move.getType() == Move.C_MOVE) {
-                    for (int k = 0; k < 3; k++)
-                        simMoves.add(move);
-                } else if (move.getType() == Move.MOVE) {
                     simMoves.add(move);
+                } else if (move.getType() == Move.FIRE) {
+                    for (int k = 0; k < 4; k++)
+                        simMoves.add(move);
                 }
             }
         } else if (heuristics) {

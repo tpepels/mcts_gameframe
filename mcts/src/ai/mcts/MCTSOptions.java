@@ -69,7 +69,7 @@ public class MCTSOptions {
             k = 2.0;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
-            k = 1.4;
+            k = 1.8;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
@@ -79,7 +79,7 @@ public class MCTSOptions {
             uctC = .5;
             MAST = true;
             mastEps = .3;
-            k = 2.2;
+            k = 2.8;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;

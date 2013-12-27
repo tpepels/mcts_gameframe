@@ -1,6 +1,8 @@
 package ai;
 
 public class MovingAverage {
+    public final int INIT_SIZE = 10;
+    //
     private double[] samples;
     private double total = 0.;
     private int index = 0, size = 0, maxSize;
@@ -8,7 +10,7 @@ public class MovingAverage {
     public MovingAverage(int size) {
         this.maxSize = size;
         //
-        samples = new double[maxSize];
+        samples = new double[INIT_SIZE];
     }
 
     public void reset() {
@@ -22,6 +24,12 @@ public class MovingAverage {
         // Number of samples < sliding window size
         if (size < maxSize) {
             size++;
+            // Grow the array to the final size
+            if (size == INIT_SIZE) {
+                double[] newSamples = new double[maxSize];
+                System.arraycopy(samples, 0, newSamples, 0, INIT_SIZE);
+                this.samples = newSamples;
+            }
         } else {
             // Number of samples > window size
             // Index is at the position to be overwritten
