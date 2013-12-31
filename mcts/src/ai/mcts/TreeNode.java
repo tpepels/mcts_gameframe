@@ -1,7 +1,8 @@
 package ai.mcts;
 
-import ai.FastSigm;
+import ai.Covariance;
 import ai.FastLog;
+import ai.FastSigm;
 import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -16,7 +17,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    // public static Covariance covariance = new Covariance();
+    public static Covariance covariance = new Covariance();
     private final boolean virtual;
     private final MCTSOptions options;
     public int player;
@@ -441,15 +442,29 @@ public class TreeNode {
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
+//                if (options.relativeBonus && (nMoves + depth) > 0) {
+//                    if (moveStats[w].variance() > 0) {
+//                        double x = moveStats[w].mean() - (nMoves + depth);
+//                        x /= moveStats[w].stddev();
+//                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
+//                    }
+//                    // Maintain the average number of moves per play-out
+//                    moveStats[w].push(nMoves + depth);
+//                }
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    double x = moveStats[w].mean() - (nMoves + depth);
-                    if (moveStats[w].variance() > 0) {
-                        x /= moveStats[w].stddev();
-                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
+                    if (covariance.variance2() > 0) {
+                        double cStar = covariance.getCovariance() / covariance.variance2();
+                        score += Math.signum(score) * (cStar * (covariance.getMean2() - (nMoves + depth)));
+//                        if (options.debug) {
+//                            System.out.println("c* = " + cStar + " cov(X,Y): " + covariance.getCovariance() + " var(X) " + covariance.variance1() + " var(Y) " + covariance.variance2());
+//                            System.out.println("Mean: " + covariance.getMean2() + " sample: " + (nMoves + depth));
+//                            System.out.println("CV " + cStar * (covariance.getMean2() - (nMoves + depth)));
+//                            System.out.println("Sigm: " + FastSigm.sigm(-options.k * ((covariance.getMean2() - (nMoves + depth)) / covariance.stddev2())));
+//                        }
                     }
-                    // Maintain the average number of moves per play-out
-                    moveStats[w].push(nMoves + depth);
+                    covariance.push((winner == IBoard.P1) ? 1 : 0, nMoves + depth);
                 }
+
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
@@ -462,17 +477,23 @@ public class TreeNode {
                     qualityStats[w].push(q);
                 }
             }
-        } else if (options.earlyEval && terminateEarly) {
+        } else if (options.earlyEval && terminateEarly)
+
+        {
             // playout terminated by nMoves surpassing pdepth
 
             // FIXME: relative bonus will not work with pdepth
             score = board.evaluate(player);
-        } else {
+        } else
+
+        {
             throw new RuntimeException("Game end error in playOut");
         }
 
         // Undo the moves done in the playout
-        for (int i = 0; i < nMoves; i++)
+        for (
+                int i = 0;
+                i < nMoves; i++)
             board.undoMove();
 
         return score;
