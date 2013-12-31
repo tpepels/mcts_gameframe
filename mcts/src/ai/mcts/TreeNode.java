@@ -454,17 +454,17 @@ public class TreeNode {
                 if (options.relativeBonus && (nMoves + depth) > 0) {
                     if (covariance[w].variance2() > 0) {
                         double cStar = covariance[w].getCovariance() / covariance[w].variance2();
-                        double diff = covariance[w].getMean2() - ((nMoves + depth) / 100.);
+                        double diff = (nMoves + depth) - covariance[w].getMean2();
                         score += Math.signum(score) * (cStar * diff);
                         if (options.debug) {
                             System.out.println("[" + winner + "] c* = " + cStar + " cov(X,Y): " + covariance[w].getCovariance() + " var(X) " + covariance[w].variance1() + " var(Y) " + covariance[w].variance2());
                             System.out.println("[" + winner + "] Diff: " + diff);
                             System.out.println("[" + winner + "] CV: " + cStar * diff);
-                            System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (diff / covariance[w].stddev2())));
+                            System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / covariance[w].stddev2())));
                         }
                     }
-                    covariance[0].push((winner == IBoard.P1) ? 1 : 0, (nMoves + depth) / 100.);
-                    covariance[1].push((winner == IBoard.P2) ? 1 : 0, (nMoves + depth) / 100.);
+                    covariance[0].push((winner == IBoard.P1) ? 1 : 0, (nMoves + depth));
+                    covariance[1].push((winner == IBoard.P2) ? 1 : 0, (nMoves + depth));
                 }
 
                 // Qualitative bonus
