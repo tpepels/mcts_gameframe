@@ -1,55 +1,38 @@
 package ai;
 
 public class Covariance {
-
-    private final double[] samples1, samples2;
-    private final int maxSamples;
-    //
     private int n = 0;
-    private double sum1, sum2, mean1, mean2, m21, m22;
-
-    public Covariance(int maxSamples) {
-        samples1 = new double[maxSamples];
-        samples2 = new double[maxSamples];
-        this.maxSamples = maxSamples;
-    }
+    private double sum1, sum2, mean1, mean2, m21, m22, covSum;
 
     public void reset() {
         n = 0;
         sum1 = 0.;
         sum2 = 0.;
+        covSum = 0.;
+        mean1 = 0.;
+        mean2 = 0.;
+        m21 = 0.;
+        m22 = 0.;
     }
 
     public void push(double value1, double value2) {
-
-        if(n >= maxSamples)
-            return;
-
-        samples1[n] = value1;
         sum1 += value1;
-        samples2[n] = value2;
         sum2 += value2;
         n++;
+        covSum += value1 * value2;
         // Compute mean and variance for sample 1
-        double delta = n - mean1;
+        double delta = value1 - mean1;
         mean1 += delta / n;
-        m21 += delta * (n - mean1);
+        m21 += delta * (value1 - mean1);
         // Compute mean and variance for sample 2
-        delta = n - mean2;
+        delta = value2 - mean2;
         mean2 += delta / n;
-        m22 += delta * (n - mean2);
+        m22 += delta * (value2 - mean2);
 
     }
 
     public double getCovariance() {
-        double mean1 = sum1 / n, mean2 = sum2 / n;
-
-        double covariance = 0.;
-        for(int i = 0; i < n; i++) {
-            covariance += ((samples1[i] - mean1) * (samples2[i] - mean2)) / n;
-        }
-
-        return covariance;
+        return (covSum - ((sum1 * sum2) / n)) / (n - 1);
     }
 
     public double getCorrelation() {
@@ -62,5 +45,21 @@ public class Covariance {
 
     public double stddev2() {
         return Math.sqrt(m22 / (double) n);
+    }
+
+    public double variance1() {
+        return m21 / (double) n;
+    }
+
+    public double variance2() {
+        return m22 / (double) n;
+    }
+
+    public double getMean2() {
+        return mean2;
+    }
+
+    public int getN() {
+        return n;
     }
 }
