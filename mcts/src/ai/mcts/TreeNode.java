@@ -17,7 +17,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static Covariance[] covariance = {new Covariance(), new Covariance()};
+    //
     private final boolean virtual;
     private final MCTSOptions options;
     public int player;
@@ -452,19 +452,18 @@ public class TreeNode {
 //                    moveStats[w].push(nMoves + depth);
 //                }
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    if (covariance[w].variance2() > 0) {
-                        double cStar = covariance[w].getCovariance() / covariance[w].variance2();
-                        double diff = (nMoves + depth) - covariance[w].getMean2();
+                    if (options.covariances.variance2() > 0) {
+                        double cStar = options.covariances.getCovariance() / options.covariances.variance2();
+                        double diff = (nMoves + depth) - options.covariances.getMean2();
                         score += Math.signum(score) * (cStar * diff);
                         if (options.debug) {
-                            System.out.println("[" + winner + "] c* = " + cStar + " cov(X,Y): " + covariance[w].getCovariance() + " var(X) " + covariance[w].variance1() + " var(Y) " + covariance[w].variance2());
-                            System.out.println("[" + winner + "] Diff: " + diff);
+                            System.out.println("[" + winner + "] c* = " + cStar + " cov(X,Y): " + options.covariances.getCovariance() + " var(X) " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
+                            System.out.println("[" + winner + "] Diff: " + diff + " mean: " + options.covariances.variance2());
                             System.out.println("[" + winner + "] CV: " + cStar * diff);
-                            System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / covariance[w].stddev2())));
+                            System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / options.covariances.stddev2())));
                         }
                     }
-                    covariance[0].push((winner == IBoard.P1) ? 1 : 0, (nMoves + depth));
-                    covariance[1].push((winner == IBoard.P2) ? 1 : 0, (nMoves + depth));
+                    options.covariances.push((winner == IBoard.P1) ? 1 : 0, (nMoves + depth));
                 }
 
                 // Qualitative bonus

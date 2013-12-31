@@ -65,7 +65,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
-//        TreeNode.covariance.reset();
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -193,8 +192,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     @Override
     public void newGame(int myPlayer, String game) {
         root = new TreeNode(myPlayer, options);
-        TreeNode.covariance[0].reset();
-        TreeNode.covariance[1].reset();
+        options.covariances.reset();
         //
         if (!options.fixedSimulations)
             options.resetSimulations(game);

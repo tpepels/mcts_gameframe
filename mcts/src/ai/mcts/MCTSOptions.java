@@ -1,11 +1,15 @@
 package ai.mcts;
 
+import ai.Covariance;
+
 import java.util.Random;
 
 public class MCTSOptions {
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
     private static int instances = 0;
+    //
+    public Covariance covariances = new Covariance();
     // Fields for enabling tree-reuse
     public boolean treeReuse = false;
     // Discount values based on their depth
