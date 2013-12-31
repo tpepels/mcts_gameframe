@@ -454,7 +454,7 @@ public class TreeNode {
                 if (options.relativeBonus && (nMoves + depth) > 0) {
                     if (covariance[w].variance2() > 0) {
                         double cStar = covariance[w].getCovariance() / covariance[w].variance2();
-                        score += Math.signum(score) * (cStar * ((nMoves + depth) - covariance[w].getMean2()));
+                        score += Math.signum(score) * (cStar * (covariance[w].getMean2() - (nMoves + depth)));
 //                        if (options.debug) {
 //                            System.out.println("c* = " + cStar + " cov(X,Y): " + covariance.getCovariance() + " var(X) " + covariance.variance1() + " var(Y) " + covariance.variance2());
 //                            System.out.println("Mean: " + covariance.getMean2() + " sample: " + (nMoves + depth));
