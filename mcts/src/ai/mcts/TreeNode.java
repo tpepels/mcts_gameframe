@@ -17,7 +17,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static Covariance covariance = new Covariance();
+    public static Covariance[] covariance = {new Covariance(), new Covariance()};
     private final boolean virtual;
     private final MCTSOptions options;
     public int player;
@@ -452,9 +452,9 @@ public class TreeNode {
 //                    moveStats[w].push(nMoves + depth);
 //                }
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    if (covariance.variance2() > 0) {
-                        double cStar = covariance.getCovariance() / covariance.variance2();
-                        score += Math.signum(score) * (cStar * ((nMoves + depth) - covariance.getMean2()));
+                    if (covariance[w].variance2() > 0) {
+                        double cStar = covariance[w].getCovariance() / covariance[w].variance2();
+                        score += Math.signum(score) * (cStar * ((nMoves + depth) - covariance[w].getMean2()));
 //                        if (options.debug) {
 //                            System.out.println("c* = " + cStar + " cov(X,Y): " + covariance.getCovariance() + " var(X) " + covariance.variance1() + " var(Y) " + covariance.variance2());
 //                            System.out.println("Mean: " + covariance.getMean2() + " sample: " + (nMoves + depth));
@@ -462,7 +462,8 @@ public class TreeNode {
 //                            System.out.println("Sigm: " + FastSigm.sigm(-options.k * ((covariance.getMean2() - (nMoves + depth)) / covariance.stddev2())));
 //                        }
                     }
-                    covariance.push((winner == IBoard.P1) ? 1 : 0, nMoves + depth);
+                    covariance[0].push((winner == IBoard.P1) ? 1 : 0, nMoves + depth);
+                    covariance[1].push((winner == IBoard.P2) ? 1 : 0, nMoves + depth);
                 }
 
                 // Qualitative bonus
