@@ -32,7 +32,7 @@ public class Covariance {
     }
 
     public double getCovariance() {
-        return (covSum - ((sum1 * sum2) / n)) / (n - 1);
+        return (covSum - ((sum1 * sum2) / n)) / n;
     }
 
     public double getCorrelation() {
