@@ -457,13 +457,14 @@ public class TreeNode {
                         double diff = (nMoves + depth) - options.covariances.getMean2();
                         score += Math.signum(score) * (cStar * diff);
                         if (options.debug) {
-                            System.out.println("[" + winner + "] c* = " + cStar + " cov(X,Y): " + options.covariances.getCovariance() + " var(X) " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
-                            System.out.println("[" + winner + "] Diff: " + diff + " mean: " + options.covariances.variance2());
-                            System.out.println("[" + winner + "] CV: " + cStar * diff);
-                            System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / options.covariances.stddev2())));
+                            //System.out.println("[" + winner + "] c* = " + cStar + " cov(X,Y): " + options.covariances.getCovariance() + " var(X) " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
+                            System.out.println("[" + winner + "] Diff: " + diff + " mean: " + options.covariances.getMean2() + " other mean: " + moveStats[w].mean());
+                            //System.out.println("[" + winner + "] CV: " + cStar * diff);
+                            //System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / options.covariances.stddev2())));
                         }
                     }
                     options.covariances.push((winner == IBoard.P1) ? 1 : 0, (nMoves + depth));
+                    moveStats[w].push(nMoves + depth);
                 }
 
                 // Qualitative bonus
