@@ -454,16 +454,18 @@ public class TreeNode {
                 if (options.relativeBonus && (nMoves + depth) > 0) {
                     if (options.covariances.variance2() > 0) {
                         double cStar = options.covariances.getCovariance() / options.covariances.variance2();
-                        double diff = (nMoves + depth) - moveStats[w].mean();
+                        double diff = (nMoves + depth) - options.covariances.getMean2();
                         score += Math.signum(score) * (cStar * diff);
                         if (options.debug) {
                             //System.out.println("[" + winner + "] c* = " + cStar + " cov(X,Y): " + options.covariances.getCovariance() + " var(X) " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
-                            System.out.println("[" + winner + "] Diff: " + diff + " mean: " + options.covariances.getMean2() + " other mean: " + moveStats[w].mean());
+                            System.out.println("Cov(X,Y): " + options.covariances.getCovariance());
+                            //System.out.println("[" + winner + "] c* = " + cStar);
+                            //System.out.println("[" + winner + "] Diff: " + diff + " mean: " + options.covariances.getMean2() + " other mean: " + moveStats[w].mean());
                             //System.out.println("[" + winner + "] CV: " + cStar * diff);
                             //System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / options.covariances.stddev2())));
                         }
                     }
-                    options.covariances.push((winner == IBoard.P1) ? 1 : 0, (nMoves + depth));
+                    options.covariances.push((winner == player) ? 1 : 0, (nMoves + depth));
                     moveStats[w].push(nMoves + depth);
                 }
 
