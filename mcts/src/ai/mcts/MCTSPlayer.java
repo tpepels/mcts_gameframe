@@ -171,6 +171,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
             }
+//            System.out.println("Cor(X,Y): " + options.covariances.getCorrelation());
 //            System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
 //            System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
 //            System.out.println("Mean: " + options.covariances.getMean2());

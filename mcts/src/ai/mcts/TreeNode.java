@@ -6,7 +6,6 @@ import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
-import sun.reflect.generics.tree.Tree;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -469,7 +468,7 @@ public class TreeNode {
 //                    }
 //                    moveStats[w].push(nMoves + depth);
 //                }
-//                options.covariances.push((winner == myPlayer) ? 1 : 0, (nMoves + depth));
+                options.covariances.push((winner == player) ? 1 : 0, (nMoves + depth));
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
