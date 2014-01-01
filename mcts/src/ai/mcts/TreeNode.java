@@ -443,32 +443,32 @@ public class TreeNode {
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
-//                if (options.relativeBonus && (nMoves + depth) > 0) {
-//                    if (moveStats[w].variance() > 0) {
-//                        double x = moveStats[w].mean() - (nMoves + depth);
-//                        x /= moveStats[w].stddev();
-//                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
-//                    }
-//                    // Maintain the average number of moves per play-out
-//                    moveStats[w].push(nMoves + depth);
-//                }
-                if (options.relativeBonus && (nMoves + depth) > 0 && winner == myPlayer) {
-                    if (options.covariances.variance2() > 0) {
-                        double cStar = options.covariances.getCovariance() / options.covariances.variance2();
-                        double diff = (nMoves + depth) - options.covariances.getMean2();
-                        score += Math.signum(score) * (cStar * diff);
-//                        if (options.debug) {
-                        //System.out.println("[" + winner + "] c* = " + cStar + " cov(X,Y): " + options.covariances.getCovariance() + " var(X) " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
-//                            System.out.println("Cov(X,Y): " + options.covariances.getCovariance());
-//                            System.out.println("[" + winner + "] c* = " + cStar);
-//                            System.out.println("[" + winner + "] Diff: " + diff + " mean: " + options.covariances.getMean2() + " other mean: " + moveStats[w].mean());
-//                            System.out.println("[" + winner + "] CV: " + cStar * diff);
-//                            System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / options.covariances.stddev2())));
-//                        }
+                if (options.relativeBonus && (nMoves + depth) > 0) {
+                    if (moveStats[w].variance() > 0) {
+                        double x = moveStats[w].mean() - (nMoves + depth);
+                        x /= moveStats[w].stddev();
+                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
                     }
+                    // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
                 }
-                options.covariances.push((winner == myPlayer) ? 1 : 0, (nMoves + depth));
+//                if (options.relativeBonus && (nMoves + depth) > 0 && winner == TreeNode.myPlayer) {
+//                    if (options.covariances.variance2() > 0) {
+//                        double cStar = options.covariances.getCovariance() / options.covariances.variance2();
+//                        double diff = (nMoves + depth) - options.covariances.getMean2();
+//                        score += Math.signum(score) * (cStar * diff);
+////                        if (options.debug) {
+////                        System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
+////                        System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
+////                        System.out.println("C* =    " + cStar);
+////                        System.out.println("mean: " + options.covariances.getMean2() + " other mean: " + moveStats[w].mean());
+////                        System.out.println("CV: " + cStar * diff + " diff: " + diff);
+////                        System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / options.covariances.stddev2())));
+////                        }
+//                    }
+//                    moveStats[w].push(nMoves + depth);
+//                }
+                options.covariances.push((winner == player) ? 1 : 0, (nMoves + depth));
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
