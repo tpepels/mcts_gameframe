@@ -442,7 +442,7 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
-            double l = board.getNMovesMade() + nMoves + depth;
+            double l = nMoves;
 //            totalStats.push(l);
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
@@ -451,7 +451,7 @@ public class TreeNode {
                 if (options.relativeBonus && l > 0) {
                     if (options.covariances.getN() > 100) {
 //                        double x = l - options.covariances.getMean2();
-                        double x = (l - moveStats[w].mean()) / moveStats[w].mean();
+                        double x = l - moveStats[w].mean();
                         double cStar = options.covariances.getCovariance() / options.covariances.variance2();
                         // x /= moveStats[w].stddev();
                         // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
@@ -461,7 +461,7 @@ public class TreeNode {
                     moveStats[w].push(l);
                 }
 
-                options.covariances.push((winner == player) ? l : 0, l);
+                options.covariances.push((winner == player) ? 1 : 0, l);
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
