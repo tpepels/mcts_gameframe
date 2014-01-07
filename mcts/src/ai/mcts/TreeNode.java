@@ -442,7 +442,7 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
-            double l = nMoves + depth;
+            double l = board.getNMovesMade() + nMoves + depth;
 //            totalStats.push(l);
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
