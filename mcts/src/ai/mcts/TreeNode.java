@@ -235,6 +235,11 @@ public class TreeNode {
         TreeNode selected = null;
         double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc;
 
+        // For a chance-move, select a random child
+        if (move != null && move.isChance()) {
+            return children.get(MCTSOptions.r.nextInt(children.size()));
+        }
+
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // Skip virtual nodes
@@ -445,17 +450,17 @@ public class TreeNode {
                 // Relative bonus
                 if (options.relativeBonus && l > 0) {
                     if (options.covariances.getN() > 1000) {
-                        double x = (l - options.covariances.getMean2()) / options.covariances.getMean2();
+                        double x = l - options.covariances.getMean2();
                         double cStar = options.covariances.getCovariance() / options.covariances.variance2();
                         // x /= moveStats[w].stddev();
                         // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
                         score += Math.signum(score) * (cStar * x);
                     }
                     // Maintain the average number of moves per play-out
-//                    moveStats[w].push(l);
+                    // moveStats[w].push(l);
                 }
 
-                options.covariances.push((winner == player) ? l : -l, l);
+                options.covariances.push((winner == player) ? 1 : -1, l);
 
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so

@@ -176,10 +176,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 
 //            StatCounter ts = TreeNode.totalStats;
 //            System.out.println("Total: Mean moves: " + ts.mean() + " variance " + ts.variance() + " std dev " + ts.stddev());
-//            System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
-//            System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
-//            System.out.println("Mean:   " + options.covariances.getMean2());
-//            System.out.println("c*      " + (options.covariances.getCovariance() / options.covariances.variance2()));
+            System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
+            System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
+            System.out.println("Mean:   " + options.covariances.getMean2());
+            System.out.println("c*      " + (options.covariances.getCovariance() / options.covariances.variance2()));
         }
 
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
