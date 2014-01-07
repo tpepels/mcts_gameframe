@@ -31,6 +31,11 @@ public class Move implements IMove {
         return move[0] + (move[1] * 1000);
     }
 
+    @Override
+    public boolean isChance() {
+        return false;
+    }
+
     public String toString() {
         return "From: " + move[0] + " to: " + move[1] + " hops: " + hops;
     }

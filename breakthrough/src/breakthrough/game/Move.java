@@ -53,6 +53,11 @@ public class Move implements IMove {
         return (digit1 * 64 + digit2);
     }
 
+    @Override
+    public boolean isChance() {
+        return false;
+    }
+
     public String toString() {
         String str = "(" + movearr[0] + "," + movearr[1] + ") -> ("
                 + movearr[2] + "," + movearr[3] + ")";
