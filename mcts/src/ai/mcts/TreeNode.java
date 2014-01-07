@@ -455,7 +455,7 @@ public class TreeNode {
                         double cStar = options.covariances.getCovariance() / options.covariances.variance2();
                         // x /= moveStats[w].stddev();
                         // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
-                        score -= Math.signum(score) * (cStar * x);
+                        score += Math.signum(score) * (cStar * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
