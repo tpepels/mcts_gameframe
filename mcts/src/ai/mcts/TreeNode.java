@@ -14,7 +14,7 @@ import java.util.Stack;
 public class TreeNode {
     public static final double INF = 999999;
     private static final Stack<IMove> movesMade = new Stack<IMove>();
-    //public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
+    public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     //public static StatCounter totalStats = new StatCounter();
     //
@@ -450,14 +450,15 @@ public class TreeNode {
                 // Relative bonus
                 if (options.relativeBonus && l > 0) {
                     if (options.covariances.getN() > 1000) {
-                        double x = l - options.covariances.getMean2();
+//                        double x = l - options.covariances.getMean2();
+                        double x = l - moveStats[w].mean();
                         double cStar = options.covariances.getCovariance() / options.covariances.variance2();
                         // x /= moveStats[w].stddev();
                         // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
                         score += Math.signum(score) * (cStar * x);
                     }
                     // Maintain the average number of moves per play-out
-                    // moveStats[w].push(l);
+                    moveStats[w].push(l);
                 }
 
                 options.covariances.push((winner == player) ? 1 : -1, l);
