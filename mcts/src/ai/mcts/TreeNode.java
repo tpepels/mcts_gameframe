@@ -451,18 +451,17 @@ public class TreeNode {
                 if (options.relativeBonus && l > 0) {
                     if (options.covariances.getN() > 100) {
 //                        double x = l - options.covariances.getMean2();
-                        double x = l - moveStats[w].mean();
+                        double x = (l - moveStats[w].mean()) / moveStats[w].mean();
                         double cStar = options.covariances.getCovariance() / options.covariances.variance2();
                         // x /= moveStats[w].stddev();
                         // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
-                        score += Math.signum(score) * (cStar * x);
+                        score -= Math.signum(score) * (cStar * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
 
-                options.covariances.push((winner == player) ? 1 : -1, l);
-
+                options.covariances.push((winner == player) ? l : 0, l);
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
