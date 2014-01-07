@@ -57,6 +57,11 @@ public class Move implements IMove {
     }
 
     @Override
+    public boolean isChance() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "(" + (move[1] * 8 + move[0]) + ") -> (" + (move[3] * 8 + move[2]) + ")";
     }

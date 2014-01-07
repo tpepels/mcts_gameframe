@@ -32,6 +32,11 @@ public class Move implements IMove {
     }
 
     @Override
+    public boolean isChance() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "from: " + move[0] + " to: " + move[1] + " shot: " + arrow;
     }

@@ -35,6 +35,11 @@ public class Move implements IMove {
         return move[0] + 100 * move[1] + 1000 * type;
     }
 
+    @Override
+    public boolean isChance() {
+        return false;
+    }
+
     public String toString() {
         String typeString = "";
         switch (type) {

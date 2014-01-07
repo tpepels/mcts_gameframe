@@ -52,6 +52,12 @@ public class Move implements IMove {
         return move[0] + (1000 * move[1]) + (10000 * pd);
     }
 
+    @Override
+    public boolean isChance() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         String cardStr, playStr, drawStr;
         int type = move[0] % 100;
