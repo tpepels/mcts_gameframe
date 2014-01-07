@@ -442,14 +442,14 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
-            double l = (board.getNMovesMade() + nMoves + depth);
+            double l = nMoves + depth;
 //            totalStats.push(l);
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
                 if (options.relativeBonus && l > 0) {
-                    if (options.covariances.getN() > 1000) {
+                    if (options.covariances.getN() > 100) {
 //                        double x = l - options.covariances.getMean2();
                         double x = l - moveStats[w].mean();
                         double cStar = options.covariances.getCovariance() / options.covariances.variance2();
