@@ -45,13 +45,13 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("checkers");
-        options1.timeInterval = 5000;
+        options1.timeInterval = 1000;
         aiPlayer1.setOptions(options1);
         // Definition for player 2
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("checkers");
-        options2.timeInterval = 5000;
+        options2.timeInterval = 1000;
         aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);

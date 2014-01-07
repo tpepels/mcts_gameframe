@@ -8,4 +8,6 @@ public interface IMove {
     public boolean equals(IMove move);
 
     public int getUniqueId();
+
+    public boolean isChance();
 }
