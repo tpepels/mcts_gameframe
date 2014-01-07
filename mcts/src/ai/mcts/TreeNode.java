@@ -14,13 +14,13 @@ import java.util.Stack;
 public class TreeNode {
     public static final double INF = 999999;
     private static final Stack<IMove> movesMade = new Stack<IMove>();
-    public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
+    //public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
+    //public static StatCounter totalStats = new StatCounter();
     //
     private final boolean virtual;
     private final MCTSOptions options;
     public int player;
-    private static int myPlayer = 0;
     public StatCounter stats;
     //
     private boolean expanded = false;
@@ -39,7 +39,6 @@ public class TreeNode {
         this.player = player;
         this.virtual = false;
         this.options = options;
-        TreeNode.myPlayer = player;
         stats = new StatCounter();
     }
 
@@ -438,60 +437,43 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
-
+            double l = (board.getNMovesMade() + nMoves + depth);
+//            totalStats.push(l);
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
-                if (options.relativeBonus && (nMoves + depth) > 0) {
-                    if (moveStats[w].variance() > 0) {
-                        double x = moveStats[w].mean() - (nMoves + depth);
-                        x /= moveStats[w].stddev();
-                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
+                if (options.relativeBonus && l > 0) {
+                    if (options.covariances.getN() > 1000) {
+                        double x = (l - options.covariances.getMean2()) / options.covariances.getMean2();
+                        double cStar = options.covariances.getCovariance() / options.covariances.variance2();
+                        // x /= moveStats[w].stddev();
+                        // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
+                        score += Math.signum(score) * (cStar * x);
                     }
                     // Maintain the average number of moves per play-out
-                    moveStats[w].push(nMoves + depth);
+//                    moveStats[w].push(l);
                 }
-//                if (options.relativeBonus && (nMoves + depth) > 0 && winner == TreeNode.myPlayer) {
-//                    if (options.covariances.variance2() > 0) {
-//                        double cStar = options.covariances.getCovariance() / options.covariances.variance2();
-//                        double diff = (nMoves + depth) - options.covariances.getMean2();
-//                        score += Math.signum(score) * (cStar * diff);
-////                        if (options.debug) {
-////                        System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
-////                        System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
-////                        System.out.println("C* =    " + cStar);
-////                        System.out.println("mean: " + options.covariances.getMean2() + " other mean: " + moveStats[w].mean());
-////                        System.out.println("CV: " + cStar * diff + " diff: " + diff);
-////                        System.out.println("[" + winner + "] Sigm: " + FastSigm.sigm(-options.k * (-diff / options.covariances.stddev2())));
-////                        }
-//                    }
-//                    moveStats[w].push(nMoves + depth);
-//                }
-                options.covariances.push((winner == player) ? 1 : 0, (nMoves + depth));
 
-                // Qualitative bonus
+                options.covariances.push((winner == player) ? l : -l, l);
+
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
-                    double qb = q - qualityStats[w].mean();
                     if (qualityStats[w].variance() > 0) {
+                        double qb = q - qualityStats[w].mean();
                         qb /= qualityStats[w].stddev();
                         score += Math.signum(score) * FastSigm.sigm(-options.k * qb);
                     }
                     qualityStats[w].push(q);
                 }
             }
-        } else if (options.earlyEval && terminateEarly)
-
-        {
+        } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
             // FIXME: relative bonus will not work with pdepth
             score = board.evaluate(player);
-        } else
-
-        {
+        } else {
             throw new RuntimeException("Game end error in playOut");
         }
 
