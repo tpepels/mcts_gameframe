@@ -26,7 +26,7 @@ public class FastSigm {
             return 1.;
         }
 
-        throw new RuntimeException("Something wrong in fastsigm");
+        throw new RuntimeException("Something wrong in fastsigm x=" + x);
     }
 
 //    public static void main(String[] args) {

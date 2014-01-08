@@ -16,7 +16,6 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    //public static StatCounter totalStats = new StatCounter();
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -442,26 +441,24 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
-            double l = board.getNMovesMade() + depth + nMoves;
-//            totalStats.push(l);
+            double l = depth + nMoves;
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].variance() != 0.) {
-                        // double x = l - options.covariances.getMean2();
-                        // double cStar = options.covariances.getCovariance() / options.covariances.variance2();
-                        // x /= moveStats[w].stddev();
-                        // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
-                        double x = l - moveStats[w].mean();
+                    if (moveStats[w].variance() > 0.) {
+                        double x = moveStats[w].mean() - l;
+                        x /= moveStats[w].stddev();
+                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
+                        x = l - moveStats[w].mean();
                         double cStar = -(options.k / moveStats[w].variance());
                         score += Math.signum(score) * (cStar * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
-                options.covariances.push((winner == player) ? 1 : -1, l);
+
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
