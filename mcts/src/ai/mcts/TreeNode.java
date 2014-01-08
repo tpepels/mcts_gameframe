@@ -447,10 +447,10 @@ public class TreeNode {
                 // Relative bonus
                 double l = depth + nMoves;
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].variance() > 0.) {
+                    if (moveStats[w].totalVisits() > 10) {
                         double x = moveStats[w].mean() - l;
                         x /= moveStats[w].mean();
-                        score += Math.signum(score) * x;//FastSigm.sigm(-options.k * x);
+                        score += Math.signum(score) * options.k * x;//FastSigm.sigm(-options.k * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
