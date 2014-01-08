@@ -447,7 +447,7 @@ public class TreeNode {
                 // Relative bonus
                 double l = depth + nMoves;
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() > 10) {
+                    if (moveStats[w].totalVisits() > 50) {
                         double x = moveStats[w].mean() - l;
                         x /= moveStats[w].mean();
                         double cstar = options.covariances.getCovariance() / options.covariances.variance2();
@@ -479,9 +479,7 @@ public class TreeNode {
         }
 
         // Undo the moves done in the playout
-        for (
-                int i = 0;
-                i < nMoves; i++)
+        for (int i = 0; i < nMoves; i++)
             board.undoMove();
 
         return score;

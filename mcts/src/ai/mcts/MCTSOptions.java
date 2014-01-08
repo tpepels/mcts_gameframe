@@ -29,7 +29,7 @@ public class MCTSOptions {
     public double uctC = 1., maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 5000, simulations = 10000, simsLeft = 10000;
+    public int timeInterval = 1000, simulations = 10000, simsLeft = 10000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
