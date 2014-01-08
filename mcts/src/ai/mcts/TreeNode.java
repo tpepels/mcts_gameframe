@@ -450,11 +450,13 @@ public class TreeNode {
                     if (moveStats[w].totalVisits() > 10) {
                         double x = moveStats[w].mean() - l;
                         x /= moveStats[w].mean();
-                        score += Math.signum(score) * options.k * x;//FastSigm.sigm(-options.k * x);
+                        double cstar = options.covariances.getCovariance() / options.covariances.variance2();
+                        score += Math.signum(score) * cstar * x;//FastSigm.sigm(-options.k * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
+                options.covariances.push((winner == player) ? l : 0, l);
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so

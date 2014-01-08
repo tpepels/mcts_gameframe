@@ -65,6 +65,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
+        options.covariances.reset();
         //
         interrupted = false;
         if (parallel) {
@@ -172,10 +173,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
             }
-//            System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
-//            System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
+            System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
+            System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
 //            System.out.println("Mean:   " + options.covariances.getMean2());
-//            System.out.println("c*      " + (options.covariances.getCovariance() / options.covariances.variance2()));
+            System.out.println("c*      " + (options.covariances.getCovariance() / options.covariances.variance2()));
         }
 
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
