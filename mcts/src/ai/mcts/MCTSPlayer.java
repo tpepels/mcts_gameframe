@@ -62,8 +62,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             root = new TreeNode(myPlayer, options);
         }
         // Reset the nodes' stats
-//        TreeNode.moveStats[0].reset();
-//        TreeNode.moveStats[1].reset();
+        TreeNode.moveStats[0].reset();
+        TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
 //        options.covariances.reset();
