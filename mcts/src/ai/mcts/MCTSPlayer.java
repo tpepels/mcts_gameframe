@@ -98,7 +98,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
-
+//                Enable this to plot per arm totals
 //                if (options.mapping && simulations % 10 == 0) {
 //                    double[] data = new double[root.getChildren().size()];
 //                    int i = 0;
@@ -178,7 +178,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
 
         // Compute cStar for the next move, abs is just a precaution
-        options.cStar = Math.abs(options.currentCov.getCovariance() / options.currentCov.variance2());
+        options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
         // Reset the currently computed covariances
         options.currentCov.reset();
         // Set the root to the best child, so in the next move, the opponent's move can become the new root

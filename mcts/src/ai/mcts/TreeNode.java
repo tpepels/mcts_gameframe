@@ -449,7 +449,6 @@ public class TreeNode {
                 if (options.relativeBonus && options.cStar > 0. &&l > 0) {
                     if (moveStats[w].totalVisits() > 100) {
                         double x = (moveStats[w].mean() - l) / moveStats[w].mean();
-
                         score += Math.signum(score) * options.cStar * x;
                     }
                     // Maintain the average number of moves per play-out
