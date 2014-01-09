@@ -65,7 +65,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
-        options.covariances.reset();
         //
         interrupted = false;
         if (parallel) {
@@ -173,12 +172,15 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
             }
-            System.out.println("Var(X)  " + options.covariances.variance1() + " var(Y) " + options.covariances.variance2());
-            System.out.println("Cov(X,Y)" + options.covariances.getCovariance());
-//            System.out.println("Mean:   " + options.covariances.getMean2());
-            System.out.println("c*      " + (options.covariances.getCovariance() / options.covariances.variance2()));
+            System.out.println("Var(X)  " + options.currentCov.variance1() + " var(Y) " + options.currentCov.variance2());
+            System.out.println("Cov(X,Y)" + options.currentCov.getCovariance());
+            System.out.println("c*      " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
         }
 
+        // Compute cStar for the next move, abs is just a precaution
+        options.cStar = Math.abs(options.currentCov.getCovariance() / options.currentCov.variance2());
+        // Reset the currently computed covariances
+        options.currentCov.reset();
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
             root = bestChild;
@@ -198,6 +200,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     @Override
     public void newGame(int myPlayer, String game) {
         root = new TreeNode(myPlayer, options);
+        options.cStar = -1;
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
