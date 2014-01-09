@@ -66,6 +66,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
         //
+        if(board.getNMovesMade() % 10 == 0)
+            options.cStar = -1.;
+        //
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
