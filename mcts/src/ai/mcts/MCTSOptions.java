@@ -17,7 +17,7 @@ public class MCTSOptions {
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations, minSWDepth = 3;
+    public int numSimulations, minSWDepth = 2;
     public double switches = 4.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
@@ -90,7 +90,6 @@ public class MCTSOptions {
             MAST = true;
             mastEps = .7;
             k = 0.4;
-            cStar = 0.45;
         }
         resetSimulations(game);
     }

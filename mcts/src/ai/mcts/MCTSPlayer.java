@@ -93,11 +93,11 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
-
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
+
 //                Enable this to plot per arm totals
 //                if (options.mapping && simulations % 10 == 0) {
 //                    double[] data = new double[root.getChildren().size()];
@@ -108,6 +108,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 //                    }
 //                    allData.add(data);
 //                }
+
             }
             // (SW-UCT) Remember the number of simulations for the next round
             options.numSimulations = simulations;
@@ -135,7 +136,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             options.debug = false;
             int nChildren = (root.getChildren() == null) ? 0 : root.getChildren().size();
             System.err.println("Null bestMove in MCTS player! Root has " + nChildren + " children.");
-
             // Try again with a new root
             root = new TreeNode(myPlayer, options);
             if (!parallel && !retry) {
@@ -145,6 +145,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
         }
         bestMove = bestChild.getMove();
+
 //        if (options.mapping) {
 //            double[] data = new double[2];
 //            for (TreeNode t : root.getChildren()) {
@@ -177,10 +178,13 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("c*      " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
         }
 
-        // Compute cStar for the next move, abs is just a precaution
-        // options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+        if (options.cStar < 0.) {
+            // Compute cStar for the next move
+            options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+        }
         // Reset the currently computed covariances
         options.currentCov.reset();
+
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
             root = bestChild;
