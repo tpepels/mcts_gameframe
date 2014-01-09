@@ -90,6 +90,7 @@ public class MCTSOptions {
             MAST = true;
             mastEps = .7;
             k = 0.4;
+            cStar = 0.45;
         }
         resetSimulations(game);
     }

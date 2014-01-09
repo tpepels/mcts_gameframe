@@ -178,7 +178,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
 
         // Compute cStar for the next move, abs is just a precaution
-        options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+        // options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
         // Reset the currently computed covariances
         options.currentCov.reset();
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
