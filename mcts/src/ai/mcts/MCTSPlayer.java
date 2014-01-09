@@ -66,9 +66,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
         //
-        if(board.getNMovesMade() % 10 == 0)
-            options.cStar = -1.;
-        //
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -181,12 +178,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("c*      " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
         }
 
-        if (options.cStar < 0.) {
-            // Compute cStar for the next move
-            options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
-        }
+//        if (options.cStar < 0.) {
+//            // Compute cStar for the next move
+              // options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+//        }
         // Reset the currently computed covariances
-        options.currentCov.reset();
+        // options.currentCov.reset();
 
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
@@ -207,7 +204,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     @Override
     public void newGame(int myPlayer, String game) {
         root = new TreeNode(myPlayer, options);
-        options.cStar = -1;
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
