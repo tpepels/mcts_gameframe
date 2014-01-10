@@ -69,27 +69,33 @@ public class MCTSOptions {
         if (game.equals("cannon")) {
             uctC = .8;
             k = 2.8;
+            cStar = .4;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             k = 2.0;
+            cStar = .5;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             k = 1.8;
+            cStar = .5;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
+            cStar = .51;
             k = .9;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
             k = 2.2;
+            cStar = .6;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
             k = 0.4;
+            cStar = .48;
         }
         resetSimulations(game);
     }
