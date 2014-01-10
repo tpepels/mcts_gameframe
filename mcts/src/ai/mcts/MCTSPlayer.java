@@ -61,8 +61,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             root = new TreeNode(myPlayer, options);
         }
         // Reset the nodes' stats
-        TreeNode.moveStats[0].reset();
-        TreeNode.moveStats[1].reset();
+        //TreeNode.moveStats[0].reset();
+        //TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
         //
@@ -178,10 +178,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("c*      " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
         }
 
-//        if (options.cStar < 0.) {
-//            // Compute cStar for the next move
-              // options.cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
-//        }
         // Reset the currently computed covariances
         options.currentCov.reset();
 
@@ -204,6 +200,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     @Override
     public void newGame(int myPlayer, String game) {
         root = new TreeNode(myPlayer, options);
+        options.currentCov.reset();
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();

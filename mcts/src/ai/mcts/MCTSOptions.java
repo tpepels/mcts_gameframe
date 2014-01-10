@@ -89,13 +89,13 @@ public class MCTSOptions {
             MAST = true;
             mastEps = .3;
             k = 2.2;
-            cStar = .6;
+            cStar = .65;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
             k = 0.4;
-            cStar = .48;
+            cStar = .4;
         }
         resetSimulations(game);
     }
