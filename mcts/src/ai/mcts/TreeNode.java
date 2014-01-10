@@ -445,7 +445,7 @@ public class TreeNode {
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
-                double l = board.getNMovesMade() + depth + nMoves;
+                double l = board.getNMovesMade();
                 if (options.relativeBonus) {
 
                     double cStar;
