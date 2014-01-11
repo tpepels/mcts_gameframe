@@ -82,7 +82,7 @@ public class MCTSOptions {
             uctC = .8;
             MAST = true;
             mastEps = .95;
-            cStar = .51;
+            cStar = .48;
             k = .9;
         } else if (game.equals("amazons")) {
             uctC = .5;
