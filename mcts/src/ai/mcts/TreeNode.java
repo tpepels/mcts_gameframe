@@ -16,6 +16,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
+    public static int myPlayer = 0;
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -38,6 +39,7 @@ public class TreeNode {
         this.player = player;
         this.virtual = false;
         this.options = options;
+        TreeNode.myPlayer = player;
         stats = new StatCounter();
     }
 
@@ -447,20 +449,20 @@ public class TreeNode {
                 // Relative bonus
                 double l = board.getNMovesMade();
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() >= 100) {
+                    if (moveStats[w].totalVisits() > 10) {
                         double cStar;
                         if (options.currentCov.getN() > 100)
                             cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
                         else
                             cStar = options.cStar;
-                        double x = (moveStats[w].mean() - l) / moveStats[w].mean();
+                        double x = moveStats[w].mean() - l;
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
 
-                options.currentCov.push((winner == player) ? l : 0, l);
+                options.currentCov.push((winner == myPlayer) ? 1 : 0, l);
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
