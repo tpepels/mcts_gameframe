@@ -445,15 +445,14 @@ public class TreeNode {
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
-                double l = depth + nMoves;
+                double l = board.getNMovesMade();
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() >= 10) {
+                    if (moveStats[w].totalVisits() >= 100) {
                         double cStar;
                         if (options.currentCov.getN() > 100)
                             cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
                         else
                             cStar = options.cStar;
-
                         double x = (moveStats[w].mean() - l) / moveStats[w].mean();
                         score += Math.signum(score) * cStar * x;
                     }
