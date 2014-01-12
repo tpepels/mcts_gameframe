@@ -447,17 +447,15 @@ public class TreeNode {
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
-//                double l = depth + nMoves;
-                double l = board.getNMovesMade();
+                double l = depth + nMoves;
                 if (options.relativeBonus && l > 0) {
                     if (moveStats[w].totalVisits() > 10 && moveStats[w].variance() > 0.) {
                         double cStar;
-                        if (options.currentCov.getN() > 100)
-                            cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
-                        else
+//                        if (options.currentCov.getN() > 100)
+//                            cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+//                        else
                             cStar = options.cStar;
-                        // double x = (moveStats[w].mean() - l) / moveStats[w].stddev();
-                        double x = (options.currentCov.getMean2() - l) / options.currentCov.stddev2();
+                        double x = (moveStats[w].mean() - l) / moveStats[w].stddev();
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
