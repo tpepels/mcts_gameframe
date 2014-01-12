@@ -16,7 +16,7 @@ public class StatCounter {
     private MovingAverage ma;
     private boolean windowed = false;
     //
-    private double m_sum, m_m2, m_mean;
+    private double m_sum, m_m2, m_mean, m_m3, m_m4;
     private int m_n, m_wins, m_losses;
     private final MCTSOptions options;
 
@@ -48,6 +48,8 @@ public class StatCounter {
 
         m_sum = 0.0;
         m_m2 = 0.0;
+        m_m3 = 0.0;
+        m_m4 = 0.0;
         m_mean = 0.0;
         m_n = 0;
         //
@@ -66,7 +68,9 @@ public class StatCounter {
 
         double delta = num - m_mean;
         m_mean += delta / m_n;
-        m_m2 += delta * (num - m_mean);
+        m_m2 += Math.pow(delta,2);
+        m_m3 += Math.pow(delta,3);
+        m_m4 += Math.pow(delta,4);
 
         // If the node is visited a few times, create the window
         if (windowed && m_n == MIN_W_VISITS) {
@@ -141,5 +145,13 @@ public class StatCounter {
 
     public double ci95() {
         return (1.96 * stddev() / Math.sqrt(m_n));
+    }
+
+    public double getSkew() {
+        return ((Math.sqrt(m_n * (m_n - 1.)))/ (m_n - 2.)) *  ((m_m3 / m_n) / Math.pow(m_m2 / m_n, 1.5));
+    }
+
+    public double getKurt() {
+        return ((m_n - 1.) / ((m_n - 2.) * (m_n - 3)))  * ((m_n + 1) * (((m_m4 / m_n) / Math.pow(m_m2 / m_n, 2.)) - 3.) + 6.);
     }
 }
