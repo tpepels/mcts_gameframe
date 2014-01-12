@@ -449,7 +449,7 @@ public class TreeNode {
                 // Relative bonus
                 double l = depth + nMoves;
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() > 10) {
+                    if (moveStats[w].totalVisits() > 10 && moveStats[w].variance() > 0.) {
                         double cStar;
                         if (options.currentCov.getN() > 100)
                             cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
