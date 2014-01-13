@@ -234,7 +234,12 @@ public class Board implements IBoard {
     @Override
     public boolean doAIMove(IMove move, int player) {
         doMove(move.getMove()[0], player);
-        return capturePieces(move.getMove()[0]);
+        if(capturePieces(move.getMove()[0]))
+            return true;
+        else {
+            nMoves--;
+            return false;
+        }
     }
 
     public int getNextMove(int[] history, int[] bfboard, int[] availmoves, int index) {
@@ -318,7 +323,7 @@ public class Board implements IBoard {
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         int count = (!firstMove) ? freeSquares : REAL_SIZE;
         poMoves.clear();
-        int c = 0, opp = getOpponent(currentPlayer), cp = currentPlayer;
+        int c = 0;
         IMove move;
         // Add the moves from the spiral ordering
         for (int i = 0; i < SIZE; i++) {
@@ -329,24 +334,6 @@ public class Board implements IBoard {
                 move = new Move(i);
                 poMoves.add(move);
                 if (heuristics) {
-//                    if (doAIMove(move, currentPlayer)) {
-//                        if (checkWin() == currentPlayer) {
-//                            undoMove();
-//                            poMoves.clear();
-//                            poMoves.add(move);
-//                            return poMoves;
-//                        }
-//                        board[i].occupant = opp;
-//                        if (checkWin() == opp) {
-//                            board[i].occupant = cp;
-//                            undoMove();
-//                            poMoves.clear();
-//                            poMoves.add(move);
-//                            return poMoves;
-//                        }
-//                        board[i].occupant = cp;
-//                        undoMove();
-//                    }
                     // Prefer the highly connected positions
                     if (board[i].numNeighbours > 4)
                         poMoves.add(move);

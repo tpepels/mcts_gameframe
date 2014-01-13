@@ -16,7 +16,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    //public static StatCounter totalStats = new StatCounter();
+    public static int myPlayer = 0;
     //
     private final boolean virtual;
     private final MCTSOptions options;
@@ -39,6 +39,7 @@ public class TreeNode {
         this.player = player;
         this.virtual = false;
         this.options = options;
+        TreeNode.myPlayer = player;
         stats = new StatCounter();
     }
 
@@ -443,26 +444,29 @@ public class TreeNode {
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
-            double l = nMoves;
-//            totalStats.push(l);
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
+                double l = board.getNMovesMade() / options.maxMoves;
+
                 if (options.relativeBonus && l > 0) {
-                    if (options.covariances.getN() > 100) {
-//                        double x = l - options.covariances.getMean2();
-                        double x = l - moveStats[w].mean();
-                        double cStar = options.covariances.getCovariance() / options.covariances.variance2();
-                        // x /= moveStats[w].stddev();
-                        // score += Math.signum(score) * FastSigm.sigm(-options.k * x);
-                        score += Math.signum(score) * (cStar * x);
+                    if (moveStats[w].totalVisits() >= 100 && moveStats[w].variance() > 0.) {
+                        double cStar;
+//                        if (options.currentCov.getN() > 100)
+                            cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+//                        else
+                        //cStar = options.cStar;
+                        double x = (l - moveStats[w].mean());
+                        score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
 
-                options.covariances.push((winner == player) ? 1 : 0, l);
+                options.currentCov.push((winner == player) ? 1 : 0, l);
+
+                // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
@@ -484,9 +488,7 @@ public class TreeNode {
         }
 
         // Undo the moves done in the playout
-        for (
-                int i = 0;
-                i < nMoves; i++)
+        for (int i = 0; i < nMoves; i++)
             board.undoMove();
 
         return score;

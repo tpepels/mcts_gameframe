@@ -8,15 +8,17 @@ public class MCTSOptions {
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
     private static int instances = 0;
+    public double maxMoves = 0;
     //
-    public Covariance covariances = new Covariance();
+    public Covariance currentCov = new Covariance();
+    public double cStar = -1;
     // Fields for enabling tree-reuse
     public boolean treeReuse = false;
     // Discount values based on their depth
     public boolean depthDiscount = false;
     // Sliding-window UCT
     public boolean swUCT = false;
-    public int numSimulations, minSWDepth = 3;
+    public int numSimulations, minSWDepth = 2;
     public double switches = 4.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
@@ -67,28 +69,40 @@ public class MCTSOptions {
     public void setGame(String game) {
         if (game.equals("cannon")) {
             uctC = .8;
-            k = 2.0;
+            k = 2.8;
+            cStar = .4;
+            maxMoves = 200.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             k = 2.0;
+            cStar = .5;
+            maxMoves = 400.;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             k = 1.8;
+            cStar = .5;
+            maxMoves = 250;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
+            cStar = .48;
             k = .9;
+            maxMoves = 100;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
             k = 2.2;
+            cStar = .65;
+            maxMoves = 70;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
             k = 0.4;
+            cStar = .45;
+            maxMoves = 120.;
         }
         resetSimulations(game);
     }
