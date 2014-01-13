@@ -465,8 +465,10 @@ public class TreeNode {
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
-
-                options.currentCov.push((winner == player) ? 1 : 0, l);
+                if(options.currentCov.variance2() > 0.)
+                options.currentCov.push((winner == player) ? 1 : -1, (l - options.currentCov.getMean2()) / options.currentCov.stddev2());
+                else
+                    options.currentCov.push((winner == player) ? 1 : -1, l);
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
