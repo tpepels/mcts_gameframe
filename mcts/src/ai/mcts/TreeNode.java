@@ -261,7 +261,7 @@ public class TreeNode {
                 // Implicit minimax
                 if (options.implicitMM) {
                     // changed to be consistent with Mark + Nathan
-                    avgValue = (1. - options.imAlpha)*avgValue + (options.imAlpha * c.imVal);
+                    avgValue = (1. - options.imAlpha) * avgValue + (options.imAlpha * c.imVal);
                     // pruning: if the child tree is wasteful (according to the bound info), add a large negative value
                     if (options.imPruning && c.imAlpha >= (c.imBeta - 0.000001)) {
                         //double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 
@@ -454,9 +454,9 @@ public class TreeNode {
                     if (moveStats[w].totalVisits() >= 100 && moveStats[w].variance() > 0.) {
                         double cStar;
 //                        if (options.currentCov.getN() > 100)
-                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
+//                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
 //                        else
-                        //cStar = options.cStar;
+                        cStar = options.cStar;
                         double x = (l - moveStats[w].mean());
                         score += Math.signum(score) * cStar * x;
                     }
@@ -465,7 +465,6 @@ public class TreeNode {
                 }
 
                 options.currentCov.push((winner == player) ? 1 : -1, l);
-
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so

@@ -34,8 +34,8 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         //
         p1Options = new MCTSOptions();
         p1Options.setGame("chinesecheckers");
-        // p1Options.relativeBonus = true;
         p2Options = new MCTSOptions();
+        p2Options.setGame("chinesecheckers");
         //
         if (!p1Human) {
             aiPlayer1 = new MCTSPlayer();
@@ -157,6 +157,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             //
             if (!human) {
                 aiPlayer1 = new MCTSPlayer();
+                p1Options.setGame("chinesecheckers");
                 aiPlayer1.setOptions(p1Options);
             }
         } else {
@@ -164,6 +165,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             //
             if (!human) {
                 aiPlayer2 = new MCTSPlayer();
+                p2Options.setGame("chinesecheckers");
                 aiPlayer2.setOptions(p2Options);
             }
         }

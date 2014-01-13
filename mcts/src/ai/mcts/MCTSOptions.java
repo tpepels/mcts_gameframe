@@ -31,7 +31,7 @@ public class MCTSOptions {
     public double uctC = 1., maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 1000, simulations = 10000, simsLeft = 10000;
+    public int timeInterval = 10000, simulations = 10000, simsLeft = 10000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -70,23 +70,23 @@ public class MCTSOptions {
         if (game.equals("cannon")) {
             uctC = .8;
             k = 2.8;
-            cStar = .4;
+            cStar = -.6;
             maxMoves = 200.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             k = 2.0;
-            cStar = .5;
+            cStar = -.1;
             maxMoves = 400.;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             k = 1.8;
-            cStar = .5;
+            cStar = -.18;
             maxMoves = 250;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
-            cStar = .48;
+            cStar = -.045;
             k = .9;
             maxMoves = 100;
         } else if (game.equals("amazons")) {
@@ -94,14 +94,14 @@ public class MCTSOptions {
             MAST = true;
             mastEps = .3;
             k = 2.2;
-            cStar = .65;
+            cStar = -.16;
             maxMoves = 70;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
             k = 0.4;
-            cStar = .45;
+            cStar = -.15;
             maxMoves = 120.;
         }
         resetSimulations(game);
