@@ -450,7 +450,7 @@ public class TreeNode {
                 // Relative bonus
                 double l = board.getNMovesMade() / options.maxMoves;
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() >= 10 && moveStats[w].variance() > 0.) {
+                    if (moveStats[w].totalVisits() >= 10.) {
 
                         double cStar;
                         if (options.currentCov.getN() >= 100)
@@ -458,14 +458,14 @@ public class TreeNode {
                         else
                             cStar = options.cStar;
 
-                        double x = (l - moveStats[w].mean()) / moveStats[w].stddev();
+                        double x = (l - .5);
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
 
-                options.currentCov.push((winner == player) ? 1 : -1, l);
+                options.currentCov.push((winner == player) ? 1 : 0, l);
 
                 // Qualitative bonus
                 if (options.qualityBonus) {

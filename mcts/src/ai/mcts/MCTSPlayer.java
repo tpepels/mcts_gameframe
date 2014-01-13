@@ -168,22 +168,22 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             if (options.relativeBonus) {
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].variance());
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
-                //System.out.println("Kurt: " + TreeNode.moveStats[myPlayer].getKurt() + " skew: " + TreeNode.moveStats[myPlayer].getSkew());
+                System.out.println("Kurt: " + TreeNode.moveStats[myPlayer].getKurt() + " skew: " + TreeNode.moveStats[myPlayer].getSkew());
             }
             if (options.qualityBonus) {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
             }
-            System.out.println("E(Y)    " + options.currentCov.getMean2());
-            System.out.println("Var(X)  " + options.currentCov.variance1() + " var(Y) " + options.currentCov.variance2());
-            System.out.println("Cov(X,Y)" + options.currentCov.getCovariance());
-            System.out.println("Corr(X,Y)" + options.currentCov.getCorrelation());
-            System.out.println("c*      " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
-            System.out.println("max moves: " + options.maxMoves);
+            System.out.println("E(Y)      " + options.currentCov.getMean2());
+            System.out.println("Var(X)    " + options.currentCov.variance1() + " var(Y) " + options.currentCov.variance2());
+            System.out.println("Cov(X,Y)  " + options.currentCov.getCovariance());
+            System.out.println("Corr(X,Y) " + options.currentCov.getCorrelation());
+            System.out.println("c*        " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
+            System.out.println("max moves " + options.maxMoves);
         }
 
         // Reset the currently computed covariances
-        //options.currentCov.reset();
+        options.currentCov.reset();
 
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
