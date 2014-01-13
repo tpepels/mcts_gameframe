@@ -32,12 +32,14 @@ public class MCTSOptions {
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
     public int timeInterval = 1000, simulations = 10000, simsLeft = 10000;
-    // Marc's stuff
+    // Marc's stuff (mostly for implicit minimax)
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
     public double imAlpha = 0.0;
     public boolean imPruning = false;
+    public boolean nodePriorsEv = false;        // use eval func for node priors ?
+    public int nodePriorsVisits = 100;          // number of visites to initialize in node priors
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
