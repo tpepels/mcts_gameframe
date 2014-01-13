@@ -168,7 +168,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             if (options.relativeBonus) {
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].variance());
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
-                System.out.println("Kurt: " + TreeNode.moveStats[myPlayer].getKurt() + " skew: " + TreeNode.moveStats[myPlayer].getSkew());
+                //System.out.println("Kurt: " + TreeNode.moveStats[myPlayer].getKurt() + " skew: " + TreeNode.moveStats[myPlayer].getSkew());
             }
             if (options.qualityBonus) {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
