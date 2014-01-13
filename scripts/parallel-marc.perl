@@ -127,6 +127,12 @@ sub get_cmd
 my @jobs = (); 
 
 my @matchups = (); 
+
+push(@matchups, "mcts_h_ege0.1_im0.5,mcts_h_ege0.1");
+#push(@matchups, "mcts_h_ege0.1_im0.5,mcts_h_pd20_im0.5");
+#push(@matchups, "mcts_h_ege0.1,mcts_h_pd20");
+
+
 #push(@matchups, "mcts_h_pb,mcts_h");
 #push(@matchups, "mcts_h_pb_ege0.1,mcts_h_im_ege0.1");
 #push(@matchups, "mcts_h_pd0,mcts_h");
@@ -135,9 +141,8 @@ my @matchups = ();
 
 #push(@matchups, "mcts_h_pd20,mcts_h");
 #push(@matchups, "mcts_h_pd20,mcts_h_pd20_im0.2");
-push(@matchups, "mcts_h_ege0.1_im0.5,mcts_h_ege0.1");
-push(@matchups, "mcts_h_ege0.1_im0.5_ip,mcts_h_ege0.1");
-push(@matchups, "mcts_h_ege0.1_im0.5_ip,mcts_h_ege0.1_im0.5");
+#push(@matchups, "mcts_h_ege0.1_im0.5_ip,mcts_h_ege0.1");
+#push(@matchups, "mcts_h_ege0.1_im0.5_ip,mcts_h_ege0.1_im0.5");
 
 #push(@matchups, "mcts_h_pd20_pb0.35,mcts_h_pd20_im0.35");
 
