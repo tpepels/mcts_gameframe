@@ -8,7 +8,7 @@ public class MCTSOptions {
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
     private static int instances = 0;
-    public double maxMoves = 0;
+    public double maxMoves = 0, currentMax = 0;
     //
     public Covariance currentCov = new Covariance();
     public double cStar = -1;
@@ -102,7 +102,7 @@ public class MCTSOptions {
             mastEps = .7;
             k = 0.4;
             cStar = -.08;
-            maxMoves = 90.;
+            maxMoves = 100.;
         }
         resetSimulations(game);
     }

@@ -447,6 +447,9 @@ public class TreeNode {
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
+                // Keep track of the longest game
+                if(board.getNMovesMade() > options.currentMax)
+                    options.currentMax = board.getNMovesMade();
                 // Relative bonus
                 double l = board.getNMovesMade() / options.maxMoves;
                 if (options.relativeBonus && l > 0) {

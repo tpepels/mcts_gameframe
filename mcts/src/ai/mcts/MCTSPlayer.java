@@ -181,6 +181,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("c*        " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
             System.out.println("max moves " + options.maxMoves);
         }
+        options.maxMoves = options.currentMax;
+        options.currentMax = 0;
 
         // Reset the currently computed covariances
         // options.currentCov.reset();
