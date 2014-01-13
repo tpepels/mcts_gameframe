@@ -1,6 +1,7 @@
 package cannon.game;
 
 import ai.FastTanh;
+import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -638,6 +639,11 @@ public class Board implements IBoard {
         double p1score = ((double) (numBlackPcs - numWhitePcs)) / (double) (N_PIECES);
         double p1eval = FastTanh.tanh(p1score);
         return (player == 1 ? p1eval : -p1eval);
+    }
+
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move) {
+        throw new RuntimeException("unimplemented"); 
     }
 
     @Override

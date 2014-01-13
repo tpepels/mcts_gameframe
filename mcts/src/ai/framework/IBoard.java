@@ -1,6 +1,7 @@
 package ai.framework;
 
 import java.util.List;
+import ai.StatCounter;
 
 public interface IBoard {
     /**
@@ -126,6 +127,12 @@ public interface IBoard {
      * position with respect to the specified player.
      */
     public double evaluate(int player);
+    
+    /**
+     * Used to initialize a node's stat counter with wins and losses.
+     * Note: player is the parent player.
+     */
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move);
 
     /**
      * Returns a value between -1 and 1 representing the quality of the game

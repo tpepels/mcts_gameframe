@@ -1,6 +1,7 @@
 package chinesecheckers.game;
 
 import ai.FastTanh;
+import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -441,6 +442,11 @@ public class Board implements IBoard {
         double distDiff = (oppdist - mydist);
         double score_th = FastTanh.tanh(distDiff / 10.0);
         return score_th;
+    }
+
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move) {
+        throw new RuntimeException("unimplemented");
     }
 
     @Override

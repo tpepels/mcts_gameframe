@@ -1,6 +1,7 @@
 package amazons.game;
 
 import ai.FastTanh;
+import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -265,6 +266,11 @@ public class Board implements IBoard {
             return p1eval; 
         else
             return -p1eval;
+    }
+    
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move) {
+        throw new RuntimeException("unimplemented");
     }
 
     @Override

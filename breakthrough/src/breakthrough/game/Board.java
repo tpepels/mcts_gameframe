@@ -1,6 +1,7 @@
 package breakthrough.game;
 
 import ai.FastTanh;
+import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -350,6 +351,78 @@ public class Board implements IBoard {
             p1eval = FastTanh.tanh(delta / 60.0);
         }
         return (player == 1 ? p1eval : -p1eval);
+    }
+
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move) {
+        // implements prior values according to Rich Lorenz's paper on Breakthrough
+
+        Move bmove = (Move)move; 
+        int rp = bmove.getMove()[2];
+        int cp = bmove.getMove()[3]; 
+
+        assert(inBounds(rp,cp)); 
+        char parentPiece = board[rp][cp]; 
+
+        assert((parentPlayer == 1 && parentPiece == 'w') || (parentPlayer == 2 && parentPiece == 'b')); 
+        char oppPiece = (parentPiece == 'w' ? 'b' : 'w');
+       
+        // count immediate attackers and defenders
+        int attackers = 0, defenders = 0; 
+
+        int[] rowOffset = {-1, -1, +1, +1}; 
+        int[] colOffset = {-1, +1, -1, +1}; 
+
+        for (int oi = 0; oi < 4; oi++) { 
+            int rpp = rp + rowOffset[oi];
+            int cpp = cp + colOffset[oi]; 
+
+            if (inBounds(rpp,cpp) && (board[rpp][cpp] == 'w' || board[rpp][cpp] == 'b')) {
+                if (parentPiece == 'w' && oi < 2 && board[rpp][cpp] == 'b')
+                    attackers++; 
+                if (parentPiece == 'w' && oi >= 2 && board[rpp][cpp] == 'w')
+                    defenders++; 
+
+                if (parentPiece == 'b' && oi < 2 && board[rpp][cpp] == 'b')
+                    defenders++; 
+                if (parentPiece == 'b' && oi >= 2 && board[rpp][cpp] == 'w')
+                    attackers++; 
+            }
+        }
+
+        //System.out.println("ad " + attackers + " " + defenders);
+        boolean safeMove = (attackers <= defenders); 
+
+        int distToGoal = (parentPlayer == 1 ? rp : (7-rp)); 
+        
+        int wins = 30; 
+
+        if (safeMove) { 
+            if (distToGoal == 1)
+                wins = 100;
+            else if (distToGoal == 2) 
+                wins = 95;
+            else if (distToGoal == 3) 
+                wins = 85;
+            else if (distToGoal == 4) 
+                wins = 75;
+            else if (distToGoal == 5) 
+                wins = 60;
+        }
+        else { 
+            if (bmove.getType() == Move.CAPTURE) 
+                wins = 60;
+        }
+
+        //if (!safeMove) { 
+        //    System.out.println("unsafe move! " + bmove + "\n" + toString()); 
+        // }
+        //System.out.println("Node priors, wins = " + wins);
+
+        for (int i = 0; i < wins/10; i++) 
+            stats.push(1.0); 
+        for (int i = 0; i < (100-wins)/10; i++)
+            stats.push(-1.0); 
     }
 
     @Override

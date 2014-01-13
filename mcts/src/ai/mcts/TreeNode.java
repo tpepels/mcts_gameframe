@@ -87,11 +87,12 @@ public class TreeNode {
         if (child == null) {
             if (isTerminal()) // Game is terminal, no more moves can be played
                 child = this;
-            else
+            else 
                 child = select(board, depth + 1);
         }
         //
         double result;
+
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
             // Execute the move represented by the child
@@ -184,8 +185,13 @@ public class TreeNode {
                 // Initialize the child
                 if (options.swUCT && depth >= options.minSWDepth)
                     child = new TreeNode(nextPlayer, moves.get(i), options, true);
-                else
+                else if (options.nodePriorsEv) {
                     child = new TreeNode(nextPlayer, moves.get(i), options);
+                    board.initNodePriors(player, child.stats, moves.get(i)); 
+                }
+                else 
+                    child = new TreeNode(nextPlayer, moves.get(i), options);
+                
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 //
@@ -234,11 +240,19 @@ public class TreeNode {
 
     private TreeNode select(IBoard board, int depth) {
         TreeNode selected = null;
-        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc;
+        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc, sumcvisits = 0;
 
         // For a chance-move, select a random child
         if (move != null && move.isChance()) {
             return children.get(MCTSOptions.r.nextInt(children.size()));
+        }
+
+        // sum of children visits
+        if (options.nodePriorsEv) {
+            sumcvisits = 0;
+            for (TreeNode cp : children) {
+                sumcvisits += cp.getnVisits();
+            }
         }
 
         // Select a child according to the UCT Selection policy
@@ -273,6 +287,12 @@ public class TreeNode {
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
+
+                if (options.nodePriorsEv)
+                    Np = sumcvisits;
+
+                // with node priors, must add all the children's initial visits
+
                 if (options.swUCT) {
                     if (c.stats.hasWindow() && !stats.hasWindow()) {
                         Np = Math.min(Np, c.stats.windowSize());

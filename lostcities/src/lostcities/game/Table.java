@@ -1,5 +1,6 @@
 package lostcities.game;
 
+import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -544,6 +545,11 @@ public class Table implements IBoard {
     @Override
     public double evaluate(int player) {
         return 0.0;
+    }
+
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move) { 
+        throw new RuntimeException("unimplemented");
     }
 
     @Override
