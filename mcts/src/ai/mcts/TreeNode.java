@@ -450,7 +450,7 @@ public class TreeNode {
                 // Relative bonus
                 double l = board.getNMovesMade() / options.maxMoves;
 
-                if(options.currentCov.variance2() > 0.)
+                if(options.currentCov.getN() > 10.)
                     l = (l - .5) / options.currentCov.stddev2();
 
                 if (options.relativeBonus && l > 0) {
@@ -470,7 +470,7 @@ public class TreeNode {
                     moveStats[w].push(l);
                 }
 
-                options.currentCov.push((winner == player) ? 1 : -1, (l - options.currentCov.getMean2()) / options.currentCov.stddev2());
+                options.currentCov.push((winner == player) ? 1 : -1, l);
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
