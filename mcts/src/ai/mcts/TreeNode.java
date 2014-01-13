@@ -448,7 +448,8 @@ public class TreeNode {
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Relative bonus
-                double l = board.getNMovesMade() / options.maxMoves;
+                double norm = (options.maxMoves - (board.getNMovesMade() - depth - nMoves));
+                double l = (depth + nMoves) / norm;
                 if (options.relativeBonus && l > 0) {
                     if (moveStats[w].totalVisits() >= 10.) {
 

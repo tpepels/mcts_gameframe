@@ -71,12 +71,12 @@ public class MCTSOptions {
             uctC = .8;
             k = 2.8;
             cStar = -.15;
-            maxMoves = 150.;
+            maxMoves = 140.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             k = 2.0;
             cStar = -.03;
-            maxMoves = 200.;
+            maxMoves = 300.;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             k = 1.8;
