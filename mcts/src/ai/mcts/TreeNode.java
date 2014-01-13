@@ -464,7 +464,7 @@ public class TreeNode {
                     moveStats[w].push(l);
                 }
 
-                options.currentCov.push((winner == player) ? 1 : 0, l);
+                options.currentCov.push((winner == player) ? 1 : -1, l);
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
