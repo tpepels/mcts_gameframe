@@ -449,10 +449,6 @@ public class TreeNode {
                 int w = winner - 1;
                 // Relative bonus
                 double l = board.getNMovesMade() / options.maxMoves;
-
-                if(options.currentCov.getN() > 10.)
-                    l = (l - .5) / options.currentCov.stddev2();
-
                 if (options.relativeBonus && l > 0) {
                     if (moveStats[w].totalVisits() >= 10 && moveStats[w].variance() > 0.) {
 
@@ -462,8 +458,7 @@ public class TreeNode {
                         else
                             cStar = options.cStar;
 
-//                        double x = (l - moveStats[w].mean());
-                        double x = l;
+                        double x = (l - moveStats[w].mean()) / moveStats[w].stddev();
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
