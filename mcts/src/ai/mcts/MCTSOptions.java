@@ -8,6 +8,7 @@ public class MCTSOptions {
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
     private static int instances = 0;
+    public double maxMoves = 0;
     //
     public Covariance currentCov = new Covariance();
     public double cStar = -1;
@@ -70,32 +71,38 @@ public class MCTSOptions {
             uctC = .8;
             k = 2.8;
             cStar = .4;
+            maxMoves = 200.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             k = 2.0;
             cStar = .5;
+            maxMoves = 400.;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             k = 1.8;
             cStar = .5;
+            maxMoves = 250;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
             cStar = .48;
             k = .9;
+            maxMoves = 100;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
             k = 2.2;
             cStar = .65;
+            maxMoves = 70;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
             k = 0.4;
             cStar = .45;
+            maxMoves = 120.;
         }
         resetSimulations(game);
     }

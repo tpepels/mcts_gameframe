@@ -234,7 +234,12 @@ public class Board implements IBoard {
     @Override
     public boolean doAIMove(IMove move, int player) {
         doMove(move.getMove()[0], player);
-        return capturePieces(move.getMove()[0]);
+        if(capturePieces(move.getMove()[0]))
+            return true;
+        else {
+            nMoves--;
+            return false;
+        }
     }
 
     public int getNextMove(int[] history, int[] bfboard, int[] availmoves, int index) {
