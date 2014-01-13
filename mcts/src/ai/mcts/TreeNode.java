@@ -451,12 +451,14 @@ public class TreeNode {
                 double l = board.getNMovesMade() / options.maxMoves;
 
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() >= 100 && moveStats[w].variance() > 0.) {
+                    if (moveStats[w].totalVisits() >= 10 && moveStats[w].variance() > 0.) {
+
                         double cStar;
-//                        if (options.currentCov.getN() > 100)
-//                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
-//                        else
-                        cStar = options.cStar;
+                        if (options.currentCov.getN() >= 100)
+                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
+                        else
+                            cStar = options.cStar;
+
                         double x = (l - moveStats[w].mean());
                         score += Math.signum(score) * cStar * x;
                     }
@@ -464,7 +466,7 @@ public class TreeNode {
                     moveStats[w].push(l);
                 }
 
-                options.currentCov.push((winner == player) ? 1 : -1, l);
+                options.currentCov.push((winner == player) ? 1 : 0, l);
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so

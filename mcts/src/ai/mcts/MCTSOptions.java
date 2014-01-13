@@ -31,7 +31,7 @@ public class MCTSOptions {
     public double uctC = 1., maxVar = 1.;
     // Discounting values
     public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 1000, simulations = 10000, simsLeft = 10000;
+    public int timeInterval = 10000, simulations = 10000, simsLeft = 10000;
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -70,39 +70,39 @@ public class MCTSOptions {
         if (game.equals("cannon")) {
             uctC = .8;
             k = 2.8;
-            cStar = -.6;
-            maxMoves = 200.;
+            cStar = -.15;
+            maxMoves = 150.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             k = 2.0;
-            cStar = -.1;
-            maxMoves = 400.;
+            cStar = -.03;
+            maxMoves = 200.;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             k = 1.8;
-            cStar = -.18;
-            maxMoves = 250;
+            cStar = -.04;
+            maxMoves = 125;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
-            cStar = -.045;
+            cStar = -.02;
             k = .9;
-            maxMoves = 100;
+            maxMoves = 80;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
             k = 2.2;
-            cStar = -.16;
-            maxMoves = 70;
+            cStar = -.31;
+            maxMoves = 90;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
             k = 0.4;
-            cStar = -.15;
-            maxMoves = 120.;
+            cStar = -.08;
+            maxMoves = 90.;
         }
         resetSimulations(game);
     }
