@@ -453,7 +453,7 @@ public class TreeNode {
                     if (moveStats[w].totalVisits() >= 100 && moveStats[w].variance() > 0.) {
                         double cStar;
 //                        if (options.currentCov.getN() > 100)
-                            cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
 //                        else
                         //cStar = options.cStar;
                         double x = (l - moveStats[w].mean());
