@@ -132,7 +132,7 @@ public interface IBoard {
      * Used to initialize a node's stat counter with wins and losses.
      * Note: player is the parent player.
      */
-    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move);
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits);
 
     /**
      * Returns a value between -1 and 1 representing the quality of the game

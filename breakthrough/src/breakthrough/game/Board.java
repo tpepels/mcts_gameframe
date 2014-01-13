@@ -354,17 +354,24 @@ public class Board implements IBoard {
     }
 
     @Override
-    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move) {
-        // implements prior values according to Rich Lorenz's paper on Breakthrough
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
+
+        //if (true) return;
+        /*double eval = evaluate(parentPlayer); 
+        for (int i = 0; i < npvisits; i++)
+          stats.push(eval);
+        if (true) return;*/
+
+        // implements prior values according to Rich Lorenz's paper on Breakthrough        
 
         Move bmove = (Move)move; 
         int rp = bmove.getMove()[2];
         int cp = bmove.getMove()[3]; 
 
-        assert(inBounds(rp,cp)); 
+        //assert(inBounds(rp,cp)); 
         char parentPiece = board[rp][cp]; 
 
-        assert((parentPlayer == 1 && parentPiece == 'w') || (parentPlayer == 2 && parentPiece == 'b')); 
+        //assert((parentPlayer == 1 && parentPiece == 'w') || (parentPlayer == 2 && parentPiece == 'b')); 
         char oppPiece = (parentPiece == 'w' ? 'b' : 'w');
        
         // count immediate attackers and defenders
@@ -395,23 +402,23 @@ public class Board implements IBoard {
 
         int distToGoal = (parentPlayer == 1 ? rp : (7-rp)); 
         
-        int wins = 30; 
+        double winrate = 0.30; 
 
         if (safeMove) { 
             if (distToGoal == 1)
-                wins = 100;
+                winrate = 1.0;
             else if (distToGoal == 2) 
-                wins = 95;
+                winrate = 0.95;
             else if (distToGoal == 3) 
-                wins = 85;
+                winrate = 0.85;
             else if (distToGoal == 4) 
-                wins = 75;
+                winrate = 0.75;
             else if (distToGoal == 5) 
-                wins = 60;
+                winrate = 0.60;
         }
         else { 
             if (bmove.getType() == Move.CAPTURE) 
-                wins = 60;
+                winrate = 0.60;
         }
 
         //if (!safeMove) { 
@@ -419,10 +426,14 @@ public class Board implements IBoard {
         // }
         //System.out.println("Node priors, wins = " + wins);
 
-        for (int i = 0; i < wins/10; i++) 
+        /* this causes a significant slowdown
+        for (int i = 0; i < winrate*npvisits; i++) 
             stats.push(1.0); 
-        for (int i = 0; i < (100-wins)/10; i++)
+        for (int i = 0; i < (1.0-winrate)*npvisits; i++)
             stats.push(-1.0); 
+        */
+
+        stats.initWinsLosses(winrate, npvisits);
     }
 
     @Override

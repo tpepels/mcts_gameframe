@@ -358,7 +358,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move) {
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
         throw new RuntimeException("unimplemented");
     }
 

@@ -187,7 +187,8 @@ public class TreeNode {
                     child = new TreeNode(nextPlayer, moves.get(i), options, true);
                 else if (options.nodePriorsEv) {
                     child = new TreeNode(nextPlayer, moves.get(i), options);
-                    board.initNodePriors(player, child.stats, moves.get(i)); 
+                    if (!child.isTerminal())
+                        board.initNodePriors(player, child.stats, moves.get(i), options.nodePriorsVisits); 
                 }
                 else 
                     child = new TreeNode(nextPlayer, moves.get(i), options);
@@ -240,19 +241,11 @@ public class TreeNode {
 
     private TreeNode select(IBoard board, int depth) {
         TreeNode selected = null;
-        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc, sumcvisits = 0;
+        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc;
 
         // For a chance-move, select a random child
         if (move != null && move.isChance()) {
             return children.get(MCTSOptions.r.nextInt(children.size()));
-        }
-
-        // sum of children visits
-        if (options.nodePriorsEv) {
-            sumcvisits = 0;
-            for (TreeNode cp : children) {
-                sumcvisits += cp.getnVisits();
-            }
         }
 
         // Select a child according to the UCT Selection policy
@@ -288,8 +281,8 @@ public class TreeNode {
                 Np = getnVisits();
                 Nc = c.getnVisits();
 
-                if (options.nodePriorsEv)
-                    Np = sumcvisits;
+                if (options.nodePriorsEv) 
+                    Np += (children.size()-1)*options.nodePriorsVisits;
 
                 // with node priors, must add all the children's initial visits
 

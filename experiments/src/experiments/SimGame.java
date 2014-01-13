@@ -91,16 +91,16 @@ public class SimGame {
          *  "mcts" is MCTSPlayer with default options
          *  For other options, add tags separated by underscores:
          *
-         *  i.e. "mcts_pd4_im" = mcts player, early playout enabled (pdepth 4), implicit minimax enabled
+         *  i.e. "mcts_pd4_imX" = mcts player, early playout enabled (pdepth 4), implicit minimax enabled
          *
          *  Index of tags (please keep alphabetically ordered):
          *
          *    _egeX  = epsilon-greedy playouts using the eval func, where X is a double
          *    _h     = enable heuristics
-         *    _im    = enable implicit minimax
+         *    _imX   = enable implicit minimax
          *    _ip    = enable implicit pruning
          *    _mastX = Plays highest MAST move with probability X, X is double
-         *    _npeX  = Node priors using the evaluation function, X = number of initialized visits 
+         *    _npX   = Node priors using the evaluation function, X = number of initialized visits 
          *    _pb    = progressive bias
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
          *    _rbX   = enable the relative bonus with K = X, where X is a double, X is optional
@@ -173,9 +173,9 @@ public class SimGame {
                         throw new RuntimeException("Unable to parse prog bias weight");
                 } else if (tag.equals("ip")) {
                     options.imPruning = true;
-                } else if (tag.startsWith("npe")) {
+                } else if (tag.startsWith("np")) {
                     options.nodePriorsEv = true;
-                    options.nodePriorsVisits = Integer.parseInt(tag.substring(3));
+                    options.nodePriorsVisits = Integer.parseInt(tag.substring(2));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

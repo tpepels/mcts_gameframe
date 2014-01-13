@@ -57,7 +57,36 @@ public class StatCounter {
             ma.reset();
     }
 
+    public void initWinsLosses(double winrate, int visits) {
+        m_wins = (int)(winrate*visits); 
+        m_losses = visits - m_wins;
+        m_sum = (m_wins - m_losses); 
+        m_n = visits;
+        m_mean = m_sum / m_n; 
+        
+        double p = ((double)m_wins) / visits; 
+        m_m2 = p*(1-p)*m_n;
+    }
+
     public void push(double num) {
+        m_sum += num;
+        m_n++;
+
+        if (Math.signum(num) > 0)
+            m_wins++;
+        else if (num != 0)
+            m_losses++;
+
+        double delta = num - m_mean;
+        m_mean += delta / m_n;
+        m_m2 += delta * (num - m_mean);
+    }
+
+    // this has become quite heavy and is affecting the performance of MCTS
+    // renaming for now until we merge branches
+    // also, i don't think m_m2 (and prob the rest are computed correctly.. what is 
+    //  below is not equivalent to what was there before)
+    public void push_tom(double num) {
         m_sum += num;
         m_n++;
 
