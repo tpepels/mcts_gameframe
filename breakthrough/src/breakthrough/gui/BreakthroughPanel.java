@@ -57,7 +57,13 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
+        options2.epsGreedyEval = true; 
+        options2.egeEpsilon = 0.1;
+        options2.implicitMM = true; 
+        options2.imAlpha = 0.5;
+        options2.timeInterval = 5000;
         aiPlayer2.setOptions(options2);
+        
         //
         //aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
     }
@@ -177,13 +183,13 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         char playerToMoveChar = board.getPlayerToMove() == 1 ? 'w' : 'b'; 
         if (clickNum == 0) {
             if (board.board[boardRow][boardCol] != playerToMoveChar) {
-                System.out.println("fail 1");
+                // System.out.println("fail 1");
                 return;
             }
         } else if (clickNum == 1) {
-            if (board.board[boardRow][boardCol] != '.' || !isAvailMove(clickPos[0] / 8, clickPos[0] % 8, boardRow, boardCol)) {
-                System.out.println(board.board[boardRow][boardCol] + " " + (clickPos[0] / 8) + " " + (clickPos[0] % 8));
-                System.out.println("fail 2: " + (clickPos[0] / 8) + " " + (clickPos[0] % 8) + " " + boardRow + " " + boardCol);
+            if (board.board[boardRow][boardCol] == playerToMoveChar || !isAvailMove(clickPos[0] / 8, clickPos[0] % 8, boardRow, boardCol)) {
+                // System.out.println(board.board[boardRow][boardCol] + " " + (clickPos[0] / 8) + " " + (clickPos[0] % 8));
+                // System.out.println("fail 2: " + (clickPos[0] / 8) + " " + (clickPos[0] % 8) + " " + boardRow + " " + boardCol);
                 clickNum--;
                 return;
             }
