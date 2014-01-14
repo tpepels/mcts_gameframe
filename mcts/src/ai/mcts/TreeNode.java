@@ -456,11 +456,11 @@ public class TreeNode {
 
                 double l = board.getNMovesMade();
                 moveStat.push(l);
-                if (options.currentCov.variance2() > 0.)
+                if (moveStat.variance() > 0.)
                     l = (l - moveStat.mean()) / moveStat.stddev();
 
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() >= 10.) {
+                    if (options.currentCov.getN() >= 100) {
 
                         double cStar;
                         if (options.currentCov.getN() >= 100)
