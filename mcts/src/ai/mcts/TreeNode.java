@@ -454,10 +454,10 @@ public class TreeNode {
 
                 // Relative bonus
                 double l = depth + nMoves;
-                options.currentCov.push((TreeNode.myPlayer == winner) ? l : 0, -l);
                 // Get the CV for winning player
                 if (moveStats[w].variance() > 0.) {
-                    l = (l  - moveStats[w].mean()) / (moveStats[w].stddev());
+                    options.currentCov.push((TreeNode.myPlayer == winner) ? 1 : -1, (TreeNode.myPlayer == winner) ? -l : l);
+                    l = (l  - moveStats[w].mean()) / (4 * moveStats[w].stddev());
                 }
                 // Maintain the average number of moves per play-out
                 moveStats[w].push(depth + nMoves);
