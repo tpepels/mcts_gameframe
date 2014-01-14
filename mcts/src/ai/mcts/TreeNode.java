@@ -16,6 +16,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
+    public static StatCounter moveStat = new StatCounter();
     public static int myPlayer = 0;
     //
     private final boolean virtual;
@@ -454,8 +455,9 @@ public class TreeNode {
 //                double l = board.getNMovesMade() / options.maxMoves;
 
                 double l = board.getNMovesMade();
+                moveStat.push(l);
                 if (options.currentCov.variance2() > 0.)
-                    l = (l - options.currentCov.getMean2()) / options.currentCov.stddev2();
+                    l = (l - moveStat.mean()) / moveStat.stddev();
 
                 if (options.relativeBonus && l > 0) {
                     if (moveStats[w].totalVisits() >= 10.) {
