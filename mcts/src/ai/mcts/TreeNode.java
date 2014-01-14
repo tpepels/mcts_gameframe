@@ -457,7 +457,7 @@ public class TreeNode {
                 // Get the CV for winning player
                 if (moveStats[w].variance() > 0.) {
                     options.currentCov.push((TreeNode.myPlayer == winner) ? 1 : -1, (TreeNode.myPlayer == winner) ? -l : l);
-                    l = (l  - moveStats[w].mean()) / (4 * moveStats[w].stddev());
+                    l = (l  - moveStats[w].mean()) / (moveStats[w].stddev());
                 }
                 // Maintain the average number of moves per play-out
                 moveStats[w].push(depth + nMoves);
