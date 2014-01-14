@@ -100,7 +100,7 @@ public class MCTSOptions {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
-            k = 0.4;
+            k = 8.;
             cStar = -.25;
             maxMoves = 100.;
         }
