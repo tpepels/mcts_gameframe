@@ -68,7 +68,7 @@ public class StatCounter {
 
         double delta = num - m_mean;
         m_mean += delta / m_n;
-        m_m2 += Math.pow(delta,2);
+        m_m2 += delta * (num - m_mean);
         m_m3 += Math.pow(delta,3);
         m_m4 += Math.pow(delta,4);
 

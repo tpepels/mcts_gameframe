@@ -448,10 +448,15 @@ public class TreeNode {
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
                 // Keep track of the longest game
-                if(board.getNMovesMade() > options.currentMax)
+                if (board.getNMovesMade() > options.currentMax)
                     options.currentMax = board.getNMovesMade();
                 // Relative bonus
-                double l = board.getNMovesMade() / options.maxMoves;
+//                double l = board.getNMovesMade() / options.maxMoves;
+
+                double l = board.getNMovesMade();
+                if (options.currentCov.variance2() > 0.)
+                    l = (l - options.currentCov.getMean2()) / options.currentCov.stddev2();
+
                 if (options.relativeBonus && l > 0) {
                     if (moveStats[w].totalVisits() >= 10.) {
 
@@ -461,14 +466,14 @@ public class TreeNode {
                         else
                             cStar = options.cStar;
 
-                        double x = (l - .5);
+                        double x = l;
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
 
-                options.currentCov.push((winner == player) ? 1 : 0, l);
+                options.currentCov.push((winner == player) ? 1 : -1, l);
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
