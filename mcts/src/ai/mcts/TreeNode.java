@@ -470,7 +470,7 @@ public class TreeNode {
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
-                    moveStats[w].push(l);
+                    moveStats[w].push((depth + nMoves));
                 }
 
                 options.currentCov.push((winner == player) ? 1 : -1, l);
