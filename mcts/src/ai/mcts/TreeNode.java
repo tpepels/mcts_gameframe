@@ -467,10 +467,10 @@ public class TreeNode {
                             cStar = options.cStar;
 
                         double x = ((depth + nMoves) - moveStats[w].mean())/moveStats[w].stddev();
-                        score += Math.signum(score) * cStar * x;
+                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
                     }
                     // Maintain the average number of moves per play-out
-                    moveStats[w].push((depth + nMoves));
+                    moveStats[w].push(depth + nMoves);
                 }
 
                 options.currentCov.push((winner == player) ? 1 : -1, l);
