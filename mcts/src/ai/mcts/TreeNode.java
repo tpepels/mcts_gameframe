@@ -463,7 +463,7 @@ public class TreeNode {
                 moveStats[w].push(depth + nMoves);
                 //
                 if (options.relativeBonus) {
-                    if (options.currentCov.getN() >= 100 && moveStats[myPlayer].totalVisits() >= 10 && moveStats[myPlayer].variance() > 0.) {
+                    if (options.currentCov.getN() >= 100 && moveStats[w].totalVisits() >= 10) {
 
                         double cStar;
                         cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
