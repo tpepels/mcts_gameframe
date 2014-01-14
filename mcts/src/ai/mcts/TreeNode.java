@@ -452,7 +452,7 @@ public class TreeNode {
                 if (board.getNMovesMade() > options.currentMax)
                     options.currentMax = board.getNMovesMade();
                 // Relative bonus
-                double l = board.getNMovesMade();
+                double l = depth + nMoves;
                 moveStat.push(l);
                 if (moveStat.variance() > 0.)
                     l = (l - moveStat.mean()) / moveStat.stddev();
