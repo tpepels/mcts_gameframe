@@ -466,7 +466,7 @@ public class TreeNode {
 //                        else
 //                            cStar = options.cStar;
 
-                        double x = ((depth + nMoves) - moveStats[w].mean())/moveStats[w].stddev();
+                        double x = (moveStats[w].mean() - (depth + nMoves))/moveStats[w].stddev();
                         score += Math.signum(score) * FastSigm.sigm(-options.k * x);
                     }
                     // Maintain the average number of moves per play-out
