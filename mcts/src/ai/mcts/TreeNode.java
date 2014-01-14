@@ -451,12 +451,17 @@ public class TreeNode {
                 // Keep track of the longest game
                 if (board.getNMovesMade() > options.currentMax)
                     options.currentMax = board.getNMovesMade();
+
                 // Relative bonus
                 double l = depth + nMoves;
-                moveStat.push(l);
-                if (moveStat.variance() > 0.)
-                    l = (l - moveStat.mean()) / (2 * moveStat.stddev());
-
+                // Get the CV for winning player
+                if (moveStats[w].variance() > 0.) {
+                    l = (l  - moveStats[w].mean()) / (moveStats[w].stddev());
+                    options.currentCov.push((TreeNode.myPlayer == winner) ? 1 : -1, (TreeNode.myPlayer == winner) ? l : -l);
+                }
+                // Maintain the average number of moves per play-out
+                moveStats[w].push(depth + nMoves);
+                //
                 if (options.relativeBonus) {
                     if (options.currentCov.getN() >= 100 && moveStats[myPlayer].totalVisits() >= 10 && moveStats[myPlayer].variance() > 0.) {
 
@@ -465,17 +470,12 @@ public class TreeNode {
 //                        else
 //                            cStar = options.cStar;
 
-                        double x = ((depth + nMoves) - moveStats[myPlayer].mean()) /(2. * moveStats[myPlayer].stddev());
-                        score += Math.signum(score) * cStar * x;
+                        double y = l;
+                        score += Math.signum(score) * cStar * y;
                     }
                     //
-                    if (winner == myPlayer)
-                        // Maintain the average number of moves per play-out
-                        moveStats[myPlayer].push(depth + nMoves);
+
                 }
-
-                options.currentCov.push((TreeNode.myPlayer == winner) ? 1 : -1, l);
-
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
