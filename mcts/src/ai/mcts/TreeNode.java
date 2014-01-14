@@ -2,6 +2,7 @@ package ai.mcts;
 
 import ai.FastLog;
 import ai.FastSigm;
+import ai.FastTanh;
 import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -455,9 +456,9 @@ public class TreeNode {
                 double l = depth + nMoves;
                 moveStat.push(l);
                 if (moveStat.variance() > 0.)
-                    l = (l - moveStat.mean()) / moveStat.stddev();
+                    l = (l - moveStat.mean()) / (moveStat.stddev());
 
-                if (options.relativeBonus && l > 0) {
+                if (options.relativeBonus) {
                     if (moveStats[w].totalVisits() > 10 && moveStats[w].variance() > 0.) {
 
 //                        double cStar;
@@ -466,7 +467,7 @@ public class TreeNode {
 //                        else
 //                            cStar = options.cStar;
 
-                        double x = (moveStats[w].mean() - (depth + nMoves))/moveStats[w].stddev();
+                        double x = (moveStats[w].mean() - (depth + nMoves)) / moveStats[w].stddev();
                         score += Math.signum(score) * FastSigm.sigm(-options.k * x);
                     }
                     // Maintain the average number of moves per play-out
