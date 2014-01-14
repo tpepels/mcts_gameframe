@@ -426,12 +426,11 @@ public class Board implements IBoard {
         // }
         //System.out.println("Node priors, wins = " + wins);
 
-        /* this causes a significant slowdown
-        for (int i = 0; i < winrate*npvisits; i++) 
+        // this causes a significant slowdown
+        /*for (int i = 0; i < winrate*npvisits; i++) 
             stats.push(1.0); 
         for (int i = 0; i < (1.0-winrate)*npvisits; i++)
-            stats.push(-1.0); 
-        */
+            stats.push(-1.0);*/
 
         stats.initWinsLosses(winrate, npvisits);
     }

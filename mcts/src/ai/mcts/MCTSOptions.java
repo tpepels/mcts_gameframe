@@ -38,7 +38,7 @@ public class MCTSOptions {
     public boolean implicitMM = false;          // implicit minimax
     public double imAlpha = 0.0;
     public boolean imPruning = false;
-    public boolean nodePriorsEv = false;        // use eval func for node priors ? TEST BRANCH
+    public boolean nodePriors = false;          // use eval func for node priors ? TEST BRANCH
     public int nodePriorsVisits = 100;          // number of visites to initialize in node priors 
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;

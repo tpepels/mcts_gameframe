@@ -174,7 +174,7 @@ public class SimGame {
                 } else if (tag.equals("ip")) {
                     options.imPruning = true;
                 } else if (tag.startsWith("np")) {
-                    options.nodePriorsEv = true;
+                    options.nodePriors = true;
                     options.nodePriorsVisits = Integer.parseInt(tag.substring(2));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);

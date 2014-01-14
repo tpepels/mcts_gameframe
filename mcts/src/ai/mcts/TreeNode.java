@@ -23,7 +23,7 @@ public class TreeNode {
     public int player;
     public StatCounter stats;
     //
-    private boolean expanded = false;
+    private boolean expanded = false, simulated = false; 
     private List<TreeNode> children;
     private IMove move;
     private double velocity = 1.;
@@ -98,9 +98,10 @@ public class TreeNode {
             // Execute the move represented by the child
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
-            if (child.getnVisits() == 0) {
+            if (!child.isSimulated()) {
                 result = child.playOut(board, depth + 1);
                 child.updateStats(-result);
+                child.simulated = true;
             } else {
                 // The next child
                 result = -child.MCTS(board, depth + 1);
@@ -185,11 +186,6 @@ public class TreeNode {
                 // Initialize the child
                 if (options.swUCT && depth >= options.minSWDepth)
                     child = new TreeNode(nextPlayer, moves.get(i), options, true);
-                else if (options.nodePriorsEv) {
-                    child = new TreeNode(nextPlayer, moves.get(i), options);
-                    if (!child.isTerminal())
-                        board.initNodePriors(player, child.stats, moves.get(i), options.nodePriorsVisits); 
-                }
                 else 
                     child = new TreeNode(nextPlayer, moves.get(i), options);
                 
@@ -213,6 +209,10 @@ public class TreeNode {
                     child.imAlpha = -INF - 1;
                     child.imBeta = +INF + 1;
                 }
+                // node priors
+                if (winner != player && winner != nextPlayer && options.nodePriors) { 
+                    board.initNodePriors(player, child.stats, moves.get(i), options.nodePriorsVisits); 
+                }
                 // prog. bias
                 if (options.progBias) {
                     // must be strictly a bonus
@@ -234,19 +234,23 @@ public class TreeNode {
             this.imBeta = +INF + 1;
         }
         // prog. bias
-        if (options.progBias) this.heval = -board.evaluate(player);
+        if (options.progBias) 
+          this.heval = -board.evaluate(player);
         // If one of the nodes is a win, return it.
         return winNode;
     }
 
     private TreeNode select(IBoard board, int depth) {
         TreeNode selected = null;
-        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc;
+        double bestValue = Double.NEGATIVE_INFINITY, uctValue, avgValue, ucbVar, Np, Nc, sumcvisits = 0;
 
         // For a chance-move, select a random child
         if (move != null && move.isChance()) {
             return children.get(MCTSOptions.r.nextInt(children.size()));
         }
+
+        for (TreeNode c : children) 
+            sumcvisits += c.getnVisits(); 
 
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
@@ -281,8 +285,9 @@ public class TreeNode {
                 Np = getnVisits();
                 Nc = c.getnVisits();
 
-                if (options.nodePriorsEv) 
-                    Np += (children.size()-1)*options.nodePriorsVisits;
+                if (options.nodePriors) 
+                    Np = sumcvisits; 
+                    //Np += (children.size()-1)*options.nodePriorsVisits;
 
                 // with node priors, must add all the children's initial visits
 
@@ -592,6 +597,10 @@ public class TreeNode {
 
     public boolean isLeaf() {
         return children == null || !expanded;
+    }
+    
+    public boolean isSimulated() {
+        return simulated;
     }
 
     public boolean isTerminal() {
