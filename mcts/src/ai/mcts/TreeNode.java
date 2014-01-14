@@ -461,9 +461,9 @@ public class TreeNode {
                     if (options.currentCov.getN() >= 100) {
 
                         double cStar;
-                        if (options.currentCov.getN() >= 100)
-                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
-                        else
+//                        if (options.currentCov.getN() >= 100)
+//                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
+//                        else
                             cStar = options.cStar;
 
                         double x = l;
