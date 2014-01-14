@@ -454,24 +454,20 @@ public class TreeNode {
 
                 // Relative bonus
                 double l = depth + nMoves;
+                options.currentCov.push((TreeNode.myPlayer == winner) ? l : 0, -l);
                 // Get the CV for winning player
                 if (moveStats[w].variance() > 0.) {
                     l = (l  - moveStats[w].mean()) / (moveStats[w].stddev());
-                    options.currentCov.push((TreeNode.myPlayer == winner) ? l : -l, -l);
                 }
                 // Maintain the average number of moves per play-out
                 moveStats[w].push(depth + nMoves);
                 //
                 if (options.relativeBonus) {
                     if (options.currentCov.getN() >= 100 && moveStats[w].totalVisits() >= 10) {
-
                         double cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
-
                         double y = l;
                         score += Math.signum(score) * cStar * y;
                     }
-                    //
-
                 }
                 // Qualitative bonus
                 if (options.qualityBonus) {
