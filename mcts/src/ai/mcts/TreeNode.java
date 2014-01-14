@@ -458,7 +458,7 @@ public class TreeNode {
                     l = (l - moveStat.mean()) / moveStat.stddev();
 
                 if (options.relativeBonus && l > 0) {
-                    if (options.currentCov.getN() >= 100) {
+                    if (moveStats[w].totalVisits() > 10) {
 
                         double cStar;
 //                        if (options.currentCov.getN() >= 100)
@@ -466,7 +466,7 @@ public class TreeNode {
 //                        else
                             cStar = options.cStar;
 
-                        double x = l;
+                        double x = ((depth + nMoves) - moveStats[w].mean())/moveStats[w].stddev();
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
