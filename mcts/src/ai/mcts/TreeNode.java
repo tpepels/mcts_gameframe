@@ -455,11 +455,11 @@ public class TreeNode {
 
                         double cStar;
                         if (options.currentCov.getN() >= 100)
-                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
+                            cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
                         else
-                            cStar = -(options.cStar);
+                            cStar = options.cStar;
 
-                        double x = (l - moveStats[w].mean()) / moveStats[w].stddev();
+                        double x = (moveStats[w].mean() - l) / moveStats[w].stddev();
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
