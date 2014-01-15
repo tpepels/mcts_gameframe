@@ -450,7 +450,7 @@ public class TreeNode {
                 int w = winner - 1;
                 // Relative bonus
                 double l = depth + nMoves;
-                options.currentCov.push((winner == myPlayer) ? l : 0, l);
+                options.currentCov.push((winner == myPlayer) ? l : -l, 2 * l);
                 if (options.relativeBonus && l > 0) {
                     if (options.currentCov.getN() >= 100 && moveStats[w].totalVisits() >= 10 && moveStats[w].variance() > 0.) {
 
