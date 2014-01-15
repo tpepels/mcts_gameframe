@@ -459,14 +459,14 @@ public class TreeNode {
                         else
                             cStar = -(options.cStar);
 
-                        double x = (moveStats[w].mean() - l) / moveStats[w].stddev();
+                        double x = (l - moveStats[w].mean()) / moveStats[w].stddev();
                         score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
 
-                options.currentCov.push((winner == myPlayer) ? l : -l, 2 * l);
+                options.currentCov.push((winner == myPlayer) ? l : -l, l);
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
