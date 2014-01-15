@@ -178,7 +178,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Var(X)    " + options.currentCov.variance1() + " var(Y) " + options.currentCov.variance2());
             System.out.println("Cov(X,Y)  " + options.currentCov.getCovariance());
             System.out.println("Corr(X,Y) " + options.currentCov.getCorrelation());
-            System.out.println("c*        " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
+            System.out.println("c*        " + -(options.currentCov.getCovariance() / options.currentCov.variance2()));
         }
 
         // Reset the currently computed covariances
