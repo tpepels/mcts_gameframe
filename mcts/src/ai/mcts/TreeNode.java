@@ -454,7 +454,9 @@ public class TreeNode {
                     l = -1 + (2. / (1. + Math.exp(-options.k * ((l - moveStats[w].mean()) / moveStats[w].stddev()))));
                     options.currentCov.push((winner == myPlayer) ? 1 : -1, l);
                 }
-                if (options.relativeBonus && l > 0) {
+                // Maintain the average number of moves per play-out
+                moveStats[w].push(depth + nMoves);
+                if (options.relativeBonus) {
                     if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 10 && options.currentCov.getN() >= 100) {
 
                         double cStar;
@@ -467,8 +469,6 @@ public class TreeNode {
                         double x = l;
                         score += Math.signum(score) * cStar * x;
                     }
-                    // Maintain the average number of moves per play-out
-                    moveStats[w].push(depth + nMoves);
                 }
 
 
