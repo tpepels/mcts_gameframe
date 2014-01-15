@@ -451,11 +451,11 @@ public class TreeNode {
                 // Relative bonus
                 double l = depth + nMoves;
                 if (moveStats[w].variance() > 0.) {
-                    l = 1. / (1. + Math.exp(-options.k * ((l - moveStats[w].mean()) / moveStats[w].stddev())));
-                    options.currentCov.push((winner == myPlayer) ? 1 : 0,  l);
+                    l = -1 + (2. / (1. + Math.exp(-options.k * ((l - moveStats[w].mean()) / moveStats[w].stddev()))));
+                    options.currentCov.push((winner == myPlayer) ? 1 : -1, l);
                 }
                 if (options.relativeBonus && l > 0) {
-                    if (moveStats[w].totalVisits() >= 10 && options.currentCov.getN() >= 100) {
+                    if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 10 && options.currentCov.getN() >= 100) {
 
                         double cStar;
 //                        if (options.currentCov.getN() >= 100)
