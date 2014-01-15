@@ -453,7 +453,7 @@ public class TreeNode {
                 double l = depth + nMoves;
                 if (moveStats[w].variance() > 0.) {
                     l = -1 + (2. / (1. + Math.exp(-options.k * ((l - moveStats[w].mean()) / moveStats[w].stddev()))));
-                    options.currentCov.push((winner == myPlayer) ? l : -l, l);
+                    options.currentCov.push((winner == myPlayer) ? 1 : -1,(winner == myPlayer) ? l : -l);
                 }
                 // Maintain the average number of moves per play-out
                 moveStats[w].push(depth + nMoves);
