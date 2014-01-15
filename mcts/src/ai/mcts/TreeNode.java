@@ -448,27 +448,18 @@ public class TreeNode {
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
-                // Keep track of the longest game
-                if (board.getNMovesMade() > options.currentMax)
-                    options.currentMax = board.getNMovesMade();
-
                 // Relative bonus
                 double l = depth + nMoves;
-                // Get the CV for winning player
-                if (moveStats[w].variance() > 0.) {
-                    options.currentCov.push((TreeNode.myPlayer == winner) ? 1 : -1, (TreeNode.myPlayer == winner) ? -l : l);
-                    l = (l  - moveStats[w].mean()) / (moveStats[w].stddev());
-                }
-                // Maintain the average number of moves per play-out
-                moveStats[w].push(depth + nMoves);
-                //
-                if (options.relativeBonus) {
-                    if (options.currentCov.getN() >= 100 && moveStats[w].totalVisits() >= 10) {
-                        double cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
-                        double y = l;
-                        score += Math.signum(score) * cStar * y;
+                if (options.relativeBonus && l > 0) {
+                    if (moveStats[w].variance() > 0. && options.currentCov.getN() > 100) {
+                        double cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+                        double x = (moveStats[w].mean() - l) / moveStats[w].stddev();
+                        score += Math.signum(score) * cStar * x;
                     }
+                    // Maintain the average number of moves per play-out
+                    moveStats[w].push(l);
                 }
+                options.currentCov.push((winner == myPlayer) ? l : 0, l);
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
