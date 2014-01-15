@@ -450,15 +450,14 @@ public class TreeNode {
                 int w = winner - 1;
                 // Relative bonus
                 double l = depth + nMoves;
-                options.currentCov.push((winner == myPlayer) ? l : -l, 2 * l);
                 if (options.relativeBonus && l > 0) {
                     if (options.currentCov.getN() >= 100 && moveStats[w].totalVisits() >= 10 && moveStats[w].variance() > 0.) {
 
                         double cStar;
                         if (options.currentCov.getN() >= 100)
-                            cStar = options.currentCov.getCovariance() / options.currentCov.variance2();
+                            cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
                         else
-                            cStar = options.cStar;
+                            cStar = -(options.cStar);
 
                         double x = (moveStats[w].mean() - l) / moveStats[w].stddev();
                         score += Math.signum(score) * cStar * x;
@@ -466,6 +465,8 @@ public class TreeNode {
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
                 }
+
+                options.currentCov.push((winner == myPlayer) ? l : -l, 2 * l);
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
