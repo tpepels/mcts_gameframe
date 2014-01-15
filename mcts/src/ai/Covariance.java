@@ -18,8 +18,8 @@ public class Covariance {
     public void push(double value1, double value2) {
         sum1 += value1;
         sum2 += value2;
-        n++;
         covSum += value1 * value2;
+        n++;
         // Compute mean and variance for sample 1
         double delta = value1 - mean1;
         mean1 += delta / n;
@@ -32,7 +32,7 @@ public class Covariance {
     }
 
     public double getCovariance() {
-        return (covSum - ((sum1 * sum2) / n)) / (double) (n - 1);
+        return (covSum - ((sum1 * sum2) / n)) / (double) n;
     }
 
     public double getCorrelation() {
