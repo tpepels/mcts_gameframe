@@ -32,7 +32,7 @@ public class Covariance {
     }
 
     public double getCovariance() {
-        return (covSum - ((sum1 * sum2) / n)) / (double) n;
+        return (covSum - ((sum1 * sum2) / n)) / (double) (n - 1);
     }
 
     public double getCorrelation() {
@@ -40,19 +40,19 @@ public class Covariance {
     }
 
     public double stddev1() {
-        return Math.sqrt(m21 / (double) n);
+        return Math.sqrt(m21 / (double) (n - 1));
     }
 
     public double stddev2() {
-        return Math.sqrt(m22 / (double) n);
+        return Math.sqrt(m22 / (double) (n - 1));
     }
 
     public double variance1() {
-        return m21 / (double) n;
+        return m21 / (double) (n - 1);
     }
 
     public double variance2() {
-        return m22 / (double) n;
+        return m22 / (double) (n - 1);
     }
 
     public double getMean2() {
