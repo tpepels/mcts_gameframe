@@ -16,7 +16,6 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static StatCounter moveStat = new StatCounter();
     public static int myPlayer = 0;
     //
     private final boolean virtual;
