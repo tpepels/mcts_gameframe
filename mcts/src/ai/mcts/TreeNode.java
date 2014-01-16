@@ -453,11 +453,10 @@ public class TreeNode {
                 double l = depth + nMoves;
                 if (moveStats[w].variance() > 0.) {
                     l = -1 + (2. / (1. + Math.exp(-options.k * ((l - moveStats[w].mean()) / moveStats[w].stddev()))));
-                    options.currentCov.push((winner == myPlayer) ? 1 : -1,(winner == myPlayer) ? l : -l);
+                    options.currentCov.push((winner == myPlayer) ? 1 : -1, l);
                 }
                 // Maintain the average number of moves per play-out
                 moveStats[w].push(depth + nMoves);
-
                 // Apply the relative bonus
                 if (options.relativeBonus) {
                     if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 10 && options.currentCov.getN() >= 100) {
