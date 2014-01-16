@@ -448,33 +448,19 @@ public class TreeNode {
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
-
                 // Relative bonus
                 double l = depth + nMoves;
-                if (moveStats[w].variance() > 0.) {
-//                    l = -1 + (2. / (1. + Math.exp(-options.k * ((l - moveStats[w].mean()) / moveStats[w].stddev()))));
-                    l = (l - moveStats[w].mean()) / (options.k * moveStats[w].stddev());
-                    options.currentCov.push((winner == myPlayer) ? 1 : -1, (winner == myPlayer) ? l : -l);
-                }
-                // Maintain the average number of moves per play-out
-                moveStats[w].push(depth + nMoves);
                 // Apply the relative bonus
                 if (options.relativeBonus) {
                     if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 10 && options.currentCov.getN() >= 100) {
-
-                        double cStar;
-//                        if (options.currentCov.getN() >= 100)
-                        cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
-//                        else
-//                            cStar = options.cStar;
-
-//                        double x = (moveStats[w].mean() - l) / moveStats[w].stddev());
-                        double x = l;
-                        score += Math.signum(score) * cStar * x;
+                        double cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
+                        score += Math.signum(score) * cStar * (l - moveStats[w].mean());
                     }
                 }
-
-
+                // Maintain the average number of moves per play-out
+                moveStats[w].push(depth + nMoves);
+                //
+                options.currentCov.push((winner == myPlayer) ? 1 : -1, l);
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so

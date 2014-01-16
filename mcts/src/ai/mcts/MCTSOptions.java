@@ -94,7 +94,6 @@ public class MCTSOptions {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
-//            k = 8.;
             k = 2.2;
             cStar = .45;
         }
