@@ -355,6 +355,20 @@ public class Board implements IBoard {
 
     @Override
     public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
+        
+        /*
+        Using the eval func for node priors is actually bad. 
+        See results/npriors.txt. Consistent with Lorenz paper.
+
+        double eval = evaluate(parentPlayer); 
+        for (int i = 0; i < npvisits; i++)
+          stats.push(eval);
+        if (true) return;*/
+
+        initNodePriorsLorenz(parentPlayer, stats, move, npvisits); 
+    }
+
+    public void initNodePriorsLorenz(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
 
         //if (true) return;
         /*double eval = evaluate(parentPlayer); 
