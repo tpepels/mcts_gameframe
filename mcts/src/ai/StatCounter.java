@@ -58,6 +58,7 @@ public class StatCounter {
     }
 
     public void initWinsLosses(double winrate, int visits) {
+        // test
         m_wins = (int)(winrate*visits); 
         m_losses = visits - m_wins;
         m_sum = (m_wins - m_losses); 
