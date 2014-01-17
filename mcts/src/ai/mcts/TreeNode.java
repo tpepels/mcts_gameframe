@@ -206,7 +206,7 @@ public class TreeNode {
                 // implicit minimax
                 if (options.implicitMM) {
                     //child.imVal = board.evaluate(player); // view of parent
-                    child.imVal = 1; 
+                    child.imVal = -INF; 
                     child.imAlpha = -INF - 1;
                     child.imBeta = +INF + 1;
                 }
@@ -274,7 +274,8 @@ public class TreeNode {
                 // Implicit minimax
                 if (options.implicitMM) {
                     // changed to be consistent with Mark + Nathan
-                    avgValue = (1. - options.imAlpha)*avgValue + (options.imAlpha * c.imVal);
+                    if (c.imVal > -INF)
+                        avgValue = (1. - options.imAlpha)*avgValue + (options.imAlpha * c.imVal);
 
                     // pruning: if the child tree is wasteful (according to the bound info), add a large negative value
                     if (options.imPruning && c.imAlpha >= (c.imBeta - 0.000001)) {
