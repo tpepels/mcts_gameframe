@@ -514,7 +514,7 @@ public class Board implements IBoard {
         //double freediff = getFreedom(1) - getFreedom(2); 
         //System.out.println(freediff);
         //double p1eval = FastTanh.tanh(diff/50.0) + 0.1*FastTanh.tanh(freediff/100.0);
-        double p1eval = FastTanh.tanh(diff/10.0);
+        double p1eval = FastTanh.tanh(diff/50.0);
         if (player == 1) 
             return p1eval; 
         else
