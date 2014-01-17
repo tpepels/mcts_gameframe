@@ -458,7 +458,7 @@ public class TreeNode {
                             double cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
                             score += Math.signum(score) * cStar * y;
                         }
-                        options.currentCov.push((winner == myPlayer) ? y : -y, y);
+                        options.currentCov.push((winner == myPlayer) ? y : 0, y);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
