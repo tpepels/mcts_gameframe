@@ -4,6 +4,7 @@ import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
+import ai.FastTanh;
 
 import java.util.*;
 
@@ -354,7 +355,14 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player) {
-        return 0;
+        //return 0;
+        double diff = (nKings1*5 + nPieces1) - (nKings2*5 + nPieces2); 
+        //System.out.println(diff);
+        double p1eval = FastTanh.tanh(diff / 10.0); 
+        if (player == 1) 
+            return p1eval;
+        else 
+            return -p1eval;
     }
 
     @Override
