@@ -16,6 +16,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
+    public static StatCounter moveStat = new StatCounter();
     public static int myPlayer = 0;
     //
     private final boolean virtual;
@@ -451,9 +452,11 @@ public class TreeNode {
                 double l = depth + nMoves;
                 // Apply the relative bonus
                 if (options.relativeBonus) {
-                    if (moveStats[w].variance() > 0.) {
-                        double y = (l - moveStats[w].mean()) / (options.k  * moveStats[w].stddev());
-                        options.currentCov.push((winner == myPlayer) ? y : 0, y);
+                    if (moveStats[w].variance() > 0. && moveStat.variance() > 0.) {
+                        double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
+                        double yt = (l - moveStat.mean()) / moveStat.stddev();
+                        //
+                        options.currentCov.push((winner == myPlayer) ? yt : 0, yt);
                         if (moveStats[w].totalVisits() >= 50 && options.currentCov.getN() >= 100) {
                             double cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
                             score += Math.signum(score) * cStar * y;
@@ -461,6 +464,7 @@ public class TreeNode {
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
+                    moveStat.push(l);
                 }
                 // Qualitative bonus
                 if (options.qualityBonus) {
