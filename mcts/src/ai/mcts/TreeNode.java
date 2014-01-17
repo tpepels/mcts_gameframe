@@ -453,7 +453,7 @@ public class TreeNode {
                 // Apply the relative bonus
                 if (options.relativeBonus) {
                     if (moveStats[w].variance() > 0.) {
-                        double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
+                        double y = (l - moveStats[w].mean()) / (options.k  * moveStats[w].stddev());
                         if (moveStats[w].totalVisits() >= 50 && options.currentCov.getN() >= 100) {
                             double cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
                             score += Math.signum(score) * cStar * y;
