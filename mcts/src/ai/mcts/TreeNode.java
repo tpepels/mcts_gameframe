@@ -456,7 +456,7 @@ public class TreeNode {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
                         double yt = (l - moveStat.mean()) / moveStat.stddev();
                         //
-                        options.currentCov.push((winner == myPlayer) ? 1 : 0, yt);
+                        options.currentCov.push((winner == myPlayer) ? moveStat.mean() : 0, yt);
                         if (moveStats[w].totalVisits() >= 50 && options.currentCov.getN() >= 100) {
                             double cStar = -(options.currentCov.getCovariance() / options.currentCov.variance2());
                             score += Math.signum(score) * cStar * y;
