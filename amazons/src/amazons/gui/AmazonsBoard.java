@@ -54,7 +54,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         MCTSOptions options1 = new MCTSOptions();
         //options1.relativeBonus = true;
         options1.useHeuristics = true;
-        options1.timeInterval = 5000;
+        options1.timeInterval = 2000;
         options1.earlyEval = true;
         options1.pdepth = 8;
         //options1.implicitMM = true;
@@ -65,7 +65,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         aiPlayer2 = new MCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.useHeuristics = true;
-        options2.timeInterval = 5000;
+        options2.timeInterval = 2000;
         //options2.earlyEval = true;
         //options2.pdepth = 6;
         //options2.implicitMM = true; 
