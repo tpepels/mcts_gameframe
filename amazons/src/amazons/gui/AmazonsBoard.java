@@ -57,8 +57,8 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         options1.timeInterval = 2000;
         options1.earlyEval = true;
         options1.pdepth = 8;
-        //options1.implicitMM = true;
-        //options1.imAlpha = 0.2;
+        options1.implicitMM = true;
+        options1.imAlpha = 0.33;
         aiPlayer1.setOptions(options1);
 
         // Definition for player 2

@@ -286,7 +286,8 @@ public class Board implements IBoard {
                 else if (bcopy[x] == EMPTY) 
                     str += ".";
                 else { 
-                    System.out.println("WTF!" ); 
+                    //str += "?";
+                    System.out.println("WTF!" + bcopy[x]); 
                     System.exit(-1); 
                 }
             }
@@ -329,11 +330,83 @@ public class Board implements IBoard {
         System.out.println("BOARD END" + time);
     }
 
+    public double evaluate_simple(int player) {
+        // clear bcopy
+        //System.arraycopy(board, 0, bcopy, 0, board.length);
+        
+        for (int i = 0; i < 4; i++)
+            board[queens[0][i]] = WHITE_Q;
+            
+        for (int i = 0; i < 4; i++)
+            board[queens[1][i]] = BLACK_Q;
+    
+        int rad = 2; 
+
+        // count white blocks
+        int whiteBlocks = 0, blackBlocks = 0;
+
+        for (int i = 0; i < 4; i++) { 
+            int coord = queens[0][i]; 
+            int r = coord / SIZE; 
+            int c = coord % SIZE; 
+
+            for (int rp = r-rad; rp <= r+rad; rp++) 
+              for (int cp = c-rad; cp <= c+rad; cp++) {
+                  if (rp >= 0 && rp < SIZE && cp >= 0 && cp < SIZE) { 
+                      int x = rp*SIZE + cp; 
+                      if (board[x] != EMPTY) 
+                          whiteBlocks++;
+                  }  
+              }
+        }
+
+        for (int i = 0; i < 4; i++) { 
+            int coord = queens[1][i]; 
+            int r = coord / SIZE; 
+            int c = coord % SIZE; 
+
+            for (int rp = r-rad; rp <= r+rad; rp++) 
+              for (int cp = c-rad; cp <= c+rad; cp++) {
+                  if (rp >= 0 && rp < SIZE && cp >= 0 && cp < SIZE) { 
+                      int x = rp*SIZE + cp; 
+                      if (board[x] != EMPTY) 
+                          blackBlocks++;
+                  }  
+              }
+        }
+        
+        for (int i = 0; i < 4; i++)
+            board[queens[0][i]] = EMPTY;
+            
+        for (int i = 0; i < 4; i++)
+            board[queens[1][i]] = EMPTY;
+        
+        double diff = blackBlocks - whiteBlocks;
+        //System.out.println(diff);
+        double p1eval = FastTanh.tanh(diff/5.0);
+        if (player == 1) 
+            return p1eval; 
+        else
+            return -p1eval;
+    }
+
+    public double evaluate_tree(int player) { 
+      double freediff = getFreedom(1) - getFreedom(2); 
+      //System.out.println(freediff);
+      double p1eval = FastTanh.tanh(freediff/100.0);
+      if (player == 1) 
+        return p1eval; 
+      else
+        return -p1eval;
+    }
+
     @Override
     public double evaluate(int player) {
         //double diff = getFreedom(1) - getFreedom(2); 
         //System.out.println(diff/100.0);
         //int[] bcopy = new int[SIZE * SIZE];
+        if (player > 2) 
+            return evaluate_tree(player-2);
         
         // clear bcopy
         System.arraycopy(board, 0, bcopy, 0, board.length);
