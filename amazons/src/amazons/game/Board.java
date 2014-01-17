@@ -261,6 +261,42 @@ public class Board implements IBoard {
         }
     }
 
+    public String toString() { 
+        System.arraycopy(board, 0, bcopy, 0, board.length);
+        
+        for (int i = 0; i < 4; i++)
+            bcopy[queens[0][i]] = WHITE_Q;
+            
+        for (int i = 0; i < 4; i++)
+            bcopy[queens[1][i]] = BLACK_Q;
+
+        String str = ""; 
+
+        for (int r = 0; r < SIZE; r++)  { 
+            for (int c = 0; c < SIZE; c++) { 
+                    
+                int x = r*SIZE + c; 
+
+                if (bcopy[x] == WHITE_Q) 
+                    str += "W"; 
+                else if (bcopy[x] == BLACK_Q) 
+                    str += "B"; 
+                else if (bcopy[x] == ARROW) 
+                    str += "a"; 
+                else if (bcopy[x] == EMPTY) 
+                    str += ".";
+                else { 
+                    System.out.println("WTF!" ); 
+                    System.exit(-1); 
+                }
+            }
+
+            str += "\n"; 
+        }
+
+        return str;
+    }
+
     private void printBoard(int[] bcopy, int time) { 
         System.out.println("BOARD START" + time);
         for (int r = 0; r < SIZE; r++)  { 
@@ -399,9 +435,13 @@ public class Board implements IBoard {
         //printBoard(bcopy, 2);
 
         double diff = whiteCount - blackCount;
+        //System.out.println(diff);
         //System.out.println("passes = " + pass + " diff = " + diff + " whiteCount = " + whiteCount + " blackCount = " + blackCount);
-
-        double p1eval = FastTanh.tanh(diff/50.0); 
+        //
+        //double freediff = getFreedom(1) - getFreedom(2); 
+        //System.out.println(freediff);
+        //double p1eval = FastTanh.tanh(diff/50.0) + 0.1*FastTanh.tanh(freediff/100.0);
+        double p1eval = FastTanh.tanh(diff/10.0);
         if (player == 1) 
             return p1eval; 
         else

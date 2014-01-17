@@ -205,7 +205,8 @@ public class TreeNode {
                 child.stats.setValue(value);
                 // implicit minimax
                 if (options.implicitMM) {
-                    child.imVal = board.evaluate(player); // view of parent
+                    //child.imVal = board.evaluate(player); // view of parent
+                    child.imVal = 1; 
                     child.imAlpha = -INF - 1;
                     child.imBeta = +INF + 1;
                 }
@@ -229,7 +230,8 @@ public class TreeNode {
         }
         // implicit minimax
         if (options.implicitMM) {
-            this.imVal = -best_imVal;
+            //this.imVal = -best_imVal;
+            this.imVal = -board.evaluate(player);
             this.imAlpha = -INF - 1;
             this.imBeta = +INF + 1;
         }

@@ -180,6 +180,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Corr(X,Y)" + options.currentCov.getCorrelation());
             System.out.println("c*      " + (options.currentCov.getCovariance() / options.currentCov.variance2()));
             System.out.println("max moves: " + options.maxMoves);
+
+            System.out.println("Board:" );
+            System.out.println(board);
         }
 
         // Reset the currently computed covariances
