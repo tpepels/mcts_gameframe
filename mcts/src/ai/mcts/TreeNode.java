@@ -454,7 +454,7 @@ public class TreeNode {
                 if (options.relativeBonus) {
                     if (moveStats[w].variance() > 0. && moveStat.variance() > 0.) {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
-                        double yt = (l - moveStat.mean()) / moveStat.stddev();
+                        double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
                         //
                         options.currentCov.push((winner == myPlayer) ? yt: 0, yt);
                         if (moveStats[w].totalVisits() >= 50 && options.currentCov.getN() >= 100) {
