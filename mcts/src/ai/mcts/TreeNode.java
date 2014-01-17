@@ -273,6 +273,7 @@ public class TreeNode {
                 if (options.implicitMM) {
                     // changed to be consistent with Mark + Nathan
                     avgValue = (1. - options.imAlpha)*avgValue + (options.imAlpha * c.imVal);
+
                     // pruning: if the child tree is wasteful (according to the bound info), add a large negative value
                     if (options.imPruning && c.imAlpha >= (c.imBeta - 0.000001)) {
                         //double penalty = (-10 + MCTSOptions.r.nextDouble()*(-50)); 

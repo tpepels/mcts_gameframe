@@ -440,7 +440,8 @@ public class Board implements IBoard {
         }
 
         double distDiff = (oppdist - mydist);
-        double score_th = FastTanh.tanh(distDiff / 10.0);
+        //System.out.println("dist diff = " + distDiff);
+        double score_th = FastTanh.tanh(distDiff/10.0);
         return score_th;
     }
 

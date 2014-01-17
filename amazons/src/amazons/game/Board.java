@@ -24,6 +24,7 @@ public class Board implements IBoard {
     public final int[][] queens = new int[2][4];
     // Board is public for fast access
     public final int[] board;
+    public int[] bcopy;
     private final int[] ALL_MOVE_INT = {9, -9, 7, -7, 8, -8, -1, 1};
     private final int[] possibleMoves = new int[40], possibleShots = new int[40];
     private final Stack<IMove> pastMoves = new Stack<IMove>();
@@ -36,6 +37,7 @@ public class Board implements IBoard {
      */
     public Board() {
         board = new int[SIZE * SIZE];
+        bcopy = new int[SIZE * SIZE];
         currentPlayer = P1;
     }
 
@@ -80,6 +82,7 @@ public class Board implements IBoard {
         newBoard.currentPlayer = currentPlayer;
         newBoard.nMoves = nMoves;
         newBoard.winner = winner;
+        newBoard.bcopy = new int[SIZE*SIZE];
         return newBoard;
     }
 
@@ -258,10 +261,147 @@ public class Board implements IBoard {
         }
     }
 
+    private void printBoard(int[] bcopy, int time) { 
+        System.out.println("BOARD START" + time);
+        for (int r = 0; r < SIZE; r++)  { 
+            for (int c = 0; c < SIZE; c++) { 
+                    
+                int x = r*SIZE + c; 
+
+                if (bcopy[x] == WHITE_Q) 
+                    System.out.print("W"); 
+                else if (bcopy[x] >= 100 && bcopy[x] < 200) 
+                    System.out.print("w"); 
+                else if (bcopy[x] == BLACK_Q) 
+                    System.out.print("B"); 
+                else if (bcopy[x] >= 200 && bcopy[x] < 300) 
+                    System.out.print("b"); 
+                else if (bcopy[x] == ARROW) 
+                    System.out.print("a"); 
+                else if (bcopy[x] == EMPTY) 
+                    System.out.print(".");
+                else if (bcopy[x] == 300) 
+                    System.out.print("#");
+                else { 
+                    System.out.println("WTF!" ); 
+                    System.exit(-1); 
+                }
+            }
+
+            System.out.println("");
+        }
+        System.out.println("BOARD END" + time);
+    }
+
     @Override
     public double evaluate(int player) {
-        double diff = getFreedom(1) - getFreedom(2); 
-        double p1eval = FastTanh.tanh(diff); 
+        //double diff = getFreedom(1) - getFreedom(2); 
+        //System.out.println(diff/100.0);
+        //int[] bcopy = new int[SIZE * SIZE];
+        
+        // clear bcopy
+        System.arraycopy(board, 0, bcopy, 0, board.length);
+        
+        for (int i = 0; i < 4; i++)
+            bcopy[queens[0][i]] = WHITE_Q;
+            
+        for (int i = 0; i < 4; i++)
+            bcopy[queens[1][i]] = BLACK_Q;
+
+        //printBoard(bcopy, 1);
+
+        // EMPTY = 0, WHITE_Q = P1, BLACK_Q = P2, ARROW = 3;
+        boolean change = true; 
+        int pass = 0; 
+
+        int whiteCount = 0;
+        int blackCount = 0;
+
+        while (change) { 
+            change = false; 
+            pass++; 
+        
+            whiteCount = 0;
+            blackCount = 0;
+
+            for (int r = 0; r < SIZE; r++) 
+                for (int c = 0; c < SIZE; c++) { 
+                    int x = r*SIZE + c; 
+
+                    if (bcopy[x] == WHITE_Q || (bcopy[x] >= 100 && bcopy[x] < 200)) 
+                        whiteCount++;
+                    if (bcopy[x] == BLACK_Q || (bcopy[x] >= 200 && bcopy[x] < 300)) 
+                        blackCount++;
+                    
+                    if (   bcopy[x] == WHITE_Q 
+                        || bcopy[x] == BLACK_Q 
+                        || bcopy[x] == (100+pass-1) 
+                        || bcopy[x] == (200+pass-1))
+                    {
+                        //System.out.println("x = " + x + " bcopy[x] = " + bcopy[x]);   
+
+                        int[] coords = new int[8];
+                        coords[0] = (r-1)*SIZE + c; 
+                        coords[1] = (r+1)*SIZE + c; 
+                        coords[2] = r*SIZE + (c-1); 
+                        coords[3] = r*SIZE + (c+1); 
+                        coords[4] = (r-1)*SIZE + (c-1); 
+                        coords[5] = (r-1)*SIZE + (c+1); 
+                        coords[6] = (r+1)*SIZE + (c-1); 
+                        coords[7] = (r+1)*SIZE + (c+1); 
+
+                        int myInfluence = 0;
+                        
+                        if (bcopy[x] == WHITE_Q || (bcopy[x] >= 100 && bcopy[x] < 200)) { 
+                          myInfluence = 100+pass;
+                        }
+                        else if (bcopy[x] == BLACK_Q || (bcopy[x] >= 200 && bcopy[x] < 300)) { 
+                          myInfluence = 200+pass;
+                        }
+
+                        //System.out.println("MY INFLUENCE " + myInfluence);
+                        //assert(myInfluence != 0); 
+
+                        for (int dir = 0; dir < 8; dir++) { 
+                            int coord = coords[dir]; 
+
+                            if (coord >= 0 && coord < SIZE*SIZE) {
+                                if (bcopy[coord] == EMPTY) { 
+                                    bcopy[coord] = myInfluence; 
+                                    change = true;
+                                    //System.out.println("Spreading " + myInfluence);
+                                    //System.out.println("changing 1: " + myInfluence);
+                                }
+                                else if (bcopy[coord] == 100+pass || bcopy[coord] == 200+pass) {
+                                    // was put here on this pass. check for collisions
+                                    // so either 10x or 20x
+
+                                    if (myInfluence == 100+pass && bcopy[coord] == 200+pass) { 
+                                        bcopy[coord] = 300; 
+                                        change = true;
+                                    }
+                                    else if (myInfluence == 200+pass && bcopy[coord] == 100+pass) { 
+                                        bcopy[coord] = 300; 
+                                        change = true;
+                                    }
+
+                                    //bcopy[coord] = 300; 
+                                    //change = true; 
+                                    //System.out.println("changing 2");
+                                }
+                            }
+                        }
+                    }
+                }
+
+        }
+
+        //printBoard(bcopy, 2);
+
+        double diff = whiteCount - blackCount;
+        //System.out.println("passes = " + pass + " diff = " + diff + " whiteCount = " + whiteCount + " blackCount = " + blackCount);
+
+        double p1eval = FastTanh.tanh(diff/50.0); 
         if (player == 1) 
             return p1eval; 
         else
