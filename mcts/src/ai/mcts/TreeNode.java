@@ -464,7 +464,7 @@ public class TreeNode {
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
-                    moveStat.push(l);
+                    moveStat.push(board.getNMovesMade());
                 }
                 // Qualitative bonus
                 if (options.qualityBonus) {
