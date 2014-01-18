@@ -12,7 +12,7 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.qualityBonus = true;
+//        options1.qualityBonus = true;
 //        options1.swUCT = true;
 //        options1.pdepth = 0;
 //        options1.earlyEval = true;
