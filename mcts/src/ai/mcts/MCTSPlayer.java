@@ -169,20 +169,20 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             if (options.relativeBonus) {
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].variance());
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
+                System.out.println("Cov(X,Y)  " + options.moveCov.getCovariance());
+                System.out.println("c*        " + -(options.moveCov.getCovariance() / options.moveCov.variance2()));
             }
             if (options.qualityBonus) {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
+                System.out.println("Cov(X,Y)  " + options.qualityCov.getCovariance());
+                System.out.println("c*        " + -(options.qualityCov.getCovariance() / options.qualityCov.variance2()));
             }
-            System.out.println("E(Y)      " + options.currentCov.getMean2());
-            System.out.println("Var(X)    " + options.currentCov.variance1() + " var(Y) " + options.currentCov.variance2());
-            System.out.println("Cov(X,Y)  " + options.currentCov.getCovariance());
-            System.out.println("Corr(X,Y) " + options.currentCov.getCorrelation());
-            System.out.println("c*        " + -(options.currentCov.getCovariance() / options.currentCov.variance2()));
         }
 
         // Reset the currently computed covariances
-        options.currentCov.reset();
+        // options.moveCov.reset();
+        // options.qualityCov.reset();
 
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
@@ -203,12 +203,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     @Override
     public void newGame(int myPlayer, String game) {
         root = new TreeNode(myPlayer, options);
-        options.currentCov.reset();
+        options.moveCov.reset();
+        options.qualityCov.reset();
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
-        TreeNode.moveStat.reset();
         //
         if (!options.fixedSimulations)
             options.resetSimulations(game);
