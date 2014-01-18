@@ -452,15 +452,13 @@ public class TreeNode {
                 // Apply the relative bonus
                 if (options.relativeBonus) {
                     if (moveStat.variance() > 0. && moveStat.totalVisits() >= 100) {
-                        //
                         double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
-                        options.moveCov.push((winner == player) ? yt : 0, yt);
-                        //
-                        if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 100) {
-                            double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
-                            double cStar = -(options.moveCov.getCovariance() / options.moveCov.variance2());
-                            score += Math.signum(score) * cStar * y;
-                        }
+                        options.moveCov.push((winner == player) ? yt : -yt, yt);
+                    }
+                    if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 100) {
+                        double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
+                        double cStar = -(options.moveCov.getCovariance() / options.moveCov.variance2());
+                        score += Math.signum(score) * cStar * y;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
