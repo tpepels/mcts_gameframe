@@ -453,7 +453,7 @@ public class TreeNode {
                 // Apply the relative bonus
                 if (options.relativeBonus) {
                     if (winStat.variance() > 0. && winStat.totalVisits() >= 100 && moveStat.variance() > 0. && moveStat.totalVisits() >= 100) {
-                        double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
+                        double yt = (l - moveStat.mean()) / moveStat.stddev();
                         double wt = (x - winStat.mean()) / winStat.stddev();
                         options.moveCov.push((winner == myPlayer) ? wt : -wt, yt);
                     }
@@ -464,7 +464,7 @@ public class TreeNode {
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
-                    moveStat.push(board.getNMovesMade());
+                    moveStat.push(l);
                 }
                 // Qualitative bonus
                 if (options.qualityBonus) {
