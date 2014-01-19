@@ -39,6 +39,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         //
         if (!p1Human) {
             aiPlayer1 = new MCTSPlayer();
+            p1Options.relativeBonus = true;
             aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {

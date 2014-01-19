@@ -65,8 +65,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
-//        TreeNode.winStat.reset();
+        TreeNode.winStat.reset();
 //        TreeNode.moveStat.reset();
+        TreeNode.qStat.reset();
         //
         interrupted = false;
         if (parallel) {
@@ -172,6 +173,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
                 System.out.println("Cov(X,Y)  " + options.moveCov.getCovariance());
                 System.out.println("c*        " + -(options.moveCov.getCovariance() / options.moveCov.variance2()));
+                System.out.println("PBC       " + options.pbc.getCorrelation());
             }
             if (options.qualityBonus) {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
@@ -184,6 +186,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         // Reset the currently computed covariances
 //        options.moveCov.reset();
 //        options.qualityCov.reset();
+        options.pbc.reset();
 
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)

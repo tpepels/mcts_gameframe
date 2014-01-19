@@ -15,7 +15,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static StatCounter moveStat = new StatCounter(), winStat = new StatCounter();
+    public static StatCounter moveStat = new StatCounter(), winStat = new StatCounter(), qStat = new StatCounter();
     public static int myPlayer = 0;
     //
     private final boolean virtual;
@@ -452,14 +452,16 @@ public class TreeNode {
                 int x = (winner == myPlayer) ? 1 : -1;
                 // Apply the relative bonus
                 if (options.relativeBonus) {
-                    if (winStat.variance() > 0. && winStat.totalVisits() >= 100 && moveStat.variance() > 0. && moveStat.totalVisits() >= 100) {
+                    if (winStat.variance() > 0. && winStat.totalVisits() >= 50 && moveStat.variance() > 0. && moveStat.totalVisits() >= 50) {
                         double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
                         double wt = (x - winStat.mean()) / winStat.stddev();
                         options.moveCov.push((winner == myPlayer) ? wt : -wt, yt);
+                        options.pbc.push((winner == myPlayer) ? 1: 0, l);
                     }
-                    if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 100) {
+                    if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 50) {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
-                        double cStar = -(options.moveCov.getCovariance() / options.moveCov.variance2());
+//                        double cStar = -(options.moveCov.getCovariance() / options.moveCov.variance2());
+                        double cStar = options.pbc.getCorrelation();
                         score += Math.signum(score) * cStar * y;
                     }
                     // Maintain the average number of moves per play-out
@@ -468,15 +470,20 @@ public class TreeNode {
                 }
                 // Qualitative bonus
                 if (options.qualityBonus) {
-                    // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
-                    options.qualityCov.push((winner == player) ? 1 : -1, q);
-                    if (qualityStats[w].totalVisits() >= 50 && options.qualityCov.getN() >= 100 && qualityStats[w].variance() > 0.) {
-                        double qb = (q - qualityStats[w].mean()); // / qualityStats[w].stddev();
+                    // Only compute the quality if QB is active, since it may be costly to do so
+                    if (winStat.variance() > 0. && winStat.totalVisits() >= 50 && qStat.totalVisits() > -50 && qStat.variance() > 0.) {
+                        double qt = (q - qStat.mean()) / qStat.stddev();
+                        double wt = (x - winStat.mean()) / winStat.stddev();
+                        options.qualityCov.push((winner == myPlayer) ? wt : -wt, qt);
+                    }
+                    if (qualityStats[w].totalVisits() >= 50 && options.qualityCov.getN() >= 50 && qualityStats[w].variance() > 0.) {
+                        double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
                         double cStar = -(options.qualityCov.getCovariance() / options.qualityCov.variance2());
                         score += Math.signum(score) * cStar * qb;
                     }
                     qualityStats[w].push(q);
+                    qStat.push(q);
                 }
                 winStat.push(x);
             }

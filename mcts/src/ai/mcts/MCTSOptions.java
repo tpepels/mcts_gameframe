@@ -1,6 +1,7 @@
 package ai.mcts;
 
 import ai.Covariance;
+import ai.PBC;
 
 import java.util.Random;
 
@@ -10,6 +11,7 @@ public class MCTSOptions {
     private static int instances = 0;
     //
     public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
+    public PBC pbc = new PBC();
     public double cStar = -1;
     // Fields for enabling tree-reuse
     public boolean treeReuse = false;
