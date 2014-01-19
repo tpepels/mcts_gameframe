@@ -15,7 +15,7 @@ public class TreeNode {
     private static final Stack<IMove> movesMade = new Stack<IMove>();
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static StatCounter moveStat = new StatCounter();
+    public static StatCounter moveStat = new StatCounter(), winStat = new StatCounter();
     public static int myPlayer = 0;
     //
     private final boolean virtual;
@@ -449,11 +449,13 @@ public class TreeNode {
                 int w = winner - 1;
                 // Relative bonus
                 double l = depth + nMoves;
+                int x = (winner == myPlayer) ? 1 : 0;
                 // Apply the relative bonus
                 if (options.relativeBonus) {
-                    if (moveStat.variance() > 0. && moveStat.totalVisits() >= 100) {
+                    if (winStat.variance() > 0. && winStat.totalVisits() >= 100 && moveStat.variance() > 0. && moveStat.totalVisits() >= 100) {
                         double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
-                        options.moveCov.push((winner == player) ? yt : -yt, yt);
+                        double wt = (x - winStat.mean()) / winStat.stddev();
+                        options.moveCov.push(wt, yt);
                     }
                     if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 100) {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
@@ -476,6 +478,7 @@ public class TreeNode {
                     }
                     qualityStats[w].push(q);
                 }
+                winStat.push(x);
             }
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
