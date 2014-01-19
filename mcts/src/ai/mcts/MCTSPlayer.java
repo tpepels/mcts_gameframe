@@ -186,7 +186,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         // Reset the currently computed covariances
 //        options.moveCov.reset();
 //        options.qualityCov.reset();
-        options.pbc.reset();
+//        options.pbc.reset();
 
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
@@ -209,6 +209,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         root = new TreeNode(myPlayer, options);
         options.moveCov.reset();
         options.qualityCov.reset();
+        options.pbc.reset();
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();
