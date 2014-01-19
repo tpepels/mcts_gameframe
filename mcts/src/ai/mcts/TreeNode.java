@@ -449,13 +449,13 @@ public class TreeNode {
                 int w = winner - 1;
                 // Relative bonus
                 double l = depth + nMoves;
-                int x = (winner == myPlayer) ? 1 : 0;
+                int x = (winner == myPlayer) ? 1 : -1;
                 // Apply the relative bonus
                 if (options.relativeBonus) {
                     if (winStat.variance() > 0. && winStat.totalVisits() >= 100 && moveStat.variance() > 0. && moveStat.totalVisits() >= 100) {
                         double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
                         double wt = (x - winStat.mean()) / winStat.stddev();
-                        options.moveCov.push(wt, yt);
+                        options.moveCov.push((winner == myPlayer) ? wt : -wt, yt);
                     }
                     if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 100) {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
