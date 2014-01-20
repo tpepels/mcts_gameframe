@@ -10,9 +10,6 @@ public class MCTSOptions {
     public static final Random r = new Random();
     private static int instances = 0;
     //
-    public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
-    public PBC pbc = new PBC();
-    public double cStar = -1;
     // Fields for enabling tree-reuse
     public boolean treeReuse = false;
     // Discount values based on their depth
@@ -70,34 +67,22 @@ public class MCTSOptions {
     public void setGame(String game) {
         if (game.equals("cannon")) {
             uctC = .8;
-            k = 1.;
-            cStar = -.4;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
-            k = 1.;
-            cStar = -.5;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
-            k = 1.;
-            cStar = -.5;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
-            cStar = -.45;
-            k = 1.;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
-            k = 1.;
-            cStar = -.65;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
-            k = 1.;
-            cStar = -.5;
         }
         resetSimulations(game);
     }
