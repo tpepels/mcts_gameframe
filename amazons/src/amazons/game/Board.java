@@ -259,10 +259,10 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player) {
-        double diff = getFreedom(1) - getFreedom(2); 
-        double p1eval = FastTanh.tanh(diff); 
-        if (player == 1) 
-            return p1eval; 
+        double diff = getFreedom(1) - getFreedom(2);
+        double p1eval = FastTanh.tanh(diff);
+        if (player == 1)
+            return p1eval;
         else
             return -p1eval;
     }
@@ -271,25 +271,15 @@ public class Board implements IBoard {
     public double getQuality() {
         double count = getFreedom(winner);
         // The more available moves the winning player has, the better
-        return count / (N_QUEENS * 16.);
+        return count / (16.);
     }
 
     private int getFreedom(int player) {
-        int from, moveCount, shotCount, total = 0;
+        int from, total = 0;
         for (int i = 0; i < queens[player - 1].length; i++) {
             // Select the location to move from, ie the queen to move
             from = queens[player - 1][i];
-            moveCount = getPossibleMovesFrom(from, possibleMoves);
-            // Move count holds the possible number of moves possible from this position
-            for (int j = 0; j < moveCount; j++) {
-                moveQueen(from, possibleMoves[j], player);
-                // Iterate through the possible shots
-                shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
-                for (int k = 0; k < shotCount; k++) {
-                    total++;
-                }
-                undoQueenMove(currentPlayer);
-            }
+            total += getPossibleMovesFrom(from, null);
         }
         return total;
     }
@@ -332,7 +322,8 @@ public class Board implements IBoard {
             while (position <= max && position >= min
                     && board[position] == Board.EMPTY) {
                 //
-                moves[count] = position;
+                if (moves != null)
+                    moves[count] = position;
                 count++;
                 position += direction;
             }
