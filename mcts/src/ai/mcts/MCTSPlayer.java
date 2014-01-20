@@ -17,7 +17,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
     private IBoard board;
     private MoveCallback callback;
     private IMove bestMove;
-    private int myPlayer;
+    private int myPlayer, nMoves = 0;
     //
     private MCTSOptions options;
 
@@ -82,6 +82,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             throw new RuntimeException("MCTS Options not set.");
 
         int simulations = 0;
+        boolean qb = options.qualityBonus;
+        boolean rb = options.relativeBonus;
+        if(qb && nMoves <= 1)
+            options.qualityBonus = false;
+        if(rb && nMoves <= 1)
+            options.relativeBonus = false;
 
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
@@ -176,10 +182,12 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("c*                : " + options.qualityCov.getCovariance() / options.qualityCov.variance2());
             }
         }
-
-        options.moveCov.reset();
-        options.qualityCov.reset();
-
+        // Turn the qb back on
+        options.qualityBonus = qb;
+        options.relativeBonus = rb;
+        //options.moveCov.reset();
+        //options.qualityCov.reset();
+        nMoves++;
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
             root = bestChild;
@@ -205,6 +213,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.qualityStats[1].reset();
         options.qualityCov.reset();
         options.moveCov.reset();
+        nMoves = 0;
         //
         if (!options.fixedSimulations)
             options.resetSimulations(game);
