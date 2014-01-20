@@ -53,7 +53,8 @@ public class PBC {
 //            tot += (data[0][i] - mean1) * (data[1][i] - mean2);
 //        }
 //        return tot / max;
-        return ((mW + mL) / n) - ((mW / wins) * (mL / losses));
+//        return ((mW + mL) / n) - ((mW / wins) * (mL / losses));
+        return ((1 - (wins/(double)n)) * (wins/(double)n)) * ((mW/wins) - (mL/losses));
     }
 
     public double getCorrelation() {
