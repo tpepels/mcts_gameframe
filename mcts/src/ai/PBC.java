@@ -46,11 +46,15 @@ public class PBC {
         return Math.sqrt(m2 / (double) (n - 1));
     }
 
+    public double getSign() {
+       return Math.signum((mW/wins) - (mL/losses));
+    }
+
     public double variance() {
         return m2 / (double) (n - 1);
     }
 
-    public double getMean2() {
+    public double getMean() {
         return mean;
     }
 
