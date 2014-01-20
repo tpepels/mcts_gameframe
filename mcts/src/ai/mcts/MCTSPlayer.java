@@ -66,7 +66,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.qualityStats[0].reset();
         TreeNode.qualityStats[1].reset();
         TreeNode.winStat.reset();
-//        TreeNode.moveStat.reset();
+        TreeNode.moveStat.reset();
         TreeNode.qStat.reset();
         //
         interrupted = false;
@@ -184,7 +184,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
 
         // Reset the currently computed covariances
-//        options.moveCov.reset();
+        options.moveCov.reset();
 //        options.qualityCov.reset();
 //        options.pbc.reset();
 
