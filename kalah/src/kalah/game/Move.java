@@ -38,10 +38,10 @@ public class Move implements IMove {
 
     @Override
     public int getUniqueId() {
-        // FIXME!!!!!
-        int maxCap = 2*Board.N_HOUSES*Board.N_SPIECES;        
-        if (true) throw new RuntimeException("Unimplemented!");
-        return (values[0]);
+        // captures*36 + (type-1)*12 + move
+        int maxMove = 2*Board.N_HOUSES;     // 12
+        int maxTypeHouseCombos = 3*maxMove; // 36
+        return (values[1]*maxTypeHouseCombos + ((type-1)*maxMove + values[0]));
     }
 
     @Override
