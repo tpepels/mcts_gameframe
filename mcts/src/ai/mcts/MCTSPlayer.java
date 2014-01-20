@@ -177,6 +177,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
         }
 
+        options.moveCov.reset();
+        options.qualityCov.reset();
+
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
             root = bestChild;

@@ -436,9 +436,9 @@ public class Board implements IBoard {
     public int checkWin() {
         // If a player has no pieces left, he lost the game
         if (numWhitePcs == 0) {
-            winningPlayer = P1;
+            winningPlayer = P1_WIN;
         } else if (numBlackPcs == 0) {
-            winningPlayer = P2;
+            winningPlayer = P2_WIN;
         }
         // Check for a checkmate position
         if (winningPlayer == NONE_WIN && allMovesForPlayer == currentPlayer) {
@@ -645,7 +645,7 @@ public class Board implements IBoard {
         if (winningPlayer == P1_WIN)
             return ((double) (numBlackPcs - numWhitePcs)) / (double) (N_PIECES);
         else if (winningPlayer == P2_WIN)
-            return ((double) (numWhitePcs - numWhitePcs)) / (double) (N_PIECES);
+            return ((double) (numWhitePcs - numBlackPcs)) / (double) (N_PIECES);
         return 1.;
     }
 }

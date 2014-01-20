@@ -2,6 +2,7 @@ package ai.mcts;
 
 import ai.FastLog;
 import ai.FastSigm;
+import ai.FastTanh;
 import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -453,8 +454,8 @@ public class TreeNode {
                     if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
                         double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
                         double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
-//                        score += Math.signum(score) * 0.25 * FastSigm.sigm(-options.k * x);
-                        score += Math.signum(score) * cStar * x;
+//                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
+                        score += Math.signum(score) * cStar * FastTanh.tanh(options.k * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
@@ -465,6 +466,8 @@ public class TreeNode {
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
+                    if(winner == 2)
+                        System.out.println("hier");
                     double q = board.getQuality();
                     if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                         double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
