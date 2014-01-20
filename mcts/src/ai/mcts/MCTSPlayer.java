@@ -184,7 +184,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         }
 
         // Reset the currently computed covariances
-        options.moveCov.reset();
+//        options.moveCov.reset();
 //        options.qualityCov.reset();
 //        options.pbc.reset();
 
