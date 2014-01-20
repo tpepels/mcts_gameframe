@@ -450,23 +450,30 @@ public class TreeNode {
 
                 // Relative bonus
                 if (options.relativeBonus && (nMoves + depth) > 0) {
-                    if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 10) {
+                    if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
                         double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
-                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
+                        double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
+//                        score += Math.signum(score) * 0.25 * FastSigm.sigm(-options.k * x);
+                        score += Math.signum(score) * cStar * x;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
+                    int nm = board.getNMovesMade();
+                    options.moveCov.push((winner == myPlayer) ? nm : 0, nm);
                 }
 
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
-                    if (qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 10) {
+                    if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                         double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
-                        score += Math.signum(score) * FastSigm.sigm(-options.k * qb);
+                        double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
+//                        score += Math.signum(score) * FastSigm.sigm(-options.k * qb);
+                        score += Math.signum(score) * cStar * qb;
                     }
                     qualityStats[w].push(q);
+                    options.qualityCov.push((winner == myPlayer) ? q : 0, q);
                 }
             }
         } else if (options.earlyEval && terminateEarly) {

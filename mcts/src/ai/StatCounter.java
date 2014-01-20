@@ -95,7 +95,7 @@ public class StatCounter {
     }
 
     public double variance() {
-        return m_m2 / (double) (m_n - 1);
+        return m_m2 / (double) m_n;
     }
 
     public double stddev() {

@@ -40,19 +40,19 @@ public class Covariance {
     }
 
     public double stddev1() {
-        return Math.sqrt(m21 / (double) (n - 1));
+        return Math.sqrt(m21 / (double) (n));
     }
 
     public double stddev2() {
-        return Math.sqrt(m22 / (double) (n - 1));
+        return Math.sqrt(m22 / (double) (n));
     }
 
     public double variance1() {
-        return m21 / (double) (n - 1);
+        return m21 / (double) (n);
     }
 
     public double variance2() {
-        return m22 / (double) (n - 1);
+        return m22 / (double) (n);
     }
 
     public double getMean2() {

@@ -10,6 +10,7 @@ public class MCTSOptions {
     public static final Random r = new Random();
     private static int instances = 0;
     //
+    public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
     // Fields for enabling tree-reuse
     public boolean treeReuse = false;
     // Discount values based on their depth
