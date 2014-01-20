@@ -54,7 +54,7 @@ public class PBC {
 //        }
 //        return tot / max;
 //        return ((mW + mL) / n) - ((mW / wins) * (mL / losses));
-        return ((1 - (wins/(double)n)) * (wins/(double)n)) * ((mW/wins) - (mL/losses));
+        return ((1. - (wins/(double)n)) * (wins/(double)n)) * ((mW/wins) - (mL/losses));
     }
 
     public double getCorrelation() {

@@ -452,21 +452,21 @@ public class TreeNode {
                 int x = (winner == myPlayer) ? 1 : 0;
                 // Apply the relative bonus
                 if (options.relativeBonus) {
-                    if (winStat.variance() > 0. && winStat.totalVisits() >= 50 && moveStat.variance() > 0. && moveStat.totalVisits() >= 50) {
-                        double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
-                        double wt = (x - winStat.mean()) / winStat.stddev();
-                        options.moveCov.push((winner == myPlayer) ? wt : -wt, yt);
+                    if (moveStat.variance() > 0. && moveStat.totalVisits() >= 50) {
+                        double yt = (l- moveStat.mean()) / moveStat.stddev();
+//                        double wt = (x - winStat.mean()) / winStat.stddev();
+//                        options.moveCov.push((winner == myPlayer) ? wt : -wt, yt);
                         options.pbc.push(x, yt);
                     }
-                    if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 50) {
+                    if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.pbc.getN() >= 50) {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
 //                        double cStar = -(options.moveCov.getCovariance() / options.moveCov.variance2());
-                        double cStar = -(options.pbc.getCovariance() / options.pbc.variance());
+                        double cStar = (options.pbc.getCovariance());// / options.pbc.variance());
                         score += Math.signum(score) * cStar * y;
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(l);
-                    moveStat.push(board.getNMovesMade());
+                    moveStat.push(l);
                 }
                 // Qualitative bonus
                 if (options.qualityBonus) {
@@ -479,7 +479,7 @@ public class TreeNode {
                     }
                     if (qualityStats[w].totalVisits() >= 50 && options.qualityCov.getN() >= 50 && qualityStats[w].variance() > 0.) {
                         double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
-                        double cStar = -(options.qualityCov.getCovariance() / options.qualityCov.variance2());
+                        double cStar = (options.qualityCov.getCovariance() / options.qualityCov.variance2());
                         score += Math.signum(score) * cStar * qb;
                     }
                     qualityStats[w].push(q);
