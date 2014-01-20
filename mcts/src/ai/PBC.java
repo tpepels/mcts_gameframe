@@ -1,6 +1,8 @@
 package ai;
 
-
+/**
+ * Point biserial correlation
+ */
 public class PBC {
     private int n = 0;
     private double sum, mean, m2;

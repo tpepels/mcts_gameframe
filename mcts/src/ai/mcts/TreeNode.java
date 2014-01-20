@@ -456,12 +456,10 @@ public class TreeNode {
                         double yt = (board.getNMovesMade() - moveStat.mean()) / moveStat.stddev();
                         double wt = (x - winStat.mean()) / winStat.stddev();
                         options.moveCov.push((winner == myPlayer) ? wt : -wt, yt);
-                        options.pbc.push((winner == myPlayer) ? 1: 0, board.getNMovesMade());
                     }
                     if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 50) {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
-//                        double cStar = -(options.moveCov.getCovariance() / options.moveCov.variance2());
-                        double cStar = options.pbc.getCorrelation();
+                        double cStar = -options.k * (options.moveCov.getCovariance() / options.moveCov.variance2());
                         score += Math.signum(score) * cStar * y;
                     }
                     // Maintain the average number of moves per play-out
