@@ -95,7 +95,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 }
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
-                if (root.MCTS(board, 0) == TreeNode.INF)
+                // Note: stats at root node are in view of the root player (also never used)
+                if (root.MCTS(board, 0, root.player) == TreeNode.INF)
                     break; // Break if you find a winning move
 
 //                Enable this to plot per arm totals
@@ -122,7 +123,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 options.simsLeft--;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
-                if (root.MCTS(board, 0) == TreeNode.INF)
+                // Note: stats at the root node are in view of the root player (also never used)
+                if (root.MCTS(board, 0, root.player) == TreeNode.INF)
                     break; // Break if you find a winning move
             }
         }

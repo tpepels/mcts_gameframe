@@ -76,12 +76,12 @@ public class TreeNode {
      * @param board The current board
      * @return the currently evaluated playout value of the node
      */
-    public double MCTS(IBoard board, int depth) {
+    public double MCTS(IBoard board, int depth, int previousPlayer) {
         TreeNode child = null;
         // First add some leafs if required
         if (isLeaf()) {
             // Expand returns any node that leads to a win
-            child = expand(board, depth + 1);
+            child = expand(board, depth + 1, previousPlayer);
         }
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
@@ -100,11 +100,21 @@ public class TreeNode {
             // When a leaf is reached return the result of the playout
             if (!child.isSimulated()) {
                 result = child.playOut(board, depth + 1);
-                child.updateStats(-result);
+                // check for non-negamax
+                // here, result is in view of the child
+                if (this.player != child.player)
+                    result = -result;
+
+                child.updateStats(result);
+
                 child.simulated = true;
             } else {
                 // The next child
-                result = -child.MCTS(board, depth + 1);
+                // check for non-negamax
+                if (this.player != child.player)
+                    result = -child.MCTS(board, depth + 1, this.player);
+                else 
+                    result = child.MCTS(board, depth + 1, this.player);
             }
             // Update the MAST value for the move, use original value not the altered reward (signum)
             if (options.useHeuristics && options.MAST)
@@ -115,9 +125,16 @@ public class TreeNode {
             result = child.stats.mean();
         }
 
+        // result is now in view of me in all cases
+
         // (Solver) If one of the children is a win, then I'm a win
         if (result == INF) {
-            stats.setValue(-INF);
+            // If I have a win, my parent has a loss. 
+            // check for non-negamax
+            if (previousPlayer != this.player)
+                stats.setValue(-INF);
+            else 
+                stats.setValue(INF);
             return result;
         } else if (result == -INF) {
             // (Solver) Check if all children are a loss
@@ -129,11 +146,15 @@ public class TreeNode {
                 if (options.solverFix && tn.isLeaf()) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
-                    TreeNode winner = tn.expand(board, depth + 2);
+                    TreeNode winner = tn.expand(board, depth + 2, this.player);
                     board.undoMove();
                     // We found a winning node below the child, this means the child is a loss.
                     if (winner != null) {
-                        tn.stats.setValue(-INF);
+                        // check for non-negamax
+                        if (player != tn.player)
+                            tn.stats.setValue(-INF);
+                        else 
+                            tn.stats.setValue(INF);
                     }
                 }
                 // Are all children a loss?
@@ -141,24 +162,50 @@ public class TreeNode {
                     // (AUCT) Update the virtual node with a loss
                     if (options.auct && children.get(0).isVirtual()) {
                         TreeNode virtChild = children.get(0);
-                        virtChild.stats.push(-1);
+                        // check for non-negamax
+                        if (player != virtChild.player)
+                            virtChild.stats.push(-1);
+                        else 
+                            virtChild.stats.push(1);
                     }
                     // Return a single loss, if not all children are a loss
-                    updateStats(1);
-                    return -1;
+                    // check for non-negamax; can't explain why the return value has a different sign
+                    if (previousPlayer != this.player) {
+                        updateStats(1);  // in view of parent
+                        return -1;       // view of me.
+                    }
+                    else {
+                        updateStats(-1);  // view of parent
+                        return -1;        // view of me
+                    }
                 }
             }
             // (Solver) If all children lead to a loss for the opponent, then I'm a win
-            stats.setValue(INF);
-            return result;
+            // check for non-negamax
+            if (previousPlayer != this.player)
+                stats.setValue(INF);
+            else 
+                stats.setValue(-INF);
+
+            return result; // always return in view of me
         }
+
+        // Why is result not negated? For the negamax case, should be -result; check with Tom
+        // before: updateStats(result); 
+
         // Update the results for the current node
-        updateStats(result);
+        // check for non-negamax
+        if (previousPlayer != this.player)
+            updateStats(-result);
+        else 
+            updateStats(result);
+
         // Back-propagate the result
+        // always return in view of me
         return result;
     }
 
-    private TreeNode expand(IBoard board, int depth) {
+    private TreeNode expand(IBoard board, int depth, int parentPlayer) {
         expanded = true;
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // If one of the nodes is a win, we don't have to select
@@ -205,7 +252,11 @@ public class TreeNode {
                 child.stats.setValue(value);
                 // implicit minimax
                 if (options.implicitMM) {
-                    child.imVal = board.evaluate(player); // view of parent
+                    // check for non-negamax
+                    if (player != nextPlayer)
+                        child.imVal = -board.evaluate(nextPlayer); // view of parent
+                    else 
+                        child.imVal = board.evaluate(nextPlayer); // view of parent
                     child.imAlpha = -INF - 1;
                     child.imBeta = +INF + 1;
                 }
@@ -229,7 +280,11 @@ public class TreeNode {
         }
         // implicit minimax
         if (options.implicitMM) {
-            this.imVal = -best_imVal;
+            // check for non-negamax; FIXME: need parent type!
+            if (player != parentPlayer)
+                this.imVal = -best_imVal;
+            else 
+                this.imVal = best_imVal;
             this.imAlpha = -INF - 1;
             this.imBeta = +INF + 1;
         }
