@@ -465,7 +465,8 @@ public class Board implements IBoard {
             str += "\n";
         }
         str += "\nPieces: " + pieces1 + " " + pieces2 + ", "
-                + "Progresses: " + progress1 + " " + progress2 + "\n";
+                + "Progresses: " + progress1 + " " + progress2 + ", " 
+                + "nMoves = " + nMoves + "\n";
         return str;
     }
 
