@@ -214,6 +214,8 @@ public class SimGame {
             board = new cannon.game.Board();
         } else if (game.equals("chinesecheckers")) {
             board = new chinesecheckers.game.Board();
+        } else if (game.equals("kalah")) {
+            board = new kalah.game.Board();
         } else if (game.equals("lostcities")) {
             board = new lostcities.game.Table();
         } else if (game.equals("pentalath")) {

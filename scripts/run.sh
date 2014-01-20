@@ -1,5 +1,5 @@
 #!/bin/sh
-dirs="cannon checkers chinesecheckers lostcities mcts pentalath amazons experiments breakthrough"
+dirs="alphabeta cannon checkers chinesecheckers kalah lostcities mcts pentalath amazons experiments breakthrough"
 class=`shift`
 
 CP="."
