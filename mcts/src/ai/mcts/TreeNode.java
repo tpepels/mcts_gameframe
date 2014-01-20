@@ -462,7 +462,7 @@ public class TreeNode {
                     }
                     if (moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50 && options.moveCov.getN() >= 50) {
                         double y = (l - moveStats[w].mean()) / (moveStats[w].stddev());
-                        double cStar = options.pbc.getSign() * (options.moveCov.getCovariance() / options.moveCov.variance2());
+                        double cStar = options.pbc.getSign() * -(options.moveCov.getCovariance() / options.moveCov.variance2());
                         score += Math.signum(score) * cStar * y;
                     }
                     // Maintain the average number of moves per play-out
