@@ -466,8 +466,6 @@ public class TreeNode {
                 // Qualitative bonus
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
-                    if(winner == 2)
-                        System.out.println("hier");
                     double q = board.getQuality();
                     if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                         double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
