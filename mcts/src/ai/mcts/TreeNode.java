@@ -207,7 +207,12 @@ public class TreeNode {
 
     private TreeNode expand(IBoard board, int depth, int parentPlayer) {
         expanded = true;
-        int nextPlayer = board.getOpponent(board.getPlayerToMove());
+
+        // check for non-negamax. will sent this later below! 
+        // old: int nextPlayer = board.getOpponent(board.getPlayerToMove());
+        int nextPlayer = -1; 
+        this.player = board.getPlayerToMove();
+
         // If one of the nodes is a win, we don't have to select
         TreeNode winNode = null;
         // Generate all moves
@@ -216,6 +221,7 @@ public class TreeNode {
             children = new ArrayList<TreeNode>(moves.size());
         // (AUCT) Add an extra virtual node
         if (options.auct) {
+            // FIXME: non-negamax games
             TreeNode vNode = new TreeNode(nextPlayer, null, true, options);
             vNode.stats = stats.copyInv();
             vNode.velocity = velocity;
@@ -235,6 +241,10 @@ public class TreeNode {
                     child = new TreeNode(nextPlayer, moves.get(i), options, true);
                 else 
                     child = new TreeNode(nextPlayer, moves.get(i), options);
+
+                // non-negamax
+                nextPlayer = board.getPlayerToMove();
+                child.player = nextPlayer;
                 
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
@@ -275,6 +285,7 @@ public class TreeNode {
             } else if (board.isPartialObservable()) {
                 // No move-checking for partial observable games
                 // Also, the legality of the move depends on the determinization
+                // FIXME: will not work for non-negamax games
                 children.add(new TreeNode(nextPlayer, moves.get(i), options));
             }
         }
