@@ -4,6 +4,7 @@ package ai;
  * Point biserial correlation
  */
 public class PBC {
+    private double[][] data = new double[2][1000000];
     private int n = 0;
     private double sum, mean, m2;
 
@@ -22,24 +23,40 @@ public class PBC {
     }
 
     public void push(int value1, double value2) {
+        if (n == data[0].length)
+            return;
+
         if (value1 == 0) {
+            data[0][losses] = value2;
             losses++;
             mL += value2;
         } else {
+            data[1][wins] = value2;
             wins++;
             mW += value2;
         }
         sum += value2;
         n++;
-        // Compute mean and variance for sample 1
+        // Compute mean and variance for sample 2
         double delta = value2 - mean;
         mean += delta / n;
         m2 += delta * (value2 - mean);
 
     }
 
+    public double getCovariance() {
+        double mean1 = mL / losses;
+        double mean2 = mW / wins;
+        int max = Math.min(losses, wins);
+        double tot = 0.;
+        for(int i = 0; i < max; i++) {
+            tot += (data[0][i] - mean1) * (data[1][i] - mean2);
+        }
+        return tot / max;
+    }
+
     public double getCorrelation() {
-        return (((mW/wins) - (mL/losses)) / stddev()) * Math.sqrt((wins / (double)n) * (losses /(double)n));
+        return (((mW / wins) - (mL / losses)) / stddev()) * Math.sqrt((wins / (double) n) * (losses / (double) n));
     }
 
     public double stddev() {
@@ -47,7 +64,7 @@ public class PBC {
     }
 
     public double getSign() {
-       return Math.signum((mW/wins) - (mL/losses));
+        return Math.signum((mW / wins) - (mL / losses));
     }
 
     public double variance() {
