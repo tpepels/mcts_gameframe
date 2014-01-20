@@ -45,14 +45,15 @@ public class PBC {
     }
 
     public double getCovariance() {
-        double mean1 = mL / losses;
-        double mean2 = mW / wins;
-        int max = Math.min(losses, wins);
-        double tot = 0.;
-        for(int i = 0; i < max; i++) {
-            tot += (data[0][i] - mean1) * (data[1][i] - mean2);
-        }
-        return tot / max;
+//        double mean1 = mL / losses;
+//        double mean2 = mW / wins;
+//        int max = Math.min(losses, wins);
+//        double tot = 0.;
+//        for(int i = 0; i < max; i++) {
+//            tot += (data[0][i] - mean1) * (data[1][i] - mean2);
+//        }
+//        return tot / max;
+        return ((mW + mL) / n) - ((mW / wins) * (mL / losses));
     }
 
     public double getCorrelation() {
