@@ -105,10 +105,15 @@ public class TreeNode {
                 result = child.playOut(board, depth + 1);
                 // check for non-negamax
                 // here, result is in view of the child
-                if (this.player != child.player)
-                    result = -result;
-
-                child.updateStats(result);
+                if (this.player != child.player) { 
+                    child.updateStats(-result);
+                    // get result in view of me
+                    result = -result;         
+                }
+                else { 
+                    child.updateStats(result);
+                    // result already in few of me.
+                } 
 
                 child.simulated = true;
             } else {

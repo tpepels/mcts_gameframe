@@ -399,9 +399,23 @@ public class Board implements IBoard {
       else
         return -p1eval;
     }
+    
+    public double evaluate_eggcelent(int player) {
+        double count = getFreedom(player) - getFreedom(3-player); 
+        // The more available moves the winning player has, the better
+        return count / (16. * (nMoves/4.0));  // 16. assumes endgame
+    }
 
     @Override
     public double evaluate(int player) {
+
+        if (true) { 
+            double val = evaluate_eggcelent(player); 
+            //System.out.println(val); 
+      
+            return FastTanh.tanh(val);
+        }
+
         //double diff = getFreedom(1) - getFreedom(2); 
         //System.out.println(diff/100.0);
         //int[] bcopy = new int[SIZE * SIZE];
@@ -534,21 +548,11 @@ public class Board implements IBoard {
     }
 
     private int getFreedom(int player) {
-        int from, moveCount, shotCount, total = 0;
+        int from, total = 0;
         for (int i = 0; i < queens[player - 1].length; i++) {
             // Select the location to move from, ie the queen to move
             from = queens[player - 1][i];
-            moveCount = getPossibleMovesFrom(from, possibleMoves);
-            // Move count holds the possible number of moves possible from this position
-            for (int j = 0; j < moveCount; j++) {
-                moveQueen(from, possibleMoves[j], player);
-                // Iterate through the possible shots
-                shotCount = getPossibleMovesFrom(possibleMoves[j], possibleShots);
-                for (int k = 0; k < shotCount; k++) {
-                    total++;
-                }
-                undoQueenMove(currentPlayer);
-            }
+            total += getPossibleMovesFrom(from, null);
         }
         return total;
     }
@@ -591,7 +595,9 @@ public class Board implements IBoard {
             while (position <= max && position >= min
                     && board[position] == Board.EMPTY) {
                 //
-                moves[count] = position;
+                if (moves != null)
+                    moves[count] = position;
+
                 count++;
                 position += direction;
             }

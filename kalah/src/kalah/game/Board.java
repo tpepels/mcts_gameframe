@@ -25,7 +25,7 @@ public class Board implements IBoard {
     /**
      *         Player 2
      *     11 10 9  8  7  6
-     *  S2                   S1
+     *  S2                  S1
      *     0  1  2  3  4  5 
      *         Player 1
      */
