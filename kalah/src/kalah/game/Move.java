@@ -12,12 +12,14 @@ public class Move implements IMove {
     // values[1] is the num of pieces captured by the opponent
     private int[] values; 
 
-    public Move(int type, int house, int numCaptured) {
+    public Move(int type, int house, int numSow, int numCaptured, int prevPlayer) {
         this.type = type; 
 
-        values = new int[2]; 
+        values = new int[3]; 
         values[0] = house; 
-        values[1] = numCaptured; 
+        values[1] = numSow;  
+        values[2] = numCaptured; 
+        values[3] = prevPlayer;
     }
 
     @Override
@@ -33,15 +35,13 @@ public class Move implements IMove {
     @Override
     public boolean equals(IMove move) {
         Move m = (Move) move;
-        return (m.type == type && m.values[0] == m.values[0] && m.values[1] == m.values[1]); 
+        return (   m.type == type && values[0] == m.values[0] && values[1] == m.values[1] && values[2] == m.values[2]
+                && values[3] == m.values[3]); 
     }
 
     @Override
     public int getUniqueId() {
-        // captures*36 + (type-1)*12 + move
-        int maxMove = 2*Board.N_HOUSES;     // 12
-        int maxTypeHouseCombos = 3*maxMove; // 36
-        return (values[1]*maxTypeHouseCombos + ((type-1)*maxMove + values[0]));
+        return (values[0]);
     }
 
     @Override

@@ -15,8 +15,6 @@ public class Board implements IBoard {
     /*
     private static final int N_PIECES = 16;
     private static final MoveList tempList = new MoveList(3);   // Temp move store for heuristic evaluation
-    private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
-    private static final MoveList static_moves = new MoveList(384);   // 64*6
     //
     private int pieces1, pieces2;
     private int progress1, progress2;
@@ -35,6 +33,12 @@ public class Board implements IBoard {
 
     // How many starting pieces per hole
     protected static final int N_SPIECES = 4;
+
+    public final int[] oppHouse1 = { 11, 10, 9, 8, 7, 6 }; 
+    public final int[] oppHouse2 = { 0, 0, 0, 0, 0, 0, 5, 4, 3, 2, 1, 0 }; 
+            
+    private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(10);
+    private static final MoveList static_moves = new MoveList(10);   
 
     private Stack<IMove> pastMoves;
     public int nMoves, winner, curPlayer;
@@ -116,6 +120,123 @@ public class Board implements IBoard {
         curPlayer = 3 - curPlayer;
         */
 
+        int[] values = move.getMove();
+        int house = values[0];
+        int sow = values[1]; 
+        int numCaptured = values[2]; 
+
+        if (board[house] != sow) 
+            throw new RuntimeException("board[house] != sow");
+
+        // take them out
+        board[house] -= sow; 
+
+        boolean extraTurn = false;
+
+        // distribute them
+        while (sow > 0) { 
+            extraTurn = false; 
+
+            if (curPlayer == 1 && house == 5) { 
+                sow--;
+                store1++;
+                extraTurn = true; 
+                house = 6;
+            }
+            else if (curPlayer == 2 && house == 11) { 
+                sow--; 
+                store2++;
+                extraTurn = true;
+                house = 0;
+            }
+            else {
+                house++;
+                if (house >= 12)
+                    house = 0; 
+
+                sow--;
+                board[house]++; 
+            }
+        }
+
+        int nextPlayer = -1; 
+
+        // check move type
+        if (move.getType() == Move.CAPTURE) { 
+            int opphouse = oppHouse1[house]; 
+
+            if (numCaptured != board[opphouse]) 
+                throw new RuntimeException("capturedPieces != board[opphouse]"); 
+            else if (board[house] != 1) 
+                throw new RuntimeException("board[house] != 1"); 
+
+            int totalPieceGain = 1+numCaptured; 
+            board[house] = 0;
+            board[opphouse] = 0; 
+
+            if (curPlayer == 1) 
+                store1 += totalPieceGain; 
+            else
+                store2 += totalPieceGain;
+
+            if (extraTurn) 
+                throw new RuntimeException("extra turn in capture");
+        
+            // change the player
+            nextPlayer = 3-curPlayer; 
+        }
+        else if (move.getType() == Move.STORE) { 
+            
+            if (numCaptured != 0) 
+                throw new RuntimeException("num captures != 0 in store move");
+            if (!extraTurn) 
+                throw new RuntimeException("no extra turn in store move");
+
+            nextPlayer = curPlayer;
+        }
+        else {
+            if (extraTurn) 
+                throw new RuntimeException("extra turn in capture");
+
+            nextPlayer = 3-curPlayer;
+        }
+
+        // check win
+        int sumRow1 = 0;
+        int sumRow2 = 0; 
+        for (int h = 0; h < 6; h++) 
+            sumRow1 += board[h];
+        for (int h = 6; h < 11; h++) 
+            sumRow2 += board[h];
+
+        if (sumRow1 == 0) { 
+            store2 += sumRow2; 
+
+            if (store1 > store2) 
+                winner = 1; 
+            else if (store2 > store1)
+                winner = 2; 
+            else 
+                winner = DRAW;            
+        }
+        else if (sumRow2 == 0) {
+            store1 += sumRow1; 
+            
+            if (store1 > store2) 
+                winner = 1; 
+            else if (store2 > store1)
+                winner = 2; 
+            else 
+                winner = DRAW;            
+        }
+        else {
+            winner = NONE_WIN;
+        }
+
+        nMoves++;
+        pastMoves.push(move);
+        curPlayer = nextPlayer; 
+
         return true;
     }
 
@@ -150,170 +271,212 @@ public class Board implements IBoard {
         progress1 = move.getOldProgress1();
         progress2 = move.getOldProgress2();
         */
+
+        Move move = (Move) pastMoves.pop();
+        nMoves--;
+        
+        int[] values = move.getMove();
+        int startHouse = values[0];
+        int sow = values[1]; 
+        int numCaptured = values[2]; 
+        int player = values[4];
+
+        curPlayer = player; 
+
+        int landingPos = -1;
+  
+        if (player == 1) { 
+            landingPos = (startHouse + sow) % 13; 
+            if (landingPos >= 7) landingPos--; 
+        }
+        else if (player == 2) {
+            landingPos = (startHouse + sow) % 13; 
+        }
+
+        int house = landingPos; 
+
+        // check for a capture
+        if (move.getType() == Move.CAPTURE) {
+            int opphouse = (player == 1 ? oppHouse1[house] : oppHouse2[house]); 
+            
+            if (board[house] != 0) 
+                throw new RuntimeException("board[house] != 0 in undo");
+            if (board[opphouse] != 0) 
+                throw new RuntimeException("board[opphouse] != 0 in undo");
+
+            board[opphouse] = numCaptured;
+
+            if (player == 1) 
+                store1 -= numCaptured;
+            else 
+                store2 -= numCaptured;
+        }
+        
+        // re-distribute them back onto the board
+        while (sow > 0) { 
+
+            if (player == 1 && house == 6) { 
+                sow--;
+                store1--;
+                house = 5;
+            }
+            else if (player == 2 && house == 0) { 
+                sow--; 
+                store2--;
+                house = 11;
+            }
+            else {
+                house--;
+                if (house < 0)
+                    house = 11; 
+
+                sow--;
+                board[house]--; 
+            }
+        }
+            
+        winner = NONE_WIN;
     }
 
     @Override
     public MoveList getExpandMoves() {
-        /*
         static_moves.clear();
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                if (curPlayer == 1 && board[r][c] == 'w') {
-                    if (inBounds(r - 1, c - 1)) {
-                        // northwest
-                        if (board[r - 1][c - 1] == 'b')
-                            static_moves.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r - 1][c - 1] == '.')
-                            static_moves.add(new Move(r, c, r - 1, c - 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r - 1, c + 1)) {
-                        // northeast
-                        if (board[r - 1][c + 1] == 'b')
-                            static_moves.add(new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r - 1][c + 1] == '.')
-                            static_moves.add(new Move(r, c, r - 1, c + 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
-                        // north
-                        static_moves.add(new Move(r, c, r - 1, c, Move.MOVE, progress1, progress2));
-                    }
-                } else if (curPlayer == 2 && board[r][c] == 'b') {
-                    if (inBounds(r + 1, c - 1)) {
-                        // southwest
-                        if (board[r + 1][c - 1] == 'w')
-                            static_moves.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r + 1][c - 1] == '.')
-                            static_moves.add(new Move(r, c, r + 1, c - 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r + 1, c + 1)) {
-                        // southeast
-                        if (board[r + 1][c + 1] == 'w')
-                            static_moves.add(new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r + 1][c + 1] == '.')
-                            static_moves.add(new Move(r, c, r + 1, c + 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
-                        // south
-                        static_moves.add(new Move(r, c, r + 1, c, Move.MOVE, progress1, progress2));
-                    }
+
+        int startHouse = (curPlayer == 1 ? 0 : 6); 
+        int endHouse = (curPlayer == 1 ? 5 : 11); 
+        int store = endHouse+1;
+
+        /**
+         *   From p1's point of view:
+         *    
+         *      12 11 10  9  8  7 
+         *                         6
+         *       0  1  2  3  4  5 
+         *
+         *   From p2's point of view:
+         *   
+         *         11 10  9  8  7  6
+         *      12
+         *          0  1  2  3  4  5
+         */
+
+
+        for (int house = startHouse; house <= endHouse; house++) { 
+            int sow = board[house]; 
+
+            if ((house + sow) % 13 == store) {
+                static_moves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
+            }
+            else if (curPlayer == 1) { 
+    
+                int landingPos = (house + sow) % 13; 
+                if (landingPos >= 7) landingPos--;  
+               
+                // check for capture
+                if (   landingPos >= startHouse && landingPos <= endHouse  
+                    && board[landingPos] == 0 && sow <= 13) { 
+
+                    int opphouse = oppHouse1[landingPos]; 
+                    int piecesCaptured = board[opphouse]; 
+
+                    static_moves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
                 }
+                else { 
+                    // regular move
+                    static_moves.add(new Move(Move.MOVE, house, sow, 0, curPlayer)); 
+                }              
+            }
+            else if (curPlayer == 2) {
+                int landingPos = (house + sow) % 13; 
+
+                // check for capture
+                if (   landingPos >= startHouse && landingPos <= endHouse  
+                    && board[landingPos] == 0 && sow <= 13) { 
+
+                    int opphouse = oppHouse2[landingPos]; 
+                    int piecesCaptured = board[opphouse]; 
+
+                    static_moves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+                }
+                else { 
+                    // regular move
+                    static_moves.add(new Move(Move.MOVE, house, sow, 0, curPlayer)); 
+                }              
             }
         }
-        return static_moves.copy();
-        */
 
-        return null;
+        return static_moves.copy();
     }
 
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
-        //ArrayList<IMove> forced = new ArrayList<IMove>(); 
-        ArrayList<IMove> forced = null;
 
-        /*
         poMoves.clear();
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                tempList.clear();
-                if (curPlayer == 1 && board[r][c] == 'w') {
-                    if (inBounds(r - 1, c - 1)) {
-                        // northwest
-                        if (board[r - 1][c - 1] == 'b')
-                            tempList.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r - 1][c - 1] == '.')
-                            tempList.add(new Move(r, c, r - 1, c - 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r - 1, c + 1)) {
-                        // northeast
-                        if (board[r - 1][c + 1] == 'b')
-                            tempList.add(new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r - 1][c + 1] == '.')
-                            tempList.add(new Move(r, c, r - 1, c + 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
-                        // north
-                        tempList.add(new Move(r, c, r - 1, c, Move.MOVE, progress1, progress2));
-                    }
-                } else if (curPlayer == 2 && board[r][c] == 'b') {
-                    if (inBounds(r + 1, c - 1)) {
-                        // southwest
-                        if (board[r + 1][c - 1] == 'w')
-                            tempList.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r + 1][c - 1] == '.')
-                            tempList.add(new Move(r, c, r + 1, c - 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r + 1, c + 1)) {
-                        // southeast
-                        if (board[r + 1][c + 1] == 'w')
-                            tempList.add(new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress1, progress2));
-                        else if (board[r + 1][c + 1] == '.')
-                            tempList.add(new Move(r, c, r + 1, c + 1, Move.MOVE, progress1, progress2));
-                    }
-                    if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
-                        // south
-                        tempList.add(new Move(r, c, r + 1, c, Move.MOVE, progress1, progress2));
-                    }
-                }
-                if (tempList.size() == 0)
-                    continue;
-                //
-                if (heuristics) {
-                    for (int i = 0; i < tempList.size(); i++) {
-                        IMove move = tempList.get(i);
-                        poMoves.add(move);
-                        // Prefer defenseless capture moves
-                        if (move.getType() == Move.CAPTURE) {
-                            int mr = move.getMove()[0];
-                            int mc = move.getMove()[1];
-                            int mrp = move.getMove()[2];
-                            int mcp = move.getMove()[3];
-                            int pl = board[mr][mc] == 'w' ? 1 : 2;
+        
+        int startHouse = (curPlayer == 1 ? 0 : 6); 
+        int endHouse = (curPlayer == 1 ? 5 : 11); 
+        int store = endHouse+1;
 
-                            if (pl == 1
-                                    && (!inBounds(mrp - 1, mcp - 1) || board[mrp - 1][mcp - 1] == '.')
-                                    && (!inBounds(mrp - 1, mcp + 1) || board[mrp - 1][mcp + 1] == '.')) {
-                                poMoves.add(move);
-                                poMoves.add(move);
-                                poMoves.add(move);
-                                poMoves.add(move);
-                            } else if (pl == 2
-                                    && (!inBounds(mrp + 1, mcp - 1) || board[mrp + 1][mcp - 1] == '.')
-                                    && (!inBounds(mrp + 1, mcp + 1) || board[mrp + 1][mcp + 1] == '.')) {
-                                poMoves.add(move);
-                                poMoves.add(move);
-                                poMoves.add(move);
-                                poMoves.add(move);
-                            } else {
-                                poMoves.add(move);
-                            }
-                        }
-                        // Decisive / anti-decisive moves
-                        if (curPlayer == 1 && (move.getMove()[2] == 0)) {
-                            poMoves.clear();
-                            poMoves.add(move);
-                            return poMoves;
-                        } else if (curPlayer == 2 && (move.getMove()[2] == 7)) {
-                            poMoves.clear();
-                            poMoves.add(move);
-                            return poMoves;
-                        } else if (move.getType() == Move.CAPTURE && (move.getMove()[0] == 7 || move.getMove()[0] == 0)) {
-                            if (forced == null)
-                                forced = new ArrayList<IMove>();
-                            forced.add(move);
-                        }
-                    }
-                } else {
-                    for (int i = 0; i < tempList.size(); i++) {
-                        IMove move = tempList.get(i);
-                        poMoves.add(move);
-                    }
-                }
+        /**
+         *   From p1's point of view:
+         *    
+         *      12 11 10  9  8  7 
+         *                         6
+         *       0  1  2  3  4  5 
+         *
+         *   From p2's point of view:
+         *   
+         *         11 10  9  8  7  6
+         *      12
+         *          0  1  2  3  4  5
+         */
+
+
+        for (int house = startHouse; house <= endHouse; house++) { 
+            int sow = board[house]; 
+
+            if ((house + sow) % 13 == store) {
+                poMoves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
             }
-        }        
-        if (forced != null && forced.size() > 0) return forced;
+            else if (curPlayer == 1) { 
+    
+                int landingPos = (house + sow) % 13; 
+                if (landingPos >= 7) landingPos--;  
+               
+                // check for capture
+                if (   landingPos >= startHouse && landingPos <= endHouse  
+                    && board[landingPos] == 0 && sow <= 13) { 
+
+                    int opphouse = oppHouse1[landingPos]; 
+                    int piecesCaptured = board[opphouse]; 
+
+                    poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+                }
+                else { 
+                    // regular move
+                    poMoves.add(new Move(Move.MOVE, house, sow, 0, curPlayer)); 
+                }              
+            }
+            else if (curPlayer == 2) {
+                int landingPos = (house + sow) % 13; 
+
+                // check for capture
+                if (   landingPos >= startHouse && landingPos <= endHouse  
+                    && board[landingPos] == 0 && sow <= 13) { 
+
+                    int opphouse = oppHouse2[landingPos]; 
+                    int piecesCaptured = board[opphouse]; 
+
+                    poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+                }
+                else { 
+                    // regular move
+                    poMoves.add(new Move(Move.MOVE, house, sow, 0, curPlayer)); 
+                }              
+            }
+        }
+
         return poMoves;
-        */
-        return null;
     }
 
     @Override
@@ -343,20 +506,7 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player) {
-        /*
-        // inspired by evaluation function in Maarten's thesis
-        double p1eval = 0;
-        if (progress1 == 7 || pieces2 == 0) p1eval = 1;
-        else if (progress2 == 7 || pieces1 == 0) p1eval = -1;
-        else {
-            double delta = (pieces1 * 10 + progress1 * 2.5) - (pieces2 * 10 + progress2 * 2.5);
-            if (delta < -100) delta = -100;
-            if (delta > 100) delta = 100;
-            // now pass it through tanh;
-            p1eval = FastTanh.tanh(delta / 60.0);
-        }
-        return (player == 1 ? p1eval : -p1eval);
-        */
+        // use the one from the ramanujan paper
         return 0;
     }
 
@@ -389,15 +539,6 @@ public class Board implements IBoard {
 
     public String toString() {
         String str = "";
-        /*
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) str += board[r][c];
-            str += "\n";
-        }
-        str += "\nPieces: " + pieces1 + " " + pieces2 + ", "
-                + "Progresses: " + progress1 + " " + progress2 + ", " 
-                + "nMoves = " + nMoves + "\n";
-        */
         return str;
     }
 
