@@ -11,7 +11,7 @@ public class FastSigm {
     static {
         for (int i = 0; i < sigms.length; i++) {
             double x = (i - 10000) / 1000.0;
-            sigms[i] = -.25 + (.5 / (1 + Math.exp(x)));
+            sigms[i] = -1  + (2./ (1+ Math.exp(x)));
         }
     }
 

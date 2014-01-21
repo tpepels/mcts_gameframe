@@ -454,8 +454,8 @@ public class TreeNode {
                     if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
                         double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
                         double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
-//                        score += Math.signum(score) * FastSigm.sigm(-options.k * x);
-                        score += Math.signum(score) * cStar * FastTanh.tanh(options.k * x);
+//                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.k * x);
+                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.k * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
@@ -470,8 +470,8 @@ public class TreeNode {
                     if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                         double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
                         double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
-//                        score += Math.signum(score) * FastSigm.sigm(-options.k * qb);
-                        score += Math.signum(score) * cStar * qb;
+//                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.k * qb);
+                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.k * qb);
                     }
                     qualityStats[w].push(q);
                     options.qualityCov.push((winner == myPlayer) ? q : 0, q);
