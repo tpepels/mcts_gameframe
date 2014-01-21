@@ -91,6 +91,9 @@ public class TreeNode {
                 child = select(board, depth + 1);
         }
         //
+        if (child.player < 0) 
+            throw new RuntimeException("Child player weird!"); 
+
         double result;
 
         // (Solver) Check for proven win / loss / draw
