@@ -650,7 +650,13 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player) {
         // use the one from the ramanujan paper
-        return 0;
+        double diff = store1-store2;
+        //System.out.println("diff = " + diff);
+        double p1eval = FastTanh.tanh(diff / 10.0); 
+        if (player == 1) 
+            return p1eval;
+        else
+            return -p1eval;
     }
 
     @Override
