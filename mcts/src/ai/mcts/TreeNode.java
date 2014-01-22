@@ -506,7 +506,11 @@ public class TreeNode {
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
-                    currentPlayer = board.getOpponent(currentPlayer);
+                    
+                    // non-negamax
+                    // currentPlayer = board.getOpponent(currentPlayer);
+                    currentPlayer = board.getPlayerToMove();
+
                     // Check if pdepth is reached
                     if (options.earlyEval && nMoves >= options.pdepth) {
                         terminateEarly = true;

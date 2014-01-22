@@ -9,7 +9,6 @@ import ai.framework.MoveList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
-import java.text.DecimalFormat;
 
 public class Board implements IBoard {
 
@@ -124,14 +123,25 @@ public class Board implements IBoard {
         int[] values = move.getMove();
         int house = values[0];
         int sow = values[1]; 
-        int numCaptured = values[2]; 
+        int numCaptured = values[2];
+
+        //System.out.println("START OF DOAIMOVE for move: " + move + ", current board: "); 
+        //System.out.println(toString()); 
+        
+        if (values[3] != player) 
+            throw new RuntimeException("player mismatch");
+        
+        if (player != curPlayer) 
+            throw new RuntimeException("player mismatch");
+            
 
         if (board[house] != sow) 
-            throw new RuntimeException("board[house] != sow");
+            throw new RuntimeException("board[house] != sow, house = " + house + ", sow = " + sow);
 
         // take them out
         board[house] -= sow; 
 
+        boolean justPlayedStoreMove = false;
         boolean extraTurn = false;
 
         // distribute them
@@ -143,17 +153,23 @@ public class Board implements IBoard {
                 store1++;
                 extraTurn = true; 
                 house = 6;
+                justPlayedStoreMove = true;
             }
             else if (curPlayer == 2 && house == 11) { 
                 sow--; 
                 store2++;
                 extraTurn = true;
                 house = 0;
+                justPlayedStoreMove = true;
             }
             else {
-                house++;
-                if (house >= 12)
-                    house = 0; 
+                if (!justPlayedStoreMove) { 
+                    house++;
+                    if (house >= 12)
+                        house = 0; 
+                }
+
+                justPlayedStoreMove = false;
 
                 sow--;
                 board[house]++; 
@@ -164,12 +180,14 @@ public class Board implements IBoard {
 
         // check move type
         if (move.getType() == Move.CAPTURE) { 
-            int opphouse = oppHouse1[house]; 
+            int opphouse = (player == 1 ? oppHouse1[house] : oppHouse2[house]); 
 
             if (numCaptured != board[opphouse]) 
-                throw new RuntimeException("capturedPieces != board[opphouse]"); 
+                throw new RuntimeException("capturedPieces != board[opphouse], move: " +
+                  move + ", houses = " + house + " " + opphouse + ", board[opphouse] = " + board[opphouse]); 
             else if (board[house] != 1) 
-                throw new RuntimeException("board[house] != 1"); 
+                throw new RuntimeException("board[house] != 1, move: " + move); 
+            
 
             int totalPieceGain = 1+numCaptured; 
             board[house] = 0;
@@ -211,21 +229,21 @@ public class Board implements IBoard {
             sumRow2 += board[h];
 
         if (sumRow1 == 0) { 
-            store2 += sumRow2; 
+            int finalstore2 = store2 + sumRow2; 
 
-            if (store1 > store2) 
+            if (store1 > finalstore2) 
                 winner = 1; 
-            else if (store2 > store1)
+            else if (finalstore2 > store1)
                 winner = 2; 
             else 
                 winner = DRAW;            
         }
         else if (sumRow2 == 0) {
-            store1 += sumRow1; 
+            int finalstore1 = store1 + sumRow1; 
             
-            if (store1 > store2) 
+            if (finalstore1 > store2) 
                 winner = 1; 
-            else if (store2 > store1)
+            else if (store2 > finalstore1)
                 winner = 2; 
             else 
                 winner = DRAW;            
@@ -237,6 +255,25 @@ public class Board implements IBoard {
         nMoves++;
         pastMoves.push(move);
         curPlayer = nextPlayer; 
+
+        //System.out.println("END OF DOAIMOVE for move: " + move + ", current board: "); 
+        //System.out.println(toString()); 
+
+        // check no negatives and magic pieces
+        int totalPieces = 0; 
+
+        for (int i = 0; i < 6; i++) {
+            if (board[i] < 0) 
+                throw new RuntimeException("board[" + i + "] = " + board[i]); 
+            if (board[6+i] < 0) 
+                throw new RuntimeException("board[" + (6+i) + "] = " + board[6+i]); 
+
+            totalPieces += board[i];
+            totalPieces += board[6+i];
+        }
+
+        if (totalPieces + store1 + store2 != (4*12)) 
+            throw new RuntimeException("Total piece count!"); 
 
         return true;
     }
@@ -272,15 +309,18 @@ public class Board implements IBoard {
         progress1 = move.getOldProgress1();
         progress2 = move.getOldProgress2();
         */
-
+        
         Move move = (Move) pastMoves.pop();
         nMoves--;
+        
+        //System.out.println("START OF UNDO for move: " + move + ", current board: "); 
+        //System.out.println(toString()); 
         
         int[] values = move.getMove();
         int startHouse = values[0];
         int sow = values[1]; 
         int numCaptured = values[2]; 
-        int player = values[4];
+        int player = values[3];
 
         curPlayer = player; 
 
@@ -308,35 +348,103 @@ public class Board implements IBoard {
             board[opphouse] = numCaptured;
 
             if (player == 1) 
-                store1 -= numCaptured;
+                store1 -= (numCaptured+1);
             else 
-                store2 -= numCaptured;
+                store2 -= (numCaptured+1);
         }
-        
+
+        int sowCounter = 0;  
+
+        // check for store move
+        if (move.getType() == Move.STORE) {
+            if (player == 1) {
+                store1--; 
+                house = 5;
+                sowCounter = 1; 
+            }
+            else if (player == 2) { 
+                store2--; 
+                house = 11; 
+                sowCounter = 1; 
+            }
+        }
+
         // re-distribute them back onto the board
-        while (sow > 0) { 
+        while (sowCounter < sow) { 
+  
+            boolean remove = true; 
+
+            //System.out.println("putting back sow, house = " + house); 
+            if (move.getType() == Move.CAPTURE && sowCounter == 0) { 
+                // keep this spot at 0, but still increase the sow counter
+                remove = false; 
+            }
+
+            boolean storeMove = false;
 
             if (player == 1 && house == 6) { 
-                sow--;
-                store1--;
-                house = 5;
+                sowCounter++;
+                if (remove) 
+                    board[house]--; 
+                storeMove = true; 
             }
             else if (player == 2 && house == 0) { 
-                sow--; 
-                store2--;
-                house = 11;
+                sowCounter++;
+                if (remove)
+                    board[house]--;
+                storeMove = true;
             }
-            else {
+
+            if (storeMove) { 
+                if (sowCounter >= sow) 
+                    throw new RuntimeException("under sowCounter >= sow after storeMove"); 
+
+                if (player == 1) { 
+                    sowCounter++; 
+                    store1--;
+                    house = 5; 
+                }
+                else if (player == 2) { 
+                    sowCounter++;
+                    store2--;
+                    house = 11; 
+                }
+            }
+            else { 
+                sowCounter++;
+                if (remove)
+                    board[house]--;
+
                 house--;
                 if (house < 0)
                     house = 11; 
-
-                sow--;
-                board[house]--; 
             }
         }
+
+        // might have done many full revolutions
+        board[startHouse] += sowCounter; 
             
         winner = NONE_WIN;
+
+        //System.out.println("END OF UNDO for move: " + move + ", current board: "); 
+        //System.out.println(toString()); 
+        
+        // check no negatives and magic pieces
+        int totalPieces = 0;
+
+        for (int i = 0; i < 6; i++) {
+            if (board[i] < 0) 
+                throw new RuntimeException("board[" + i + "] = " + board[i]); 
+            if (board[6+i] < 0) 
+                throw new RuntimeException("board[" + (6+i) + "] = " + board[6+i]); 
+
+            totalPieces += board[i];
+            totalPieces += board[6+i];
+        }
+
+        if (totalPieces + store1 + store2 != (4*12)) 
+            throw new RuntimeException("Total piece count!"); 
+
     }
 
     @Override
@@ -365,6 +473,9 @@ public class Board implements IBoard {
         for (int house = startHouse; house <= endHouse; house++) { 
             int sow = board[house]; 
 
+            if (sow == 0) 
+                continue;
+
             if ((house + sow) % 13 == store) {
                 static_moves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
             }
@@ -379,6 +490,13 @@ public class Board implements IBoard {
 
                     int opphouse = oppHouse1[landingPos]; 
                     int piecesCaptured = board[opphouse]; 
+
+                    // might be more if you wrapped around                    
+                    if (sow >= 8) { 
+                        int fullrevs = sow/13; 
+                        int halfrevs = (sow - fullrevs) >= 8 ? 1 : 0; 
+                        piecesCaptured += (fullrevs + halfrevs);
+                    }
 
                     static_moves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
                 }
@@ -396,6 +514,13 @@ public class Board implements IBoard {
 
                     int opphouse = oppHouse2[landingPos]; 
                     int piecesCaptured = board[opphouse]; 
+                    
+                    // might be more if you wrapped around                    
+                    if (sow >= 8) { 
+                        int fullrevs = sow/13; 
+                        int halfrevs = (sow - fullrevs) >= 8 ? 1 : 0; 
+                        piecesCaptured += (fullrevs + halfrevs);
+                    }
 
                     static_moves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
                 }
@@ -436,6 +561,9 @@ public class Board implements IBoard {
         for (int house = startHouse; house <= endHouse; house++) { 
             int sow = board[house]; 
 
+            if (sow == 0) 
+                continue;
+
             if ((house + sow) % 13 == store) {
                 poMoves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
             }
@@ -450,6 +578,13 @@ public class Board implements IBoard {
 
                     int opphouse = oppHouse1[landingPos]; 
                     int piecesCaptured = board[opphouse]; 
+                    
+                    // might be more if you wrapped around                    
+                    if (sow >= 8) { 
+                        int fullrevs = sow/13; 
+                        int halfrevs = (sow - fullrevs) >= 8 ? 1 : 0; 
+                        piecesCaptured += (fullrevs + halfrevs);
+                    }
 
                     poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
                 }
@@ -467,6 +602,13 @@ public class Board implements IBoard {
 
                     int opphouse = oppHouse2[landingPos]; 
                     int piecesCaptured = board[opphouse]; 
+                    
+                    // might be more if you wrapped around                    
+                    if (sow >= 8) { 
+                        int fullrevs = sow/13; 
+                        int halfrevs = (sow - fullrevs) >= 8 ? 1 : 0; 
+                        piecesCaptured += (fullrevs + halfrevs);
+                    }
 
                     poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
                 }
@@ -538,8 +680,16 @@ public class Board implements IBoard {
         return 0;
     }
 
+    private String formatInt(int x) { 
+        if (x >= 10) 
+            return ("" + x);
+        else
+            return (" " + x); 
+            
+    }
+
     public String toString() {
-        String str = "";
+        String str = "\n";
 
         /**
          *          Player 2
@@ -549,23 +699,25 @@ public class Board implements IBoard {
          *          Player 1
          */
 
-        DecimalFormat int2 = new DecimalFormat("##");
-        
-        str += "    "; 
+        str += "Current player: " + curPlayer + ", nMoves = " + nMoves + "\n\n";
+
+        str += "   "; 
 
         for (int house = 11; house >= 6; house--) 
-            str += int2.format(board[house]) + " ";
+            str += formatInt(board[house]) + " ";
 
         str += "\n"; 
-        str += int2.format(store2);
-        str += "                    ";
-        str += int2.format(store1); 
+        str += formatInt(store2);
+        str += "                   ";
+        str += formatInt(store1); 
         str += "\n";
 
-        str += "    ";
+        str += "   ";
 
-        for (int house = 0; house < 5; house++) 
-            str += int2.format(board[house]) + " ";
+        for (int house = 0; house < 6; house++) 
+            str += formatInt(board[house]) + " ";
+        
+        str += "\n";
 
         return str;
     }

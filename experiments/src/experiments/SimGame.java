@@ -8,6 +8,7 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
+import ai.RandomPlayer;
 
 /*
 FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
@@ -79,7 +80,9 @@ public class SimGame {
                 printBoard = true; 
             } else if (args[i].equals("--mctsdebug")) { 
                 mctsDebug = true; 
-            } 
+            } else {
+                throw new RuntimeException("Unknown option: " + args[i]); 
+            }
         }
     }
 
@@ -183,6 +186,8 @@ public class SimGame {
 
             // and set the options for this player
             playerRef.setOptions(options);
+        } else if (parts[0].equals("random")) { 
+            playerRef = new RandomPlayer(); 
         } else {
             throw new RuntimeException("Unrecognized player: " + label);
         }

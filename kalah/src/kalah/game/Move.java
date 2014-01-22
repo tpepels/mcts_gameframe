@@ -15,7 +15,7 @@ public class Move implements IMove {
     public Move(int type, int house, int numSow, int numCaptured, int prevPlayer) {
         this.type = type; 
 
-        values = new int[3]; 
+        values = new int[4]; 
         values[0] = house; 
         values[1] = numSow;  
         values[2] = numCaptured; 
@@ -50,12 +50,12 @@ public class Move implements IMove {
     }
 
     public String toString() {
-        String str = "House " + values[0]; 
+        String str = "House " + values[0] + " Sow " + values[1]; 
         if (type == CAPTURE) 
-          return "Cap " + str + " (" + values[1] + ")"; 
+          return "Cap " + str + " (" + values[2] + ")"; 
         else if (type == STORE) 
           return "Sto " + str; 
         else 
-          return "Mov" + str; 
+          return "Mov " + str; 
     }
 }
