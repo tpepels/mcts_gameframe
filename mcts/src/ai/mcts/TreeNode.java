@@ -275,6 +275,10 @@ public class TreeNode {
                         child.imVal = -board.evaluate(nextPlayer); // view of parent
                     else 
                         child.imVal = board.evaluate(nextPlayer); // view of parent
+
+                    if (child.imVal > best_imVal)
+                        best_imVal = child.imVal;
+
                     child.imAlpha = -INF - 1;
                     child.imBeta = +INF + 1;
                 }
@@ -309,7 +313,7 @@ public class TreeNode {
         }
         // prog. bias
         if (options.progBias) 
-          this.heval = -board.evaluate(player);
+            this.heval = -board.evaluate(player);
         // If one of the nodes is a win, return it.
         return winNode;
     }
