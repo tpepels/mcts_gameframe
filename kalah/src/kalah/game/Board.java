@@ -9,6 +9,7 @@ import ai.framework.MoveList;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
+import java.text.DecimalFormat;
 
 public class Board implements IBoard {
 
@@ -501,7 +502,7 @@ public class Board implements IBoard {
 
     @Override
     public int getMaxUniqueMoveId() {
-        return 4095;  // 64*64 - 1
+        return 6;  // really, it's just 6
     }
 
     @Override
@@ -539,6 +540,33 @@ public class Board implements IBoard {
 
     public String toString() {
         String str = "";
+
+        /**
+         *          Player 2
+         *      11 10 9  8  7  6
+         *  S2                    S1
+         *      0  1  2  3  4  5 
+         *          Player 1
+         */
+
+        DecimalFormat int2 = new DecimalFormat("##");
+        
+        str += "    "; 
+
+        for (int house = 11; house >= 6; house--) 
+            str += int2.format(board[house]) + " ";
+
+        str += "\n"; 
+        str += int2.format(store2);
+        str += "                    ";
+        str += int2.format(store1); 
+        str += "\n";
+
+        str += "    ";
+
+        for (int house = 0; house < 5; house++) 
+            str += int2.format(board[house]) + " ";
+
         return str;
     }
 
