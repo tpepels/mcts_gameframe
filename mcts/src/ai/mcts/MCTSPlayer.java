@@ -86,11 +86,11 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         boolean qb = options.qualityBonus;
         boolean rb = options.relativeBonus;
         boolean sw = options.swUCT;
-        if (qb && nMoves <= 1)
+        if (qb && nMoves == 0)
             options.qualityBonus = false;
-        if (rb && nMoves <= 1)
+        if (rb && nMoves == 0)
             options.relativeBonus = false;
-        if (sw && nMoves <= 1)
+        if (sw && nMoves == 0)
             options.swUCT = false;
 
         if (!options.fixedSimulations) {
@@ -195,12 +195,14 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             MovingAverage.full = 0;
             MovingAverage.smallInstances = 0;
         }
-        // Turn the qb back on
+        // Turn the qb/rb/sw-uct back on
         options.qualityBonus = qb;
         options.relativeBonus = rb;
         options.swUCT = sw;
+
         //options.moveCov.reset();
         //options.qualityCov.reset();
+
         nMoves++;
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
