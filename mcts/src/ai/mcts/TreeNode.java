@@ -183,7 +183,7 @@ public class TreeNode {
             if (!board.isPartialObservable() && board.doAIMove(moves.get(i), player)) {
                 TreeNode child;
                 // Initialize the child
-                if (options.swUCT && depth >= options.minSWDepth)
+                if (options.swUCT && depth >= options.minSWDepth && depth <= options.maxSWDepth)
                     child = new TreeNode(nextPlayer, moves.get(i), options, true);
                 else
                     child = new TreeNode(nextPlayer, moves.get(i), options);
@@ -256,9 +256,6 @@ public class TreeNode {
                 uctValue = INF + MCTSOptions.r.nextDouble();
             } else {
                 avgValue = c.stats.mean();
-                // Depth discount changes the average value
-                if (options.depthDiscount && Math.abs(avgValue) != INF)
-                    avgValue *= (1. - Math.pow(options.depthD, depth));
                 // Implicit minimax
                 if (options.implicitMM) {
                     // changed to be consistent with Mark + Nathan

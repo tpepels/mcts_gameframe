@@ -9,28 +9,28 @@ public class MCTSOptions {
     // Initialize a random generator, separate for each MCTS player
     public static final Random r = new Random();
     private static int instances = 0;
-    //
-    public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
-    // Fields for enabling tree-reuse
-    public boolean treeReuse = false;
-    // Discount values based on their depth
-    public boolean depthDiscount = false;
     // Sliding-window UCT
-    public boolean swUCT = false;
-    public int numSimulations, minSWDepth = 2;
+    public int numSimulations, minSWDepth = 2, maxSWDepth = 3;
     public double switches = 4.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
+    public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
     public double k = 2.0;
-    // note: useHeuristics uses a different default (false) when using SimGame
-    public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, mapping = false;
-    public boolean ucbTuned = false, auct = false;
+    // note: useHeuristics has a different default (false) when using SimGame
+    public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false,treeReuse = false;
+    public boolean ucbTuned = false, auct = false, swUCT = false;
+    // Plot stats to a file
+    public boolean mapping = false;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
     // MCTS Specific values
     public double uctC = 1., maxVar = 1.;
     // Discounting values
-    public double lambda = .999999, depthD = 0.1;
-    public int timeInterval = 1000, simulations = 10000, simsLeft = 10000;
+    public double lambda = .999999;
+    public int timeInterval = 1000, simulations = 10000, simsLeft;
+    // MAST stuff
+    public boolean MAST = false, TO_MAST = false; // Turning off heuristics also disables MAST
+    public double mastEps = 0.8;
+    //
     // Marc's stuff
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -43,9 +43,6 @@ public class MCTSOptions {
     // Progressive bias; H_i is the evaluation function value
     public boolean progBias = false;
     public double progBiasWeight = 0.0;
-    // MAST stuff
-    public boolean MAST = false, TO_MAST = false; // Turning off heuristics also disables MAST
-    public double mastEps = 0.8;
     //
     private int instance = 0;
     private double[][] mastValues, mastVisits;
@@ -68,22 +65,28 @@ public class MCTSOptions {
     public void setGame(String game) {
         if (game.equals("cannon")) {
             uctC = .8;
+            k = 3.0;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
+            k = 1.2;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
+            k = 2.8;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
+            k = 1.;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
+            k = 2.6;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
+            k = 8.0;
         }
         resetSimulations(game);
     }
@@ -98,27 +101,32 @@ public class MCTSOptions {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
-                numSimulations = 15 * timeInterval;
-        } else if (game.equals("lostcities")) {
-            if (fixedSimulations)
-                numSimulations = simulations;
-            else
-                numSimulations = 7 * timeInterval;
-        } else if (game.equals("pentalath")) {
+                numSimulations = 14 * timeInterval;
+        } else if (game.equals("checkers")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 24 * timeInterval;
+        } else if (game.equals("lostcities")) {
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 6 * timeInterval;
+        } else if (game.equals("pentalath")) {
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 21 * timeInterval;
         } else if (game.equals("amazons")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
-                numSimulations = 5 * timeInterval;
+                numSimulations = 3 * timeInterval;
         } else if (game.equals("breakthrough")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
-                numSimulations = 18 * timeInterval;
+                numSimulations = 17 * timeInterval;
         }
         simsLeft = numSimulations;
     }

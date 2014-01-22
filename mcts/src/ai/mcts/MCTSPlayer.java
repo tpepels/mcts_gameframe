@@ -1,5 +1,6 @@
 package ai.mcts;
 
+import ai.MovingAverage;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -84,10 +85,13 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         int simulations = 0;
         boolean qb = options.qualityBonus;
         boolean rb = options.relativeBonus;
-        if(qb && nMoves <= 1)
+        boolean sw = options.swUCT;
+        if (qb && nMoves <= 1)
             options.qualityBonus = false;
-        if(rb && nMoves <= 1)
+        if (rb && nMoves <= 1)
             options.relativeBonus = false;
+        if (sw && nMoves <= 1)
+            options.swUCT = false;
 
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
@@ -117,7 +121,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 
             }
             // (SW-UCT) Remember the number of simulations for the next round
-            options.numSimulations = simulations;
+            options.numSimulations = simulations + (int) (0.1 * simulations);
             options.simsLeft = options.numSimulations;
         } else {
             options.numSimulations = options.simulations;
@@ -181,12 +185,22 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
                 System.out.println("c*                : " + options.qualityCov.getCovariance() / options.qualityCov.variance2());
             }
+            if (options.swUCT) {
+                System.out.println("Small instances: " + ((MovingAverage.smallInstances / (double) MovingAverage.instances) * 100.) + "%");
+                System.out.println("Windows grown:  " + ((MovingAverage.grown / (double) MovingAverage.smallInstances) * 100.) + "%");
+                System.out.println("Windows cycled: " + ((MovingAverage.full / (double) MovingAverage.instances) * 100.) + "%");
+            }
+            MovingAverage.grown = 0;
+            MovingAverage.instances = 0;
+            MovingAverage.full = 0;
+            MovingAverage.smallInstances = 0;
         }
         // Turn the qb back on
         options.qualityBonus = qb;
         options.relativeBonus = rb;
-        //options.moveCov.reset();
-        //options.qualityCov.reset();
+        options.swUCT = sw;
+        options.moveCov.reset();
+        options.qualityCov.reset();
         nMoves++;
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)

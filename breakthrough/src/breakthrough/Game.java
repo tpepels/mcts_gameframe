@@ -14,6 +14,7 @@ public class Game {
         MCTSOptions options1 = new MCTSOptions();
 //        options1.qualityBonus = true;
 //        options1.swUCT = true;
+//        options1.switches = 10;
 //        options1.pdepth = 0;
 //        options1.earlyEval = true;
 //        options1.useHeuristics = true;

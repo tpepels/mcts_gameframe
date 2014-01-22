@@ -61,12 +61,12 @@ public class AITests {
         DateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
         Date today = Calendar.getInstance().getTime();
         writeOutput(df.format(today), true);
+        games = 1000;
         writeOutput("Running test # " + which + ", # of runs: " + games + ", on game: " + game, true);
-
         // AI 1
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = false;
-        options1.relativeBonus = true;
+        options1.swUCT = true;
         options1.setGame(game);
         aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
@@ -79,13 +79,29 @@ public class AITests {
 
         // Run one of the defined experiments
         if (which == 1) {
-            runGames("New RB | MCTS");
+            options1.switches = 4;
+            runGames("SW UCT 4 | MCTS");
+
+            options1.switches = 12;
+            runGames("SW UCT 12 | MCTS");
         } else if (which == 2) {
+            options1.switches = 6;
+            runGames("SW UCT 6 | MCTS");
 
+            options1.switches = 14;
+            runGames("SW UCT 14 | MCTS");
         } else if (which == 3) {
+            options1.switches = 8;
+            runGames("SW UCT 8 | MCTS");
 
+            options1.switches = 16;
+            runGames("SW UCT 16 | MCTS");
         } else if (which == 4) {
+            options1.switches = 10;
+            runGames("SW UCT 10 | MCTS");
 
+            options1.switches = 20;
+            runGames("SW UCT 20 | MCTS");
         }
     }
 
