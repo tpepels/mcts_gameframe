@@ -650,18 +650,18 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player) {
         // use the one from the ramanujan paper
-        double score1 = store1;
-        double score2 = store2; 
+        double score1 = store1*10;
+        double score2 = store2*10; 
 
-        /*for (int i = 0; i < 6; i++) { 
+        for (int i = 0; i < 6; i++) { 
             score1 += board[i];
             score2 += board[6+i];
-        }*/
+        }
 
         double diff = score1-score2;
         
         //System.out.println("diff = " + diff);
-        double p1eval = FastTanh.tanh(diff / 50.0); 
+        double p1eval = FastTanh.tanh(diff / 100.0); 
         if (player == 1) 
             return p1eval;
         else
