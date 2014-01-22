@@ -106,12 +106,12 @@ public class TreeNode {
                 // check for non-negamax
                 // here, result is in view of the child
                 if (this.player != child.player) { 
-                    child.updateStats(-result);
+                    child.updateStats(-result, this.player);
                     // get result in view of me
                     result = -result;         
                 }
                 else { 
-                    child.updateStats(result);
+                    child.updateStats(result, this.player);
                     // result already in few of me.
                 } 
 
@@ -179,12 +179,12 @@ public class TreeNode {
                     // Return a single loss, if not all children are a loss
                     // check for non-negamax; can't explain why the return value has a different sign
                     if (previousPlayer != this.player) {
-                        updateStats(1);  // in view of parent
-                        return -1;       // view of me.
+                        updateStats(1, previousPlayer);  // in view of parent
+                        return -1;                       // view of me.
                     }
                     else {
-                        updateStats(-1);  // view of parent
-                        return -1;        // view of me
+                        updateStats(-1, previousPlayer);  // view of parent
+                        return -1;                        // view of me
                     }
                 }
             }
@@ -204,9 +204,9 @@ public class TreeNode {
         // Update the results for the current node
         // check for non-negamax
         if (previousPlayer != this.player)
-            updateStats(-result);
+            updateStats(-result, previousPlayer);
         else 
-            updateStats(result);
+            updateStats(result, previousPlayer);
 
         // Back-propagate the result
         // always return in view of me
@@ -299,7 +299,7 @@ public class TreeNode {
         }
         // implicit minimax
         if (options.implicitMM) {
-            // check for non-negamax; FIXME: need parent type!
+            // check for non-negamax; 
             if (player != parentPlayer)
                 this.imVal = -best_imVal;
             else 
@@ -626,7 +626,7 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(double value) {
+    private void updateStats(double value, int previousPlayer) {
         // If we are not using AUCT simply add the total value
         if (!options.auct || isLeaf()) {
             stats.push(value);
@@ -656,7 +656,13 @@ public class TreeNode {
                 if ((-c.imAlpha) > bestBeta) bestBeta = (-c.imAlpha);
             }
 
-            this.imVal = -bestVal;       // view of parent
+            // check for non-negamax; FIXME: implicit pruning does not work for non-negamax
+
+            if (previousPlayer != this.player)
+                this.imVal = -bestVal;       // view of parent
+            else
+                this.imVal = bestVal;        // view of parent
+
             this.imAlpha = bestAlpha;    // view of me
             this.imBeta = bestBeta;      // view of me
         }
@@ -670,7 +676,7 @@ public class TreeNode {
             }
             // Due to velocities being reset
             if (!isLeaf())
-                updateStats(0);
+                updateStats(0, 0);
         }
     }
 
