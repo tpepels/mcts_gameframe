@@ -199,8 +199,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         options.qualityBonus = qb;
         options.relativeBonus = rb;
         options.swUCT = sw;
-        options.moveCov.reset();
-        options.qualityCov.reset();
+        //options.moveCov.reset();
+        //options.qualityCov.reset();
         nMoves++;
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
         if (options.treeReuse)
