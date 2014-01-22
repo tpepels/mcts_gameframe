@@ -10,18 +10,6 @@ import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import ai.RandomPlayer;
 
-/*
-FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
-     by using their fully-qualified names. 
-import amazons.game.Board;
-import cannon.game.Board;
-import chinesecheckers.game.Board;
-import breakthrough.game.Board;
-import lostcities.game.Table;
-import pentalath.game.Board;
-*/
-
-
 /**
  * Runs a single experiment. Options are sent by command-line.
  */
@@ -76,6 +64,7 @@ public class SimGame {
             } else if (args[i].equals("--seed")) {
                 i++;
                 seed = Long.parseLong(args[i]);
+                MCTSOptions.r.setSeed(seed);
             } else if (args[i].equals("--printboard")) { 
                 printBoard = true; 
             } else if (args[i].equals("--mctsdebug")) { 
@@ -86,7 +75,7 @@ public class SimGame {
         }
     }
 
-    public void loadPlayer(int player) {
+    public void loadPlayer(int player, String label) {
         /**
          * Label of the player determines options. This is needed by the 
          * post-processing scripts. 
@@ -114,7 +103,6 @@ public class SimGame {
          *    _ucb1t = enables UCB1-Tuned
          *    _wX    = enable sliding window UCT with Wc = X, where X is a double
          */
-        String label = (player == 1 ? p1label : p2label);
         AIPlayer playerRef = null;
 
         String[] parts = label.split("_");
@@ -127,7 +115,6 @@ public class SimGame {
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
-            MCTSOptions.r.setSeed(seed);
 
             // now, parse the tags
             for (int i = 1; i < parts.length; i++) {
@@ -236,6 +223,12 @@ public class SimGame {
     }
 
     public void run() {
+
+        if (game.equals("kalah")) {
+            run_kalah();
+            return;
+        }
+
         System.out.println("Starting game simulation...");
 
         System.out.println("Game: " + game);
@@ -244,8 +237,8 @@ public class SimGame {
         System.out.println("");
 
         loadGame();
-        loadPlayer(1);
-        loadPlayer(2);
+        loadPlayer(1, p1label);
+        loadPlayer(2, p2label);
 
         // Initialize the fast... stuff
         FastTanh.tanh(1.);
@@ -272,6 +265,131 @@ public class SimGame {
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
         System.out.println("Game over. Winner is " + board.checkWin());
+    }
+    
+    public void run_kalah() {
+        
+        System.out.println("Starting kalah game simulation...");
+
+        System.out.println("P1: " + p1label);
+        System.out.println("P2: " + p2label);
+        System.out.println("");
+
+        // generate a random board. 
+        int[] initb = new int[12]; 
+        for (int i = 0; i < 12; i++)
+            initb[i] = 0; 
+
+        for (int i = 0; i < 48; i++) { 
+            int index = (int)(MCTSOptions.r.nextDouble() * 12); 
+            initb[index]++;
+        }
+
+        kalah.game.Board initBoard = new kalah.game.Board();
+        initBoard.initialize(initb);
+
+        System.out.println("Generated board: \n" + initBoard); 
+
+        loadPlayer(1, p1label);
+        loadPlayer(2, p2label);
+
+        kalah.game.Board board = (kalah.game.Board)initBoard.copy();
+
+        // Initialize the fast... stuff
+        FastTanh.tanh(1.);
+        FastSigm.sigm(1.);
+        FastLog.log(1.);
+
+        while (board.checkWin() == IBoard.NONE_WIN) {
+            int player = board.getPlayerToMove();
+
+            if (printBoard)
+                System.out.println(board.toString());
+
+            AIPlayer aiPlayer = (board.getPlayerToMove() == 1 ? player1 : player2);
+            System.gc();
+
+            IMove m = null;
+            aiPlayer.getMove(board.copy(), null, board.getPlayerToMove(), false, m);
+            m = aiPlayer.getBestMove();
+            board.doAIMove(m, player);
+
+            if (m != null)
+                System.out.println("Player " + player + " played " + m);
+        }
+
+        // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
+        //System.out.println("Game over. Winner is " + board.checkWin());
+        
+        int firstgame_p1score = board.getEndScore(1); 
+        int firstgame_p2score = board.getEndScore(2);
+
+        System.out.println("*** First game done. Scores are: " + firstgame_p1score + " " + firstgame_p2score); 
+        System.out.println("");
+
+        System.out.println("Reloading initial board and swaping players..."); 
+        
+        // swap!
+        loadPlayer(1, p2label);
+        loadPlayer(2, p1label);
+
+        board = (kalah.game.Board)initBoard.copy();
+
+        System.out.println(board);
+        
+        //try { Thread.sleep(5000); } catch(Exception e) { } 
+
+        // Initialize the fast... stuff
+        FastTanh.tanh(1.);
+        FastSigm.sigm(1.);
+        FastLog.log(1.);
+
+        while (board.checkWin() == IBoard.NONE_WIN) {
+            int player = board.getPlayerToMove();
+
+            if (printBoard)
+                System.out.println(board.toString());
+
+            AIPlayer aiPlayer = (board.getPlayerToMove() == 1 ? player1 : player2);
+            System.gc();
+
+            IMove m = null;
+            aiPlayer.getMove(board.copy(), null, board.getPlayerToMove(), false, m);
+            m = aiPlayer.getBestMove();
+            board.doAIMove(m, player);
+
+            if (m != null)
+                System.out.println("Player " + player + " played " + m);
+        }
+
+        // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
+        //System.out.println("Game over. Winner is " + board.checkWin());
+        
+        int secondgame_p1score = board.getEndScore(1); 
+        int secondgame_p2score = board.getEndScore(2);
+
+        System.out.println("***  game done. Scores are: " + secondgame_p1score + " " + secondgame_p2score); 
+        System.out.println("");
+
+        System.out.println("First game scores, " + p1label + ": " + firstgame_p1score + " " + p2label + ": " + firstgame_p2score);
+        System.out.println("Second game scores, " + p2label + ": " + secondgame_p1score + " " + p1label + ": " + secondgame_p2score); 
+  
+        // Check for a p1label win
+        if (   (firstgame_p1score > firstgame_p2score && secondgame_p2score >= firstgame_p2score)
+            || (secondgame_p2score > secondgame_p1score && firstgame_p1score >= secondgame_p1score) ) { 
+            System.out.println("Game over. Winner is 1");
+        }
+        // Check for a p2label win
+        else if (   (firstgame_p2score > firstgame_p1score && secondgame_p1score >= firstgame_p1score)
+            || (secondgame_p1score > secondgame_p2score && firstgame_p2score >= secondgame_p2score) ) { 
+            System.out.println("Game over. Winner is 2");
+        }
+        // else, discard
+        else { 
+            System.out.println("Game over. Winner is DISCARDED"); 
+        } 
+          
+
     }
 
 }

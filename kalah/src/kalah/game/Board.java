@@ -45,6 +45,21 @@ public class Board implements IBoard {
     public int[] board;
     public int store1, store2;
     
+    public void initialize(int setboard[]) {
+        board = new int[N_HOUSES*2]; 
+        store1 = 0; 
+        store2 = 0;
+        
+        for (int i = 0; i < N_HOUSES*2; i++) 
+            board[i] = setboard[i]; 
+
+        pastMoves = new Stack<IMove>();
+        nMoves = 0;
+        winner = NONE_WIN;
+        curPlayer = 1;
+        
+    }
+
     @Override
     public void initialize() {
 
@@ -630,6 +645,21 @@ public class Board implements IBoard {
     @Override
     public int checkWin() {
         return winner;
+    }
+
+    public int getEndScore(int player) {
+        int score = 0;
+        if (player == 1) { 
+            score = store1; 
+            for (int i = 0; i < 6; i++) 
+                score += board[i];
+        }
+        else if (player == 2) {
+            score = store2;
+            for (int i = 0; i < 6; i++)
+                score += board[6+i];
+        }
+        return score; 
     }
 
     @Override
