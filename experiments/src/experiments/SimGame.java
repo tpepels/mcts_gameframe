@@ -375,20 +375,16 @@ public class SimGame {
         System.out.println("Second game scores, " + p2label + ": " + secondgame_p1score + " " + p1label + ": " + secondgame_p2score); 
   
         // Check for a p1label win
-        if (   (firstgame_p1score > firstgame_p2score && secondgame_p2score >= firstgame_p2score)
-            || (secondgame_p2score > secondgame_p1score && firstgame_p1score >= secondgame_p1score) ) { 
+        if (   (firstgame_p1score > firstgame_p2score && secondgame_p2score >= secondgame_p1score)
+            || (secondgame_p2score > secondgame_p1score && firstgame_p1score >= firstgame_p2score))
             System.out.println("Game over. Winner is 1");
-        }
         // Check for a p2label win
-        else if (   (firstgame_p2score > firstgame_p1score && secondgame_p1score >= firstgame_p1score)
-            || (secondgame_p1score > secondgame_p2score && firstgame_p2score >= secondgame_p2score) ) { 
+        else if (   (firstgame_p2score > firstgame_p1score && secondgame_p1score >= secondgame_p2score)
+                 || (secondgame_p1score > secondgame_p2score && firstgame_p2score >= firstgame_p1score))  
             System.out.println("Game over. Winner is 2");
-        }
         // else, discard
-        else { 
+        else 
             System.out.println("Game over. Winner is DISCARDED"); 
-        } 
-          
 
     }
 
