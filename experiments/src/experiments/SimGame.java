@@ -384,7 +384,7 @@ public class SimGame {
             System.out.println("Game over. Winner is 2");
         // else, discard
         else 
-            System.out.println("Game over. Winner is DISCARDED"); 
+            System.out.println("Game over. Winner is 3"); 
 
     }
 
