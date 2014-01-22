@@ -566,9 +566,6 @@ public class Board implements IBoard {
 
             if ((house + sow) % 13 == store) {
                 poMoves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
-
-                if (heuristics)
-                    poMoves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
             }
             else if (curPlayer == 1) { 
     
@@ -590,11 +587,6 @@ public class Board implements IBoard {
                     }
 
                     poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
-
-                    if (heuristics) {
-                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
-                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
-                    }
                 }
                 else { 
                     // regular move
@@ -619,11 +611,6 @@ public class Board implements IBoard {
                     }
                     
                     poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
-
-                    if (heuristics) { 
-                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
-                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
-                    }
                 }
                 else { 
                     // regular move
