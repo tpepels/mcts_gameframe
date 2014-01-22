@@ -566,6 +566,9 @@ public class Board implements IBoard {
 
             if ((house + sow) % 13 == store) {
                 poMoves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
+
+                if (heuristics)
+                    poMoves.add(new Move(Move.STORE, house, sow, 0, curPlayer)); 
             }
             else if (curPlayer == 1) { 
     
@@ -587,6 +590,11 @@ public class Board implements IBoard {
                     }
 
                     poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+
+                    if (heuristics) {
+                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+                    }
                 }
                 else { 
                     // regular move
@@ -609,8 +617,13 @@ public class Board implements IBoard {
                         int halfrevs = (sow - fullrevs) >= 8 ? 1 : 0; 
                         piecesCaptured += (fullrevs + halfrevs);
                     }
-
+                    
                     poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+
+                    if (heuristics) { 
+                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+                        poMoves.add(new Move(Move.CAPTURE, house, sow, piecesCaptured, curPlayer));
+                    }
                 }
                 else { 
                     // regular move
@@ -653,15 +666,15 @@ public class Board implements IBoard {
         double score1 = store1*10;
         double score2 = store2*10; 
 
-        for (int i = 0; i < 6; i++) { 
+        /*for (int i = 0; i < 6; i++) { 
             score1 += board[i];
             score2 += board[6+i];
-        }
+        }*/
 
         double diff = score1-score2;
         
         //System.out.println("diff = " + diff);
-        double p1eval = FastTanh.tanh(diff / 75.0); 
+        double p1eval = FastTanh.tanh(diff / 100.0); 
         if (player == 1) 
             return p1eval;
         else
