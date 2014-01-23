@@ -92,6 +92,7 @@ public class SimGame {
          *    _imX   = enable implicit minimax
          *    _ip    = enable implicit pruning
          *    _mastX = Plays highest MAST move with probability X, X is double
+         *    _mbp   = Maximum backpropagation
          *    _npX   = Node priors using the evaluation function, X = number of initialized visits 
          *    _pb    = progressive bias
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
@@ -163,6 +164,8 @@ public class SimGame {
                         throw new RuntimeException("Unable to parse prog bias weight");
                 } else if (tag.equals("ip")) {
                     options.imPruning = true;
+                } else if (tag.equals("mbp")) {
+                    options.maxBackprop = true;
                 } else if (tag.startsWith("np")) {
                     options.nodePriors = true;
                     options.nodePriorsVisits = Integer.parseInt(tag.substring(2));

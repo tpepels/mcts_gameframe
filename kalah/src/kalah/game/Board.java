@@ -692,6 +692,8 @@ public class Board implements IBoard {
         
         //System.out.println("diff = " + diff);
         double p1eval = FastTanh.tanh(diff / 10.0); 
+        //double p1eval = diff;
+
         if (player == 1) 
             return p1eval;
         else

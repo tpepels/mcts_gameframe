@@ -31,6 +31,7 @@ public class TreeNode {
     private double imAlpha = -INF - 1; // implicit lower bound (in view of me)
     private double imBeta = +INF + 1;  // implicit upper bound (in view of me)
     private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
+    public double maxBackpropQs = 0;  // max backprop node value
 
     /**
      * Constructor for the rootnode
@@ -237,7 +238,7 @@ public class TreeNode {
         }
 
         int winner;
-        double value, best_imVal = -INF;
+        double value, best_imVal = -INF, best_maxBackpropQs = -INF;
 
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
@@ -282,6 +283,19 @@ public class TreeNode {
                     child.imAlpha = -INF - 1;
                     child.imBeta = +INF + 1;
                 }
+                // max backprop
+                if (options.maxBackprop) {
+                    // new node
+                    // FIXME: assumes pdepth 0 !
+                    if (player != nextPlayer)
+                        child.maxBackpropQs = -board.evaluate(nextPlayer); // view of parent
+                    else 
+                        child.maxBackpropQs = board.evaluate(nextPlayer); // view of parent
+
+                    double childVal = getnVisits()*child.maxBackpropQs;
+                    if (childVal > best_maxBackpropQs)
+                        best_maxBackpropQs = childVal;
+                }
                 // node priors
                 if (winner != player && winner != nextPlayer && options.nodePriors) { 
                     board.initNodePriors(player, child.stats, moves.get(i), options.nodePriorsVisits); 
@@ -311,6 +325,15 @@ public class TreeNode {
             this.imAlpha = -INF - 1;
             this.imBeta = +INF + 1;
         }
+        // max backprop
+        if (options.maxBackprop) {
+            // check for non-negamax; 
+            if (player != parentPlayer)
+                this.maxBackpropQs = -best_maxBackpropQs;
+            else 
+                this.maxBackpropQs = best_maxBackpropQs;
+        }
+
         // prog. bias
         if (options.progBias) 
             this.heval = -board.evaluate(player);
@@ -359,6 +382,9 @@ public class TreeNode {
                         double penalty = MCTSOptions.r.nextDouble() * (-0.5);
                         avgValue += penalty;
                     }
+                }
+                if (options.maxBackprop) { 
+                    avgValue = c.maxBackpropQs;
                 }
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
@@ -669,6 +695,23 @@ public class TreeNode {
 
             this.imAlpha = bestAlpha;    // view of me
             this.imBeta = bestBeta;      // view of me
+        }
+
+        // max backprop
+        if (options.maxBackprop && children != null) { 
+            double bestVal = -INF - 1;
+
+            for (TreeNode c : children) {
+                double childVal = getnVisits() * c.maxBackpropQs; 
+
+                if (childVal > bestVal) 
+                    bestVal = childVal;
+            }
+            
+            if (previousPlayer != this.player)
+                this.maxBackpropQs = -bestVal;       // view of parent
+            else
+                this.maxBackpropQs = bestVal;        // view of parent
         }
     }
 
