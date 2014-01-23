@@ -146,11 +146,11 @@ public class SimGame {
                 } else if (tag.startsWith("rb")) {
                     options.relativeBonus = true;
                     if (tryParseDouble(tag.substring(2)))
-                        options.k = Double.parseDouble(tag.substring(2));
+                        options.kr = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("qb")) {
                     options.qualityBonus = true;
                     if (tryParseDouble(tag.substring(2)))
-                        options.k = Double.parseDouble(tag.substring(2));
+                        options.kq = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("ucb1t")) {
                     options.ucbTuned = true;
                 } else if (tag.startsWith("uct")) {

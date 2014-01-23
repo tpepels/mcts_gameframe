@@ -11,11 +11,11 @@ public class MCTSOptions {
     private static int instances = 0;
     // Sliding-window UCT
     public int numSimulations, minSWDepth = 2, maxSWDepth = 3;
-    public double switches = 4.;
+    public double switches = 6.;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
     public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
-    public double k = 2.0;
+    public double kr = 2.0, kq =2.0;
     // note: useHeuristics has a different default (false) when using SimGame
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false,treeReuse = false;
     public boolean ucbTuned = false, auct = false, swUCT = false;
@@ -65,28 +65,34 @@ public class MCTSOptions {
     public void setGame(String game) {
         if (game.equals("cannon")) {
             uctC = .8;
-            k = 3.0;
+            kr = 3.0;
+            kq = 4.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
-            k = 1.2;
+            kr = 1.2;
+            kq = 2.8;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
-            k = 2.8;
+            kr = 2.8;
+            kq = 2.0;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
             mastEps = .95;
-            k = 1.;
+            kr = 1.;
+            kq = 1.6;
         } else if (game.equals("amazons")) {
             uctC = .5;
             MAST = true;
             mastEps = .3;
-            k = 2.6;
+            kr = 2.2;
+            kq = 1.6; //
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
             mastEps = .7;
-            k = 8.0;
+            kr = 8.0;
+            kq = 2.0;
         }
         resetSimulations(game);
     }
