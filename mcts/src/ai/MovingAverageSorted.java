@@ -1,7 +1,7 @@
 package ai;
 
 public class MovingAverageSorted {
-    public final double INIT_SIZE = .25;
+    public final double INIT_SIZE = .2;
     private int curSize = 0;
     //
     private double[] samples;
@@ -13,7 +13,7 @@ public class MovingAverageSorted {
         this.maxSize = size;
         //
         curSize = (int)(INIT_SIZE * size);
-        if(curSize <= 25)
+        if(curSize <= 10)
             curSize = size;
         samples = new double[curSize];
         depths = new int[curSize];
@@ -27,6 +27,7 @@ public class MovingAverageSorted {
     }
 
     public void add(double sample, int depth) {
+
         // Number of samples < swUCT size
         if (size < maxSize) {
             size++;
@@ -45,12 +46,14 @@ public class MovingAverageSorted {
             // Index is at the position to be overwritten
             total -= samples[index];
         }
+        //
         depths[index] = (depth * 10000) + index;
         samples[index++] = sample;
         total += sample;
         // Reset the index to start at the beginning of the array
         if (index == maxSize) {
             index = 0;
+            // Sort on the depth of the signal
             quickSort(depths, 0, depths.length - 1);
         }
     }

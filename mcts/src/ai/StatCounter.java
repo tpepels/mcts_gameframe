@@ -12,7 +12,6 @@ import ai.mcts.MCTSOptions;
 import ai.mcts.TreeNode;
 
 public class StatCounter {
-    public static int MIN_W_VISITS = 2; // Only after this many visits, initialize the window
     private MovingAverage ma;
     private boolean windowed = false;
     //
@@ -56,30 +55,27 @@ public class StatCounter {
     }
 
     public void push(double num) {
-        m_sum += num;
         m_n++;
-
-        if (Math.signum(num) > 0)
-            m_wins++;
-        else if (num != 0)
-            m_losses++;
-
-        double delta = num - m_mean;
-        m_mean += delta / m_n;
-        m_m2 += delta * (num - m_mean);
-
         // If the node is visited a few times, create the window
-        if (windowed && m_n == MIN_W_VISITS) {
+        if (windowed && m_n == 2) {
             // The size of the window is based on the number of simulations remaining
             int size = options.getWindowSize();
             if (size > 0) {
                 ma = new MovingAverage(size);
-                ma.add(m_sum);     // Store the current value (Works for MIN_W_VISITS = 2)
+                ma.add(m_sum);                  // Store the first value, the current one will be added later
             } else {
                 // Make sure no new window is created
                 windowed = false;
             }
         }
+        m_sum += num;
+        if (Math.signum(num) > 0)
+            m_wins++;
+        else if (num != 0)
+            m_losses++;
+        double delta = num - m_mean;
+        m_mean += delta / m_n;
+        m_m2 += delta * (num - m_mean);
         //
         if (ma != null) ma.add(num);
     }

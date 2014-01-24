@@ -67,14 +67,14 @@ public class AITests {
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = false;
         options1.swUCT = true;
-        options1.timeInterval = 2500;
+        options1.timeInterval = 1500;
         options1.setGame(game);
         aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
         // AI 2
         MCTSOptions options2 = new MCTSOptions();
         options2.debug = false;
-        options2.timeInterval = 2500;
+        options2.timeInterval = 1500;
         options2.setGame(game);
         aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);

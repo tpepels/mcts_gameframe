@@ -12,16 +12,12 @@ import ai.mcts.MCTSOptions;
 import ai.mcts.TreeNode;
 
 public class StatCounterSorted {
-
-    public static int MIN_W_VISITS = 2; // Only after this many visits, initialize the window
     private MovingAverageSorted ma;
     private boolean windowed = false;
-    private final MCTSOptions options;
     //
     private double m_sum, m_m2, m_mean;
-    private int m_n;
-    private int m_wins;
-    private int m_losses;
+    private int m_n, m_wins, m_losses;
+    private final MCTSOptions options;
 
     public StatCounterSorted() {
         this.reset();
@@ -36,17 +32,7 @@ public class StatCounterSorted {
         this.reset();
     }
 
-    public StatCounterSorted copyInv() {
-        StatCounterSorted newSc = new StatCounterSorted();
-        newSc.m_sum = -m_sum;
-        newSc.m_mean = -m_mean;
-        newSc.m_m2 = -m_m2;
-        newSc.m_n = m_n;
-        return newSc;
-    }
-
     public void reset() {
-
         m_losses = 0;
         m_wins = 0;
 
@@ -60,35 +46,33 @@ public class StatCounterSorted {
     }
 
     public void push(double num, int depth) {
-        m_sum += num;
         m_n++;
-
-        if (Math.signum(num) > 0)
-            m_wins++;
-        else if (num != 0)
-            m_losses++;
-
-        double delta = num - m_mean;
-        m_mean += delta / m_n;
-        m_m2 += delta * (num - m_mean);
-
         // If the node is visited a few times, create the window
-        if (windowed && m_n == MIN_W_VISITS) {
+        if (windowed && m_n == 2) {
             // The size of the window is based on the number of simulations remaining
             int size = options.getWindowSize();
             if (size > 0) {
                 ma = new MovingAverageSorted(size);
-                ma.add(m_sum, depth);     // Store the current value (Works for MIN_W_VISITS = 2)
+                ma.add(m_sum, depth);                  // Store the first value, the current one will be added later
             } else {
                 // Make sure no new window is created
                 windowed = false;
             }
         }
-
+        m_sum += num;
+        if (Math.signum(num) > 0)
+            m_wins++;
+        else if (num != 0)
+            m_losses++;
+        double delta = num - m_mean;
+        m_mean += delta / m_n;
+        m_m2 += delta * (num - m_mean);
+        //
         if (ma != null) ma.add(num, depth);
     }
 
-    public String wlString() {
+    @Override
+    public String toString() {
         return "W:" + m_wins + " L:" + m_losses;
     }
 
@@ -118,6 +102,10 @@ public class StatCounterSorted {
 
     public double window_mean() {
         return ma.getAverage();
+    }
+
+    public boolean hasWindow() {
+        return ma != null;
     }
 
     public double windowSize() {

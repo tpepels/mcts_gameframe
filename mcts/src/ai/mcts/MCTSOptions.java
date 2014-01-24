@@ -15,7 +15,7 @@ public class MCTSOptions {
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
     public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
-    public double kr = 2.0, kq =2.0;
+    public double kr = 2.0, kq = 2.0;
     // note: useHeuristics has a different default (false) when using SimGame
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false,treeReuse = false;
     public boolean ucbTuned = false, auct = false, swUCT = false;

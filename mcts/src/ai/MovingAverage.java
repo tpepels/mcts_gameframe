@@ -20,7 +20,6 @@ public class MovingAverage {
         }
         instances++;
         samples = new double[curSize];
-
     }
 
     public void reset() {
