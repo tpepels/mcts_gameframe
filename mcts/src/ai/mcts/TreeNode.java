@@ -273,9 +273,9 @@ public class TreeNode {
                 if (options.implicitMM) {
                     // check for non-negamax
                     if (player != nextPlayer)
-                        child.imVal = -board.evaluate(nextPlayer); // view of parent
+                        child.imVal = -board.evaluate(nextPlayer, options.efVer); // view of parent
                     else 
-                        child.imVal = board.evaluate(nextPlayer); // view of parent
+                        child.imVal = board.evaluate(nextPlayer, options.efVer); // view of parent
 
                     if (child.imVal > best_imVal)
                         best_imVal = child.imVal;
@@ -288,9 +288,9 @@ public class TreeNode {
                     // new node
                     // FIXME: assumes pdepth 0 !
                     if (player != nextPlayer)
-                        child.maxBackpropQs = -board.evaluate(nextPlayer); // view of parent
+                        child.maxBackpropQs = -board.evaluate(nextPlayer, options.efVer); // view of parent
                     else 
-                        child.maxBackpropQs = board.evaluate(nextPlayer); // view of parent
+                        child.maxBackpropQs = board.evaluate(nextPlayer, options.efVer); // view of parent
 
                     double childVal = getnVisits()*child.maxBackpropQs;
                     if (childVal > best_maxBackpropQs)
@@ -303,7 +303,7 @@ public class TreeNode {
                 // prog. bias
                 if (options.progBias) {
                     // must be strictly a bonus
-                    child.heval = board.evaluate(player);
+                    child.heval = board.evaluate(player, options.efVer);
                 }
                 children.add(child);
                 // reset the board
@@ -336,7 +336,7 @@ public class TreeNode {
 
         // prog. bias
         if (options.progBias) 
-            this.heval = -board.evaluate(player);
+            this.heval = -board.evaluate(player, options.efVer);
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -457,7 +457,7 @@ public class TreeNode {
             if (!success)
                 continue;
 
-            double eval = board.evaluate(currentPlayer);
+            double eval = board.evaluate(currentPlayer, options.efVer);
             board.undoMove();
 
             if (eval > bestValue + tolerance) {
@@ -609,7 +609,7 @@ public class TreeNode {
             // playout terminated by nMoves surpassing pdepth
 
             // FIXME: relative bonus will not work with pdepth
-            score = board.evaluate(player);
+            score = board.evaluate(player, options.efVer);
         } else {
             throw new RuntimeException("Game end error in playOut");
         }

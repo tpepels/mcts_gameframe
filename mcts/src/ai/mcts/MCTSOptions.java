@@ -41,6 +41,7 @@ public class MCTSOptions {
     public boolean nodePriors = false;          // use eval func for node priors ? TEST BRANCH
     public int nodePriorsVisits = 100;          // number of visites to initialize in node priors 
     public boolean maxBackprop = false;         // max backprop (FIXME: (i) Ramanujan version, (ii) only works with pdepth = 0)
+    public int efVer = 0;                       // int evaluation function version
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;

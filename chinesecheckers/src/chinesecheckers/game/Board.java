@@ -413,7 +413,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
 
         // Adds up the distance to closest home base for all pieces
         // Compares that to the opponent's 

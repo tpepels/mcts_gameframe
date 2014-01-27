@@ -330,7 +330,7 @@ public class Board implements IBoard {
         System.out.println("BOARD END" + time);
     }
 
-    public double evaluate_simple(int player) {
+    public double evaluate_simple(int player, int version) {
         // clear bcopy
         //System.arraycopy(board, 0, bcopy, 0, board.length);
         
@@ -407,7 +407,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
 
         if (true) { 
             double val = evaluate_eggcelent(player); 

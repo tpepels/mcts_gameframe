@@ -263,7 +263,7 @@ public class AlphaBeta implements AIPlayer {
         }
         // Leaf-node, evaluate the node
         if (depth == 0 && !valuefound) {
-            bestValue = color * board.evaluate(myPlayer);
+            bestValue = color * board.evaluate(myPlayer, 0);
             valuefound = true;
         } else if (!valuefound) {
             /*

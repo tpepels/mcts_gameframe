@@ -87,6 +87,7 @@ public class SimGame {
          *
          *  Index of tags (please keep alphabetically ordered):
          *
+         *    _efvX  = evaluation function version
          *    _egeX  = epsilon-greedy playouts using the eval func, where X is a double
          *    _h     = enable heuristics
          *    _imX   = enable implicit minimax
@@ -169,6 +170,8 @@ public class SimGame {
                 } else if (tag.startsWith("np")) {
                     options.nodePriors = true;
                     options.nodePriorsVisits = Integer.parseInt(tag.substring(2));
+                } else if (tag.startsWith("efv")) {
+                    options.efVer = Integer.parseInt(tag.substring(3));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

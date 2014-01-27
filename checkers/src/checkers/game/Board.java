@@ -354,7 +354,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
         //return 0;
         double diff = (nKings1*5 + nPieces1) - (nKings2*5 + nPieces2); 
         //System.out.println(diff);

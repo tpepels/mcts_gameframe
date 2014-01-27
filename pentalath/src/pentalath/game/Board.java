@@ -661,7 +661,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
         // early termination (mcts_pd0 and mcts_pd3) is losing by a lot against vanilla mcts
         // I suspect something is still wrong with this
         //

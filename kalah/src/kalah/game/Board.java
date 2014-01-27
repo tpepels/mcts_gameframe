@@ -678,7 +678,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
         // use the one from the ramanujan paper
         double score1 = store1;
         double score2 = store2; 

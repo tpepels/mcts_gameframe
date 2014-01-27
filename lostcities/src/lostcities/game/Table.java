@@ -543,7 +543,7 @@ public class Table implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
         return 0.0;
     }
 

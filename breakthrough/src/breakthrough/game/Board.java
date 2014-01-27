@@ -15,12 +15,28 @@ public class Board implements IBoard {
     private static final MoveList tempList = new MoveList(3);   // Temp move store for heuristic evaluation
     private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
     private static final MoveList static_moves = new MoveList(384);   // 64*6
+
+    // these are the values for black (p2)
+    private static final char[][] lorentzValues = { {  5, 15, 15,  5,  5, 15, 15,  5}, 
+                                                    {  2,  3,  3,  3,  3,  3,  3,  2},
+                                                    {  4,  6,  6,  6,  6,  6,  6,  4}, 
+                                                    {  7, 10, 10, 10, 10, 10, 10,  7},
+                                                    { 11, 15, 15, 15, 15, 15, 15, 11}, 
+                                                    { 16, 21, 21, 21, 21, 21, 21, 16}, 
+                                                    { 20, 28, 28, 28, 28, 28, 28, 20}, 
+                                                    { 36, 36, 36, 36, 36, 36, 36, 36} };
+        
+
     //
     public char[][] board;
     public int nMoves, winner, curPlayer;
     private int pieces1, pieces2;
     private int progress1, progress2;
+    private int lorentzPV1, lorentzPV2;
     private Stack<IMove> pastMoves;
+
+    static {
+    }
 
     @Override
     public IBoard copy() {
@@ -28,11 +44,13 @@ public class Board implements IBoard {
 
         b.board = new char[8][8];
         for (int r = 0; r < 8; r++)
-            for (int c = 0; c < 8; c++)
+            for (int c = 0; c < 8; c++) 
                 b.board[r][c] = this.board[r][c];
 
         b.pieces1 = this.pieces1;
         b.pieces2 = this.pieces2;
+        b.lorentzPV1 = this.lorentzPV1;
+        b.lorentzPV2 = this.lorentzPV2;
         b.progress1 = this.progress1;
         b.progress2 = this.progress2;
         b.nMoves = this.nMoves;
@@ -43,6 +61,13 @@ public class Board implements IBoard {
         b.pastMoves = new Stack<IMove>();
 
         return b;
+    }
+
+    private int getLorentzPV(int player, int row, int col) { 
+        if (player == 2) 
+            return lorentzValues[row][col];
+        else 
+            return lorentzValues[7-row][col];
     }
 
     private void recomputeProgress(int player) {
@@ -77,6 +102,17 @@ public class Board implements IBoard {
         board[rp][cp] = board[r][c];
         board[r][c] = '.';
 
+        // lorentz piece value updates:
+        // subtract off from where you came, add where you ended up
+        if (player == 1) { 
+            lorentzPV1 -= getLorentzPV(1, r, c); 
+            lorentzPV1 += getLorentzPV(1, rp, cp);
+        }
+        else if (player == 2) { 
+            lorentzPV2 -= getLorentzPV(2, r, c); 
+            lorentzPV2 += getLorentzPV(2, rp, cp);
+        }
+
         // check for a capture
         if (move.getType() == Move.CAPTURE) {
             if (player == 1) {
@@ -84,10 +120,14 @@ public class Board implements IBoard {
                 // wiping out this piece could reduce the player's progress
                 if (progress2 == rp && pieces2 > 0)
                     recomputeProgress(2);
+                // remove a lorentz piece value for that player
+                lorentzPV2 -= getLorentzPV(2, rp, cp); 
             } else if (player == 2) {
                 pieces1--;
                 if (progress1 == 7 - rp && pieces1 > 0)
                     recomputeProgress(1);
+                // remove a lorentz piece value for that player
+                lorentzPV1 -= getLorentzPV(1, rp, cp); 
             }
         }
 
@@ -117,6 +157,16 @@ public class Board implements IBoard {
 
         board[r][c] = board[rp][cp];
         board[rp][cp] = '.';
+        
+        // lorentz piece value updates:
+        if (curPlayer == 1) { 
+            lorentzPV1 -= getLorentzPV(1, rp, cp);
+            lorentzPV1 += getLorentzPV(1, r, c); 
+        }
+        else if (curPlayer == 2) { 
+            lorentzPV2 -= getLorentzPV(2, rp, cp);
+            lorentzPV2 += getLorentzPV(2, r, c); 
+        }
 
         // remove the win, if there was one
         winner = NONE_WIN;
@@ -126,9 +176,11 @@ public class Board implements IBoard {
             if (curPlayer == 1) {
                 board[rp][cp] = 'b';
                 pieces2++;
+                lorentzPV2 += getLorentzPV(2, rp, cp);
             } else if (curPlayer == 2) {
                 board[rp][cp] = 'w';
                 pieces1++;
+                lorentzPV1 += getLorentzPV(1, rp, cp);
             }
         }
 
@@ -324,8 +376,14 @@ public class Board implements IBoard {
         board = new char[8][8];
         for (int r = 0; r < 8; r++)
             for (int c = 0; c < 8; c++) {
-                if (r == 0 || r == 1) board[r][c] = 'b'; // player 2 is black
-                else if (r == 6 || r == 7) board[r][c] = 'w'; // player 1 is white
+                if (r == 0 || r == 1) {
+                    board[r][c] = 'b'; // player 2 is black
+                    lorentzPV2 += getLorentzPV(2, r, c);
+                }
+                else if (r == 6 || r == 7) { 
+                    board[r][c] = 'w'; // player 1 is white
+                    lorentzPV1 += getLorentzPV(1, r, c);
+                }
                 else board[r][c] = '.';
             }
 
@@ -337,8 +395,7 @@ public class Board implements IBoard {
         pastMoves = new Stack<IMove>();
     }
 
-    @Override
-    public double evaluate(int player) {
+    public double evaluateSchadd(int player) { 
         // inspired by evaluation function in Maarten's thesis
         double p1eval = 0;
         if (progress1 == 7 || pieces2 == 0) p1eval = 1;
@@ -351,6 +408,36 @@ public class Board implements IBoard {
             p1eval = FastTanh.tanh(delta / 60.0);
         }
         return (player == 1 ? p1eval : -p1eval);
+    }
+    
+    public double evaluateLorentz(int player) { 
+        // inspired by evaluation function in Maarten's thesis
+        double p1eval = 0;
+        if (progress1 == 7 || pieces2 == 0) p1eval = 1;
+        else if (progress2 == 7 || pieces1 == 0) p1eval = -1;
+        else {
+            //double delta = (pieces1 * 10 + progress1 * 2.5) - (pieces2 * 10 + progress2 * 2.5);
+            double delta = lorentzPV1 - lorentzPV2;
+            //System.out.println("delta = " + delta);
+
+            //if (delta < -100) delta = -100;
+            //if (delta > 100) delta = 100;
+
+            // now pass it through tanh;
+            p1eval = FastTanh.tanh(delta / 60.0);
+        }
+        return (player == 1 ? p1eval : -p1eval);
+    }
+
+    @Override
+    public double evaluate(int player, int version) {
+        if (version == 0) 
+            return evaluateSchadd(player);
+        else if (version == 1) 
+            return evaluateLorentz(player); 
+        else { 
+            throw new RuntimeException("Evaluation function version unknown! " + version);
+        }
     }
 
     @Override

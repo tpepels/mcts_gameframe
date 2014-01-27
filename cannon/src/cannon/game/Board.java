@@ -635,7 +635,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
         double p1score = ((double) (numBlackPcs - numWhitePcs)) / (double) (N_PIECES);
         double p1eval = FastTanh.tanh(p1score);
         return (player == 1 ? p1eval : -p1eval);
