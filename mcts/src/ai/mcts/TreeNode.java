@@ -481,8 +481,10 @@ public class TreeNode {
     @SuppressWarnings("ConstantConditions")
     private double playOut(IBoard board, int depth) {
         boolean gameEnded, moveMade;
+        double detScore = 0;
         int currentPlayer = board.getPlayerToMove(), moveIndex = -1;
         double mastMax, mastVal, nMoves = 0;
+        int nMovesInt = 0;
         List<IMove> moves;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
@@ -533,6 +535,7 @@ public class TreeNode {
                         movesMade.push(currentMove);
 
                     nMoves++;
+                    nMovesInt++;
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
@@ -545,6 +548,14 @@ public class TreeNode {
                     if (options.earlyEval && nMoves >= options.pdepth) {
                         terminateEarly = true;
                         break;
+                    }
+                    // Check if dynamic early termination satisfied 
+                    if (options.detEnabled && nMovesInt % 5 == 0) { 
+                        detScore = board.evaluate(player, options.efVer); 
+                        if (detScore > options.detThreshold || detScore < -options.detThreshold) {
+                            terminateEarly = true;
+                            break;
+                        }
                     }
                 } else {
                     // The move was illegal, remove it from the list.
@@ -605,11 +616,20 @@ public class TreeNode {
                     qualityStats[w].push(q);
                 }
             }
+        } else if (options.detEnabled && terminateEarly) { 
+            if (detScore > options.detThreshold) 
+                score = 1.0;
+            else if (detScore < -options.detThreshold) 
+                score = -1.0;
+            else { 
+                score = 0.0;
+                throw new RuntimeException("Should not get here!");
+            }
         } else if (options.earlyEval && terminateEarly) {
             // playout terminated by nMoves surpassing pdepth
 
             // FIXME: relative bonus will not work with pdepth
-            score = board.evaluate(player, options.efVer);
+            score = board.evaluate(player, options.efVer);        
         } else {
             throw new RuntimeException("Game end error in playOut");
         }

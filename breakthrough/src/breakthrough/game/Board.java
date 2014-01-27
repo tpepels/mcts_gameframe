@@ -330,11 +330,11 @@ public class Board implements IBoard {
                                 poMoves.add(move);
                             } else if (curPlayer == 1 && mrp >= 4 && mrp <= 7) { 
                                 // prefer defensive captures
-                                poMoves.add(move);
+                                //poMoves.add(move);
                                 poMoves.add(move);
                             } else if (curPlayer == 2 && mrp >= 0 && mrp <= 3) { 
                                 // prefer defensive captures
-                                poMoves.add(move);
+                                //poMoves.add(move);
                                 poMoves.add(move);
                             } else {
                                 poMoves.add(move);
@@ -442,12 +442,11 @@ public class Board implements IBoard {
             //double delta = (pieces1 * 10 + progress1 * 2.5) - (pieces2 * 10 + progress2 * 2.5);
             double delta = lorentzPV1 - lorentzPV2;
             //System.out.println("delta = " + delta);
-
-            //if (delta < -100) delta = -100;
-            //if (delta > 100) delta = 100;
+            if (delta < -100) delta = -100;
+            if (delta > 100) delta = 100;
 
             // now pass it through tanh;
-            p1eval = FastTanh.tanh(delta / 100.0);
+            p1eval = FastTanh.tanh(delta / 60.0);
         }
         return (player == 1 ? p1eval : -p1eval);
     }

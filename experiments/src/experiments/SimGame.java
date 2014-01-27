@@ -88,6 +88,7 @@ public class SimGame {
          *
          *  Index of tags (please keep alphabetically ordered):
          *
+         *    _detX  = dynamic eart terminations, with X = threshold value (a double)
          *    _efvX  = evaluation function version
          *    _egeX  = epsilon-greedy playouts using the eval func, where X is a double
          *    _h     = enable heuristics
@@ -134,6 +135,12 @@ public class SimGame {
                         options.imAlpha = Double.parseDouble(tag.substring(2));
                     else
                         throw new RuntimeException("IM: problem parsing alpha");
+                } else if (tag.startsWith("det")) {
+                    options.detEnabled = true;
+                    if (tryParseDouble(tag.substring(3)))
+                        options.detThreshold = Double.parseDouble(tag.substring(3));
+                    else
+                        throw new RuntimeException("IM: problem parsing det threshold");
                 } else if (tag.startsWith("ege")) {
                     options.epsGreedyEval = true;
                     options.egeEpsilon = Double.parseDouble(tag.substring(3));
