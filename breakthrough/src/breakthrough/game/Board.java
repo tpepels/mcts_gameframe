@@ -432,9 +432,9 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player, int version) {
         if (version == 0) 
-            return evaluateSchadd(player);
-        else if (version == 1) 
             return evaluateLorentz(player); 
+        else if (version == 1) 
+            return evaluateSchadd(player);
         else { 
             throw new RuntimeException("Evaluation function version unknown! " + version);
         }
