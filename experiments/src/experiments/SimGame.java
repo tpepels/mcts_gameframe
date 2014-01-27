@@ -9,6 +9,7 @@ import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import ai.RandomPlayer;
+import ai.KeyboardPlayer;
 
 /**
  * Runs a single experiment. Options are sent by command-line.
@@ -181,6 +182,8 @@ public class SimGame {
             playerRef.setOptions(options);
         } else if (parts[0].equals("random")) { 
             playerRef = new RandomPlayer(); 
+        } else if (parts[0].equals("keyboard")) { 
+            playerRef = new KeyboardPlayer(); 
         } else {
             throw new RuntimeException("Unrecognized player: " + label);
         }

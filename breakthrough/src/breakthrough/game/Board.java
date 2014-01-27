@@ -546,11 +546,18 @@ public class Board implements IBoard {
     }
 
     public String toString() {
+        String rowLabels = "87654321";
+        String colLabels = "abcdefgh";
+
         String str = "";
         for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) str += board[r][c];
+            str += (rowLabels.charAt(r));
+            for (int c = 0; c < 8; c++) { 
+                str += board[r][c];
+            }
             str += "\n";
         }
+        str += (" " + colLabels + "\n");
         str += "\nPieces: " + pieces1 + " " + pieces2 + ", "
                 + "Progresses: " + progress1 + " " + progress2 + ", " 
                 + "nMoves = " + nMoves + "\n";
