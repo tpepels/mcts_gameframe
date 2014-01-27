@@ -424,7 +424,7 @@ public class Board implements IBoard {
             //if (delta > 100) delta = 100;
 
             // now pass it through tanh;
-            p1eval = FastTanh.tanh(delta / 60.0);
+            p1eval = FastTanh.tanh(delta / 100.0);
         }
         return (player == 1 ? p1eval : -p1eval);
     }
