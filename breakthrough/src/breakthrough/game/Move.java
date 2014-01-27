@@ -8,8 +8,10 @@ public class Move implements IMove {
     private int type;
     private int[] movearr;
     private int oldProgress1, oldProgress2;
+    private int oldCapBonus1, oldCapBonus2;
 
-    public Move(int r, int c, int rp, int cp, int type, int oldProgress1, int oldProgress2) {
+    public Move(int r, int c, int rp, int cp, int type, int oldProgress1, int oldProgress2, 
+        int oldCapBonus1, int oldCapBonus2) {
         movearr = new int[4];
         movearr[0] = r;
         movearr[1] = c;
@@ -19,6 +21,8 @@ public class Move implements IMove {
         this.type = type;
         this.oldProgress1 = oldProgress1;
         this.oldProgress2 = oldProgress2;
+        this.oldCapBonus1 = oldCapBonus1;
+        this.oldCapBonus2 = oldCapBonus2;
     }
 
     public int getOldProgress1() {
@@ -27,6 +31,14 @@ public class Move implements IMove {
 
     public int getOldProgress2() {
         return oldProgress2;
+    }
+    
+    public int getOldCapBonus1() {
+        return oldCapBonus1;
+    }
+
+    public int getOldCapBonus2() {
+        return oldCapBonus2;
     }
 
     @Override
