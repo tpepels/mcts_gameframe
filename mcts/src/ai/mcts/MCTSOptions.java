@@ -41,7 +41,7 @@ public class MCTSOptions {
     public boolean nodePriors = false;          // use eval func for node priors ? TEST BRANCH
     public int nodePriorsVisits = 100;          // number of visites to initialize in node priors 
     public boolean maxBackprop = false;         // max backprop (FIXME: (i) Ramanujan version, (ii) only works with pdepth = 0)
-    public int efVer = 0;                       // int evaluation function version
+    public int efVer = 1;                       // int evaluation function version
     public boolean detEnabled = false;          // dynamic early terminations (uses ev. func.)
     public double detThreshold = 0.3;           // >T -> win whereas <T -> loss
     public int detFreq = 5;                     // >T -> win whereas <T -> loss

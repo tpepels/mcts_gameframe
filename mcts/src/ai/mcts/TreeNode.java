@@ -440,8 +440,6 @@ public class TreeNode {
         double roll = MCTSOptions.r.nextDouble();
         double tolerance = 0.0001;
 
-        // try lorentz dynamic early cutoffs
-
         if (roll < options.egeEpsilon) {
             return MCTSOptions.r.nextInt(moves.size());
         }
