@@ -440,6 +440,8 @@ public class TreeNode {
         double roll = MCTSOptions.r.nextDouble();
         double tolerance = 0.0001;
 
+        // try lorentz dynamic early cutoffs
+
         if (roll < options.egeEpsilon) {
             return MCTSOptions.r.nextInt(moves.size());
         }
@@ -550,8 +552,9 @@ public class TreeNode {
                         break;
                     }
                     // Check if dynamic early termination satisfied 
-                    if (options.detEnabled && nMovesInt % 5 == 0) { 
-                        detScore = board.evaluate(player, options.efVer); 
+                    if (options.detEnabled && nMovesInt % options.detFreq == 0) { 
+                        //detScore = board.evaluate(player, options.efVer); 
+                        detScore = board.evaluate(player, 1); 
                         if (detScore > options.detThreshold || detScore < -options.detThreshold) {
                             terminateEarly = true;
                             break;

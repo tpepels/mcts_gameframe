@@ -44,7 +44,7 @@ public class MCTSOptions {
     public int efVer = 1;                       // int evaluation function version
     public boolean detEnabled = false;          // dynamic early terminations (uses ev. func.)
     public double detThreshold = 0.0;           // >T -> win whereas <T -> loss
-    public int detFreq = 10;                    // >T -> win whereas <T -> loss
+    public int detFreq = 5;                     // >T -> win whereas <T -> loss
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
