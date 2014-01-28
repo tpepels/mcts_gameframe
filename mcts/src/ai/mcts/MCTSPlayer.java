@@ -179,6 +179,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].variance());
                 System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
                 System.out.println("c*                : " + options.moveCov.getCovariance() / options.moveCov.variance2());
+                System.out.println("c*                : " + options.moveCov1.getCovariance() / options.moveCov1.variance2());
             }
             if (options.qualityBonus) {
                 System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
@@ -201,7 +202,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         options.relativeBonus = rb;
         options.swUCT = sw;
 
-        //options.moveCov.reset();
+        options.moveCov.reset();
         //options.qualityCov.reset();
 
         nMoves++;

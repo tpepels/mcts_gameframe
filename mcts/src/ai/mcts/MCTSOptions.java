@@ -11,10 +11,10 @@ public class MCTSOptions {
     private static int instances = 0;
     // Sliding-window UCT
     public int numSimulations, minSWDepth = 2, maxSWDepth = 3;
-    public double switches = 6.;
+    public double switches = 6., windowSize = 200;
     // Relative bonus!
     public boolean relativeBonus = false, qualityBonus = false;
-    public Covariance moveCov = new Covariance(), qualityCov = new Covariance();
+    public Covariance moveCov = new Covariance(), qualityCov = new Covariance(), moveCov1 = new Covariance();
     public double kr = 2.0, kq = 2.0;
     // note: useHeuristics has a different default (false) when using SimGame
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false,treeReuse = false;
@@ -138,8 +138,8 @@ public class MCTSOptions {
     }
 
     public int getWindowSize() {
-        if (simsLeft > 100)
-            return (int) Math.sqrt((simsLeft * Math.log(simsLeft)) / switches);
+        if (simsLeft > windowSize)
+            return (int)windowSize;
         else
             return -1;
     }

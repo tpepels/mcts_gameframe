@@ -81,29 +81,29 @@ public class AITests {
 
         // Run one of the defined experiments
         if (which == 1) {
-            options1.switches = 4;
-            runGames("SW UCT 4 | MCTS");
+            options1.windowSize = 75;
+            runGames("SW UCT 75 | MCTS");
 
-            options1.switches = 12;
-            runGames("SW UCT 12 | MCTS");
+            options1.windowSize = 50;
+            runGames("SW UCT 50 | MCTS");
         } else if (which == 2) {
-            options1.switches = 6;
-            runGames("SW UCT 6 | MCTS");
+            options1.windowSize = 100;
+            runGames("SW UCT 100 | MCTS");
 
-            options1.switches = 14;
-            runGames("SW UCT 14 | MCTS");
+            options1.windowSize = 1000;
+            runGames("SW UCT 1000 | MCTS");
         } else if (which == 3) {
-            options1.switches = 8;
-            runGames("SW UCT 8 | MCTS");
+            options1.windowSize = 200;
+            runGames("SW UCT 200 | MCTS");
 
-            options1.switches = 16;
-            runGames("SW UCT 16 | MCTS");
+            options1.windowSize = 300;
+            runGames("SW UCT 300 | MCTS");
         } else if (which == 4) {
-            options1.switches = 10;
-            runGames("SW UCT 10 | MCTS");
+            options1.windowSize = 400;
+            runGames("SW UCT 400 | MCTS");
 
-            options1.switches = 20;
-            runGames("SW UCT 20 | MCTS");
+            options1.windowSize = 750;
+            runGames("SW UCT 100 | MCTS");
         }
     }
 

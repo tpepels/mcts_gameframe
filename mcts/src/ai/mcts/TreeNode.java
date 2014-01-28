@@ -63,6 +63,9 @@ public class TreeNode {
         stats = new StatCounter();
     }
 
+    /**
+     * Initialize a virtual treenode for AUCT
+     */
     public TreeNode(int player, IMove move, final boolean virtual, MCTSOptions options) {
         this.player = player;
         this.move = move;
@@ -451,13 +454,14 @@ public class TreeNode {
                     if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
                         double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
                         double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
-                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
-//                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
+                        //score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
+                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
                     int nm = board.getNMovesMade();
-                    options.moveCov.push((winner == myPlayer) ? nm : 0, nm);
+                    int n = (winner == player) ? nm : 0;
+                    options.moveCov.push(n, nm);
                 }
 
                 // Qualitative bonus

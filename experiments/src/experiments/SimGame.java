@@ -161,7 +161,7 @@ public class SimGame {
                 } else if (tag.startsWith("sw")) {
                     options.swUCT = true;
                     if (tryParseDouble(tag.substring(2)))
-                        options.switches = Double.parseDouble(tag.substring(2));
+                        options.windowSize = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("sl")) {
                     options.fixedSimulations = true;
                 } else if (tag.startsWith("pb")) {
