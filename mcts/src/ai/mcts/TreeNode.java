@@ -551,8 +551,8 @@ public class TreeNode {
                     }
                     // Check if dynamic early termination satisfied 
                     if (options.detEnabled && nMovesInt % options.detFreq == 0) { 
-                        //detScore = board.evaluate(player, options.efVer); 
-                        detScore = board.evaluate(player, 1); 
+                        detScore = board.evaluate(player, options.efVer); 
+                        //detScore = board.evaluate(player, 1); 
                         if (detScore > options.detThreshold || detScore < -options.detThreshold) {
                             terminateEarly = true;
                             break;
