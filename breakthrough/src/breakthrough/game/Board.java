@@ -25,6 +25,23 @@ public class Board implements IBoard {
                                                     { 16, 21, 21, 21, 21, 21, 21, 16}, 
                                                     { 20, 28, 28, 28, 28, 28, 28, 20}, 
                                                     { 36, 36, 36, 36, 36, 36, 36, 36} };
+
+    //private String startingBoard = "";
+    //private int startingPlayer = 0;
+
+    private String startingBoard = 
+          "..b..b.." +
+          "bb..b..b" +
+          "......b." +
+          "b.bb.b.b" +
+          "w..w.w.w" +
+          "..ww...w" +
+          ".ww.ww.." +
+          "........" ;
+
+    private int startingPlayer = 1;
+
+                                   
         
 
     //
@@ -395,25 +412,53 @@ public class Board implements IBoard {
     @Override
     public void initialize() {
         board = new char[8][8];
+        pieces1 = pieces2 = 0;
+
         for (int r = 0; r < 8; r++)
             for (int c = 0; c < 8; c++) {
-                if (r == 0 || r == 1) {
-                    board[r][c] = 'b'; // player 2 is black
-                    lorentzPV2 += getLorentzPV(2, r, c);
-                }
-                else if (r == 6 || r == 7) { 
-                    board[r][c] = 'w'; // player 1 is white
-                    lorentzPV1 += getLorentzPV(1, r, c);
-                }
-                else board[r][c] = '.';
-            }
 
-        pieces1 = pieces2 = N_PIECES;
-        progress1 = progress2 = 1;
-        capBonus1 = capBonus2 = 0;
+              if (startingBoard.equals("")) { 
+                  if (r == 0 || r == 1) {
+                      board[r][c] = 'b'; // player 2 is black
+                      lorentzPV2 += getLorentzPV(2, r, c);
+                  }
+                  else if (r == 6 || r == 7) { 
+                      board[r][c] = 'w'; // player 1 is white
+                      lorentzPV1 += getLorentzPV(1, r, c);
+                  }
+                  else board[r][c] = '.';
+              }
+              else {
+                  if (startingBoard.length() != 64) 
+                      throw new RuntimeException("Starting board length! " + startingBoard.length()); 
+
+                  board[r][c] = startingBoard.charAt(r*8 + c); 
+
+                  if (board[r][c] == 'b') {
+                      pieces2++;
+                      lorentzPV2 += getLorentzPV(2, r, c);
+                  }
+                  else if (board[r][c] == 'w') {
+                      pieces1++; 
+                      lorentzPV1 += getLorentzPV(1, r, c);
+                  }
+              }
+            }
+        
+        if (startingBoard.length() != 64) { 
+            pieces1 = pieces2 = N_PIECES;
+            progress1 = progress2 = 1;
+            capBonus1 = capBonus2 = 0;
+            curPlayer = 1;
+        }
+        else {  
+            recomputeProgress(1);
+            recomputeProgress(2);
+            curPlayer = startingPlayer;
+        }
+
         nMoves = 0;
         winner = NONE_WIN;
-        curPlayer = 1;
         pastMoves = new Stack<IMove>();
     }
 

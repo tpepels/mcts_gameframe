@@ -71,8 +71,15 @@ public class Move implements IMove {
     }
 
     public String toString() {
-        String str = "(" + movearr[0] + "," + movearr[1] + ") -> ("
-                + movearr[2] + "," + movearr[3] + ")";
+        String str = ""; 
+        //str = "(" + movearr[0] + "," + movearr[1] + ") -> ("
+        //        + movearr[2] + "," + movearr[3] + ")";
+        
+        str += ("" + ((char)(97+movearr[1])));
+        str += ("" + (8-movearr[0])); 
+        str += ("" + ((char)(97+movearr[3])));
+        str += ("" + (8-movearr[2])); 
+
         if (type == CAPTURE) return "Cap " + str;
         return "Mov " + str;
     }
