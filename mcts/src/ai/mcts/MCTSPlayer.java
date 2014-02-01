@@ -84,6 +84,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         int simulations = 0;
 
         if (!options.fixedSimulations) {
+            double tickInterval = 30000.0;
+            double startTime = System.currentTimeMillis(); 
+            double nextTickTime = startTime + tickInterval;
+
             // Search for timeInterval seconds
             long endTime = System.currentTimeMillis() + options.timeInterval;
             // Run the MCTS algorithm while time allows it
@@ -92,6 +96,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 options.simsLeft--;
                 if (System.currentTimeMillis() >= endTime) {
                     break;
+                }
+                else if (System.currentTimeMillis() >= nextTickTime) { 
+                    System.out.println("Tick. I have searched " + ((System.currentTimeMillis() - startTime)/1000.0) + " seconds."); 
+                    nextTickTime = System.currentTimeMillis() + tickInterval;
                 }
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
