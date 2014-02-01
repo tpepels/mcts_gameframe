@@ -26,10 +26,10 @@ public class Board implements IBoard {
                                                     { 20, 28, 28, 28, 28, 28, 28, 20}, 
                                                     { 36, 36, 36, 36, 36, 36, 36, 36} };
 
-    //private String startingBoard = "";
-    //private int startingPlayer = 0;
+    private String startingBoard = "";
+    private int startingPlayer = 0;
 
-    private String startingBoard = 
+    /*private String startingBoard = 
           "..b..b.." +
           "bb..b..b" +
           "......b." +
@@ -39,7 +39,7 @@ public class Board implements IBoard {
           ".ww.ww.." +
           "........" ;
 
-    private int startingPlayer = 1;
+    private int startingPlayer = 1;*/
 
                                    
         
