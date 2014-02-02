@@ -98,7 +98,8 @@ public class SimGame {
          *    _mastX = Plays highest MAST move with probability X, X is double
          *    _mbp   = Maximum backpropagation
          *    _npX   = Node priors using the evaluation function, X = number of initialized visits 
-         *    _pb    = progressive bias
+         *    _pbX   = progressive bias, weight = X (a double)
+         *    _pbd   = progressive bias with decay
          *    _pdX   = enable early playout termination, pdedpth = X, where X is an integer
          *    _rbX   = enable the relative bonus with K = X, where X is a double, X is optional
          *    _rbqX  = enable the relative bonus with quality bonus, K = X, where X is a double, X is optional
@@ -168,6 +169,10 @@ public class SimGame {
                         options.switches = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("sl")) {
                     options.fixedSimulations = true;
+                } else if (tag.equals("pbd")) { 
+                    options.progBias = true;
+                    options.pbDecay = true;
+                    options.progBiasWeight = 0.66;
                 } else if (tag.startsWith("pb")) {
                     options.progBias = true;
                     if (tryParseDouble(tag.substring(2)))

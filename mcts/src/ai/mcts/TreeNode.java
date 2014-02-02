@@ -238,7 +238,7 @@ public class TreeNode {
         }
 
         int winner;
-        double value, best_imVal = -INF, best_maxBackpropQs = -INF;
+        double value, best_imVal = -INF, best_pbVal = -INF, best_maxBackpropQs = -INF;
 
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
@@ -303,7 +303,10 @@ public class TreeNode {
                 // prog. bias
                 if (options.progBias) {
                     // must be strictly a bonus
-                    child.heval = board.evaluate(player, options.efVer);
+                    child.heval = -board.evaluate(nextPlayer, options.efVer);
+
+                    if (options.pbDecay && child.heval > best_pbVal)
+                        best_pbVal = child.heval;
                 }
                 children.add(child);
                 // reset the board
@@ -325,6 +328,9 @@ public class TreeNode {
             this.imAlpha = -INF - 1;
             this.imBeta = +INF + 1;
         }
+        if (options.progBias && options.pbDecay) { 
+            this.imVal = -best_pbVal;
+        }
         // max backprop
         if (options.maxBackprop) {
             // check for non-negamax; 
@@ -335,8 +341,13 @@ public class TreeNode {
         }
 
         // prog. bias
-        if (options.progBias) 
-            this.heval = -board.evaluate(player, options.efVer);
+        if (options.progBias) {
+            if (!options.pbDecay) 
+                this.heval = -board.evaluate(player, options.efVer);
+            else 
+                this.heval = -best_pbVal;
+        }
+
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -405,7 +416,15 @@ public class TreeNode {
                 }
                 // Progressive bias
                 if (options.progBias) {
-                    avgValue += options.progBiasWeight * c.heval;
+                    if (options.pbDecay) { 
+                        // decay 
+                        //avgValue += options.progBiasWeight * c.heval;
+                        avgValue += 0.66 * c.heval / (Nc+1);
+                    }
+                    else {
+                        avgValue += 0.66 * c.heval;
+                    }
+                    
                     //avgValue += options.progBiasWeight * c.heval / (c.getnVisits() + 1); 
                     //avgValue += 0.5*c.heval; // <-- this is not prog. bias, but I'm calling it that for now
                 }
@@ -617,7 +636,7 @@ public class TreeNode {
                     qualityStats[w].push(q);
                 }
             }
-        } else if (options.detEnabled && terminateEarly) { 
+        } else if (options.detEnabled && terminateEarly && (detScore > options.detThreshold || detScore < -options.detThreshold)) { 
             if (detScore > options.detThreshold) 
                 score = 1.0;
             else if (detScore < -options.detThreshold) 
@@ -716,6 +735,20 @@ public class TreeNode {
 
             this.imAlpha = bestAlpha;    // view of me
             this.imBeta = bestBeta;      // view of me
+        }
+
+        // prog bias decay
+        if (options.progBias && options.pbDecay && children != null) { 
+            double bestVal = -INF - 1;
+
+            for (TreeNode c : children) {
+                if (c.heval > bestVal) bestVal = c.heval;
+            }
+
+            if (previousPlayer != this.player)
+                this.heval = -bestVal;       // view of parent
+            else
+                this.heval = heval;        // view of parent
         }
 
         // max backprop

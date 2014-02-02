@@ -442,11 +442,11 @@ public class Board implements IBoard {
             //double delta = (pieces1 * 10 + progress1 * 2.5) - (pieces2 * 10 + progress2 * 2.5);
             double delta = lorentzPV1 - lorentzPV2;
             //System.out.println("delta = " + delta);
-            if (delta < -100) delta = -100;
-            if (delta > 100) delta = 100;
+            //if (delta < -100) delta = -100;
+            //if (delta > 100) delta = 100;
 
             // now pass it through tanh;
-            p1eval = FastTanh.tanh(delta / 60.0);
+            p1eval = FastTanh.tanh(delta / 100.0);
         }
         return (player == 1 ? p1eval : -p1eval);
     }
