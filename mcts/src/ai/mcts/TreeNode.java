@@ -21,7 +21,7 @@ public class TreeNode {
     private final boolean virtual;
     private final MCTSOptions options;
     public int player;
-    public StatCounter stats;
+    public StatCounter stats;    
     //
     private boolean expanded = false, simulated = false; 
     private List<TreeNode> children;
@@ -30,6 +30,8 @@ public class TreeNode {
     private double imVal = 0.; // implicit minimax value (in view of parent)
     private double imAlpha = -INF - 1; // implicit lower bound (in view of me)
     private double imBeta = +INF + 1;  // implicit upper bound (in view of me)
+    private double lsUCT = 0;
+    private double lsIM = 0;
     private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
     public double maxBackpropQs = 0;  // max backprop node value
 
@@ -364,6 +366,10 @@ public class TreeNode {
         for (TreeNode c : children) 
             sumcvisits += c.getnVisits(); 
 
+        double vanillaUCTvalue = -INF-1;
+        double bestUCTvalue = -INF-1;
+        TreeNode bestUCTchild = null;
+
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // Skip virtual nodes
@@ -376,8 +382,10 @@ public class TreeNode {
             if (c.getnVisits() == 0 || c.stats.mean() == INF) {
                 // First, visit all children at least once
                 uctValue = INF + MCTSOptions.r.nextDouble();
+                vanillaUCTvalue = uctValue; 
             } else {
                 avgValue = c.stats.mean();
+                vanillaUCTvalue = avgValue; 
                 // Depth discount changes the average value
                 if (options.depthDiscount && Math.abs(avgValue) != INF)
                     avgValue *= (1. - Math.pow(options.depthD, depth));
@@ -435,7 +443,12 @@ public class TreeNode {
                 } else {
                     // Compute the uct value with the (new) average value
                     uctValue = avgValue + options.uctC * Math.sqrt(FastLog.log(Np) / Nc);
+                    vanillaUCTvalue = vanillaUCTvalue + options.uctC * Math.sqrt(FastLog.log(Np) / Nc);
                 }
+            }
+            if (vanillaUCTvalue > bestUCTvalue) { 
+                bestUCTchild = c;
+                bestUCTvalue = vanillaUCTvalue;
             }
             // Remember the highest UCT value
             if (uctValue > bestValue) {
@@ -452,6 +465,12 @@ public class TreeNode {
                 c1.velocity = c1.velocity * options.lambda + sel;
             }
         }
+
+        //if (bestUCTchild != null)
+        bestUCTchild.lsUCT = getnVisits();
+        selected.lsIM = getnVisits(); 
+
+
         return selected;
     }
 
@@ -818,6 +837,7 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tvar: " + stats.variance() + "\t\t" + stats.toString();
+        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean()  
+                    + "\tlsUCB lsIM " + lsUCT + " " + lsIM + "\tvar: " + stats.variance() + "\t\t" + stats.toString();
     }
 }
