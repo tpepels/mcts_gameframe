@@ -474,8 +474,8 @@ public class TreeNode {
                     if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                         double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
                         double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
-                        //score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
-                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
+                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
+//                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
                     }
                     qualityStats[w].push(q);
                     options.qualityCov.push((winner == myPlayer) ? q : 0, q);
