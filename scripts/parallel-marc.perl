@@ -134,32 +134,43 @@ my @matchups = ();
 #push(@matchups, "mcts_h_ege0.1_det0.5_efv0,mcts_h_ege0.1_efv0");
 #push(@matchups, "mcts_h_ege0.1_det0.5_efv0,mcts_h_pd20_det0.5_efv0");
 
-
-push(@matchups, "mcts_h,mcts");
-push(@matchups, "mcts_h_im0.4,mcts_h");
-push(@matchups, "mcts_h_pd20_efv0_im0.4,mcts_h_pd20_efv0");
-push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_ege0.1_efv0_det0.5_pb0.4");
-push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_ege0.1_efv0_det0.5_pbd");
-push(@matchups, "mcts_h_ege0.1_efv0_det0.5,mcts_h_ege0.1_efv0_det0.5_np10_im0.6");
+#push(@matchups, "mcts_h,mcts");
+#push(@matchups, "mcts_h_im0.4,mcts_h");
+#push(@matchups, "mcts_h_pd20_efv0_im0.4,mcts_h_pd20_efv0");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_ege0.1_efv0_det0.5_pb0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_ege0.1_efv0_det0.5_pbd");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5,mcts_h_ege0.1_efv0_det0.5_np10_im0.6");
 
 #push(@matchups, "mcts_h_ege0.1_det0.5_efv0,mcts_h_pd20_efv0");
 
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.00");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.05");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.10");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.15");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.20");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.25");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.30");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.35");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.40");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.45");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.50");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.55");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.60");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im0.75");
-#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_np50,mcts_h_ege0.1_efv0_det0.5_np50_im1.00");
+# here!! (will take 22 hours :()
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_pd20_np10_im0.4");
 
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp10000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp50000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp20000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp2000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp1000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp500,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp100,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp50,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp10,mcts_h_ege0.1_efv0_det0.5_im0.4");
+
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.00");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.05");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.10");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.15");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.20");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.25");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.30");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.35");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.40");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.45");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.50");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.55");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.60");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.75");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im1.00");
 
 
 print "queuing jobs... \n";

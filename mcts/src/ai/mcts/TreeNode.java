@@ -286,7 +286,7 @@ public class TreeNode {
                     child.imBeta = +INF + 1;
                 }
                 // max backprop
-                if (options.maxBackprop) {
+                /*if (options.maxBackprop) {
                     // new node
                     // FIXME: assumes pdepth 0 !
                     if (player != nextPlayer)
@@ -297,7 +297,7 @@ public class TreeNode {
                     double childVal = getnVisits()*child.maxBackpropQs;
                     if (childVal > best_maxBackpropQs)
                         best_maxBackpropQs = childVal;
-                }
+                }*/
                 // node priors
                 if (winner != player && winner != nextPlayer && options.nodePriors) { 
                     board.initNodePriors(player, child.stats, moves.get(i), options.nodePriorsVisits); 
@@ -334,13 +334,13 @@ public class TreeNode {
             this.imVal = -best_pbVal;
         }
         // max backprop
-        if (options.maxBackprop) {
+        /*if (options.maxBackprop) {
             // check for non-negamax; 
             if (player != parentPlayer)
                 this.maxBackpropQs = -best_maxBackpropQs;
             else 
                 this.maxBackpropQs = best_maxBackpropQs;
-        }
+        }*/
 
         // prog. bias
         if (options.progBias) {
@@ -402,9 +402,9 @@ public class TreeNode {
                         avgValue += penalty;
                     }
                 }
-                if (options.maxBackprop) { 
+                /*if (options.maxBackprop) { 
                     avgValue = c.maxBackpropQs;
-                }
+                }*/
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
@@ -716,8 +716,26 @@ public class TreeNode {
     }
 
     private void updateStats(double value, int previousPlayer) {
+
         // If we are not using AUCT simply add the total value
-        if (!options.auct || isLeaf()) {
+        if (options.maxBackprop && children != null && getnVisits() >= options.maxBackpropT) { 
+            double bestVal = -INF - 1;
+
+            for (TreeNode c : children) {
+                //double childVal = getnVisits() * c.maxBackpropQs; 
+                //double childVal = getnVisits() * c.maxBackpropQs; 
+                double childVal = c.stats.mean(); 
+
+                if (childVal > bestVal) 
+                    bestVal = childVal;
+            }
+            
+            if (previousPlayer != this.player)
+                stats.push(-bestVal);
+            else
+                stats.push(bestVal);
+        }
+        else if ((!options.auct || isLeaf())) {
             stats.push(value);
         } else {
             // Compute the auct win ratio
@@ -770,22 +788,6 @@ public class TreeNode {
                 this.heval = heval;        // view of parent
         }
 
-        // max backprop
-        if (options.maxBackprop && children != null) { 
-            double bestVal = -INF - 1;
-
-            for (TreeNode c : children) {
-                double childVal = getnVisits() * c.maxBackpropQs; 
-
-                if (childVal > bestVal) 
-                    bestVal = childVal;
-            }
-            
-            if (previousPlayer != this.player)
-                this.maxBackpropQs = -bestVal;       // view of parent
-            else
-                this.maxBackpropQs = bestVal;        // view of parent
-        }
     }
 
     public void resetVelocities() {
