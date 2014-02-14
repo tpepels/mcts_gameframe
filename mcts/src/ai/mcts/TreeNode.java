@@ -19,7 +19,7 @@ public class TreeNode {
     private final boolean virtual;
     private final MCTSOptions options;
     public final int player, ply;
-//    public StatCounter stats;
+    //  public StatCounter stats;
     public StatCounterSorted stats;
     //
     private boolean expanded = false;
@@ -32,7 +32,7 @@ public class TreeNode {
     private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
 
     /**
-     * Constructor for the rootnode
+     * Constructor for the root
      */
     public TreeNode(int player, MCTSOptions options) {
         this.player = player;
@@ -40,6 +40,18 @@ public class TreeNode {
         this.options = options;
         this.ply = 0;
         TreeNode.myPlayer = player;
+        stats = new StatCounterSorted();
+    }
+
+    /**
+     * Constructor for internal node
+     */
+    public TreeNode(int player, int ply, IMove move, MCTSOptions options) {
+        this.player = player;
+        this.move = move;
+        this.virtual = false;
+        this.options = options;
+        this.ply = ply;
         stats = new StatCounterSorted();
     }
 
@@ -55,19 +67,10 @@ public class TreeNode {
         stats = new StatCounterSorted(windowed, options);
     }
 
-    public TreeNode(int player, int ply, IMove move, MCTSOptions options) {
-        this.player = player;
-        this.move = move;
-        this.virtual = false;
-        this.options = options;
-        this.ply = ply;
-        stats = new StatCounterSorted();
-    }
-
     /**
-     * Initialize a virtual treenode for AUCT
+     * Initialize a virtual TreeNode for AUCT
      */
-    public TreeNode(int player, int ply,IMove move, final boolean virtual, MCTSOptions options) {
+    public TreeNode(int player, int ply, IMove move, final boolean virtual, MCTSOptions options) {
         this.player = player;
         this.move = move;
         this.virtual = virtual;
@@ -77,10 +80,7 @@ public class TreeNode {
     }
 
     /**
-     * Run the MCTS algorithm on the given node.
-     *
-     * @param board The current board
-     * @return the currently evaluated playout value of the node
+     * Run the MCTS algorithm on the given node
      */
     public double MCTS(IBoard board, int depth) {
         TreeNode child = null;
@@ -457,8 +457,8 @@ public class TreeNode {
                     if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
                         double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
                         double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
-                        //score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
-                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
+                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
+//                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
                     }
                     // Maintain the average number of moves per play-out
                     moveStats[w].push(nMoves + depth);
@@ -474,8 +474,8 @@ public class TreeNode {
                     if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                         double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
                         double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
-                        //score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
-                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
+                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
+//                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
                     }
                     qualityStats[w].push(q);
                     options.qualityCov.push((winner == myPlayer) ? q : 0, q);
@@ -536,8 +536,8 @@ public class TreeNode {
         // If we are not using AUCT simply add the total value
         if (!options.auct || isLeaf()) {
             stats.push(value, poDepth);
-            // Keep track of the max number of simulations per ply for the depth of swuct
-            if(options.swUCT) {
+            // Keep track of the max number of simulations per ply for the max depth of swuct
+            if (options.swUCT) {
                 if (ply < options.maxSims.length && options.maxSims[ply] < stats.totalVisits())
                     options.maxSims[ply] = stats.totalVisits();
             }

@@ -212,7 +212,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         options.relativeBonus = rb;
         options.swUCT = sw;
 
-        options.moveCov.reset();
+        //options.moveCov.reset();
         //options.qualityCov.reset();
 
         if (options.swUCT) {

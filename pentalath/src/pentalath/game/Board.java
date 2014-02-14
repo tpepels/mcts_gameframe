@@ -105,6 +105,9 @@ public class Board implements IBoard {
         // blackHash = r.nextLong();
         // zobristHash ^= whiteHash;
         //
+        nPieces1 = 0;
+        nPieces2 = 0;
+
         board = new Field[SIZE];
         // Initialize the empty fields
         for (int i = 0; i < SIZE; i++) {
@@ -241,7 +244,7 @@ public class Board implements IBoard {
     @Override
     public boolean doAIMove(IMove move, int player) {
         doMove(move.getMove()[0], player);
-        if(capturePieces(move.getMove()[0]))
+        if (capturePieces(move.getMove()[0]))
             return true;
         else {
             nMoves--;
@@ -410,6 +413,10 @@ public class Board implements IBoard {
             // zobristHash ^= zobristPositions[pos][board[pos].occupant - 1];
             // Not allowed!
             board[pos].occupant = FREE;
+            if (player == P1)
+                nPieces1--;
+            else
+                nPieces2--;
             freeSquares++;
             // reset the current player remove the move
             moveList.remove(moveList.size() - 1);
@@ -445,7 +452,7 @@ public class Board implements IBoard {
             playerCaps[color - 1]--;
             board[position].occupant = color;
             //
-            if(color == P1)
+            if (color == P1)
                 nPieces1++;
             else
                 nPieces2++;
@@ -473,7 +480,7 @@ public class Board implements IBoard {
             // Remove the stone from the position
             board[move].occupant = FREE;
 
-            if(currentPlayer == P1)
+            if (currentPlayer == P1)
                 nPieces1--;
             else
                 nPieces2--;
@@ -495,7 +502,7 @@ public class Board implements IBoard {
                 captureI++;
                 // zobristHash ^= zobristPositions[i][board[i].occupant - 1];
                 playerCaps[board[i].occupant - 1]++;
-                if(board[i].occupant == P1) {
+                if (board[i].occupant == P1) {
                     nPieces1--;
                 } else {
                     nPieces2--;
@@ -772,11 +779,17 @@ public class Board implements IBoard {
 
     @Override
     public double getQuality() {
-        if (winner == P1_WIN)
-            return ((ROW_SIZE - getRowScore(P2)) / (double) ROW_SIZE);
-        else if (winner == P2_WIN)
-            return ((ROW_SIZE - getRowScore(P1)) / (double) ROW_SIZE);
-        return 1;
+        if (winner == P1_WIN) {
+            return (5. - ((nPieces1 - 1) - nPieces2)) / 10.;
+        } else if (winner == P2_WIN) {
+            return (5. - ((nPieces2 - 1) - nPieces1)) / 10.;
+        }
+        return .5;
+//        if (winner == P1_WIN)
+//            return ((ROW_SIZE - getRowScore(P2)) / (double) ROW_SIZE);
+//        else if (winner == P2_WIN)
+//            return ((ROW_SIZE - getRowScore(P1)) / (double) ROW_SIZE);
+//        return 1;
     }
 
     public double getRowScore(int player) {
