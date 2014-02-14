@@ -779,17 +779,17 @@ public class Board implements IBoard {
 
     @Override
     public double getQuality() {
-        if (winner == P1_WIN) {
-            return (5. - ((nPieces1 - 1) - nPieces2)) / 10.;
-        } else if (winner == P2_WIN) {
-            return (5. - ((nPieces2 - 1) - nPieces1)) / 10.;
-        }
-        return .5;
-//        if (winner == P1_WIN)
-//            return ((ROW_SIZE - getRowScore(P2)) / (double) ROW_SIZE);
-//        else if (winner == P2_WIN)
-//            return ((ROW_SIZE - getRowScore(P1)) / (double) ROW_SIZE);
-//        return 1;
+//        if (winner == P1_WIN) {
+//            return (5. - ((nPieces1 - 1) - nPieces2)) / 10.;
+//        } else if (winner == P2_WIN) {
+//            return (5. - ((nPieces2 - 1) - nPieces1)) / 10.;
+//        }
+//        return .5;
+        if (winner == P1_WIN)
+            return ((ROW_SIZE - getRowScore(P2)) / (double) ROW_SIZE);
+        else if (winner == P2_WIN)
+            return ((ROW_SIZE - getRowScore(P1)) / (double) ROW_SIZE);
+        return 1;
     }
 
     public double getRowScore(int player) {

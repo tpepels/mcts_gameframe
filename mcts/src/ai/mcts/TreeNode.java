@@ -26,10 +26,10 @@ public class TreeNode {
     private List<TreeNode> children;
     private IMove move;
     private double velocity = 1.;
-    private double imVal = 0.; // implicit minimax value (in view of parent)
-    private double imAlpha = -INF - 1; // implicit lower bound (in view of me)
-    private double imBeta = +INF + 1;  // implicit upper bound (in view of me)
-    private double heval = 0.; // heuristic evaluation for prog. bias (in view of parent)
+    private double imVal = 0.;          // implicit minimax value (in view of parent)
+    private double imAlpha = -INF - 1;  // implicit lower bound (in view of me)
+    private double imBeta = +INF + 1;   // implicit upper bound (in view of me)
+    private double heval = 0.;          // heuristic evaluation for prog. bias (in view of parent)
 
     /**
      * Constructor for the root

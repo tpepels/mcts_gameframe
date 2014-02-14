@@ -27,7 +27,7 @@ public class MCTSOptions {
     public double uctC = 1., maxVar = 1.;
     // Discounting values
     public double lambda = .999999;
-    public int timeInterval = 3000, simulations = 10000, simsLeft;
+    public int timeInterval = 1000, simulations = 10000, simsLeft;
     // MAST stuff
     public boolean MAST = false, TO_MAST = false; // Turning off heuristics also disables MAST
     public double mastEps = 0.8;

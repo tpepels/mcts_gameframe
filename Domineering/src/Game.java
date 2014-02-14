@@ -1,24 +1,26 @@
+import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import domineering.game.Board;
 import domineering.game.Move;
+import mcts2e.BRUE.MCTS2ePlayer;
 
 public class Game {
     public static void main(String[] args) {
         Board b = new Board(6);
         b.initialize();
 
-        MCTSOptions options1 = new MCTSOptions();
-        options1.setGame("domineering");
-        MCTSPlayer aiPlayer1 = new MCTSPlayer();
-        aiPlayer1.setOptions(options1);
+//        MCTSOptions options1 = new MCTSOptions();
+//        options1.setGame("domineering");
+        MCTS2ePlayer aiPlayer1 = new MCTS2ePlayer();
+//        aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("domineering");
         MCTSPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 
-        MCTSPlayer aiPlayer;
+        AIPlayer aiPlayer;
         Move m = null;
         while (b.checkWin() == Board.NONE_WIN) {
             int player = b.getPlayerToMove();

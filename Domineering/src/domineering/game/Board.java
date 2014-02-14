@@ -1,15 +1,17 @@
 package domineering.game;
 
+import ai.framework.FiniteBoard;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
-public class Board implements IBoard {
-    private static final int EMPTY = 0, WHITE = P1, BLACK = P2, VERT_PLAYER = P1, HOR_PLAYER = P2;
+public class Board implements FiniteBoard {
+    private static final int EMPTY = 0;
     private static final boolean CRAM = true;
     private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(1000);
     private static final MoveList static_moves = new MoveList(1000);
@@ -18,8 +20,24 @@ public class Board implements IBoard {
     private final int size;
     private int nMoves, currentPlayer, freeSquares;
     private Stack<IMove> pastMoves = new Stack<IMove>();
+    //
+    private final long[][] zobristPositions;
+    private long zobristHash, whiteHash, blackHash;
 
     public Board(int size) {
+        // First, generate a random hashing key for all positions
+        zobristPositions = new long[size*size][];
+        Random r = new Random();
+        for (int i = 0; i < size * size; i++) {
+            // Generate a random number for each possible occupation
+            zobristPositions[i] = new long[2];
+            zobristPositions[i][P1 - 1] = r.nextLong();
+            zobristPositions[i][P2 - 1] = r.nextLong();
+        }
+        whiteHash = r.nextLong();
+        blackHash = r.nextLong();
+        zobristHash ^= whiteHash;
+
         this.size = size;
         this.board = new int[size][size];
         this.freeSquares = size * size;
@@ -30,9 +48,18 @@ public class Board implements IBoard {
         Board newBoard = new Board(size);
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
+                //
                 newBoard.board[i][j] = board[i][j];
+
+                // Generate a random number for each possible occupation
+                newBoard.zobristPositions[i * size + j] = new long[2];
+                newBoard.zobristPositions[i * size + j][P1 - 1] = zobristPositions[i * size + j][P1 - 1];
+                newBoard.zobristPositions[i * size + j][P2 - 1] = zobristPositions[i * size + j][P2 - 1];
             }
         }
+        newBoard.zobristHash = zobristHash;
+        newBoard.whiteHash = whiteHash;
+        newBoard.blackHash = blackHash;
         newBoard.nMoves = nMoves;
         newBoard.currentPlayer = currentPlayer;
         newBoard.freeSquares = freeSquares;
@@ -45,9 +72,12 @@ public class Board implements IBoard {
         int y1 = move.getMove()[1], y2 = move.getMove()[3];
         board[y1][x1] = currentPlayer;
         board[y2][x2] = currentPlayer;
+        zobristHash ^= zobristPositions[y1 * size + x1][currentPlayer - 1];
+        zobristHash ^= zobristPositions[y2 * size + x2][currentPlayer - 1];
         freeSquares -= 2;
         nMoves++;
         currentPlayer = getOpponent(currentPlayer);
+        hashCurrentPlayer();
         pastMoves.push(move);
         return true;
     }
@@ -92,9 +122,15 @@ public class Board implements IBoard {
         currentPlayer = getOpponent(currentPlayer);
         nMoves--;
         freeSquares -= 2;
+        hashCurrentPlayer();
         //
         int x1 = move.getMove()[0], x2 = move.getMove()[2];
         int y1 = move.getMove()[1], y2 = move.getMove()[3];
+        int color = board[y1][x1];
+        // return the stone to the hash
+        zobristHash ^= zobristPositions[y1 * size + x1][color - 1];
+        zobristHash ^= zobristPositions[y2 * size + x2][color - 1];
+        //
         board[y1][x1] = EMPTY;
         board[y2][x2] = EMPTY;
     }
@@ -209,5 +245,26 @@ public class Board implements IBoard {
     @Override
     public boolean noMovesIsDraw() {
         return false;
+    }
+
+    @Override
+    public int getHorizon() {
+        // After this many turns, the board is full
+        return (size * size) / 2;
+    }
+
+    @Override
+    public long getStateHash() {
+        return zobristHash;
+    }
+
+    private void hashCurrentPlayer() {
+        if (currentPlayer == Board.P1) {
+            zobristHash ^= blackHash;
+            zobristHash ^= whiteHash;
+        } else {
+            zobristHash ^= whiteHash;
+            zobristHash ^= blackHash;
+        }
     }
 }
