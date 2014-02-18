@@ -1,5 +1,5 @@
 #!/bin/sh
-dirs="Domineering cannon checkers chinesecheckers lostcities mcts pentalath amazons experiments breakthrough"
+dirs="BRUE Domineering cannon checkers chinesecheckers lostcities mcts pentalath amazons experiments breakthrough"
 class=`shift`
 
 CP="."
