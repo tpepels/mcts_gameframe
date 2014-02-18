@@ -1,9 +1,8 @@
-package mcts2e.BRUE;
+package mcts2e.BRUEic;
 
 import ai.framework.*;
 import ai.mcts.MCTSOptions;
-
-import java.util.Random;
+import mcts2e.BRUE.StateHash;
 
 public class MCTS2ePlayer implements AIPlayer, Runnable {
     private final int TT_SIZE = 33554432;
@@ -80,14 +79,12 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
                 max = stateValues[hashPos].value;
                 maxVisits = stateValues[hashPos].visits;
                 bestMove = moves.get(i);
-            } else if(stateValues[hashPos] == null) {
-                System.out.println("hier");
             }
             board.undoMove();
         }
-        if(bestMove == null) {
+        if(bestMove == null)
             bestMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
-        }
+
         if (options.debug) {
             System.out.println("h:" + board.getStateHash());
             System.out.println("Ran " + simulations + " simulations.");

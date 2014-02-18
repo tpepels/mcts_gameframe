@@ -12,7 +12,7 @@ import java.util.Stack;
 
 public class Board implements FiniteBoard {
     private static final int EMPTY = 0;
-    private static final boolean CRAM = true;
+    public static boolean CRAM = false;
     private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(1000);
     private static final MoveList static_moves = new MoveList(1000);
     //
@@ -37,10 +37,10 @@ public class Board implements FiniteBoard {
         whiteHash = r.nextLong();
         blackHash = r.nextLong();
         zobristHash ^= whiteHash;
-
         this.size = size;
         this.board = new int[size][size];
         this.freeSquares = size * size;
+        this.nMoves = 0;
     }
 
     @Override
@@ -249,8 +249,8 @@ public class Board implements FiniteBoard {
 
     @Override
     public int getHorizon() {
-        // After this many turns, the board is full
-        return (size * size) / 2;
+        // After this many turns, the board will be full
+        return ((size * size) / 2) - (nMoves) + 1;
     }
 
     @Override

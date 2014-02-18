@@ -8,6 +8,7 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
+import mcts2e.BRUE.MCTS2ePlayer;
 
 /*
 FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
@@ -36,7 +37,7 @@ public class SimGame {
     private AIPlayer player2;
     private int timeLimit;
     private long seed;
-    private boolean printBoard; 
+    private boolean printBoard;
     private boolean mctsDebug;
 
     SimGame() {
@@ -47,7 +48,7 @@ public class SimGame {
         player2 = null;
         timeLimit = 1000;
         printBoard = false;
-        mctsDebug = false; 
+        mctsDebug = false;
 
         seed = System.currentTimeMillis();
     }
@@ -75,11 +76,11 @@ public class SimGame {
             } else if (args[i].equals("--seed")) {
                 i++;
                 seed = Long.parseLong(args[i]);
-            } else if (args[i].equals("--printboard")) { 
-                printBoard = true; 
-            } else if (args[i].equals("--mctsdebug")) { 
-                mctsDebug = true; 
-            } 
+            } else if (args[i].equals("--printboard")) {
+                printBoard = true;
+            } else if (args[i].equals("--mctsdebug")) {
+                mctsDebug = true;
+            }
         }
     }
 
@@ -179,6 +180,28 @@ public class SimGame {
 
             // and set the options for this player
             playerRef.setOptions(options);
+        } else if (parts[0].equals("brue")) {
+            //
+            playerRef = new MCTS2ePlayer();
+            MCTSOptions options = new MCTSOptions();
+            options.debug = mctsDebug; // false by default
+            options.useHeuristics = false;
+            options.timeInterval = timeLimit;
+            options.simulations = timeLimit;
+            options.setGame(game);
+            MCTSOptions.r.setSeed(seed);
+
+            // now, parse the tags
+            for (int i = 1; i < parts.length; i++) {
+                String tag = parts[i];
+                if (tag.startsWith("sl")) {
+                    options.fixedSimulations = true;
+                } else {
+                    throw new RuntimeException("Unrecognized MCTS tag: " + tag);
+                }
+            }
+            // and set the options for this player
+            playerRef.setOptions(options);
         } else {
             throw new RuntimeException("Unrecognized player: " + label);
         }
@@ -216,12 +239,19 @@ public class SimGame {
             board = new pentalath.game.Board();
         } else if (game.equals("checkers")) {
             board = new checkers.game.Board();
+        } else if (game.startsWith("domineering")) {
+            int size = Integer.parseInt(game.substring(11));
+            board = new domineering.game.Board(size);
+            domineering.game.Board.CRAM = false;
+        } else if (game.equals("cram")) {
+            int size = Integer.parseInt(game.substring(4));
+            board = new domineering.game.Board(size);
+            domineering.game.Board.CRAM = true;
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
         }
 
         board.initialize();
-
     }
 
     public void run() {

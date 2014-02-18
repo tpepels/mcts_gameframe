@@ -8,6 +8,7 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
+import mcts2e.BRUE.MCTS2ePlayer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -66,44 +67,43 @@ public class AITests {
         // AI 1
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = false;
-        options1.swUCT = true;
-        options1.timeInterval = 1500;
         options1.setGame(game);
-        aiPlayer1 = new MCTSPlayer();
+
+        aiPlayer1 = new MCTS2ePlayer();
         aiPlayer1.setOptions(options1);
         // AI 2
         MCTSOptions options2 = new MCTSOptions();
         options2.debug = false;
-        options2.timeInterval = 1500;
         options2.setGame(game);
+
         aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 
         // Run one of the defined experiments
         if (which == 1) {
-            options1.windowSize = 75;
-            runGames("SW UCT 75 | MCTS");
-
-            options1.windowSize = 50;
-            runGames("SW UCT 50 | MCTS");
+            options1.fixedSimulations = true;
+            options1.simulations = 100000;
+            options2.fixedSimulations = true;
+            options2.simulations = 100000;
+            runGames("100,000 sims BRUE | MCTS");
         } else if (which == 2) {
-            options1.windowSize = 100;
-            runGames("SW UCT 100 | MCTS");
-
-            options1.windowSize = 1000;
-            runGames("SW UCT 1000 | MCTS");
+            options1.fixedSimulations = true;
+            options1.simulations = 500000;
+            options2.fixedSimulations = true;
+            options2.simulations = 500000;
+            runGames("500,000 sims BRUE | MCTS");
         } else if (which == 3) {
-            options1.windowSize = 200;
-            runGames("SW UCT 200 | MCTS");
-
-            options1.windowSize = 300;
-            runGames("SW UCT 300 | MCTS");
+            options1.fixedSimulations = false;
+            options1.timeInterval = 1000;
+            options2.fixedSimulations = false;
+            options2.timeInterval = 1000;
+            runGames("1 sec BRUE | MCTS");
         } else if (which == 4) {
-            options1.windowSize = 400;
-            runGames("SW UCT 400 | MCTS");
-
-            options1.windowSize = 750;
-            runGames("SW UCT 100 | MCTS");
+            options1.fixedSimulations = false;
+            options1.timeInterval = 5000;
+            options2.fixedSimulations = false;
+            options2.timeInterval = 5000;
+            runGames("5 sec BRUE | MCTS");
         }
     }
 
@@ -161,7 +161,7 @@ public class AITests {
     }
 
     private IBoard getBoard() {
-        IBoard board = null;
+        IBoard board;
 
         if (game.equals("amazons")) {
             board = new amazons.game.Board();
@@ -177,9 +177,19 @@ public class AITests {
             board = new pentalath.game.Board();
         } else if (game.equals("checkers")) {
             board = new checkers.game.Board();
+        } else if (game.startsWith("domineering")) {
+            int size = Integer.parseInt(game.substring(11));
+            board = new domineering.game.Board(size);
+            domineering.game.Board.CRAM = false;
+        } else if (game.startsWith("cram")) {
+            int size = Integer.parseInt(game.substring(4));
+            board = new domineering.game.Board(size);
+            domineering.game.Board.CRAM = true;
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
         }
+
+        board.initialize();
         return board;
     }
 
