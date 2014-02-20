@@ -69,7 +69,7 @@ public class AITests {
         options1.debug = false;
         options1.setGame(game);
 
-        aiPlayer1 = new MCTS2ePlayer();
+        aiPlayer1 = new mcts2e.BRUEi.MCTS2ePlayer();
         aiPlayer1.setOptions(options1);
         // AI 2
         MCTSOptions options2 = new MCTSOptions();
@@ -82,16 +82,16 @@ public class AITests {
         // Run one of the defined experiments
         if (which == 1) {
             options1.fixedSimulations = true;
-            options1.simulations = 100000;
+            options1.simulations = 10000;
             options2.fixedSimulations = true;
-            options2.simulations = 100000;
-            runGames("100,000 sims BRUE | MCTS");
+            options2.simulations = 10000;
+            runGames("10,000 sims BRUE | MCTS");
         } else if (which == 2) {
             options1.fixedSimulations = true;
-            options1.simulations = 500000;
+            options1.simulations = 50000;
             options2.fixedSimulations = true;
-            options2.simulations = 500000;
-            runGames("500,000 sims BRUE | MCTS");
+            options2.simulations = 50000;
+            runGames("50,000 sims BRUE | MCTS");
         } else if (which == 3) {
             options1.fixedSimulations = false;
             options1.timeInterval = 1000;

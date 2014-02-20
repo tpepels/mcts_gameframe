@@ -1,19 +1,15 @@
-package mcts2e.BRUEic;
+package mcts2e.BRUEi;
 
 import ai.*;
-import ai.framework.IBoard;
-import ai.framework.IMove;
-import ai.framework.MoveList;
+import ai.framework.*;
 import ai.mcts.MCTSOptions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class TreeNode {
-    public static final double INF = 999999;
-    private static final Stack<IMove> movesMade = new Stack<IMove>();
-    public static int myPlayer = 0;
+    public static int myPlayer = 0, sigma = 0;
+    public static boolean retract = false;
     //
     private final MCTSOptions options;
     public final int player;
@@ -46,73 +42,84 @@ public class TreeNode {
     /**
      * Run the MCTS algorithm on the given node
      */
-    public double MCTS2e(IBoard board, int depth, int sigma) {
-        TreeNode child = null;
-        // First add some leafs if required
-        if (isLeaf()) {
-            expand(board);
+    public double MCTS2e(IBoard board, int depth) {
+        // We've gone deep enough, evaluate the position
+        if (endOfProbe(depth, board)) {
+            double result = playOut(board);
+            updateStats(result);
+            // Back-propagate the result
+            return result;
         }
-        // Select the best child, if we didn't find a winning position in the expansion
-        if (child == null) {
-            if (isTerminal()) // Game is terminal, no more moves can be played
-                child = this;
-//            else
-//                child = select(board, depth + 1);
-        }
-        //
-        double result;
-        // (Solver) Check for proven win / loss / draw
-        if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
-            // Execute the move represented by the child
-            board.doAIMove(child.getMove(), player);
-            // When a leaf is reached return the result of the playout
-            if (child.getnVisits() == 0) {
-                result = child.playOut(board);
-                child.updateStats(-result);
-            } else {
-                // The next child
-                result = child.MCTS2e(board, depth + 1, sigma);
-            }
-            // Update the MAST value for the move, use original value not the altered reward (signum)
-            if (options.useHeuristics && options.MAST)
-                options.updateMast(player, child.getMove().getUniqueId(), result); // It's the child's reward that counts, hence -result
-            // set the board back to its previous configuration
-            board.undoMove();
-        } else {
-            result = child.stats.mean();
-        }
-
-
-        // Update the results for the current node
-        updateStats(result);
+        TreeNode child;
+        // Select a child
+        child = select(board, depth);
+        // Execute the move represented by the child
+        board.doAIMove(child.getMove(), player);
+        // The next child
+        double result = child.MCTS2e(board, depth + 1);
+        // set the board back to its previous configuration
+        board.undoMove();
+        // Only update at sigma level
+        if (depth == sigma) updateStats(result);
         // Back-propagate the result
         return result;
     }
 
+    private boolean endOfProbe(int depth, IBoard board) {
+        // First add some leafs if required
+        if (isLeaf())
+            expand(board);
+        // Don't continue if there are no more moves available
+        if (isTerminal()) return true;
+        // Visited node
+        if (stats.visits() > 0) return false;
+        // Leaf, check if we went too far
+        if (depth <= sigma) {
+            //sigma = -1;
+            retract = true;
+        }
+        return true;
+    }
+
     private void expand(IBoard board) {
-        expanded = true;
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // Generate all moves
         MoveList moves = board.getExpandMoves();
-        //
         if (children == null)
             children = new ArrayList<TreeNode>(moves.size());
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             children.add(new TreeNode(nextPlayer, moves.get(i), options));
         }
+        expanded = true;
     }
 
-    private TreeNode select(IBoard board, int depth, int sigma) {
+    private TreeNode select(IBoard board, int d) {
         TreeNode selected = null;
         // For a chance-move, select a random child
         if (move != null && move.isChance()) {
             return children.get(MCTSOptions.r.nextInt(children.size()));
         }
-
-        // Select a child according to the UCT Selection policy
-        for (TreeNode c : children) {
-
+        // Estimation policy
+        if (d > sigma) {
+            double max = Double.NEGATIVE_INFINITY, min = Double.POSITIVE_INFINITY;
+            for (TreeNode c : children) {
+                if (board.getPlayerToMove() == myPlayer) {
+                    if (c.stats.mean() > max) {
+                        max = c.stats.mean();
+                        selected = c;
+                    }
+                } else {
+                    if (c.stats.mean() < min) {
+                        min = c.stats.mean();
+                        selected = c;
+                    }
+                }
+            }
+        }
+        // Exploration policy
+        if (d <= sigma || selected == null) {
+            selected = children.get(MCTSOptions.r.nextInt(children.size()));
         }
         return selected;
     }
@@ -120,8 +127,7 @@ public class TreeNode {
     @SuppressWarnings("ConstantConditions")
     private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
-        int currentPlayer = board.getPlayerToMove(), moveIndex = -1, nMoves = 0;
-        double mastMax, mastVal;
+        int currentPlayer = board.getPlayerToMove(), moveIndex, nMoves = 0;
 
         List<IMove> moves;
         int winner = board.checkWin();
@@ -149,17 +155,6 @@ public class TreeNode {
                 if (options.epsGreedyEval) {
                     // If epsilon greedy play-outs, choose the highest eval
                     moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
-                } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
-                    mastMax = Double.NEGATIVE_INFINITY;
-                    // Select the move with the highest MAST value
-                    for (int i = 0; i < moves.size(); i++) {
-                        mastVal = options.getMastValue(currentPlayer, moves.get(i).getUniqueId());
-                        // If bigger, we have a winner, if equal, flip a coin
-                        if (mastVal > mastMax || (mastVal == mastMax && MCTSOptions.r.nextDouble() < .5)) {
-                            mastMax = mastVal;
-                            moveIndex = i;
-                        }
-                    }
                 } else {
                     // Choose randomly
                     moveIndex = MCTSOptions.r.nextInt(moves.size());
@@ -167,10 +162,6 @@ public class TreeNode {
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
-
-                    // Keep track of moves made for MAST
-                    if (options.useHeuristics && options.MAST && !options.TO_MAST)
-                        movesMade.push(currentMove);
 
                     nMoves++;
                     moveMade = true;
@@ -210,7 +201,7 @@ public class TreeNode {
         myMoves.addAll(moves);
 
         ArrayList<Integer> bestMoveIndices = new ArrayList<Integer>();
-        double bestValue = -INF - 1;
+        double bestValue = Double.NEGATIVE_INFINITY;
 
         for (int i = 0; i < myMoves.size(); i++) {
             IMove move = myMoves.get(i);
@@ -267,14 +258,6 @@ public class TreeNode {
 
     public boolean isTerminal() {
         return children != null && children.size() == 0;
-    }
-
-    public int getArity() {
-        return children == null ? 0 : children.size();
-    }
-
-    public List<TreeNode> getChildren() {
-        return children;
     }
 
     public IMove getMove() {

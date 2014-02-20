@@ -1,9 +1,14 @@
 package breakthrough;
 
+import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
+import mcts2e.SRCRMCTS.HalfGreedySelect;
+import mcts2e.SRCRMCTS.SRCRMCTSPlayer;
+import mcts2e.SRCRMCTS.SelectionPolicy;
+import mcts2e.SRCRMCTS.UCT;
 
 public class Game {
 
@@ -12,33 +17,21 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-//        options1.qualityBonus = true;
-        options1.swUCT = true;
-//        options1.switches = 10;
-//        options1.pdepth = 0;
-//        options1.earlyEval = true;
-//        options1.useHeuristics = true;
-//        options1.timeInterval = 1000;
         options1.setGame("breakthrough");
-        MCTSPlayer aiPlayer1 = new MCTSPlayer();
+        AIPlayer aiPlayer1 = new SRCRMCTSPlayer();
         aiPlayer1.setOptions(options1);
+        SelectionPolicy selectionPolicy1 = new HalfGreedySelect(options1);
+        ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy1);
 
         MCTSOptions options2 = new MCTSOptions();
-//        options2.mapping = true;
-//        options2.relativeBonus = true;
-//        options2.pdepth = 0;
-//        options2.earlyEval = true;
-//        options2.useHeuristics = true;
-//        options2.timeInterval = 1000;
-//        options2.implicitMM = true;
         options2.setGame("breakthrough");
-        MCTSPlayer aiPlayer2 = new MCTSPlayer();
+        AIPlayer aiPlayer2 = new SRCRMCTSPlayer();
         aiPlayer2.setOptions(options2);
+        SelectionPolicy selectionPolicy2 = new UCT(options2);
+        ((SRCRMCTSPlayer)aiPlayer2).setSelectionPolicy(selectionPolicy2);
 
-        MCTSPlayer aiPlayer;
+        AIPlayer aiPlayer;
         Move m = null;
-//        setupTestBoard(b);
-//        b.curPlayer = 2;
         while (b.checkWin() == Board.NONE_WIN) {
             int player = b.getPlayerToMove();
             System.out.println(b.toString());
@@ -54,22 +47,6 @@ public class Game {
         }
 
         System.out.println("Winner is " + b.checkWin());
-    }
-
-    private static void setupTestBoard(Board b) {
-        String board = ".bbb....\n" +
-                "b...bbb.\n" +
-                "w.bb....\n" +
-                ".b.w.b..\n" +
-                "..bw.w..\n" +
-                "wwww....\n" +
-                "w.....w.\n" +
-                "..ww.w..";
-        String[] arr = board.split("\n");
-        b.board = new char[8][8];
-        for (int i = 0; i < 8; i++) {
-            b.board[i] = arr[i].toCharArray();
-        }
     }
 }
 
