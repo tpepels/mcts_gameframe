@@ -1,14 +1,15 @@
 package mcts2e.SRCRMCTS;
 
-import ai.FastLog;
 import ai.mcts.MCTSOptions;
 
 public class HalfGreedySelect implements SelectionPolicy {
 
     private final MCTSOptions options;
+    private final UCT uctSelection;
 
-    public HalfGreedySelect(MCTSOptions options) {
+    public HalfGreedySelect(MCTSOptions options, UCT uctSelection) {
         this.options = options;
+        this.uctSelection = uctSelection;
     }
 
     @Override
@@ -31,28 +32,7 @@ public class HalfGreedySelect implements SelectionPolicy {
                 return node.getChildren().get(MCTSOptions.r.nextInt(node.getArity()));
             }
         } else {
-            // For a chance-move, select a random child
-            if (node.getMove().isChance()) {
-                return node.getChildren().get(MCTSOptions.r.nextInt(node.getArity()));
-            }
-            // Use UCT down the tree
-            double uctValue;
-            // Select a child according to the UCT Selection policy
-            for (TreeNode c : node.getChildren()) {
-                // No visits or win-node
-                if (c.getnVisits() == 0 || c.stats.mean() == TreeNode.INF) {
-                    // First, visit all children at least once
-                    uctValue = 1000 + MCTSOptions.r.nextDouble();
-                } else {
-                    // Compute the uct value with the (new) average value
-                    uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(node.getnVisits()) / c.getnVisits());
-                }
-                // Remember the highest UCT value
-                if (uctValue > max) {
-                    selected = c;
-                    max = uctValue;
-                }
-            }
+           uctSelection.select(node, depth);
         }
         return selected;
     }

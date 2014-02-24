@@ -9,6 +9,7 @@ import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import mcts2e.BRUE.MCTS2ePlayer;
+import mcts2e.SRCRMCTS.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -69,41 +70,51 @@ public class AITests {
         options1.debug = false;
         options1.setGame(game);
 
-        aiPlayer1 = new mcts2e.BRUEi.MCTS2ePlayer();
+        aiPlayer1 = new SRCRMCTSPlayer();
         aiPlayer1.setOptions(options1);
+
         // AI 2
         MCTSOptions options2 = new MCTSOptions();
         options2.debug = false;
         options2.setGame(game);
 
-        aiPlayer2 = new MCTSPlayer();
+        aiPlayer2 = new SRCRMCTSPlayer();
         aiPlayer2.setOptions(options2);
+        ((SRCRMCTSPlayer)aiPlayer2).setSelectionPolicy(new UCT(options2));
 
         // Run one of the defined experiments
         if (which == 1) {
-            options1.fixedSimulations = true;
-            options1.simulations = 10000;
-            options2.fixedSimulations = true;
-            options2.simulations = 10000;
-            runGames("10,000 sims BRUE | MCTS");
-        } else if (which == 2) {
-            options1.fixedSimulations = true;
-            options1.simulations = 50000;
-            options2.fixedSimulations = true;
-            options2.simulations = 50000;
-            runGames("50,000 sims BRUE | MCTS");
-        } else if (which == 3) {
+            SelectionPolicy selectionPolicy = new SuccessiveRejects(options1, new UCT(options1));
+            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
             options1.fixedSimulations = false;
             options1.timeInterval = 1000;
             options2.fixedSimulations = false;
             options2.timeInterval = 1000;
-            runGames("1 sec BRUE | MCTS");
-        } else if (which == 4) {
+            runGames("1 second SR | MCTS");
+        } else if (which == 2) {
+//            SelectionPolicy selectionPolicy = new HalfGreedySelect(options1);
+//            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
+//            options1.fixedSimulations = true;
+//            options1.simulations = 10000;
+//            options2.fixedSimulations = true;
+//            options2.simulations = 10000;
+//            runGames("10,000 sims .5 greedy | MCTS");
+        } else if (which == 3) {
+            SelectionPolicy selectionPolicy = new SqrtUCT(options1, new UCT(options1));
+            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
             options1.fixedSimulations = false;
-            options1.timeInterval = 5000;
+            options1.timeInterval = 30000;
             options2.fixedSimulations = false;
-            options2.timeInterval = 5000;
-            runGames("5 sec BRUE | MCTS");
+            options2.timeInterval = 30000;
+            runGames("30 sec SQRT-UCT | MCTS");
+        } else if (which == 4) {
+            SelectionPolicy selectionPolicy = new HalfGreedySelect(options1, new UCT(options1));
+            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
+            options1.fixedSimulations = false;
+            options1.timeInterval = 60000;
+            options2.fixedSimulations = false;
+            options2.timeInterval = 60000;
+            runGames("60 sec .5 greedy | MCTS");
         }
     }
 

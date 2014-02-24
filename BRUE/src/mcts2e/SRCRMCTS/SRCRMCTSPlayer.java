@@ -99,6 +99,8 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
             }
+            options.numSimulations = simulations;// + (int) (0.1 * simulations);
+            options.simsLeft = options.numSimulations;
         } else {
             options.numSimulations = options.simulations;
             options.simsLeft = options.numSimulations;
