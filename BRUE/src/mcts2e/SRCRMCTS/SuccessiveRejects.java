@@ -97,15 +97,14 @@ public class SuccessiveRejects implements SelectionPolicy {
                     }
                     if (options.debug)
                         System.out.println("node: " + value + " max v child: " + vnew);
-                    value2 = vnew;
                     value = vnew;
                 }
             }
             if (value1 > max1) {
-                max1 = value;
+                max1 = value1;
                 bestChild1 = t;
             }
-            if (value2 > max2) {
+            if (value > max2) {
                 max2 = value;
                 bestChild2 = t;
             }
