@@ -9,6 +9,7 @@ import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import mcts2e.BRUE.MCTS2ePlayer;
+import mcts2e.SRCRMCTS.*;
 
 /*
 FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
@@ -196,6 +197,43 @@ public class SimGame {
                 String tag = parts[i];
                 if (tag.startsWith("sl")) {
                     options.fixedSimulations = true;
+                } else {
+                    throw new RuntimeException("Unrecognized MCTS tag: " + tag);
+                }
+            }
+            // and set the options for this player
+            playerRef.setOptions(options);
+        } else if (parts[0].equals("srmcts")) {
+            //
+            playerRef = new SRCRMCTSPlayer();
+            MCTSOptions options = new MCTSOptions();
+            options.debug = mctsDebug; // false by default
+            options.useHeuristics = false;
+            options.timeInterval = timeLimit;
+            options.simulations = timeLimit;
+            options.setGame(game);
+            MCTSOptions.r.setSeed(seed);
+
+            // now, parse the tags
+            for (int i = 1; i < parts.length; i++) {
+                String tag = parts[i];
+                if (tag.startsWith("sl")) {
+                    options.fixedSimulations = true;
+                } else if (tag.equals("h")) {
+                    options.useHeuristics = true;
+                } else if (tag.equals("sr")) {
+                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SuccessiveRejects(options, new UCT(options)));
+                } else if (tag.equals("su")) {
+                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SqrtUCT(options, new UCT(options)));
+                } else if (tag.equals("hg")) {
+                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new HalfGreedySelect(options, new UCT(options)));
+                } else if (tag.equals("uct")) {
+                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new UCT(options));
+                } else if (tag.equals("c")) {
+                    options.uctC = Double.parseDouble(tag.substring(1));
+                } else if (tag.startsWith("mast")) {
+                    options.MAST = true;
+                    options.mastEps = Double.parseDouble(tag.substring(4));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

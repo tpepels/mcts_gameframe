@@ -87,10 +87,10 @@ public class AITests {
             SelectionPolicy selectionPolicy = new SuccessiveRejects(options1, new UCT(options1));
             ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
             options1.fixedSimulations = false;
-            options1.timeInterval = 1000;
+            options1.timeInterval = 2500;
             options2.fixedSimulations = false;
-            options2.timeInterval = 1000;
-            runGames("1 second SR | MCTS");
+            options2.timeInterval = 2500;
+            runGames("2.5 second SR | MCTS");
         } else if (which == 2) {
 //            SelectionPolicy selectionPolicy = new HalfGreedySelect(options1);
 //            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
