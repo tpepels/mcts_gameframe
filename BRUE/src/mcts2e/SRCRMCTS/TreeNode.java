@@ -7,6 +7,7 @@ import ai.framework.IMove;
 import ai.framework.MoveList;
 import ai.mcts.MCTSOptions;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -81,8 +82,8 @@ public class TreeNode {
                 result = -child.MCTS(board, depth + 1);
             }
             // Update the MAST value for the move, use original value not the altered reward (signum)
-            if (options.useHeuristics && options.MAST)
-                options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
+//            if (options.useHeuristics && options.MAST)
+//                options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
         } else {
@@ -286,12 +287,15 @@ public class TreeNode {
             else score = -1;
 
             // Update the mast values for the moves made during playout
-            if (options.useHeuristics && options.MAST && !options.TO_MAST) {
+//            if (options.useHeuristics && options.MAST && !options.TO_MAST) {
+            if (options.MAST && !options.TO_MAST) {
                 double value;
                 while (!movesMade.empty()) {
                     currentMove = movesMade.pop();
                     currentPlayer = board.getOpponent(currentPlayer);
                     value = (currentPlayer == player) ? score : -score;
+//                    if(currentMove.getUniqueId() == 513)
+//                        System.out.println(currentMove + " " + currentPlayer + " " + value);
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
@@ -374,6 +378,7 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tVar: " + stats.variance();
+        DecimalFormat df2 = new DecimalFormat("###,##0.00000");
+        return move + "\tVisits: " + getnVisits() + "\tValue: " + df2.format(stats.mean()) + "\tMAST val: " + df2.format(options.getMastValue(myPlayer, move.getUniqueId())) + "\tMAST vis: " + options.getMastVisits(myPlayer, move.getUniqueId());
     }
 }

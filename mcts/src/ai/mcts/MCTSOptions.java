@@ -2,6 +2,7 @@ package ai.mcts;
 
 import ai.Covariance;
 import ai.PBC;
+import ai.framework.IMove;
 
 import java.util.Random;
 
@@ -68,14 +69,17 @@ public class MCTSOptions {
             uctC = .8;
             kr = 3.0;
             kq = 4.;
+            mastEps = 1.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             kr = 1.2;
             kq = 2.8;
+            mastEps = 1.;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             kr = 2.8;
             kq = 2.0;
+            mastEps = 1.;
         } else if (game.equals("pentalath")) {
             uctC = .8;
             MAST = true;
@@ -87,7 +91,7 @@ public class MCTSOptions {
             MAST = true;
             mastEps = .3;
             kr = 2.2;
-            kq = 1.6; //
+            kq = 1.6;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
             MAST = true;
@@ -158,5 +162,20 @@ public class MCTSOptions {
 
     public double getMastValue(int player, int id) {
         return mastValues[player - 1][id];
+    }
+
+    public double getMastVisits(int player, int id) {
+        return mastVisits[player - 1][id];
+    }
+
+    public void highestMastMove(int player) {
+        double max = Double.NEGATIVE_INFINITY;
+        int maxI = 0;
+        for(int i = 0; i < mastValues[player - 1].length; i++) {
+            if(mastValues[player - 1][i] > max) {
+                max = mastValues[player - 1][i];
+                maxI = i;
+            }
+        }
     }
 }

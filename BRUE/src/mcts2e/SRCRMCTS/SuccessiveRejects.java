@@ -1,6 +1,7 @@
 package mcts2e.SRCRMCTS;
 
 import ai.mcts.MCTSOptions;
+import com.sun.org.apache.bcel.internal.generic.Select;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public class SuccessiveRejects implements SelectionPolicy {
 
     private final MCTSOptions options;
-    private final UCT uctSelection;
+    private final SelectionPolicy uctSelection;
     //
     private final int FINAL_ARMS = 1; // + 1 final last arm
     private ArrayList<TreeNode> A = new ArrayList<TreeNode>();
@@ -17,7 +18,7 @@ public class SuccessiveRejects implements SelectionPolicy {
     private int simulations = 0, nextRound, arms, n, K;
     public int myPlayer = 0;
 
-    public SuccessiveRejects(MCTSOptions options, UCT uctSelection) {
+    public SuccessiveRejects(MCTSOptions options, SelectionPolicy uctSelection) {
         this.options = options;
         this.uctSelection = uctSelection;
     }

@@ -4,12 +4,12 @@ import ai.FastLog;
 import ai.mcts.MCTSOptions;
 
 /**
- * Created by Tom on 20-2-14.
+ * Created by Tom on 25-2-14.
  */
-public class UCT implements SelectionPolicy {
+public class MastUCT implements SelectionPolicy {
     private final MCTSOptions options;
 
-    public UCT(MCTSOptions options) {
+    public MastUCT(MCTSOptions options) {
         this.options = options;
     }
 
@@ -34,10 +34,10 @@ public class UCT implements SelectionPolicy {
                 // Compute the uct value with the (new) average value
                 uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(node.getnVisits()) / c.getnVisits());
                 if(options.MAST) {
-                    if(options.getMastVisits(node.player, c.getMove().getUniqueId()) > 0) {
-                        uctValue = .75 * uctValue + .25 * ( options.getMastValue(node.player, c.getMove().getUniqueId()) + Math.sqrt(FastLog.log(node.getnVisits()) / options.getMastVisits(node.player, c.getMove().getUniqueId())));
-                    } else {
-
+                    double v = options.getMastVisits(node.player, c.getMove().getUniqueId());
+                    double nv = c.getnVisits();
+                    if(v > nv) {
+                        uctValue = .75 * uctValue + .25 * options.getMastValue(node.player, c.getMove().getUniqueId());
                     }
                 }
             }

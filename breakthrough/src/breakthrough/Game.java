@@ -21,7 +21,8 @@ public class Game {
 //        options1.simulations = 100000;
 //        SelectionPolicy selectionPolicy1 = new HalfGreedySelect(options1);
 //        SelectionPolicy selectionPolicy1 = new SqrtUCT(options1);
-        SelectionPolicy selectionPolicy1 = new SuccessiveRejects(options1, new UCT(options1));
+//        SelectionPolicy selectionPolicy1 = new SuccessiveRejects(options1, new UCT(options1));
+        SelectionPolicy selectionPolicy1 = new MastUCT(options1);
         ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy1);
 
         MCTSOptions options2 = new MCTSOptions();
@@ -43,7 +44,6 @@ public class Game {
             System.gc();
             aiPlayer.getMove(b.copy(), null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
-
             b.doAIMove(m, player);
 
             if (m != null)
@@ -52,6 +52,7 @@ public class Game {
 
         System.out.println("Winner is " + b.checkWin());
     }
+
 }
 
 
