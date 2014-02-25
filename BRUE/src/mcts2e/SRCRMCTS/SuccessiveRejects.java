@@ -63,7 +63,8 @@ public class SuccessiveRejects implements SelectionPolicy {
 //                        }
 //                    }
 
-                    int test = (node.getArity() - A.size()) / A.size();
+                    int test = (node.getArity() - A.size()) / (A.size() * 2);
+                    System.out.println(test);
                     TreeNode minArm = getMinValueNode(A, test);
                     A.remove(minArm);
                     arms = A.size();
