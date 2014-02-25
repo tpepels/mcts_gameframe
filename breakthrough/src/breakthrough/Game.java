@@ -17,8 +17,8 @@ public class Game {
         options1.setGame("breakthrough");
         AIPlayer aiPlayer1 = new SRCRMCTSPlayer();
         aiPlayer1.setOptions(options1);
-        options1.fixedSimulations = true;
-        options1.simulations = 100000;
+//        options1.fixedSimulations = true;
+//        options1.simulations = 100000;
 //        SelectionPolicy selectionPolicy1 = new HalfGreedySelect(options1);
 //        SelectionPolicy selectionPolicy1 = new SqrtUCT(options1);
         SelectionPolicy selectionPolicy1 = new SuccessiveRejects(options1, new UCT(options1));
@@ -26,8 +26,8 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
-        options2.fixedSimulations = true;
-        options2.simulations = 100000;
+//        options2.fixedSimulations = true;
+//        options2.simulations = 100000;
         AIPlayer aiPlayer2 = new SRCRMCTSPlayer();
         aiPlayer2.setOptions(options2);
         SelectionPolicy selectionPolicy2 = new UCT(options2);
@@ -50,6 +50,7 @@ public class Game {
         }
 
         System.out.println("Winner is " + b.checkWin());
+        System.out.println("Different selections made: " + ((SuccessiveRejects)selectionPolicy1).difference);
     }
 }
 

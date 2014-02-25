@@ -3,6 +3,7 @@ package mcts2e.SRCRMCTS;
 import ai.mcts.MCTSOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class SuccessiveRejects implements SelectionPolicy {
@@ -29,7 +30,8 @@ public class SuccessiveRejects implements SelectionPolicy {
 
             // If the root was just expanded
             if (node.getnVisits() == 0) {
-                n = options.numSimulations; K = node.getArity() - FINAL_ARMS;
+                n = options.numSimulations;
+                K = node.getArity() - FINAL_ARMS;
                 A.clear();
                 A.addAll(node.getChildren());
                 arms = A.size();
@@ -48,7 +50,7 @@ public class SuccessiveRejects implements SelectionPolicy {
 
             // Check if a new round should start
             if (simulations == nextRound) {
-                nextRound +=(int) Math.ceil((1. / log_k) * ((n - K) / (K + 1 - k)));
+                nextRound += (int) Math.ceil((1. / log_k) * ((n - K) / (K + 1 - k)));
                 k++;
                 if (arms > 2) { // Just to make sure there are still some arms left
                     TreeNode minArm = null;
@@ -61,7 +63,7 @@ public class SuccessiveRejects implements SelectionPolicy {
                     }
                     A.remove(minArm);
                     arms = A.size();
-               }
+                }
             }
             return selected;
         } else {
@@ -69,38 +71,53 @@ public class SuccessiveRejects implements SelectionPolicy {
         }
     }
 
+    public int difference = 0;
     @Override
     public TreeNode selectBestMove(TreeNode node) {
-        TreeNode bestChild = null;
-        double max = Double.NEGATIVE_INFINITY, value;
-        if (node.getnVisits() > 0.) {
-            for (TreeNode t : A) {
+        TreeNode bestChild1 = null;TreeNode bestChild2 = null;
+        double max1 = Double.NEGATIVE_INFINITY, max2 = Double.NEGATIVE_INFINITY, value, value1= 0, value2 = 0;
+        List<TreeNode> l = (node.getnVisits() > 0.) ? A : node.getChildren();
+        for (TreeNode t : l) {
+            if (t.stats.mean() == TreeNode.INF)
+                value = TreeNode.INF + MCTSOptions.r.nextDouble();
+            else if (t.stats.mean() == -TreeNode.INF)
+                value = -TreeNode.INF + t.stats.totalVisits() + MCTSOptions.r.nextDouble();
+            else {
                 // Select the child with the highest value
                 value = t.stats.mean();
-                //
-                if (value > max) {
-                    max = value;
-                    bestChild = t;
+                value1 = value;
+                if (t.getArity() > 0) {
+                    double maxv = Double.NEGATIVE_INFINITY, vnew = 0;
+                    for (TreeNode c : t.getChildren()) {
+                        //  Get the value of the node with the most visits
+                        if (c.getnVisits() > maxv) {
+                            vnew = -c.stats.mean();
+                            maxv = c.getnVisits();
+                        }
+                    }
+                    if (options.debug)
+                        System.out.println("node: " + value + " max v child: " + vnew);
+                    value2 = vnew;
+                    value = vnew;
                 }
-                // For debugging, print the node
-                if (options.debug)
-                    System.out.println(t);
             }
-        } else {
-            for (TreeNode t : node.getChildren()) {
-                // Select the child with the highest value
-                value = t.stats.mean();
-                //
-                if (value > max) {
-                    max = value;
-                    bestChild = t;
-                }
-                // For debugging, print the node
-                if (options.debug)
-                    System.out.println(t);
+            if (value1 > max1) {
+                max1 = value;
+                bestChild1 = t;
             }
+            if (value2 > max2) {
+                max2 = value;
+                bestChild2 = t;
+            }
+            // For debugging, print the node
+            if (options.debug)
+                System.out.println(t);
         }
-        return bestChild;
+
+        if(!bestChild1.getMove().equals(bestChild2.getMove()))
+            difference++;
+
+        return bestChild2;
     }
 
 }
