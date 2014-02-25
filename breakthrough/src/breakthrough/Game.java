@@ -43,6 +43,7 @@ public class Game {
             System.gc();
             aiPlayer.getMove(b.copy(), null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
+
             b.doAIMove(m, player);
 
             if (m != null)
@@ -50,7 +51,6 @@ public class Game {
         }
 
         System.out.println("Winner is " + b.checkWin());
-        System.out.println("Different selections made: " + ((SuccessiveRejects)selectionPolicy1).difference);
     }
 }
 

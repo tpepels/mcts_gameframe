@@ -11,11 +11,11 @@ public class SuccessiveRejects implements SelectionPolicy {
     private final MCTSOptions options;
     private final UCT uctSelection;
     //
-    private final int FINAL_ARMS = 2; // + 1 final last arm
+    private final int FINAL_ARMS = 1; // + 1 final last arm
     private ArrayList<TreeNode> A = new ArrayList<TreeNode>();
     private double log_k = .5, k = 1;
     private int simulations = 0, nextRound, arms, n, K;
-    private int myPlayer = 0;
+    public int myPlayer = 0;
 
     public SuccessiveRejects(MCTSOptions options, UCT uctSelection) {
         this.options = options;
@@ -53,7 +53,7 @@ public class SuccessiveRejects implements SelectionPolicy {
             if (simulations == nextRound) {
                 nextRound += (int) Math.ceil((1. / log_k) * ((n - K) / (K + 1 - k)));
                 k++;
-                if (arms > 2) { // Just to make sure there are still some arms left
+                if (arms > 0) { // Just to make sure there are still arms left
                     TreeNode minArm = null;
                     double minVal = Double.POSITIVE_INFINITY;
                     for (TreeNode arm : A) {
@@ -62,10 +62,6 @@ public class SuccessiveRejects implements SelectionPolicy {
                             minVal = arm.stats.mean();
                         }
                     }
-
-//                    int test = (node.getArity() - A.size()) / (A.size() * 2);
-                    //System.out.println(test);
-//                    TreeNode minArm = getMinValueNode(A, test);
                     A.remove(minArm);
                     arms = A.size();
                 }
