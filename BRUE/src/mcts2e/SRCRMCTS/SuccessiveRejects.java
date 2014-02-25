@@ -54,18 +54,18 @@ public class SuccessiveRejects implements SelectionPolicy {
                 nextRound += (int) Math.ceil((1. / log_k) * ((n - K) / (K + 1 - k)));
                 k++;
                 if (arms > 2) { // Just to make sure there are still some arms left
-//                    TreeNode minArm = null;
-//                    double minVal = Double.POSITIVE_INFINITY;
-//                    for (TreeNode arm : A) {
-//                        if (arm.stats.mean() < minVal) {
-//                            minArm = arm;
-//                            minVal = arm.stats.mean();
-//                        }
-//                    }
+                    TreeNode minArm = null;
+                    double minVal = Double.POSITIVE_INFINITY;
+                    for (TreeNode arm : A) {
+                        if (arm.stats.mean() < minVal) {
+                            minArm = arm;
+                            minVal = arm.stats.mean();
+                        }
+                    }
 
-                    int test = (node.getArity() - A.size()) / (A.size() * 2);
+//                    int test = (node.getArity() - A.size()) / (A.size() * 2);
                     //System.out.println(test);
-                    TreeNode minArm = getMinValueNode(A, test);
+//                    TreeNode minArm = getMinValueNode(A, test);
                     A.remove(minArm);
                     arms = A.size();
                 }
