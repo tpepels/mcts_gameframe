@@ -229,7 +229,7 @@ public class SimGame {
                     ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new HalfGreedySelect(options, new UCT(options)));
                 } else if (tag.equals("uct")) {
                     ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new UCT(options));
-                } else if (tag.equals("c")) {
+                } else if (tag.startsWith("c")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
