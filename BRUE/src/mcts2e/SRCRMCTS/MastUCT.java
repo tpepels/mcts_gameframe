@@ -23,7 +23,7 @@ public class MastUCT implements SelectionPolicy {
         TreeNode selected = null;
         double max = Double.NEGATIVE_INFINITY;
         // Use UCT down the tree
-        double uctValue;
+        double uctValue, value;
         // Select a child according to the UCT Selection policy
         for (TreeNode c : node.getChildren()) {
             // No visits or win-node
@@ -31,15 +31,16 @@ public class MastUCT implements SelectionPolicy {
                 // First, visit all children at least once
                 uctValue = 1000 + MCTSOptions.r.nextDouble();
             } else {
-                // Compute the uct value with the (new) average value
-                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(node.getnVisits()) / c.getnVisits());
+                value = c.stats.mean();
                 if(options.MAST) {
                     double v = options.getMastVisits(node.player, c.getMove().getUniqueId());
                     double nv = c.getnVisits();
                     if(v > nv) {
-                        uctValue = .75 * uctValue + .25 * options.getMastValue(node.player, c.getMove().getUniqueId());
+                        value = .75 * value + .25 * options.getMastValue(node.player, c.getMove().getUniqueId());
                     }
                 }
+                // Compute the uct value with the (new) average value
+                uctValue = value + options.uctC * Math.sqrt(FastLog.log(node.getnVisits()) / c.getnVisits());
             }
             // Remember the highest UCT value
             if (uctValue > max) {

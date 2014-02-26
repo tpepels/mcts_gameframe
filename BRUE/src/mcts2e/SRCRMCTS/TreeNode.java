@@ -294,8 +294,6 @@ public class TreeNode {
                     currentMove = movesMade.pop();
                     currentPlayer = board.getOpponent(currentPlayer);
                     value = (currentPlayer == player) ? score : -score;
-//                    if(currentMove.getUniqueId() == 513)
-//                        System.out.println(currentMove + " " + currentPlayer + " " + value);
                     options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
                 }
             }
