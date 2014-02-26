@@ -1,6 +1,9 @@
 package ai.mcts;
 
-import ai.*;
+import ai.FastLog;
+import ai.FastSigm;
+import ai.StatCounter;
+import ai.StatCounterSorted;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;

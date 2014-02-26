@@ -1,14 +1,12 @@
 package experiments;
 
-import ai.FastSigm;
 import ai.FastLog;
+import ai.FastSigm;
 import ai.FastTanh;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
-import mcts2e.BRUE.MCTS2ePlayer;
 import mcts2e.SRCRMCTS.*;
 
 import java.io.IOException;

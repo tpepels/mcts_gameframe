@@ -2,10 +2,12 @@ package breakthrough;
 
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
-import mcts2e.SRCRMCTS.*;
+import mcts2e.SRCRMCTS.MastUCT;
+import mcts2e.SRCRMCTS.SRCRMCTSPlayer;
+import mcts2e.SRCRMCTS.SelectionPolicy;
+import mcts2e.SRCRMCTS.UCT;
 
 public class Game {
 

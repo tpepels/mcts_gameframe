@@ -3,8 +3,6 @@ package mcts2e.BRUE;
 import ai.framework.*;
 import ai.mcts.MCTSOptions;
 
-import java.util.Random;
-
 public class MCTS2ePlayer implements AIPlayer, Runnable {
     private final int TT_SIZE = 33554432;
     private final long MASK = TT_SIZE - 1;

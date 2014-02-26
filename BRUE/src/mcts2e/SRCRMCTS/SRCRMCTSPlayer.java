@@ -1,6 +1,8 @@
 package mcts2e.SRCRMCTS;
 
-import ai.framework.*;
+import ai.framework.AIPlayer;
+import ai.framework.IBoard;
+import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
 

@@ -1,7 +1,9 @@
 package mcts2e.BRUEi;
 
-import ai.*;
-import ai.framework.*;
+import ai.StatCounter;
+import ai.framework.IBoard;
+import ai.framework.IMove;
+import ai.framework.MoveList;
 import ai.mcts.MCTSOptions;
 
 import java.util.ArrayList;

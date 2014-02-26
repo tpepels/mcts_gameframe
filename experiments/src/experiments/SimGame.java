@@ -1,7 +1,7 @@
 package experiments;
 
-import ai.FastSigm;
 import ai.FastLog;
+import ai.FastSigm;
 import ai.FastTanh;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
@@ -222,7 +222,7 @@ public class SimGame {
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
                 } else if (tag.equals("sr")) {
-                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SuccessiveRejects(options, new UCT(options)));
+                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SuccessiveRejects(options, new MastUCT(options)));
                 } else if (tag.equals("su")) {
                     ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SqrtUCT(options, new UCT(options)));
                 } else if (tag.equals("hg")) {

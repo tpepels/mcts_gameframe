@@ -1,6 +1,9 @@
 package mcts2e.BRUEi;
 
-import ai.framework.*;
+import ai.framework.AIPlayer;
+import ai.framework.IBoard;
+import ai.framework.IMove;
+import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
 
 public class MCTS2ePlayer implements AIPlayer, Runnable {
