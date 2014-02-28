@@ -190,9 +190,9 @@ public class TreeNode {
             }
             sims++;
             return A.get((sims - 1) % A.size());
-        } else if(depth == 1) {
-            sims++;
-            return A.get((sims - 1) % A.size());
+//        } else if(depth == 1) {
+//            sims++;
+//            return A.get((sims - 1) % A.size());
         } else {
             return uct.select(this);
         }
