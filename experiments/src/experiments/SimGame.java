@@ -152,8 +152,10 @@ public class SimGame {
                         options.kr = Double.parseDouble(tag.substring(2));
                 } else if (tag.equals("sr")) {
                     playerRef = new SRMCTSPlayer();
-                } else if (tag.equals("masl")) {
+                } else if (tag.startsWith("masl")) {
                     options.MASTShortLists = true;
+                    if(tryParseDouble(tag.substring(4)))
+                        options.slMinVisits = Integer.parseInt(tag.substring(4));
                 } else if (tag.startsWith("qb")) {
                     options.qualityBonus = true;
                     if (tryParseDouble(tag.substring(2)))

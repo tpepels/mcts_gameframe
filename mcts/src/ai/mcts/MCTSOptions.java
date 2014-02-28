@@ -156,13 +156,14 @@ public class MCTSOptions {
 
     public MASTEntry[][] shortLists = new MASTEntry[2][10];
     public boolean MASTShortLists = false;
+    public int slMinVisits = 10;
 
     public void updateMast(int player, int moveId, double value) {
         mastValues[player - 1][moveId] +=
                 (value - mastValues[player - 1][moveId]) /
                         (++mastVisits[player - 1][moveId]);
         //
-        if (MASTShortLists && value > 0) {
+        if (MASTShortLists && mastVisits[player - 1][moveId] > slMinVisits) {
             int index = -1;
             for (int i = 0; i < shortLists[player - 1].length; i++) {
                 if (shortLists[player - 1][i] == null) {
