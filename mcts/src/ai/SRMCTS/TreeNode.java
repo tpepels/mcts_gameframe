@@ -46,13 +46,12 @@ public class TreeNode {
     /**
      * Constructor for internal node
      */
-    public TreeNode(int player, IMove move, MCTSOptions options, int simulations, TreeNode parent) {
+    public TreeNode(int player, IMove move, MCTSOptions options, TreeNode parent) {
         this.player = player;
         this.move = move;
         this.simulations = 0;
         this.options = options;
         this.stats = new StatCounter();
-        this.simulations = simulations;
         this.uct = new UCT(options);
         this.parent = parent;
     }
@@ -169,32 +168,29 @@ public class TreeNode {
                     }
                     A.remove(minArm);
                 }
-                if (k > delay) {
-                    for (TreeNode arm : A) {
-                        if (arm.A.size() > 1) {
-                            minVal = Double.POSITIVE_INFINITY;
-                            minArm = null;
-                            for (TreeNode arm1 : arm.A) {
-                                if (arm1.stats.mean() < minVal) {
-                                    minArm = arm1;
-                                    minVal = arm1.stats.mean();
-                                }
-                            }
-                            arm.stats.subtract(minArm.stats);
-                            arm.A.remove(minArm);
-                        }
-                    }
-                }
+//                if (k > delay) {
+//                    for (TreeNode arm : A) {
+//                        if (arm.A.size() > 1) {
+//                            minVal = Double.POSITIVE_INFINITY;
+//                            minArm = null;
+//                            for (TreeNode arm1 : arm.A) {
+//                                if (arm1.stats.mean() < minVal) {
+//                                    minArm = arm1;
+//                                    minVal = arm1.stats.mean();
+//                                }
+//                            }
+//                            //arm.stats.subtract(minArm.stats);
+//                            arm.A.remove(minArm);
+//                        }
+//                    }
+//                }
                 nextRound += round;
                 k++;
             }
             sims++;
             return A.get((sims - 1) % A.size());
-//        } else if(depth == 1) {
-//            sims++;
-//            return A.get((sims - 1) % A.size());
         } else {
-            return uct.select(this);
+            return uct.select(children, getnVisits());
         }
     }
 
@@ -214,7 +210,7 @@ public class TreeNode {
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (board.doAIMove(moves.get(i), player)) {
-                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options, (int) (1. / (4. + depth) * simulations), this);
+                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options, this);
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 //
@@ -234,17 +230,12 @@ public class TreeNode {
                 board.undoMove();
             }
         }
-
-        if (depth < 2) {
-            if (depth == 1) {
-                if (parent.getArity() - getArity() > delay)
-                    delay = parent.getArity() - getArity();
-            }
+        // After expanding the root, set the Successive Rejects parameters
+        if (depth == 0) {
             A = new ArrayList<TreeNode>();
             A.addAll(getChildren());
             setSRParameters();
         }
-
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -453,9 +444,7 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(double value) {
-        stats.push(value);
-    }
+    private void updateStats(double value) { stats.push(value); }
 
     public boolean isLeaf() {
         return children == null || !expanded;
@@ -473,17 +462,13 @@ public class TreeNode {
         return children;
     }
 
-    public int getArity() {
-        return children == null ? 0 : children.size();
-    }
+    public int getArity() { return children == null ? 0 : children.size(); }
 
-    public double getnVisits() {
-        return stats.visits();
-    }
+    public double getnVisits() { return stats.visits(); }
 
     @Override
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("###,##0.00000");
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + df2.format(stats.mean()) + "\tSims: " + simulations;
+        return move + "\tValue: " + df2.format(stats.mean()) + "\tVisits: " + getnVisits();
     }
 }
