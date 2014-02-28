@@ -3,6 +3,7 @@ package experiments;
 import ai.FastLog;
 import ai.FastSigm;
 import ai.FastTanh;
+import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -149,6 +150,10 @@ public class SimGame {
                     options.relativeBonus = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.kr = Double.parseDouble(tag.substring(2));
+                } else if (tag.equals("sr")) {
+                    playerRef = new SRMCTSPlayer();
+                } else if (tag.equals("masl")) {
+                    options.MASTShortLists = true;
                 } else if (tag.startsWith("qb")) {
                     options.qualityBonus = true;
                     if (tryParseDouble(tag.substring(2)))
