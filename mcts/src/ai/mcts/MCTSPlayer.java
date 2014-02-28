@@ -192,6 +192,14 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Windows grown  : " + ((MovingAverageSorted.grown / (double) MovingAverageSorted.smallInstances) * 100.) + "%");
                 System.out.println("Windows cycled : " + ((MovingAverageSorted.full / (double) MovingAverageSorted.instances) * 100.) + "%");
             }
+            if(options.MASTShortLists) {
+                for(int i = 0; i < options.shortLists[0].length; i++) {
+                    System.out.println("p1: " + options.shortLists[0][i] + " v: " + options.getMastVisits(1, options.shortLists[0][i].id));
+                }
+                for(int i = 0; i < options.shortLists[1].length; i++) {
+                    System.out.println("p2: " + options.shortLists[1][i] + " v: " + options.getMastVisits(2, options.shortLists[1][i].id));
+                }
+            }
             MovingAverageSorted.grown = 0;
             MovingAverageSorted.instances = 0;
             MovingAverageSorted.full = 0;

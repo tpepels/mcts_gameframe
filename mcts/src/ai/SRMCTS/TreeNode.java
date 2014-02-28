@@ -22,12 +22,11 @@ public class TreeNode {
     private final MCTSOptions options;
     private UCT uct;
     public final int player;
-    public int simulations, delay;
+    public int simulations;
     public StatCounter stats;
     //
     private boolean expanded = false;
     private List<TreeNode> children, A;
-    private TreeNode parent = null;
     private IMove move;
 
     /**
@@ -46,14 +45,13 @@ public class TreeNode {
     /**
      * Constructor for internal node
      */
-    public TreeNode(int player, IMove move, MCTSOptions options, TreeNode parent) {
+    public TreeNode(int player, IMove move, MCTSOptions options) {
         this.player = player;
         this.move = move;
         this.simulations = 0;
         this.options = options;
         this.stats = new StatCounter();
         this.uct = new UCT(options);
-        this.parent = parent;
     }
 
     /**
@@ -133,33 +131,18 @@ public class TreeNode {
 
     private final int FINAL_ARMS = 2;
     private double log_k = .5, k = 1;
-    private int sims = 0, round, nextRound = 0, K;
-
-
-    private void setSRParameters() {
-        K = getArity() - FINAL_ARMS + 1;
-        sims = 0;
-        k = 1;
-        log_k = .5;
-        for (int i = 2; i <= K; i++) {
-            log_k += 1. / i;
-        }
-        round = (int) Math.ceil((1. / log_k) * ((simulations - K) / (K + 1 - k)));
-        nextRound += round;
-        k++;
-
-    }
+    private int sims = 0, nextRound = 0, K;
 
     private TreeNode select(int depth) {
         if (depth == 0) {
             // Check if a new round should start
             if (sims == nextRound) {
-                round = (int) Math.ceil((1. / log_k) * ((simulations - K) / (K + 1 - k)));
-
-                TreeNode minArm = null;
-                double minVal = Double.POSITIVE_INFINITY;
+                nextRound += (int) Math.ceil((1. / log_k) * ((simulations - K) / (K + 1 - k)));
+                k++;
                 // Remove an arm
                 if (A.size() > FINAL_ARMS) { // To make sure there are still arms left
+                    TreeNode minArm = null;
+                    double minVal = Double.POSITIVE_INFINITY;
                     for (TreeNode arm : A) {
                         if (arm.stats.mean() < minVal) {
                             minArm = arm;
@@ -168,24 +151,6 @@ public class TreeNode {
                     }
                     A.remove(minArm);
                 }
-//                if (k > delay) {
-//                    for (TreeNode arm : A) {
-//                        if (arm.A.size() > 1) {
-//                            minVal = Double.POSITIVE_INFINITY;
-//                            minArm = null;
-//                            for (TreeNode arm1 : arm.A) {
-//                                if (arm1.stats.mean() < minVal) {
-//                                    minArm = arm1;
-//                                    minVal = arm1.stats.mean();
-//                                }
-//                            }
-//                            //arm.stats.subtract(minArm.stats);
-//                            arm.A.remove(minArm);
-//                        }
-//                    }
-//                }
-                nextRound += round;
-                k++;
             }
             sims++;
             return A.get((sims - 1) % A.size());
@@ -210,7 +175,7 @@ public class TreeNode {
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (board.doAIMove(moves.get(i), player)) {
-                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options, this);
+                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 //
@@ -234,7 +199,17 @@ public class TreeNode {
         if (depth == 0) {
             A = new ArrayList<TreeNode>();
             A.addAll(getChildren());
-            setSRParameters();
+            //
+            K = getArity() - FINAL_ARMS + 1;
+            sims = 0;
+            k = 1;
+            log_k = .5;
+            for (int i = 2; i <= K; i++) {
+                log_k += 1. / i;
+            }
+            nextRound = 0;
+            nextRound += (int) Math.ceil((1. / log_k) * ((simulations - K) / (K + 1 - k)));
+            k++;
         }
         // If one of the nodes is a win, return it.
         return winNode;
@@ -444,7 +419,9 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(double value) { stats.push(value); }
+    private void updateStats(double value) {
+        stats.push(value);
+    }
 
     public boolean isLeaf() {
         return children == null || !expanded;
@@ -462,9 +439,13 @@ public class TreeNode {
         return children;
     }
 
-    public int getArity() { return children == null ? 0 : children.size(); }
+    public int getArity() {
+        return children == null ? 0 : children.size();
+    }
 
-    public double getnVisits() { return stats.visits(); }
+    public double getnVisits() {
+        return stats.visits();
+    }
 
     @Override
     public String toString() {

@@ -142,7 +142,7 @@ public class MCTSOptions {
 
     public int getWindowSize() {
         if (simsLeft > windowSize)
-            return (int)windowSize;
+            return (int) windowSize;
         else
             return -1;
     }
@@ -150,12 +150,47 @@ public class MCTSOptions {
     public void resetMast(int maxId) {
         mastValues = new double[2][maxId];
         mastVisits = new double[2][maxId];
+        if(MASTShortLists)
+            shortLists = new MASTEntry[2][10];
     }
+
+    public MASTEntry[][] shortLists = new MASTEntry[2][10];
+    public boolean MASTShortLists = false;
 
     public void updateMast(int player, int moveId, double value) {
         mastValues[player - 1][moveId] +=
                 (value - mastValues[player - 1][moveId]) /
                         (++mastVisits[player - 1][moveId]);
+        //
+        if (MASTShortLists && value > 0) {
+            int index = -1;
+            for (int i = 0; i < shortLists[player - 1].length; i++) {
+                if (shortLists[player - 1][i] == null) {
+                    index = i;
+                    break;
+                } else if (shortLists[player - 1][i].id == moveId) {
+                    index = -1;
+                    // Update the value
+                    shortLists[player - 1][i].value = mastValues[player - 1][moveId];
+                    break;
+                } else if (mastValues[player - 1][moveId] > shortLists[player - 1][i].value) {
+                    index = i;
+                }
+            }
+            if (index != -1) {
+                // Update the value
+                shortLists[player - 1][index] = new MASTEntry(moveId, mastValues[player - 1][moveId]);
+            }
+        }
+    }
+
+    public boolean isShortListed(int moveId, int player) {
+        for (int i = 0; i < shortLists[player - 1].length; i++) {
+            if(shortLists[player - 1][i] != null && shortLists[player - 1][i].id == moveId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public double getMastValue(int player, int id) {
@@ -169,8 +204,8 @@ public class MCTSOptions {
     public void highestMastMove(int player) {
         double max = Double.NEGATIVE_INFINITY;
         int maxI = 0;
-        for(int i = 0; i < mastValues[player - 1].length; i++) {
-            if(mastValues[player - 1][i] > max) {
+        for (int i = 0; i < mastValues[player - 1].length; i++) {
+            if (mastValues[player - 1][i] > max) {
                 max = mastValues[player - 1][i];
                 maxI = i;
             }

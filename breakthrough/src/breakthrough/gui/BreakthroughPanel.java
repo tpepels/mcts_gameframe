@@ -49,7 +49,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         aiPlayer1 = null;
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
-        options1.relativeBonus = true;
+        options1.MASTShortLists = true;
         options1.setGame("breakthrough");
         aiPlayer1.setOptions(options1);
 

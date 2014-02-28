@@ -7,6 +7,7 @@ import ai.StatCounterSorted;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
+import amazons.game.Board;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -114,7 +115,7 @@ public class TreeNode {
                 result = -child.MCTS(board, depth + 1);
             }
             // Update the MAST value for the move, use original value not the altered reward (signum)
-            if (options.useHeuristics && options.MAST)
+            if (options.useHeuristics && (options.MAST || options.MASTShortLists))
                 options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
@@ -372,6 +373,7 @@ public class TreeNode {
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
         boolean terminateEarly = false;
+        movesMade.clear();
         while (!gameEnded && !terminateEarly) {
 
             moves = board.getPlayoutMoves(options.useHeuristics);
@@ -388,32 +390,43 @@ public class TreeNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-
-                // Select a move from the available ones
-                if (options.epsGreedyEval) {
-                    // If epsilon greedy play-outs, choose the highest eval
-                    moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
-                } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
-                    mastMax = Double.NEGATIVE_INFINITY;
-                    // Select the move with the highest MAST value
+                moveIndex = -1;
+                if (options.useHeuristics && options.MASTShortLists) {
                     for (int i = 0; i < moves.size(); i++) {
-                        mastVal = options.getMastValue(currentPlayer, moves.get(i).getUniqueId());
-                        // If bigger, we have a winner, if equal, flip a coin
-                        if (mastVal > mastMax || (mastVal == mastMax && MCTSOptions.r.nextDouble() < .5)) {
-                            mastMax = mastVal;
+                        if (options.isShortListed(moves.get(i).getUniqueId(), currentPlayer)) {
                             moveIndex = i;
+                            break;
                         }
                     }
-                } else {
-                    // Choose randomly
-                    moveIndex = MCTSOptions.r.nextInt(moves.size());
+                }
+                if (moveIndex == -1) {
+                    // Select a move from the available ones
+                    if (options.epsGreedyEval) {
+                        // If epsilon greedy play-outs, choose the highest eval
+                        moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
+                    } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
+                        mastMax = Double.NEGATIVE_INFINITY;
+                        // Select the move with the highest MAST value
+                        for (int i = 0; i < moves.size(); i++) {
+                            mastVal = options.getMastValue(currentPlayer, moves.get(i).getUniqueId());
+                            // If bigger, we have a winner, if equal, flip a coin
+                            if (mastVal > mastMax || (mastVal == mastMax && MCTSOptions.r.nextDouble() < .5)) {
+                                mastMax = mastVal;
+                                moveIndex = i;
+                            }
+                        }
+                    } else {
+                        // Choose randomly
+                        moveIndex = MCTSOptions.r.nextInt(moves.size());
+                    }
                 }
                 currentMove = moves.get(moveIndex);
+
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
 
                     // Keep track of moves made for MAST
-                    if (options.useHeuristics && options.MAST && !options.TO_MAST)
+                    if (options.useHeuristics && ((options.MAST && !options.TO_MAST) || options.MASTShortLists))
                         movesMade.push(currentMove);
 
                     nMoves++;
@@ -441,16 +454,6 @@ public class TreeNode {
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
 
-            // Update the mast values for the moves made during playout
-            if (options.useHeuristics && options.MAST && !options.TO_MAST) {
-                double value;
-                while (!movesMade.empty()) {
-                    currentMove = movesMade.pop();
-                    currentPlayer = board.getOpponent(currentPlayer);
-                    value = (currentPlayer == player) ? score : -score;
-                    options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
-                }
-            }
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;
@@ -496,6 +499,17 @@ public class TreeNode {
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
+
+        // Update the mast values for the moves made during playout
+        if (options.useHeuristics && ((options.MAST && !options.TO_MAST) || options.MASTShortLists)) {
+            double value;
+            while (!movesMade.empty()) {
+                currentMove = movesMade.pop();
+                currentPlayer = board.getOpponent(currentPlayer);
+                value = (currentPlayer == player) ? Math.signum(score) : -Math.signum(score);
+                options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
+            }
+        }
 
         return score;
     }
