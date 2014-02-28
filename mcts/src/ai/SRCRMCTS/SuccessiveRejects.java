@@ -1,4 +1,4 @@
-package mcts2e.SRCRMCTS;
+package ai.SRCRMCTS;
 
 import ai.mcts.MCTSOptions;
 
@@ -11,7 +11,7 @@ public class SuccessiveRejects implements SelectionPolicy {
     private final MCTSOptions options;
     private final SelectionPolicy uctSelection;
     //
-    private final int FINAL_ARMS = 1; // + 1 final last arm
+    private final int FINAL_ARMS = 2; // + 1 final last arm
     private ArrayList<TreeNode> A = new ArrayList<TreeNode>();
     private double log_k = .5, k = 1;
     private int simulations = 0, nextRound, arms, n, K;
@@ -24,15 +24,14 @@ public class SuccessiveRejects implements SelectionPolicy {
 
     @Override
     public TreeNode select(TreeNode node, int depth) {
-
         // Otherwise apply the selection policy
         TreeNode selected;
-        if (depth == 0) {
+        if (depth < 1) {
             myPlayer = node.player;
             // If the root was just expanded
             if (node.getnVisits() == 0) {
                 n = options.numSimulations;
-                K = node.getArity() - FINAL_ARMS;
+                K = node.getArity();
                 A.clear();
                 A.addAll(node.getChildren());
                 arms = A.size();
@@ -51,9 +50,10 @@ public class SuccessiveRejects implements SelectionPolicy {
 
             // Check if a new round should start
             if (simulations == nextRound) {
-                nextRound += (int) Math.ceil((1. / log_k) * ((n - K) / (K + 1 - k)));
+                int round = (int) Math.ceil((1. / log_k) * ((n - K) / (K + 1 - k)));
+                nextRound += round;
                 k++;
-                if (arms > 0) { // Just to make sure there are still arms left
+                if (arms > FINAL_ARMS) { // Just to make sure there are still arms left
                     TreeNode minArm = null;
                     double minVal = Double.POSITIVE_INFINITY;
                     for (TreeNode arm : A) {
@@ -64,6 +64,9 @@ public class SuccessiveRejects implements SelectionPolicy {
                     }
                     A.remove(minArm);
                     arms = A.size();
+                    for (TreeNode arm : A) {
+                        arm.simulations += round / arms;
+                    }
                 }
             }
             return selected;
@@ -72,13 +75,10 @@ public class SuccessiveRejects implements SelectionPolicy {
         }
     }
 
-    public int difference = 0;
-
     @Override
     public TreeNode selectBestMove(TreeNode node) {
-        TreeNode bestChild1 = null;
-        TreeNode bestChild2 = null;
-        double max1 = Double.NEGATIVE_INFINITY, max2 = Double.NEGATIVE_INFINITY, value, value1 = 0, value2 = 0;
+        TreeNode bestChild = null;
+        double max = Double.NEGATIVE_INFINITY, value;
         List<TreeNode> l = (node.getnVisits() > 0.) ? A : node.getChildren();
         for (TreeNode t : l) {
             if (t.stats.mean() == TreeNode.INF)
@@ -88,64 +88,16 @@ public class SuccessiveRejects implements SelectionPolicy {
             else {
                 // Select the child with the highest value
                 value = t.stats.mean();
-                value1 = value;
-                //
-//                if (t.getArity() > 0) {
-//                    value = getMaxValueNode(t.getChildren(), 0).stats.mean();
-//                }
             }
-            if (value1 > max1) {
-                max1 = value1;
-                bestChild1 = t;
-            }
-            if (value > max2) {
-                max2 = value;
-                bestChild2 = t;
+            if (value > max) {
+                max = value;
+                bestChild = t;
             }
             // For debugging, print the node
             if (options.debug)
                 System.out.println(t);
         }
 
-        if (!bestChild1.getMove().equals(bestChild2.getMove()))
-            difference++;
-
-        return bestChild2;
-    }
-
-    private TreeNode getMinValueNode(List<TreeNode> nodes, int depth) {
-        double min = Double.POSITIVE_INFINITY, value;
-        TreeNode current, minNode = null;
-        for (TreeNode c : nodes) {
-            if (c.getArity() > 0 && depth > 1)
-                current = getMinValueNode(c.getChildren(), depth - 1);
-            else
-                current = c;
-            value = (current.player == myPlayer) ? -current.stats.mean() : current.stats.mean();
-            //  Get the value of the node with the most visits
-            if (value < min) {
-                min = value;
-                minNode = c;
-            }
-        }
-        return minNode;
-    }
-
-    private TreeNode getMaxValueNode(List<TreeNode> nodes, int depth) {
-        double max = Double.NEGATIVE_INFINITY, value;
-        TreeNode current, maxNode = null;
-        for (TreeNode c : nodes) {
-            if (c.getArity() > 0 && depth > 1)
-                current = getMinValueNode(c.getChildren(), depth - 1);
-            else
-                current = c;
-            value = (current.player == myPlayer) ? -current.stats.mean() : current.stats.mean();
-            //  Get the value of the node with the most visits
-            if (value > max) {
-                max = value;
-                maxNode = c;
-            }
-        }
-        return maxNode;
+        return bestChild;
     }
 }

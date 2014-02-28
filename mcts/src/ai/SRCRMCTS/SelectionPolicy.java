@@ -1,4 +1,4 @@
-package mcts2e.SRCRMCTS;
+package ai.SRCRMCTS;
 
 /**
  * Created by Tom on 20-2-14.

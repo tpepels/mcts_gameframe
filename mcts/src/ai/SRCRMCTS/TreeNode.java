@@ -1,4 +1,4 @@
-package mcts2e.SRCRMCTS;
+package ai.SRCRMCTS;
 
 import ai.FastSigm;
 import ai.StatCounter;
@@ -22,6 +22,7 @@ public class TreeNode {
     private final MCTSOptions options;
     private final SelectionPolicy selectionPolicy;
     public final int player;
+    public int simulations;
     public StatCounter stats;
     //
     private boolean expanded = false;
@@ -31,9 +32,10 @@ public class TreeNode {
     /**
      * Constructor for the root
      */
-    public TreeNode(int player, MCTSOptions options, SelectionPolicy selectionPolicy) {
+    public TreeNode(int player, MCTSOptions options, int simulations, SelectionPolicy selectionPolicy) {
         this.player = player;
         this.options = options;
+        this.simulations = simulations;
         TreeNode.myPlayer = player;
         stats = new StatCounter();
         this.selectionPolicy = selectionPolicy;
@@ -45,6 +47,7 @@ public class TreeNode {
     public TreeNode(int player, IMove move, MCTSOptions options, SelectionPolicy selectionPolicy) {
         this.player = player;
         this.move = move;
+        this.simulations = 0;
         this.options = options;
         this.stats = new StatCounter();
         this.selectionPolicy = selectionPolicy;
@@ -82,8 +85,8 @@ public class TreeNode {
                 result = -child.MCTS(board, depth + 1);
             }
             // Update the MAST value for the move, use original value not the altered reward (signum)
-//            if (options.useHeuristics && options.MAST)
-//                options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
+            if (options.useHeuristics && options.MAST)
+                options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
         } else {
@@ -287,8 +290,7 @@ public class TreeNode {
             else score = -1;
 
             // Update the mast values for the moves made during playout
-//            if (options.useHeuristics && options.MAST && !options.TO_MAST) {
-            if (options.MAST && !options.TO_MAST) {
+            if (options.useHeuristics && options.MAST && !options.TO_MAST) {
                 double value;
                 while (!movesMade.empty()) {
                     currentMove = movesMade.pop();
@@ -377,6 +379,6 @@ public class TreeNode {
     @Override
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("###,##0.00000");
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + df2.format(stats.mean()) + "\tMAST val: " + df2.format(options.getMastValue(myPlayer, move.getUniqueId())) + "\tMAST vis: " + options.getMastVisits(myPlayer, move.getUniqueId());
+        return move + "\tVisits: " + getnVisits() + "\tValue: " + df2.format(stats.mean()) + "\tSims: " + simulations;
     }
 }

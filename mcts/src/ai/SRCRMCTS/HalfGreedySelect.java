@@ -1,4 +1,4 @@
-package mcts2e.SRCRMCTS;
+package ai.SRCRMCTS;
 
 import ai.mcts.MCTSOptions;
 

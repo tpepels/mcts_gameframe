@@ -1,4 +1,4 @@
-package mcts2e.SRCRMCTS;
+package ai.SRCRMCTS;
 
 import ai.FastLog;
 import ai.mcts.MCTSOptions;
@@ -33,13 +33,6 @@ public class UCT implements SelectionPolicy {
             } else {
                 // Compute the uct value with the (new) average value
                 uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(node.getnVisits()) / c.getnVisits());
-                if(options.MAST) {
-                    if(options.getMastVisits(node.player, c.getMove().getUniqueId()) > 0) {
-                        uctValue = .75 * uctValue + .25 * ( options.getMastValue(node.player, c.getMove().getUniqueId()) + Math.sqrt(FastLog.log(node.getnVisits()) / options.getMastVisits(node.player, c.getMove().getUniqueId())));
-                    } else {
-
-                    }
-                }
             }
             // Remember the highest UCT value
             if (uctValue > max) {

@@ -9,7 +9,7 @@ import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import mcts2e.BRUE.MCTS2ePlayer;
-import mcts2e.SRCRMCTS.*;
+import ai.SRCRMCTS.*;
 
 /*
 FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
@@ -222,7 +222,7 @@ public class SimGame {
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
                 } else if (tag.equals("sr")) {
-                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SuccessiveRejects(options, new MastUCT(options)));
+                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SuccessiveRejects(options, new UCT(options)));
                 } else if (tag.equals("su")) {
                     ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SqrtUCT(options, new UCT(options)));
                 } else if (tag.equals("hg")) {

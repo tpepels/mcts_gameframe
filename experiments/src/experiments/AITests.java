@@ -7,7 +7,7 @@ import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
-import mcts2e.SRCRMCTS.*;
+import ai.SRCRMCTS.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
