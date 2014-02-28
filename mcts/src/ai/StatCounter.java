@@ -16,7 +16,7 @@ public class StatCounter {
     private boolean windowed = false;
     //
     private double m_sum, m_m2, m_mean;
-    private int m_n, m_wins, m_losses;
+    private int m_n;
     private final MCTSOptions options;
 
     public StatCounter() {
@@ -42,9 +42,6 @@ public class StatCounter {
     }
 
     public void reset() {
-        m_losses = 0;
-        m_wins = 0;
-
         m_sum = 0.0;
         m_m2 = 0.0;
         m_mean = 0.0;
@@ -69,10 +66,6 @@ public class StatCounter {
             }
         }
         m_sum += num;
-        if (Math.signum(num) > 0)
-            m_wins++;
-        else if (num != 0)
-            m_losses++;
         double delta = num - m_mean;
         m_mean += delta / m_n;
         m_m2 += delta * (num - m_mean);
@@ -80,14 +73,15 @@ public class StatCounter {
         if (ma != null) ma.add(num);
     }
 
-    @Override
-    public String toString() {
-        return "W:" + m_wins + " L:" + m_losses;
-    }
-
     public void setValue(double val) {
         m_sum = val;
         m_mean = val;
+    }
+
+    public void subtract(StatCounter statCounter) {
+        this.m_sum -= statCounter.m_sum;
+        this.m_n -= statCounter.m_n;
+        m_mean = m_sum / m_n;
     }
 
     public double variance() {

@@ -171,7 +171,7 @@ public class TreeNode {
                 }
                 if (k > delay) {
                     for (TreeNode arm : A) {
-                        if (arm.A.size() > FINAL_ARMS) {
+                        if (arm.A.size() > 1) {
                             minVal = Double.POSITIVE_INFINITY;
                             minArm = null;
                             for (TreeNode arm1 : arm.A) {
@@ -180,6 +180,7 @@ public class TreeNode {
                                     minVal = arm1.stats.mean();
                                 }
                             }
+                            arm.stats.subtract(minArm.stats);
                             arm.A.remove(minArm);
                         }
                     }
@@ -187,6 +188,9 @@ public class TreeNode {
                 nextRound += round;
                 k++;
             }
+            sims++;
+            return A.get((sims - 1) % A.size());
+        } else if(depth == 1) {
             sims++;
             return A.get((sims - 1) % A.size());
         } else {
