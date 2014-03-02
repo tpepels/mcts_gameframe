@@ -1,6 +1,7 @@
 package pentalath.game;
 
 import ai.FastTanh;
+import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -691,7 +692,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
         // early termination (mcts_pd0 and mcts_pd3) is losing by a lot against vanilla mcts
         // I suspect something is still wrong with this
         //
@@ -776,6 +777,12 @@ public class Board implements IBoard {
         double score_nt = FastTanh.tanh(score / 1000.0);
         return score_nt;
     }
+
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
+        throw new RuntimeException("unimplemented");
+    }
+
 
     @Override
     public double getQuality() {

@@ -15,6 +15,7 @@ public class StatCounter {
     private MovingAverage ma;
     private boolean windowed = false;
     //
+    private int m_wins, m_losses;
     private double m_sum, m_m2, m_mean;
     private int m_n;
     private final MCTSOptions options;
@@ -51,8 +52,26 @@ public class StatCounter {
             ma.reset();
     }
 
+    public void initWinsLosses(double winrate, int visits) {
+        // test
+        m_wins = (int)(winrate*visits); 
+        m_losses = visits - m_wins;
+        m_sum = (m_wins - m_losses); 
+        m_n = visits;
+        m_mean = m_sum / m_n; 
+        
+        double p = ((double)m_wins) / visits; 
+        m_m2 = p*(1-p)*m_n;
+    }
+
+
     public void push(double num) {
         m_n++;
+
+        if (Math.signum(num) > 0)
+            m_wins++;
+        else if (num != 0)
+            m_losses++;
         // If the node is visited a few times, create the window
         if (windowed && m_n == 2) {
             // The size of the window is based on the number of simulations remaining

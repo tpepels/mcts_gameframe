@@ -1,5 +1,6 @@
 package domineering.game;
 
+import ai.StatCounter;
 import ai.framework.FiniteBoard;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -191,6 +192,16 @@ public class Board implements FiniteBoard {
     }
 
     @Override
+    public double evaluate(int player, int version) {
+        return 0;
+    }
+
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
+
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < size; i++) {
@@ -210,11 +221,6 @@ public class Board implements FiniteBoard {
             sb.append("\n");
         }
         return sb.toString();
-    }
-
-    @Override
-    public double evaluate(int player) {
-        return 0;
     }
 
     @Override

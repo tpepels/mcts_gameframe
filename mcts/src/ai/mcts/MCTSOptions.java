@@ -30,19 +30,27 @@ public class MCTSOptions {
     // MAST stuff
     public boolean MAST = false, TO_MAST = false; // Turning off heuristics also disables MAST
     public double mastEps = 0.8;
-    //
-    // Marc's stuff
+    // Marc's stuff (mostly for implicit minimax)
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
     public double imAlpha = 0.0;
     public boolean imPruning = false;
+    public boolean nodePriors = false;          // use eval func for node priors ? TEST BRANCH
+    public int nodePriorsVisits = 100;          // number of visites to initialize in node priors 
+    public boolean maxBackprop = false;         // max backprop 
+    public int maxBackpropT = 0;                // threshold for when to switch
+    public int efVer = 1;                       // int evaluation function version
+    public boolean detEnabled = false;          // dynamic early terminations (uses ev. func.)
+    public double detThreshold = 0.3;           // >T -> win whereas <T -> loss
+    public int detFreq = 5;                     // how often the eval is checked in det
     // Epsilon-greedy play-outs, where greedy is the highest eval
     public boolean epsGreedyEval = false;
     public double egeEpsilon = 0.1;
     // Progressive bias; H_i is the evaluation function value
     public boolean progBias = false;
     public double progBiasWeight = 0.0;
+    public boolean pbDecay = false;
     //
     private int instance = 0;
     private double[][] mastValues, mastVisits;
@@ -150,26 +158,6 @@ public class MCTSOptions {
     public void resetMast(int maxId) {
         mastValues = new double[2][maxId];
         mastVisits = new double[2][maxId];
-        transNGRAMS = new double[2][maxId+1];
-        transNGRAMVisits = new double[2][maxId+1];
-        if(MASTShortLists)
-            shortLists = new MASTEntry[2][10];
-    }
-
-    public double[][] transNGRAMS, transNGRAMVisits;
-    public boolean transNGrams = false;
-    public MASTEntry[][] shortLists = new MASTEntry[2][10];
-    public boolean MASTShortLists = false;
-    public int slMinVisits = 10;
-
-    public void updateTransNGRAM(int player, int id, double value) {
-        transNGRAMS[player - 1][id] +=
-                (value - transNGRAMS[player - 1][id]) /
-                        (++transNGRAMVisits[player - 1][id]);
-    }
-
-    public double getTransNGRAM(int player, int id) {
-        return transNGRAMS[player - 1][id];
     }
 
 
@@ -177,37 +165,8 @@ public class MCTSOptions {
         mastValues[player - 1][moveId] +=
                 (value - mastValues[player - 1][moveId]) /
                         (++mastVisits[player - 1][moveId]);
-        //
-        if (MASTShortLists && mastVisits[player - 1][moveId] > slMinVisits) {
-            int index = -1;
-            for (int i = 0; i < shortLists[player - 1].length; i++) {
-                if (shortLists[player - 1][i] == null) {
-                    index = i;
-                    break;
-                } else if (shortLists[player - 1][i].id == moveId) {
-                    index = -1;
-                    // Update the value
-                    shortLists[player - 1][i].value = mastValues[player - 1][moveId];
-                    break;
-                } else if (mastValues[player - 1][moveId] > shortLists[player - 1][i].value) {
-                    index = i;
-                }
-            }
-            if (index != -1) {
-                // Update the value
-                shortLists[player - 1][index] = new MASTEntry(moveId, mastValues[player - 1][moveId]);
-            }
-        }
     }
 
-    public double isShortListed(int moveId, int player) {
-        for (int i = 0; i < shortLists[player - 1].length; i++) {
-            if(shortLists[player - 1][i] != null && shortLists[player - 1][i].id == moveId) {
-                return shortLists[player - 1][i].value;
-            }
-        }
-        return -1;
-    }
 
     public double getMastValue(int player, int id) {
         return mastValues[player - 1][id];

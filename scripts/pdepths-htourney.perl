@@ -256,7 +256,7 @@ sub determine_winners {
 }
 
 if ("$algprefix" eq "mcts" or "$algprefix" eq "mcts_h") { 
-  @parms1 = ( "0", "1", "2", "3", "4", "5", "8", "10", "20", "30", "50", "100", "1000" ); 
+  @parms1 = ( "0", "1", "2", "3", "4", "5", "8", "10", "12", "16", "20", "30", "50", "100", "1000" ); 
 }
 else { 
   print "Problem. game not eq2.. \n";

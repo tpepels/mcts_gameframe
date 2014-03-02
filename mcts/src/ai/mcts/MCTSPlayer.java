@@ -34,7 +34,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         this.myPlayer = myPlayer;
 
         // Reset the MAST arrays
-        if (options.MAST || options.MASTShortLists || options.transNGrams)
+        if (options.MAST)
             options.resetMast(board.getMaxUniqueMoveId());
 
         // Create a new root, or reuse the old tree
@@ -94,6 +94,10 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             options.swUCT = false;
 
         if (!options.fixedSimulations) {
+            double tickInterval = 30000.0;
+            double startTime = System.currentTimeMillis(); 
+            double nextTickTime = startTime + tickInterval;
+
             // Search for timeInterval seconds
             long endTime = System.currentTimeMillis() + options.timeInterval;
             // Run the MCTS algorithm while time allows it
@@ -103,9 +107,14 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
+                else if (System.currentTimeMillis() >= nextTickTime) { 
+                    System.out.println("Tick. I have searched " + ((System.currentTimeMillis() - startTime)/1000.0) + " seconds."); 
+                    nextTickTime = System.currentTimeMillis() + tickInterval;
+                }
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
-                if (root.MCTS(board, 0) == TreeNode.INF)
+                // Note: stats at root node are in view of the root player (also never used)
+                if (root.MCTS(board, 0, root.player) == TreeNode.INF)
                     break; // Break if you find a winning move
 
 //                Enable this to plot per arm totals
@@ -132,7 +141,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 options.simsLeft--;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
-                if (root.MCTS(board, 0) == TreeNode.INF)
+                // Note: stats at the root node are in view of the root player (also never used)
+                if (root.MCTS(board, 0, root.player) == TreeNode.INF)
                     break; // Break if you find a winning move
             }
         }
@@ -191,14 +201,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Small instances: " + ((MovingAverageSorted.smallInstances / (double) MovingAverageSorted.instances) * 100.) + "%");
                 System.out.println("Windows grown  : " + ((MovingAverageSorted.grown / (double) MovingAverageSorted.smallInstances) * 100.) + "%");
                 System.out.println("Windows cycled : " + ((MovingAverageSorted.full / (double) MovingAverageSorted.instances) * 100.) + "%");
-            }
-            if(options.MASTShortLists) {
-                for(int i = 0; i < options.shortLists[0].length; i++) {
-                    System.out.println("p1: " + options.shortLists[0][i] + " v: " + options.getMastVisits(1, options.shortLists[0][i].id));
-                }
-                for(int i = 0; i < options.shortLists[1].length; i++) {
-                    System.out.println("p2: " + options.shortLists[1][i] + " v: " + options.getMastVisits(2, options.shortLists[1][i].id));
-                }
             }
             MovingAverageSorted.grown = 0;
             MovingAverageSorted.instances = 0;

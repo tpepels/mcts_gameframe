@@ -212,7 +212,7 @@ public class TreeNode {
             if (!success)
                 continue;
 
-            double eval = board.evaluate(currentPlayer);
+            double eval = board.evaluate(currentPlayer, 0);
             board.undoMove();
 
             if (eval > bestValue + tolerance) {

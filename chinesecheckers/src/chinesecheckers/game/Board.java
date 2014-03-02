@@ -1,6 +1,7 @@
 package chinesecheckers.game;
 
 import ai.FastTanh;
+import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
@@ -412,7 +413,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public double evaluate(int player) {
+    public double evaluate(int player, int version) {
 
         // Adds up the distance to closest home base for all pieces
         // Compares that to the opponent's 
@@ -439,8 +440,14 @@ public class Board implements IBoard {
         }
 
         double distDiff = (oppdist - mydist);
-        double score_th = FastTanh.tanh(distDiff / 10.0);
+        //System.out.println("dist diff = " + distDiff);
+        double score_th = FastTanh.tanh(distDiff/10.0);
         return score_th;
+    }
+
+    @Override
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
+        throw new RuntimeException("unimplemented");
     }
 
     @Override

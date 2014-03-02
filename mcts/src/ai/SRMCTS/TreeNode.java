@@ -236,7 +236,7 @@ public class TreeNode {
             if (!success)
                 continue;
 
-            double eval = board.evaluate(currentPlayer);
+            double eval = board.evaluate(currentPlayer, 0);
             board.undoMove();
 
             if (eval > bestValue + tolerance) {
@@ -383,7 +383,7 @@ public class TreeNode {
             // playout terminated by nMoves surpassing pdepth
 
             // FIXME: relative bonus will not work with pdepth
-            score = board.evaluate(player);
+            score = board.evaluate(player, 0);
         } else {
             throw new RuntimeException("Game end error in playOut");
         }

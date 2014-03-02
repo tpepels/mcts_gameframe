@@ -1,5 +1,5 @@
 #!/bin/sh
-dirs="BRUE Domineering cannon checkers chinesecheckers lostcities mcts pentalath amazons experiments breakthrough"
+dirs="alphabeta BRUE Domineering cannon checkers chinesecheckers kalah lostcities mcts pentalath amazons experiments breakthrough"
 
 for d in $dirs
 do

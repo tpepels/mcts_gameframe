@@ -82,12 +82,10 @@ public class AITests {
 
         // Run one of the defined experiments
         if (which == 1) {
-            options1.transNGrams = true;
             options1.timeInterval = 1000;
             options2.timeInterval = 1000;
             runGames("1 sec AI 1: Trans3Gram AI 2: MCTS");
         } else if (which == 2) {
-            options1.transNGrams = true;
             options1.timeInterval = 2500;
             options2.timeInterval = 2500;
             runGames("2.5 sec AI 1: Trans3Gram AI 2: MCTS");

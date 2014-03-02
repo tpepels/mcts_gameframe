@@ -1,6 +1,7 @@
 package ai.framework;
 
 import java.util.List;
+import ai.StatCounter;
 
 public interface IBoard {
     /**
@@ -125,7 +126,13 @@ public interface IBoard {
      * Returns a value between -1 and 1 indicating the heuristic value of the
      * position with respect to the specified player.
      */
-    public double evaluate(int player);
+    public double evaluate(int player, int version);
+    
+    /**
+     * Used to initialize a node's stat counter with wins and losses.
+     * Note: player is the parent player.
+     */
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits);
 
     /**
      * Returns a value between -1 and 1 representing the quality of the game

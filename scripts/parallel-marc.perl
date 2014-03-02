@@ -119,7 +119,7 @@ sub get_cmd
   my $alg2 = shift;
   my $seed = shift;
 
-  my $cmd = "scripts/run.sh experiments.SimGame --game $game --p1 $alg1 --p2 $alg2 --seed $seed --timelimit $tl";
+  my $cmd = "scripts/run.sh experiments.SimGame --game $game --p1 $alg1 --p2 $alg2 --seed $seed --timelimit $tl --printboard";
   
   return $cmd;
 }
@@ -127,53 +127,51 @@ sub get_cmd
 my @jobs = (); 
 
 my @matchups = (); 
-#push(@matchups, "mcts_h_pb,mcts_h");
-#push(@matchups, "mcts_h_pb_ege0.1,mcts_h_im_ege0.1");
-#push(@matchups, "mcts_h_pd0,mcts_h");
-
-#push(@matchups, "mcts_h_im0.5_pd3,mcts_h_pb0.5_pd3");
-
-#push(@matchups, "mcts_h_pd20,mcts_h");
-#push(@matchups, "mcts_h_pd20,mcts_h_pd20_im0.2");
-push(@matchups, "mcts_h_ege0.1_im0.5,mcts_h_ege0.1");
-push(@matchups, "mcts_h_ege0.1_im0.5_ip,mcts_h_ege0.1");
-push(@matchups, "mcts_h_ege0.1_im0.5_ip,mcts_h_ege0.1_im0.5");
-
-#push(@matchups, "mcts_h_pd20_pb0.35,mcts_h_pd20_im0.35");
-
-#ush(@matchups, "mcts_h_ege0.1_im0.5,mcts_h_ege0.1_pb0.5");
-#push(@matchups, "mcts_h_ege0.1_im0.1,mcts_h_ege0.1_pb0.1");
-#push(@matchups, "mcts_h_ege0.1_im0.8,mcts_h_ege0.1_pb0.8");
-#push(@matchups, "mcts_h_ege0.1_im0.4,mcts_h_ege0.1_pb0.4");
-#push(@matchups, "mcts_h_ege0.1_im0.2,mcts_h_ege0.1_pb0.2");
-#push(@matchups, "mcts_h_ege0.1_im0.3,mcts_h_ege0.1_pb0.3");
-#push(@matchups, "mcts_h_ege0.1_im0.6,mcts_h_ege0.1_pb0.6");
-#push(@matchups, "mcts_h_ege0.1_im0.7,mcts_h_ege0.1_pb0.7");
-#push(@matchups, "mcts_h_ege0.1_im0.9,mcts_h_ege0.1_pb0.9");
-
-# here's an example of a loop to initialize matchups instead of a static list
-#my @pdepths = ( 3, 2, 0, 1, 4, 5, 6, 7, 8, 10, 12, 15, 30, 50, 1000 ); 
-#my @parms = ( 0.1, 0.05, 0.2, 0.3, 0.4, 0.5, 0.6, 0.25, 0.7, 0.8 ); 
-
-#for (my $i = 0; $i < scalar(@parms); $i++) { 
-#  my $parm = $parms[$i];
-#  #my $tag = "mcts_h_pd$pd,mcts_h_pd${pd}_im"; 
-#  my $tag = "mcts_ege$parm,mcts_ege${parm}_im"; 
-#  push(@matchups, $tag); 
-#}
 
 
-# this is a list of matchups 
-# a matchup is a string of "playertype1,playertype2"
-# you can also use a loop to fill this with different player types
-#my @matchups = ( 
-#  "mcts_h,mcts_h_pd0", 
-#  "mcts_h,mcts_h_pd4",
-#  "mcts_h,mcts_h_pd1", 
-#  "mcts_h,mcts_h_pd3", 
-#  "mcts_h,mcts_h_pd5", 
-#  "mcts_h,mcts_h_pd2"
-#);
+#push(@matchups, "mcts_h_ege0.1_efv0,mcts_h_pd20_efv0");
+#push(@matchups, "mcts_h_ege0.1_efv0,mcts_h_pd4_efv0");
+#push(@matchups, "mcts_h_ege0.1_det0.5_efv0,mcts_h_ege0.1_efv0");
+#push(@matchups, "mcts_h_ege0.1_det0.5_efv0,mcts_h_pd20_det0.5_efv0");
+
+#push(@matchups, "mcts_h,mcts");
+#push(@matchups, "mcts_h_im0.4,mcts_h");
+#push(@matchups, "mcts_h_pd20_efv0_im0.4,mcts_h_pd20_efv0");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_ege0.1_efv0_det0.5_pb0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_ege0.1_efv0_det0.5_pbd");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5,mcts_h_ege0.1_efv0_det0.5_np10_im0.6");
+
+#push(@matchups, "mcts_h_ege0.1_det0.5_efv0,mcts_h_pd20_efv0");
+
+# here!! (will take 22 hours :()
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_im0.4,mcts_h_pd20_np10_im0.4");
+
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp10000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp50000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp20000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp2000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp1000,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp500,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp100,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp50,mcts_h_ege0.1_efv0_det0.5_im0.4");
+#push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp10,mcts_h_ege0.1_efv0_det0.5_im0.4");
+
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.00");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.05");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.10");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.15");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.20");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.25");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.30");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.35");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.40");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.45");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.50");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.55");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.60");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im0.75");
+push(@matchups, "mcts_h_pd20_np50,mcts_h_pd20_np50_im1.00");
+
 
 print "queuing jobs... \n";
 
@@ -194,7 +192,6 @@ for (my $i = 0; $i < scalar(@matchups); $i++)
     my $cmd = get_cmd($alg1, $alg2, $seed); 
     my $fullcmd = "$cmd >$scratchdir/$runname.log 2>&1";
     
-    #print "queueing $fullcmd\n";
     push(@jobs, $fullcmd); 
 
     # now swap seats
@@ -204,7 +201,6 @@ for (my $i = 0; $i < scalar(@matchups); $i++)
     $cmd = get_cmd($alg1, $alg2, $seed); 
     $fullcmd = "$cmd >$scratchdir/$runname.log 2>&1";
     
-    #print "queueing $fullcmd\n";
     push(@jobs, $fullcmd); 
   }
 }

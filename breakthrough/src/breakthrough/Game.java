@@ -18,7 +18,6 @@ public class Game {
         options1.setGame("breakthrough");
         AIPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
-        options1.transNGrams = true;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
