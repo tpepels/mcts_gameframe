@@ -34,7 +34,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         this.myPlayer = myPlayer;
 
         // Reset the MAST arrays
-        if (options.MAST || options.MASTShortLists)
+        if (options.MAST || options.MASTShortLists || options.transNGrams)
             options.resetMast(board.getMaxUniqueMoveId());
 
         // Create a new root, or reuse the old tree

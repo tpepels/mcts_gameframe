@@ -3,6 +3,7 @@ package breakthrough;
 import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
+import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
 import ai.SRCRMCTS.*;
@@ -15,15 +16,12 @@ public class Game {
 
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("breakthrough");
-        AIPlayer aiPlayer1 = new SRMCTSPlayer();
+        AIPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
-        options1.fixedSimulations = true;
-        options1.simulations = 20000;
+        options1.transNGrams = true;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
-        options2.fixedSimulations = true;
-        options2.simulations = 20000;
         AIPlayer aiPlayer2 = new SRCRMCTSPlayer();
         aiPlayer2.setOptions(options2);
         SelectionPolicy selectionPolicy2 = new UCT(options2);

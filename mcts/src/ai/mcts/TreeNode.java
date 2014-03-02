@@ -7,8 +7,8 @@ import ai.StatCounterSorted;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
-import amazons.game.Board;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -19,10 +19,10 @@ public class TreeNode {
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     public static int myPlayer = 0, poDepth = 0;
+    public final int player, ply;
     //
     private final boolean virtual;
     private final MCTSOptions options;
-    public final int player, ply;
     //  public StatCounter stats;
     public StatCounterSorted stats;
     //
@@ -34,6 +34,11 @@ public class TreeNode {
     private double imAlpha = -INF - 1;  // implicit lower bound (in view of me)
     private double imBeta = +INF + 1;   // implicit upper bound (in view of me)
     private double heval = 0.;          // heuristic evaluation for prog. bias (in view of parent)
+    //
+    // TransNGrams
+    private static int cnt = 0, id = 0;
+    private static int[] ids = new int[3];
+    private int ngId;
 
     /**
      * Constructor for the root
@@ -104,6 +109,23 @@ public class TreeNode {
         double result;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
+            // Keep track of the id of the current move sequence
+            if (options.transNGrams) {
+                // Reset the tng every iteration
+                if (depth == 0) {
+                    cnt = 0;
+                    id = 0;
+                    ids = new int[3];
+                }
+                if (cnt > 2) {
+                    // Take out the old one first
+                    id ^= ids[cnt % 3];
+                }
+                ids[cnt % 3] = child.getMove().getUniqueId();
+                id ^= ids[cnt % 3];
+                cnt++;
+            }
+
             // Execute the move represented by the child
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
@@ -114,9 +136,17 @@ public class TreeNode {
                 // The next child
                 result = -child.MCTS(board, depth + 1);
             }
+
             // Update the MAST value for the move, use original value not the altered reward (signum)
             if (options.useHeuristics && (options.MAST || options.MASTShortLists))
                 options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
+
+            // Keep track of the id of the current move sequence
+            if (options.transNGrams) {
+                if (cnt > 2) {
+                    options.updateTransNGRAM(player, child.ngId, -1 * Math.signum(result));
+                }
+            }
             // set the board back to its previous configuration
             board.undoMove();
         } else {
@@ -185,7 +215,7 @@ public class TreeNode {
 
         int winner;
         double value, best_imVal = -INF;
-
+        int tempId = id ^ ids[cnt % 3];
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
@@ -220,6 +250,12 @@ public class TreeNode {
                 if (options.progBias) {
                     // must be strictly a bonus
                     child.heval = board.evaluate(player);
+                }
+                //
+                if (options.transNGrams) {
+                    tempId ^= moves.get(i).getUniqueId();
+                    child.ngId = tempId;
+                    tempId ^= moves.get(i).getUniqueId();
                 }
                 children.add(child);
                 // reset the board
@@ -277,6 +313,8 @@ public class TreeNode {
                         avgValue += penalty;
                     }
                 }
+                if(options.transNGrams && options.transNGRAMVisits[player - 1][c.ngId] > 0)
+                    avgValue = .75 * avgValue + .25 * options.getTransNGRAM(player, c.ngId);
                 // Parent visits can be altered for windowed UCT
                 Np = getnVisits();
                 Nc = c.getnVisits();
@@ -366,7 +404,7 @@ public class TreeNode {
     private double playOut(IBoard board, int depth) {
         poDepth = depth;
         boolean gameEnded, moveMade;
-        int currentPlayer = board.getPlayerToMove(), moveIndex = -1;
+        int currentPlayer = board.getPlayerToMove(), moveIndex = -1, localcnt = cnt;
         double mastMax, mastVal, nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
@@ -374,6 +412,7 @@ public class TreeNode {
         IMove currentMove;
         boolean terminateEarly = false;
         movesMade.clear();
+
         while (!gameEnded && !terminateEarly) {
 
             moves = board.getPlayoutMoves(options.useHeuristics);
@@ -391,11 +430,13 @@ public class TreeNode {
                     break;
                 }
                 moveIndex = -1;
+                // Check the shortlists for known good moves
                 if (options.useHeuristics && options.MASTShortLists) {
+                    double val, maxVal = Double.NEGATIVE_INFINITY;
                     for (int i = 0; i < moves.size(); i++) {
-                        if (options.isShortListed(moves.get(i).getUniqueId(), currentPlayer)) {
+                        val = options.isShortListed(moves.get(i).getUniqueId(), currentPlayer);
+                        if (val != -1 && (val > maxVal || (val == maxVal && MCTSOptions.r.nextDouble() < .5))) {
                             moveIndex = i;
-                            break;
                         }
                     }
                 }
@@ -428,6 +469,16 @@ public class TreeNode {
                     // Keep track of moves made for MAST
                     if (options.useHeuristics && ((options.MAST && !options.TO_MAST) || options.MASTShortLists))
                         movesMade.push(currentMove);
+
+                    //
+                    if (options.transNGrams) {
+                        if (localcnt > 2) {
+                            id ^= ids[localcnt % 3];
+                        }
+                        ids[localcnt % 3] = currentMove.getUniqueId();
+                        id ^= ids[localcnt % 3];
+                        localcnt++;
+                    }
 
                     nMoves++;
                     moveMade = true;
@@ -635,6 +686,7 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tVisits: " + getnVisits() + "\tValue: " + stats.mean() + "\tvar: " + stats.variance() + "\t\t" + stats.toString();
+        DecimalFormat df2 = new DecimalFormat("###,##0.00000");
+        return move + "\tValue: " + df2.format(stats.mean()) + "\tVisits: " + getnVisits();
     }
 }

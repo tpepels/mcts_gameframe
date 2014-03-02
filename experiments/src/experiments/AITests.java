@@ -8,6 +8,7 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.SRCRMCTS.*;
+import ai.mcts.MCTSPlayer;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -68,7 +69,7 @@ public class AITests {
         options1.debug = false;
         options1.setGame(game);
 
-        aiPlayer1 = new SRCRMCTSPlayer();
+        aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         // AI 2
@@ -76,43 +77,24 @@ public class AITests {
         options2.debug = false;
         options2.setGame(game);
 
-        aiPlayer2 = new SRCRMCTSPlayer();
+        aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
-        ((SRCRMCTSPlayer)aiPlayer2).setSelectionPolicy(new UCT(options2));
 
         // Run one of the defined experiments
         if (which == 1) {
-            SelectionPolicy selectionPolicy = new SuccessiveRejects(options1, new UCT(options1));
-            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
-            options1.fixedSimulations = false;
-            options1.timeInterval = 2500;
-            options2.fixedSimulations = false;
-            options2.timeInterval = 2500;
-            runGames("2.5 second SR | MCTS");
+            options1.transNGrams = true;
+            options1.timeInterval = 1000;
+            options2.timeInterval = 1000;
+            runGames("1 sec AI 1: Trans3Gram AI 2: MCTS");
         } else if (which == 2) {
-//            SelectionPolicy selectionPolicy = new HalfGreedySelect(options1);
-//            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
-//            options1.fixedSimulations = true;
-//            options1.simulations = 10000;
-//            options2.fixedSimulations = true;
-//            options2.simulations = 10000;
-//            runGames("10,000 sims .5 greedy | MCTS");
+            options1.transNGrams = true;
+            options1.timeInterval = 2500;
+            options2.timeInterval = 2500;
+            runGames("2.5 sec AI 1: Trans3Gram AI 2: MCTS");
         } else if (which == 3) {
-            SelectionPolicy selectionPolicy = new SqrtUCT(options1, new UCT(options1));
-            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
-            options1.fixedSimulations = false;
-            options1.timeInterval = 30000;
-            options2.fixedSimulations = false;
-            options2.timeInterval = 30000;
-            runGames("30 sec SQRT-UCT | MCTS");
+
         } else if (which == 4) {
-            SelectionPolicy selectionPolicy = new HalfGreedySelect(options1, new UCT(options1));
-            ((SRCRMCTSPlayer)aiPlayer1).setSelectionPolicy(selectionPolicy);
-            options1.fixedSimulations = false;
-            options1.timeInterval = 60000;
-            options2.fixedSimulations = false;
-            options2.timeInterval = 60000;
-            runGames("60 sec .5 greedy | MCTS");
+
         }
     }
 

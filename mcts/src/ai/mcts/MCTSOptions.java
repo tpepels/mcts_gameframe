@@ -150,13 +150,28 @@ public class MCTSOptions {
     public void resetMast(int maxId) {
         mastValues = new double[2][maxId];
         mastVisits = new double[2][maxId];
+        transNGRAMS = new double[2][maxId+1];
+        transNGRAMVisits = new double[2][maxId+1];
         if(MASTShortLists)
             shortLists = new MASTEntry[2][10];
     }
 
+    public double[][] transNGRAMS, transNGRAMVisits;
+    public boolean transNGrams = false;
     public MASTEntry[][] shortLists = new MASTEntry[2][10];
     public boolean MASTShortLists = false;
     public int slMinVisits = 10;
+
+    public void updateTransNGRAM(int player, int id, double value) {
+        transNGRAMS[player - 1][id] +=
+                (value - transNGRAMS[player - 1][id]) /
+                        (++transNGRAMVisits[player - 1][id]);
+    }
+
+    public double getTransNGRAM(int player, int id) {
+        return transNGRAMS[player - 1][id];
+    }
+
 
     public void updateMast(int player, int moveId, double value) {
         mastValues[player - 1][moveId] +=
@@ -185,13 +200,13 @@ public class MCTSOptions {
         }
     }
 
-    public boolean isShortListed(int moveId, int player) {
+    public double isShortListed(int moveId, int player) {
         for (int i = 0; i < shortLists[player - 1].length; i++) {
             if(shortLists[player - 1][i] != null && shortLists[player - 1][i].id == moveId) {
-                return true;
+                return shortLists[player - 1][i].value;
             }
         }
-        return false;
+        return -1;
     }
 
     public double getMastValue(int player, int id) {

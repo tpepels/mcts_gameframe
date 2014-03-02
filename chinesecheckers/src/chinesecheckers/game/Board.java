@@ -388,7 +388,7 @@ public class Board implements IBoard {
 
     @Override
     public int getMaxUniqueMoveId() {
-        return 125126;
+        return 125126 * 2;
     }
 
     @Override

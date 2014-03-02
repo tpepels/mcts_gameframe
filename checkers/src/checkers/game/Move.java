@@ -53,7 +53,7 @@ public class Move implements IMove {
 
     @Override
     public int getUniqueId() {
-        return ((move[1] * 8) + move[0]) + 100 * ((move[3] * 8) + move[2]);
+        return ((move[1] * 8) + move[0]) + 64 * ((move[3] * 8) + move[2]);
     }
 
     @Override
