@@ -1,13 +1,19 @@
 package ai.framework;
 
-public interface IMove {
-    public int[] getMove();
+import ai.mcts.MCTSOptions;
 
-    public int getType();
+public abstract class IMove {
+    public abstract int[] getMove();
 
-    public boolean equals(IMove move);
+    public abstract int getType();
 
-    public int getUniqueId();
+    public abstract boolean equals(IMove move);
 
-    public boolean isChance();
+    public abstract int getUniqueId();
+
+    public abstract boolean isChance();
+
+    public double getHistoryVal(int player, MCTSOptions options) {
+        return options.getMastValue(player, getUniqueId());
+    }
 }

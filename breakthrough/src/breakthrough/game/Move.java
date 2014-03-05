@@ -2,7 +2,7 @@ package breakthrough.game;
 
 import ai.framework.IMove;
 
-public class Move implements IMove {
+public class Move extends IMove {
 
     public static final int MOVE = 1, CAPTURE = 2;
     private int type;
@@ -41,35 +41,36 @@ public class Move implements IMove {
         return oldCapBonus2;
     }
 
-    @Override
+
     public int[] getMove() {
         return movearr;
     }
 
-    @Override
+
     public int getType() {
         return type;
     }
 
-    @Override
+
     public boolean equals(IMove move) {
         Move m = (Move) move;
         return (m.movearr[0] == movearr[0] && m.movearr[1] == movearr[1]
                 && m.movearr[2] == movearr[2] && m.movearr[3] == movearr[3]);
     }
 
-    @Override
+
     public int getUniqueId() {
         int digit1 = movearr[0] * 8 + movearr[1];
         int digit2 = movearr[2] * 8 + movearr[3];
         return (digit1 * 64 + digit2);
     }
 
-    @Override
+
     public boolean isChance() {
         return false;
     }
 
+    @Override
     public String toString() {
         String str = ""; 
         //str = "(" + movearr[0] + "," + movearr[1] + ") -> ("

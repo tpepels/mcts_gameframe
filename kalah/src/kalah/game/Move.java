@@ -2,7 +2,7 @@ package kalah.game;
 
 import ai.framework.IMove;
 
-public class Move implements IMove {
+public class Move extends IMove {
 
     public static final int MOVE = 1, CAPTURE = 2, STORE = 3;
     
@@ -22,33 +22,34 @@ public class Move implements IMove {
         values[3] = prevPlayer;
     }
 
-    @Override
+
     public int[] getMove() {
         return values;
     }
 
-    @Override
+
     public int getType() {
         return type;
     }
 
-    @Override
+
     public boolean equals(IMove move) {
         Move m = (Move) move;
         return (   m.type == type && values[0] == m.values[0] && values[1] == m.values[1] && values[2] == m.values[2]
                 && values[3] == m.values[3]); 
     }
 
-    @Override
+
     public int getUniqueId() {
         return (values[0]);
     }
 
-    @Override
+
     public boolean isChance() {
         return false;
     }
 
+    @Override
     public String toString() {
         String str = "House " + values[0] + " Sow " + values[1]; 
         if (type == CAPTURE) 

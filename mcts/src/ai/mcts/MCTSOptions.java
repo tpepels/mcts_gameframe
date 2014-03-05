@@ -28,7 +28,8 @@ public class MCTSOptions {
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // MAST stuff
-    public boolean MAST = false, TO_MAST = false; // Turning off heuristics also disables MAST
+    public boolean history = false, to_history = false; // Set this to true to keep track of all results
+    public boolean MAST = false; // Turning off heuristics also disables MAST
     public double mastEps = 0.8;
     // Marc's stuff (mostly for implicit minimax)
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
@@ -75,33 +76,30 @@ public class MCTSOptions {
             uctC = .8;
             kr = 3.0;
             kq = 4.;
-            mastEps = 1.;
         } else if (game.equals("chinesecheckers")) {
             uctC = .8;
             kr = 1.2;
             kq = 2.8;
-            mastEps = 1.;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             kr = 2.8;
             kq = 2.0;
-            mastEps = 1.;
         } else if (game.equals("pentalath")) {
             uctC = .8;
-            MAST = true;
-            mastEps = .95;
+            // MAST = true;
+            // mastEps = 1. - .95;
             kr = 1.;
             kq = 1.6;
         } else if (game.equals("amazons")) {
             uctC = .5;
-            MAST = true;
-            mastEps = .3;
+            // MAST = true;
+            // mastEps = 1. - .3;
             kr = 2.2;
             kq = 1.6;
         } else if (game.equals("breakthrough")) {
             uctC = 1.;
-            MAST = true;
-            mastEps = .7;
+            // MAST = true;
+            // mastEps = 1. - .7;
             kr = 8.0;
             kq = 2.0;
         }
@@ -160,13 +158,11 @@ public class MCTSOptions {
         mastVisits = new double[2][maxId];
     }
 
-
     public void updateMast(int player, int moveId, double value) {
         mastValues[player - 1][moveId] +=
                 (value - mastValues[player - 1][moveId]) /
                         (++mastVisits[player - 1][moveId]);
     }
-
 
     public double getMastValue(int player, int id) {
         return mastValues[player - 1][id];
@@ -174,16 +170,5 @@ public class MCTSOptions {
 
     public double getMastVisits(int player, int id) {
         return mastVisits[player - 1][id];
-    }
-
-    public void highestMastMove(int player) {
-        double max = Double.NEGATIVE_INFINITY;
-        int maxI = 0;
-        for (int i = 0; i < mastValues[player - 1].length; i++) {
-            if (mastValues[player - 1][i] > max) {
-                max = mastValues[player - 1][i];
-                maxI = i;
-            }
-        }
     }
 }

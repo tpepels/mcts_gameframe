@@ -3,9 +3,7 @@ package ai.mcts;
 import ai.FastLog;
 import ai.FastSigm;
 import ai.StatCounter;
-import ai.framework.IBoard;
-import ai.framework.IMove;
-import ai.framework.MoveList;
+import ai.framework.*;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -14,7 +12,8 @@ import java.util.Stack;
 
 public class TreeNode {
     public static final double INF = 999999;
-    private static final Stack<IMove> movesMade = new Stack<IMove>();
+    private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
+    private static final MoveList mastMoves = new MoveList(100);
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     public static int myPlayer = 0;
@@ -89,6 +88,10 @@ public class TreeNode {
      */
     public double MCTS(IBoard board, int depth, int previousPlayer) {
         TreeNode child = null;
+        if (depth == 0) {
+            movesMade[0].clear();
+            movesMade[1].clear();
+        }
         // First add some leafs if required
         if (isLeaf()) {
             // Expand returns any node that leads to a win
@@ -106,25 +109,27 @@ public class TreeNode {
             throw new RuntimeException("Child player weird!");
 
         double result;
-
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
             // Execute the move represented by the child
             board.doAIMove(child.getMove(), player);
+
+            if (options.history)
+                movesMade[player - 1].add(child.getMove());
+
             // When a leaf is reached return the result of the playout
             if (!child.isSimulated()) {
                 result = child.playOut(board, depth + 1);
                 // check for non-negamax
                 // here, result is in view of the child
                 if (this.player != child.player) {
-                    child.updateStats(-result, this.player);
+                    child.updateStats(-result, this.player, depth + 1);
                     // get result in view of me
                     result = -result;
                 } else {
-                    child.updateStats(result, this.player);
-                    // result already in few of me.
+                    child.updateStats(result, this.player, depth + 1);
+                    // result already in view of me
                 }
-
                 child.simulated = true;
             } else {
                 // The next child
@@ -134,9 +139,6 @@ public class TreeNode {
                 else
                     result = child.MCTS(board, depth + 1, this.player);
             }
-            // Update the MAST value for the move, use original value not the altered reward (signum)
-            if (options.useHeuristics && options.MAST)
-                options.updateMast(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
         } else {
@@ -189,10 +191,10 @@ public class TreeNode {
                     // Return a single loss, if not all children are a loss
                     // check for non-negamax; can't explain why the return value has a different sign
                     if (previousPlayer != this.player) {
-                        updateStats(1, previousPlayer);  // in view of parent
+                        updateStats(1, previousPlayer, depth);  // in view of parent
                         return -1;                       // view of me.
                     } else {
-                        updateStats(-1, previousPlayer);  // view of parent
+                        updateStats(-1, previousPlayer, depth);  // view of parent
                         return -1;                        // view of me
                     }
                 }
@@ -213,9 +215,9 @@ public class TreeNode {
         // Update the results for the current node
         // check for non-negamax
         if (previousPlayer != this.player)
-            updateStats(-result, previousPlayer);
+            updateStats(-result, previousPlayer, depth);
         else
-            updateStats(result, previousPlayer);
+            updateStats(result, previousPlayer, depth);
 
         // Back-propagate the result
         // always return in view of me
@@ -482,7 +484,6 @@ public class TreeNode {
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
         boolean terminateEarly = false;
-        movesMade.clear();
 
         while (!gameEnded && !terminateEarly) {
 
@@ -500,37 +501,39 @@ public class TreeNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-                moveIndex = -1;
 
-                if (moveIndex == -1) {
-                    // Select a move from the available ones
-                    if (options.epsGreedyEval) {
-                        // If epsilon greedy play-outs, choose the highest eval
-                        moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
-                    } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < (1. - options.mastEps)) {
-                        mastMax = Double.NEGATIVE_INFINITY;
-                        // Select the move with the highest MAST value
-                        for (int i = 0; i < moves.size(); i++) {
-                            mastVal = options.getMastValue(currentPlayer, moves.get(i).getUniqueId());
-                            // If bigger, we have a winner, if equal, flip a coin
-                            if (mastVal > mastMax || (mastVal == mastMax && MCTSOptions.r.nextDouble() < .5)) {
-                                mastMax = mastVal;
-                                moveIndex = i;
-                            }
+                // Select a move from the available ones
+                if (options.epsGreedyEval) {
+                    // If epsilon greedy play-outs, choose the highest eval
+                    moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
+                    currentMove = moves.get(moveIndex);
+                } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
+                    mastMoves.clear();
+                    mastMax = Double.NEGATIVE_INFINITY;
+                    // Select the move with the highest MAST value
+                    for (int i = 0; i < moves.size(); i++) {
+                        mastVal = moves.get(i).getHistoryVal(currentPlayer, options);
+                        // If bigger, we have a winner, if equal, flip a coin
+                        if (mastVal > mastMax) {
+                            mastMoves.clear();
+                            mastMax = mastVal;
+                            mastMoves.add(moves.get(i));
+                        } else if (mastVal == mastMax) {
+                            mastMoves.add(moves.get(i));
                         }
-                    } else {
-                        // Choose randomly
-                        moveIndex = MCTSOptions.r.nextInt(moves.size());
                     }
+                    currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
+                } else {
+                    // Choose randomly
+                    currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
                 }
-                currentMove = moves.get(moveIndex);
 
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
 
-                    // Keep track of moves made for MAST
-                    if (options.useHeuristics && (options.MAST && !options.TO_MAST))
-                        movesMade.push(currentMove);
+                    // Keep track of moves made
+                    if (options.history && !options.to_history)
+                        movesMade[currentPlayer - 1].add(currentMove);
 
                     nMoves++;
                     nMovesInt++;
@@ -559,7 +562,7 @@ public class TreeNode {
                 } else {
                     // The move was illegal, remove it from the list.
                     moveMade = false;
-                    moves.remove(moveIndex);
+                    moves.remove(currentMove);
                 }
             }
         }
@@ -626,17 +629,19 @@ public class TreeNode {
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
 
-        // Update the mast values for the moves made during playout
-        if (options.useHeuristics && (options.MAST && !options.TO_MAST)) {
-            double value;
-            while (!movesMade.empty()) {
-                currentMove = movesMade.pop();
-                currentPlayer = board.getOpponent(currentPlayer);
-                value = (currentPlayer == player) ? Math.signum(score) : -Math.signum(score);
-                options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
+        // Update the history values for the moves made during the match
+        if (options.history) {
+            double p1Score = (winner == IBoard.P1_WIN) ? Math.signum(score) : -Math.signum(score);
+            for (int i = 0; i < movesMade[0].size(); i++) {
+                options.updateMast(1, movesMade[0].get(i).getUniqueId(), p1Score);
             }
+            for (int i = 0; i < movesMade[1].size(); i++) {
+                options.updateMast(2, movesMade[1].get(i).getUniqueId(), -p1Score);
+            }
+            // Clear the lists
+            movesMade[0].clear();
+            movesMade[1].clear();
         }
-
         return score;
     }
 
@@ -675,7 +680,7 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(double value, int previousPlayer) {
+    private void updateStats(double value, int previousPlayer, int depth) {
 
         // If we are not using AUCT simply add the total value
         if (options.maxBackprop && children != null && getnVisits() >= options.maxBackpropT) {
@@ -757,7 +762,7 @@ public class TreeNode {
             }
             // Due to velocities being reset
             if (!isLeaf())
-                updateStats(0, 0);
+                updateStats(0, 0, 0);
         }
     }
 

@@ -2,7 +2,7 @@ package chinesecheckers.game;
 
 import ai.framework.IMove;
 
-public class Move implements IMove {
+public class Move extends IMove {
     private final int[] move;
     private final int hops;
 
@@ -11,27 +11,27 @@ public class Move implements IMove {
         this.hops = hops;
     }
 
-    @Override
+
     public int[] getMove() {
         return move;
     }
 
-    @Override
+
     public int getType() {
         return hops;
     }
 
-    @Override
+
     public boolean equals(IMove move) {
         return move.getMove()[0] == this.move[0] && move.getMove()[1] == this.move[1] && hops == move.getType();
     }
 
-    @Override
+
     public int getUniqueId() {
         return move[0] + (move[1] * 1000);
     }
 
-    @Override
+
     public boolean isChance() {
         return false;
     }

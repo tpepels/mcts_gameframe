@@ -68,6 +68,8 @@ public class AITests {
         MCTSOptions options1 = new MCTSOptions();
         options1.debug = false;
         options1.setGame(game);
+        options1.history = true;
+        options1.to_history = true;
 
         aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
@@ -76,7 +78,6 @@ public class AITests {
         MCTSOptions options2 = new MCTSOptions();
         options2.debug = false;
         options2.setGame(game);
-
         aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 
@@ -84,11 +85,11 @@ public class AITests {
         if (which == 1) {
             options1.timeInterval = 1000;
             options2.timeInterval = 1000;
-            runGames("1 sec AI 1: Trans3Gram AI 2: MCTS");
+            runGames("1 sec AI 1: PMB AI 2: MCTS");
         } else if (which == 2) {
             options1.timeInterval = 2500;
             options2.timeInterval = 2500;
-            runGames("2.5 sec AI 1: Trans3Gram AI 2: MCTS");
+            runGames("2.5 sec AI 1: PMB AI 2: MCTS");
         } else if (which == 3) {
 
         } else if (which == 4) {

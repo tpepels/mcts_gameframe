@@ -8,11 +8,13 @@ import mcts2e.BRUE.MCTS2ePlayer;
 public class Game {
     public static void main(String[] args) {
         Board b = new Board(8);
+        Board.CRAM = true;
         b.initialize();
 
-        MCTS2ePlayer aiPlayer1 = new MCTS2ePlayer();
+        MCTSPlayer aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("domineering");
+        options1.history = true;
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
@@ -26,7 +28,7 @@ public class Game {
             int player = b.getPlayerToMove();
             System.out.println(b.toString());
 
-            aiPlayer = (b.getPlayerToMove() == 1 ? aiPlayer2 : aiPlayer1);
+            aiPlayer = (b.getPlayerToMove() == 1 ? aiPlayer1 : aiPlayer2);
             System.gc();
             aiPlayer.getMove(b.copy(), null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();

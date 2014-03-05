@@ -260,10 +260,6 @@ public class TreeNode {
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
 
-                    // Keep track of moves made for MAST
-                    if (options.useHeuristics && options.MAST && !options.TO_MAST)
-                        movesMade.push(currentMove);
-
                     nMoves++;
                     moveMade = true;
                     winner = board.checkPlayoutWin();
@@ -289,16 +285,6 @@ public class TreeNode {
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
 
-            // Update the mast values for the moves made during playout
-            if (options.useHeuristics && options.MAST && !options.TO_MAST) {
-                double value;
-                while (!movesMade.empty()) {
-                    currentMove = movesMade.pop();
-                    currentPlayer = board.getOpponent(currentPlayer);
-                    value = (currentPlayer == player) ? score : -score;
-                    options.updateMast(currentPlayer, currentMove.getUniqueId(), value);
-                }
-            }
             // Alter the score using the relative bonus
             if (winner != IBoard.DRAW) {
                 int w = winner - 1;

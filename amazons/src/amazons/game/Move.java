@@ -1,8 +1,9 @@
 package amazons.game;
 
 import ai.framework.IMove;
+import ai.mcts.MCTSOptions;
 
-public class Move implements IMove {
+public class Move extends IMove {
     public final int[] move;
     public int arrow;
 

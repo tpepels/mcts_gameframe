@@ -2,7 +2,7 @@ package checkers.game;
 
 import ai.framework.IMove;
 
-public class Move implements IMove {
+public class Move extends IMove {
     public static int P_SLIDE = 1, K_SLIDE = 2, P_CAP = 3, K_CAP = 4;
     //
     public final int[] move, captures;
@@ -27,17 +27,17 @@ public class Move implements IMove {
         return captures;
     }
 
-    @Override
+
     public int[] getMove() {
         return move;
     }
 
-    @Override
+
     public int getType() {
         return type;
     }
 
-    @Override
+
     public boolean equals(IMove mv) {
 
         if (mv.getMove().length != move.length)
@@ -51,12 +51,12 @@ public class Move implements IMove {
         return true;
     }
 
-    @Override
+
     public int getUniqueId() {
         return ((move[1] * 8) + move[0]) + 64 * ((move[3] * 8) + move[2]);
     }
 
-    @Override
+
     public boolean isChance() {
         return false;
     }

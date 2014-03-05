@@ -2,7 +2,7 @@ package lostcities.game;
 
 import ai.framework.IMove;
 
-public class Move implements IMove {
+public class Move extends IMove {
     // 0 Is draw from the deck, 1 - 5 corresponds to the coloured stacks
     public static final int DECK_DRAW = 0, PLAY = 1, DISCARD = -1;
     final int[] move = new int[2];
@@ -31,28 +31,27 @@ public class Move implements IMove {
         return "ERROR";
     }
 
-    @Override
-    public int[] getMove() {
+   public int[] getMove() {
         return move;
     }
 
-    @Override
+
     public int getType() {
         return type;
     }
 
-    @Override
+
     public boolean equals(IMove move) {
         return move.getMove()[0] == this.move[0] && move.getMove()[1] == this.move[1] && move.getType() == this.type;
     }
 
-    @Override
+
     public int getUniqueId() {
         int pd = (type == PLAY) ? 0 : 1;
         return move[0] + (1000 * move[1]) + (10000 * pd);
     }
 
-    @Override
+
     public boolean isChance() {
         return false;
     }

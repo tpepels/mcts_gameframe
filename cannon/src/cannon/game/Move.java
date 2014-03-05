@@ -2,7 +2,7 @@ package cannon.game;
 
 import ai.framework.IMove;
 
-public class Move implements IMove {
+public class Move extends IMove {
 
     public static final int MOVE = 1, CAPTURE = 2, FIRE = 3, RETREAT = 4, CASTLE = 5, C_MOVE = 6;
 
@@ -14,32 +14,33 @@ public class Move implements IMove {
         this.type = type;
     }
 
-    @Override
+
     public int[] getMove() {
         return move;
     }
 
-    @Override
+
     public int getType() {
         return type;
     }
 
-    @Override
+
     public boolean equals(IMove move) {
         return move.getMove()[0] == this.move[0] && move.getMove()[1] == this.move[1]
                 && type == move.getType();
     }
 
-    @Override
+
     public int getUniqueId() {
         return move[0] + 100 * move[1] + 1000 * type;
     }
 
-    @Override
+
     public boolean isChance() {
         return false;
     }
 
+    @Override
     public String toString() {
         String typeString = "";
         switch (type) {
