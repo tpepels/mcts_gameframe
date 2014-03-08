@@ -20,7 +20,7 @@ public class TreeNode {
     public StatCounter stats;
     //
     private boolean expanded = false, simulated = false, newRound = false;
-    private List<TreeNode> children, A, Au;
+    public List<TreeNode> children, A, Au;
     private int totVisits = 0, totalSimulations = 0, roundSimulations = 0, budget = 0, startIndex = -1;
     private IMove move;
 
@@ -68,7 +68,7 @@ public class TreeNode {
             // Execute the move represented by the child
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
-            if (!child.simulated && depth + 1 > options.sr_depth) {
+            if (!child.simulated && depth >= options.sr_depth) {
                 result = child.playOut(board);
                 child.updateStats(-result);
                 child.simulated = true;
@@ -129,7 +129,68 @@ public class TreeNode {
         return result;
     }
 
-    private double log_k = .5, k = 1;
+    private TreeNode expand(IBoard board, int depth) {
+        expanded = true;
+        int nextPlayer = board.getOpponent(board.getPlayerToMove());
+        // If one of the nodes is a win, we don't have to select
+        TreeNode winNode = null;
+        // Generate all moves
+        MoveList moves = board.getExpandMoves();
+        //
+        if (children == null)
+            children = new ArrayList<TreeNode>(moves.size());
+        //
+        if (depth <= options.sr_depth) {
+            A = new ArrayList<TreeNode>(moves.size());      // All nodes
+            Au = new ArrayList<TreeNode>(moves.size());     // Unsolved nodes
+        }
+        int winner;
+        double value;
+        // Add all moves as children to the current node
+        for (int i = 0; i < moves.size(); i++) {
+            // If the game is partial observable, we don't want to do the solver part
+            if (board.doAIMove(moves.get(i), player)) {
+                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
+                // Check for a winner, (Solver)
+                winner = board.checkWin();
+                //
+                if (winner == player) {
+                    value = INF;
+                    // This is a win for the expanding node
+                    winNode = child;
+                } else if (winner == nextPlayer) {
+                    value = -INF;
+                } else {
+                    value = 0.;
+                }
+                // Set the value of the child (0 = nothing, +/-INF win/loss)
+                child.stats.setValue(value);
+                //
+                if (depth <= options.sr_depth) {
+                    Au.add(child);
+                    A.add(child);
+                }
+                //
+                children.add(child);
+                // reset the board
+                board.undoMove();
+            }
+        }
+        // After expanding the root, set the Successive Rejects parameters
+        if (depth == 0) {
+            K = getArity();
+            k = 1;
+            log_k = .0;
+            for (int i = 2; i <= K; i++) {
+                log_k += 1. / i;
+            }
+        }
+        startIndex = children.indexOf(winNode);
+        // If one of the nodes is a win, return it.
+        return winNode;
+    }
+
+    private double log_k, k;
     private int K;
 
     private TreeNode select(int depth) {
@@ -145,6 +206,10 @@ public class TreeNode {
             k++;
             if (k > 2 && A.size() > 1) {
                 removeMinArm();
+            }
+            if (Au.size() == 0) {
+                // Abandon ship, all is lost!
+                return children.get(0);
             }
             divideBudget(budget);
             // Do the selection again, this time an arm will be selected
@@ -163,10 +228,12 @@ public class TreeNode {
                     break;
                 }
             }
+            if(selected.stats.mean() == -INF) {
+                System.out.println();
+            }
             if (budget == 1 && Au.size() > 1) { // && totVisits > children.size()) {
                 removeMinArm();
             }
-            // Do the selection again for the parent, this time an arm will be selected
             return selected;
         } else {
             return uct.select(children, totVisits);
@@ -180,6 +247,7 @@ public class TreeNode {
             // See if we can return an arm to Au
             if (Au.size() + 1 < children.size()) {
                 for (TreeNode a : children) {
+                    // Return a non-solved arm
                     if (Math.abs(a.stats.mean()) != INF && !Au.contains(a)) {
                         if (a.getnVisits() > maxVisits) {
                             maxVisits = a.getnVisits();
@@ -193,10 +261,10 @@ public class TreeNode {
                 Au.add(returnArm);
                 A.add(returnArm);
                 returnArm.budget = arm.budget;
-                // arm.budget = 0;
+                arm.budget = 0;
                 returnArm.newRound = true;
             } else if (arm.budget > 0) {
-                // arm.budget = 0;
+                arm.budget = 0;
                 // Divide the rest of the budget if no arm was returned
                 divideBudget(budget);
             }
@@ -237,7 +305,7 @@ public class TreeNode {
         for (TreeNode arm : A) {
             // Throw out solved arms first, these will not be selected anyway
             val = (Math.abs(arm.stats.mean()) == INF) ? -10. : arm.stats.mean();
-            if ((Math.abs(arm.stats.mean()) == INF || arm.stats.visits() > 0) && arm.budget == 0 && val < minVal) {
+            if (val < minVal && (Math.abs(arm.stats.mean()) == INF || arm.stats.visits() > 0)) {
                 minArm = arm;
                 minVal = arm.stats.mean();
             }
@@ -248,70 +316,9 @@ public class TreeNode {
         Au.remove(minArm);
         // TODO for debug only
         for (TreeNode arm : A) {
-            arm.stats.reset();
+            if (Math.abs(arm.stats.mean()) != INF)
+                arm.stats.reset();
         }
-    }
-
-    private TreeNode expand(IBoard board, int depth) {
-        expanded = true;
-        int nextPlayer = board.getOpponent(board.getPlayerToMove());
-        // If one of the nodes is a win, we don't have to select
-        TreeNode winNode = null;
-        // Generate all moves
-        MoveList moves = board.getExpandMoves();
-        //
-        if (children == null)
-            children = new ArrayList<TreeNode>(moves.size());
-        //
-        if (depth <= options.sr_depth) {
-            A = new ArrayList<TreeNode>(moves.size());      // All nodes
-            Au = new ArrayList<TreeNode>(moves.size());     // Unsolved nodes
-        }
-        int winner;
-        double value;
-        // Add all moves as children to the current node
-        for (int i = 0; i < moves.size(); i++) {
-            // If the game is partial observable, we don't want to do the solver part
-            if (board.doAIMove(moves.get(i), player)) {
-                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
-                // Check for a winner, (Solver)
-                winner = board.checkWin();
-                //
-                if (winner == player) {
-                    value = INF;
-                    // This is a win for the expanding node
-                    winNode = child;
-                } else if (winner == nextPlayer) {
-                    value = -INF;
-                } else {
-                    value = 0.;
-                }
-                // Set the value of the child (0 = nothing, +/-INF win/loss)
-                child.stats.setValue(value);
-                //
-                if (depth <= options.sr_depth) {
-                    if (Math.abs(value) != INF)
-                        Au.add(child);
-                    A.add(child);
-                }
-                //
-                children.add(child);
-                // reset the board
-                board.undoMove();
-            }
-        }
-        // After expanding the root, set the Successive Rejects parameters
-        if (depth == 0) {
-            K = getArity() - 1;
-            k = 1;
-            log_k = .5;
-            for (int i = 2; i <= K; i++) {
-                log_k += 1. / i;
-            }
-        }
-        startIndex = children.indexOf(winNode);
-        // If one of the nodes is a win, return it.
-        return winNode;
     }
 
     @SuppressWarnings("ConstantConditions")

@@ -78,7 +78,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                 options.simsLeft--;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
-                if (root.MCTS(board, 0) == TreeNode.INF)
+                if (root.MCTS(board, 0) == TreeNode.INF || root.A.size() == 1)
                     break; // Break if you find a winning move
             }
         }
