@@ -16,19 +16,17 @@ public class Game {
 
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("breakthrough");
-        AIPlayer aiPlayer1 = new MCTSPlayer();
+        AIPlayer aiPlayer1 = new SRMCTSPlayer();
         aiPlayer1.setOptions(options1);
-//        options1.history = true;
-//        options1.to_history = true;
-//        options1.partialMaxBack = true;
-        options1.timeInterval = 1500;
+        options1.fixedSimulations = true;
+        options1.simulations = 20000;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
-        AIPlayer aiPlayer2 = new SRCRMCTSPlayer();
-        ((SRCRMCTSPlayer)aiPlayer2).setSelectionPolicy(new UCT(options2));
+        AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
-        options2.timeInterval = 1500;
+        options2.fixedSimulations = true;
+        options2.simulations = 20000;
 
         AIPlayer aiPlayer;
         Move m = null;

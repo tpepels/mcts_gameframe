@@ -19,43 +19,18 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
     @Override
     public void getMove(IBoard board, MoveCallback callback, int myPlayer, boolean parallel,
                         IMove lastMove) {
-
         if (options == null)
             throw new RuntimeException("MCTS Options or selection policy not set.");
-
         this.board = board;
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
 
-        // Reset the MAST arrays
-        if (options.MAST)
-            options.resetMast(board.getMaxUniqueMoveId());
+        if (options.fixedSimulations) {
+            options.numSimulations = options.simulations;
+        }
 
-        // Create a new root, or reuse the old tree
-        if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
-            root = new TreeNode(myPlayer, options, options.numSimulations);
-        } else if (options.treeReuse) {
-            // Get the opponent's last move from the root's children
-            for (TreeNode t : root.getChildren()) {
-                if (t.getMove().equals(lastMove)) {
-                    root = t;
-                    break;
-                }
-            }
-        }
-        // Possible if new root was not expanded
-        if (root.player != myPlayer) {
-            if (options.debug && root.getChildren() != null)
-                System.err.println("Incorrect player at root, old root has " + root.getArity() + " children");
-            // Create a new root
-            root = new TreeNode(myPlayer, options, options.numSimulations);
-        }
-        // Reset the nodes' stats
-        TreeNode.moveStats[0].reset();
-        TreeNode.moveStats[1].reset();
-        TreeNode.qualityStats[0].reset();
-        TreeNode.qualityStats[1].reset();
+        root = new TreeNode(myPlayer, options, options.numSimulations);
         //
         interrupted = false;
         if (parallel) {
@@ -73,38 +48,30 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
             throw new RuntimeException("MCTS Options not set.");
 
         int simulations = 0;
-
-        boolean qb = options.qualityBonus;
-        boolean rb = options.relativeBonus;
-        boolean sw = options.swUCT;
-
-        if (qb && nMoves == 0)
-            options.qualityBonus = false;
-        if (rb && nMoves == 0)
-            options.relativeBonus = false;
-        if (sw && nMoves == 0)
-            options.swUCT = false;
-
         if (!options.fixedSimulations) {
+
             // Search for timeInterval seconds
             long endTime = System.currentTimeMillis() + options.timeInterval;
+
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
                 simulations++;
                 options.simsLeft--;
+
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
+
                 board.newDeterminization(myPlayer);
+
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
             }
+
             options.numSimulations = simulations + (int) (0.1 * simulations);
-            options.simsLeft = options.numSimulations;
         } else {
             options.numSimulations = options.simulations;
-            options.simsLeft = options.numSimulations;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
                 simulations++;
@@ -115,39 +82,21 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                     break; // Break if you find a winning move
             }
         }
+
         // Return the best move found
         TreeNode bestChild = root.selectBestMove();
         bestMove = bestChild.getMove();
+
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
-            //
-            if (options.relativeBonus) {
-                System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].variance());
-                System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
-                System.out.println("c*                : " + options.moveCov.getCovariance() / options.moveCov.variance2());
-                System.out.println("c*                : " + options.moveCov1.getCovariance() / options.moveCov1.variance2());
-            }
-            if (options.qualityBonus) {
-                System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
-                System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
-                System.out.println("c*                : " + options.qualityCov.getCovariance() / options.qualityCov.variance2());
-            }
         }
-        // Turn the qb/rb/sw-uct back on
-        options.qualityBonus = qb;
-        options.relativeBonus = rb;
-        options.swUCT = sw;
-        //
+
         nMoves++;
-        // Set the root to the best child, so in the next move, the opponent's move can become the new root
-        if (options.treeReuse)
-            root = bestChild;
-        else
-            root = null;
+        root = null;
         // Release the board's memory
         board = null;
         // Make the move in the GUI, if parallel
@@ -164,14 +113,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
     public void newGame(int myPlayer, String game) {
         if (options == null)
             throw new RuntimeException("MCTS Options or selection policy not set.");
-
         root = new TreeNode(myPlayer, options, options.numSimulations);
-        TreeNode.moveStats[0].reset();
-        TreeNode.moveStats[1].reset();
-        TreeNode.qualityStats[0].reset();
-        TreeNode.qualityStats[1].reset();
-        options.qualityCov.reset();
-        options.moveCov.reset();
         nMoves = 0;
         //
         if (!options.fixedSimulations)
