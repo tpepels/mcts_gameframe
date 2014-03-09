@@ -20,7 +20,7 @@ public class TreeNode {
     public StatCounter stats;
     //
     private boolean expanded = false, simulated = false, newRound = false;
-    public List<TreeNode> children, A, Au;
+    public List<TreeNode> children, A, Au, As;
     private int totVisits = 0, totalSimulations = 0, roundSimulations = 0, budget = 0, startIndex = -1;
     private IMove move;
 
@@ -143,6 +143,7 @@ public class TreeNode {
         if (depth <= options.sr_depth) {
             A = new ArrayList<TreeNode>(moves.size());      // All nodes
             Au = new ArrayList<TreeNode>(moves.size());     // Unsolved nodes
+            As = new ArrayList<TreeNode>(moves.size());     // Solved nodes
         }
         int winner;
         double value;
@@ -169,6 +170,8 @@ public class TreeNode {
                 if (depth <= options.sr_depth) {
                     Au.add(child);
                     A.add(child);
+                    if(value == INF)
+                        As.add(child);
                 }
                 //
                 children.add(child);
@@ -228,9 +231,6 @@ public class TreeNode {
                     break;
                 }
             }
-            if(selected.stats.mean() == -INF) {
-                System.out.println();
-            }
             if (budget == 1 && Au.size() > 1) { // && totVisits > children.size()) {
                 removeMinArm();
             }
@@ -282,14 +282,26 @@ public class TreeNode {
                 a.newRound = true;
             }
         }
-        // Start dividing the budget at a random position, make sure winning nodes are selected first
-        startIndex = (startIndex < 0) ? (MCTSOptions.r.nextInt(Au.size())) : startIndex;
-        int ctr = startIndex;
-        TreeNode arm;
+        //
         int b = budget;
+        // First divide over solved nodes
+        for(TreeNode arm : As) {
+            arm.roundSimulations = 0;
+            arm.budget++;
+            b--;
+            arm.newRound = true;
+            if(budget == 0)
+                break;
+        }
+        // Divide the budget at a random position, make sure winning nodes are selected first
+        int ctr = MCTSOptions.r.nextInt(Au.size());
+        TreeNode arm;
         // Set new budgets for the arms
         while (b > 0) {
             arm = Au.get(ctr % Au.size());
+            // Skip over solved arms
+            if(Math.abs(arm.stats.mean()) == INF)
+                continue;
             arm.roundSimulations = 0;
             arm.budget++;
             b--;
