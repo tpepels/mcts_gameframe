@@ -216,7 +216,7 @@ public class TreeNode {
             //
             if (k > 2 && A.size() > 2) {
                 removeMinArm(false);
-                resetStats();
+                //resetStats();
             }
             //
             if (As.size() > 0)
@@ -250,7 +250,7 @@ public class TreeNode {
                 removeMinArm(true);
                 removeMinArm(true);
                 removeMinArm(true);
-                resetStats();
+                //resetStats();
             }
             return arm;
         } else {
