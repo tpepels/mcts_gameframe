@@ -18,15 +18,15 @@ public class Game {
         options1.setGame("breakthrough");
         AIPlayer aiPlayer1 = new SRMCTSPlayer();
         aiPlayer1.setOptions(options1);
-        options1.fixedSimulations = true;
-        options1.simulations = 20000;
+//        options1.fixedSimulations = true;
+//        options1.simulations = 20000;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
         AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
-        options2.fixedSimulations = true;
-        options2.simulations = 20000;
+//        options2.fixedSimulations = true;
+//        options2.simulations = 20000;
 
         AIPlayer aiPlayer;
         Move m = null;

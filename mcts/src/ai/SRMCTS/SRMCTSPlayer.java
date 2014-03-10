@@ -12,7 +12,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
     private IBoard board;
     private MoveCallback callback;
     private IMove bestMove;
-    private int myPlayer, nMoves = 0;
+    private int myPlayer;
     // Fields that must be set
     private MCTSOptions options = null;
 
@@ -94,8 +94,6 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
         }
-
-        nMoves++;
         root = null;
         // Release the board's memory
         board = null;
@@ -114,7 +112,6 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
         if (options == null)
             throw new RuntimeException("MCTS Options or selection policy not set.");
         root = new TreeNode(myPlayer, options, options.numSimulations);
-        nMoves = 0;
         //
         if (!options.fixedSimulations)
             options.resetSimulations(game);
