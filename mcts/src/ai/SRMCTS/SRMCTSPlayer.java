@@ -29,8 +29,6 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
         if (options.fixedSimulations) {
             options.numSimulations = options.simulations;
         }
-
-        root = new TreeNode(myPlayer, options, options.numSimulations);
         //
         interrupted = false;
         if (parallel) {
@@ -46,7 +44,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
     public void run() {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
-
+        root = new TreeNode(myPlayer, options, options.numSimulations);
         int simulations = 0;
         if (!options.fixedSimulations) {
 
@@ -65,7 +63,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                 board.newDeterminization(myPlayer);
 
                 // Make one simulation from root to leaf.
-                if (root.MCTS(board, 0) == TreeNode.INF)
+                if (Math.abs(root.MCTS(board, 0)) == TreeNode.INF)
                     break; // Break if you find a winning move
             }
 
@@ -78,11 +76,12 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                 options.simsLeft--;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
-                if (root.MCTS(board, 0) == TreeNode.INF || root.A.size() == 1)
+                if (Math.abs(root.MCTS(board, 0)) == TreeNode.INF)
                     break; // Break if you find a winning move
             }
         }
-
+        if(simulations < options.simulations)
+            System.out.print("");
         // Return the best move found
         TreeNode bestChild = root.selectBestMove();
         bestMove = bestChild.getMove();

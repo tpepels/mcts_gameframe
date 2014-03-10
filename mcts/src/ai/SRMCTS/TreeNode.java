@@ -90,6 +90,8 @@ public class TreeNode {
             // Remove from list of unsolved nodes
             if (Au != null)
                 removeSolvedArm(child);
+            if (As != null)
+                As.add(child);
             stats.setValue(-INF);
             return result;
         } else if (result == -INF) {
@@ -100,13 +102,13 @@ public class TreeNode {
             // (Solver) Check if all children are a loss
             for (TreeNode tn : children) {
                 // If the child is not expanded, make sure it is
-                if (tn.isLeaf()) {
+                if (tn.isLeaf() && tn.stats.mean() != INF) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
                     TreeNode winner = tn.expand(board, depth + 1);
                     board.undoMove();
                     // We found a winning node below the child, this means the child is a loss.
-                    if (winner != null) {
+                    if (winner != null && winner.stats.mean() == -INF) {
                         tn.stats.setValue(-INF);
                         // Remove from list of unsolved nodes
                         if (Au != null)
@@ -182,7 +184,6 @@ public class TreeNode {
         // After expanding the root, set the Successive Rejects parameters
         if (depth == 0) {
             K = getArity();
-            k = 1;
             log_k = .0;
             for (int i = 2; i <= K; i++) {
                 log_k += 1. / i;
@@ -192,7 +193,7 @@ public class TreeNode {
         return winNode;
     }
 
-    private double log_k, k;
+    private double log_k, k = 1;
     private int K, ctr = -1, rootCtr = 0;
 
     private TreeNode select(int depth) {
@@ -205,16 +206,17 @@ public class TreeNode {
                 if (arm.budget > 0)
                     return arm;
             }
+            newRound = true;
             // Make sure we don't go over the arity
             if (k == children.size())
                 k = (double) getArity() - 1;
-            newRound = true;
             // If no child was returned, the budget for each arm is spent
             budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
             k++;
             //
             if (k > 2 && A.size() > 2) {
                 removeMinArm(false);
+                resetStats();
             }
             //
             if (As.size() > 0)
@@ -241,8 +243,15 @@ public class TreeNode {
                 if (arm.budget > 0)
                     break;
             }
-            if (budget == 1 && Au.size() > 1)// && totVisits > children.size())
-                removeMinArm(false);
+            if (budget == 1)
+                k++;
+            if(Au.size() > 4 && k % 4 == 0 && totVisits > 4 * children.size()) {
+                removeMinArm(true);
+                removeMinArm(true);
+                removeMinArm(true);
+                removeMinArm(true);
+                resetStats();
+            }
             return arm;
         } else {
             return uct.select(children, totVisits);
@@ -336,7 +345,7 @@ public class TreeNode {
                 break;
             } else if (arm.stats.visits() > 0) {
                 if (ucb)
-                    value = arm.stats.mean() * Math.sqrt(FastLog.log(totVisits) / arm.getnVisits());
+                    value = arm.stats.mean() + Math.sqrt(FastLog.log(totVisits) / arm.getnVisits());
                 else
                     value = arm.stats.mean();
                 if (value < minVal) {
@@ -349,7 +358,10 @@ public class TreeNode {
         }
         A.remove(minArm);
         Au.remove(minArm);
-        // Reset the stats for the arms that were not removed
+    }
+
+    private void resetStats() {
+        // Reset the stats for the arms that are not solved
         for (TreeNode arm : A) {
             if (Math.abs(arm.stats.mean()) != INF)
                 arm.stats.reset();
