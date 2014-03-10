@@ -216,7 +216,7 @@ public class TreeNode {
             //
             if (k > 2 && A.size() > 2) {
                 removeMinArm(false);
-                //resetStats();
+                resetStats(depth);
             }
             //
             if (As.size() > 0)
@@ -250,7 +250,7 @@ public class TreeNode {
                 removeMinArm(true);
                 removeMinArm(true);
                 removeMinArm(true);
-                //resetStats();
+                resetStats(depth);
             }
             return arm;
         } else {
@@ -360,7 +360,10 @@ public class TreeNode {
         Au.remove(minArm);
     }
 
-    private void resetStats() {
+    private void resetStats(int depth) {
+        // Don't reset the learned statistics
+        if(depth == options.sr_depth)
+            return;
         // Reset the stats for the arms that are not solved
         for (TreeNode arm : A) {
             if (Math.abs(arm.stats.mean()) != INF)
