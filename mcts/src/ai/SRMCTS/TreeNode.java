@@ -250,13 +250,13 @@ public class TreeNode {
             if (totVisits > options.sr_c * Au.size()) {
                 if (Au.size() > options.sr_c && k % options.sr_c == 0) {
                     for (int i = 0; i < options.sr_c; i++) {
-                        removeMinArm(false, false);
+                        removeMinArm(false, true);
                     }
                     resetStats(depth);
                 } else if (Au.size() > 1 && Au.size() < options.sr_c) {
                     // Remove half of the remaining arms
                     for (int i = 0; i < (int)(Au.size() / 2.); i++) {
-                        removeMinArm(false, true); // this can also remove protected arms
+                        removeMinArm(false, false); // this can also remove protected arms
                     }
                     resetStats(depth);
                 }
@@ -352,7 +352,12 @@ public class TreeNode {
             if (arm.stats.mean() == -INF) {
                 minArm = arm;
                 break;
-            } else if (arm.stats.visits() > 0 && (skipProtected || arm.getMove().isProtected())) {
+            }
+            // Skip protected arms
+            if(skipProtected && arm.getMove().isProtected())
+                continue;
+
+            if (arm.stats.visits() > 0) {
                 if (ucb)
                     value = arm.stats.mean() + Math.sqrt(FastLog.log(totVisits) / arm.getnVisits());
                 else
