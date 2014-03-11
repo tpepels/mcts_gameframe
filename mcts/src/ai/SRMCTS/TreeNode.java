@@ -183,7 +183,7 @@ public class TreeNode {
         }
         // After expanding the root, set the Successive Rejects parameters
         if (depth == 0) {
-            K = getArity();
+            K = getArity() - 1;
             log_k = .0;
             for (int i = 2; i <= K; i++) {
                 log_k += 1. / i;
@@ -214,9 +214,9 @@ public class TreeNode {
             budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
             k++;
             //
-            if (k > 2 && A.size() > 2) {
+            if (k > 1 && A.size() > 1) {
                 removeMinArm(false, false);
-                //resetStats(depth);
+                // resetStats(depth);
             }
             //
             if (As.size() > 0)
@@ -244,7 +244,7 @@ public class TreeNode {
                     break;
             }
             //
-            if (budget == 1 && roundSimulations >= Au.size()) {
+            if (budget == 1 && roundSimulations >= options.sr_c * Au.size()) {
                 k++;
                 if (Au.size() > options.sr_c && k % options.sr_c == 0) {
                     for (int i = 0; i < options.sr_c; i++)
