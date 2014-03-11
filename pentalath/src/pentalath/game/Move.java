@@ -30,6 +30,11 @@ public class Move extends IMove {
         return false;
     }
 
+    @Override
+    public boolean isProtected() {
+        return false;
+    }
+
     public String toString() {
         return "Position: " + Integer.toString(position);
     }

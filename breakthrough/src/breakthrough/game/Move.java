@@ -71,6 +71,11 @@ public class Move extends IMove {
     }
 
     @Override
+    public boolean isProtected() {
+        return type == CAPTURE;
+    }
+
+    @Override
     public String toString() {
         String str = ""; 
         //str = "(" + movearr[0] + "," + movearr[1] + ") -> ("

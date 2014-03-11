@@ -39,7 +39,12 @@ public class Move extends IMove {
     }
 
     @Override
+    public boolean isProtected() {
+        return false;
+    }
+
+    @Override
     public String toString() {
-        return "(" + move[0] + "," + move[1] + ") -> (" + move[2] + "," + move[3] + ")";
+        return "(" + move[0] + "," + move[1] + "), (" + move[2] + "," + move[3] + ")";
     }
 }

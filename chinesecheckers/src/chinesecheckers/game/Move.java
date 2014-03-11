@@ -36,6 +36,11 @@ public class Move extends IMove {
         return false;
     }
 
+    @Override
+    public boolean isProtected() {
+        return hops > 1;
+    }
+
     public String toString() {
         return "From: " + move[0] + " to: " + move[1] + " hops: " + hops;
     }

@@ -38,6 +38,11 @@ public class Move extends IMove {
     }
 
     @Override
+    public boolean isProtected() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         return "from: " + move[0] + " to: " + move[1] + " shot: " + arrow;
     }

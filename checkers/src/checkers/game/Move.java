@@ -62,6 +62,11 @@ public class Move extends IMove {
     }
 
     @Override
+    public boolean isProtected() {
+        return captures.length > 0;
+    }
+
+    @Override
     public String toString() {
         return "(" + (move[1] * 8 + move[0]) + ") -> (" + (move[3] * 8 + move[2]) + ")";
     }

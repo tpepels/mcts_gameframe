@@ -57,6 +57,11 @@ public class Move extends IMove {
     }
 
     @Override
+    public boolean isProtected() {
+        return false;
+    }
+
+    @Override
     public String toString() {
         String cardStr, playStr, drawStr;
         int type = move[0] % 100;

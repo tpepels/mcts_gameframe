@@ -41,6 +41,11 @@ public class Move extends IMove {
     }
 
     @Override
+    public boolean isProtected() {
+        return type == CAPTURE || type == FIRE;
+    }
+
+    @Override
     public String toString() {
         String typeString = "";
         switch (type) {

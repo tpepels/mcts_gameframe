@@ -50,6 +50,11 @@ public class Move extends IMove {
     }
 
     @Override
+    public boolean isProtected() {
+        return type == CAPTURE;
+    }
+
+    @Override
     public String toString() {
         String str = "House " + values[0] + " Sow " + values[1]; 
         if (type == CAPTURE) 

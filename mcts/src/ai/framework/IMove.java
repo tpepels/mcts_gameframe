@@ -16,4 +16,6 @@ public abstract class IMove {
     public double getHistoryVal(int player, MCTSOptions options) {
         return options.getMastValue(player, getUniqueId());
     }
+
+    public abstract boolean isProtected();
 }
