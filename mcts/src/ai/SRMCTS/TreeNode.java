@@ -244,7 +244,7 @@ public class TreeNode {
                     break;
             }
             //
-            if (budget == 1 && roundSimulations > Au.size()) {
+            if (budget == 1 && roundSimulations >= Au.size()) {
                 k++;
                 if (Au.size() > options.sr_c && k % options.sr_c == 0) {
                     for (int i = 0; i < options.sr_c; i++)
@@ -310,8 +310,6 @@ public class TreeNode {
         for (TreeNode arm : As) {
             if (arm.getnVisits() > 0)
                 continue;
-            if (newRound)
-                arm.roundSimulations = 0;
             arm.budget++;
             b--;
             arm.newRound = true;
@@ -329,9 +327,6 @@ public class TreeNode {
             if (Au.size() > As.size() && arm.stats.mean() == INF)
                 continue;
             //
-            if (newRound)
-                arm.roundSimulations = 0;
-            //
             arm.budget++;
             b--;
             arm.newRound = true;
@@ -344,6 +339,7 @@ public class TreeNode {
         double minVal = Double.POSITIVE_INFINITY, value;
         List<TreeNode> l = (Au.size() > 0) ? Au : A;
         for (TreeNode arm : l) {
+            arm.roundSimulations = 0;
             // Throw out solved arms first, these will not be selected anyway
             if (arm.stats.mean() == -INF) {
                 minArm = arm;
