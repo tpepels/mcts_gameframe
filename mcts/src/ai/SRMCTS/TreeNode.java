@@ -247,14 +247,16 @@ public class TreeNode {
             if (budget == 1)
                 k++;
             //
-            if (Au.size() > options.sr_c && k % options.sr_c == 0) { // && totVisits > options.sr_depth * children.size()) {
-                for (int i = 0; i < options.sr_c; i++) {
+            if (totVisits > k * Au.size()) {
+                if (Au.size() > options.sr_c && k % options.sr_c == 0) {
+                    for (int i = 0; i < options.sr_c; i++) {
+                        removeMinArm(false);
+                    }
+                    resetStats(depth);
+                } else if (Au.size() > 1 && Au.size() < options.sr_c) {
                     removeMinArm(false);
+                    resetStats(depth);
                 }
-                resetStats(depth);
-            } else if (Au.size() > 1 && Au.size() < options.sr_c) {
-                removeMinArm(false);
-                resetStats(depth);
             }
             return arm;
         } else {
