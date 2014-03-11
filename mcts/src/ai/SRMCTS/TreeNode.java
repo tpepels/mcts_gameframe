@@ -254,7 +254,10 @@ public class TreeNode {
                     }
                     resetStats(depth);
                 } else if (Au.size() > 1 && Au.size() < options.sr_c) {
-                    removeMinArm(false);
+                    // Remove half of the remaining arms
+                    for (int i = 0; i < (int)(Au.size() / 2.); i++) {
+                        removeMinArm(false);
+                    }
                     resetStats(depth);
                 }
             }
