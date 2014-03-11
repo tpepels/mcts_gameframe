@@ -243,14 +243,16 @@ public class TreeNode {
                 if (arm.budget > 0)
                     break;
             }
+            //
             if (budget == 1)
                 k++;
+            //
             if (Au.size() > options.sr_c && k % options.sr_c == 0) { // && totVisits > options.sr_depth * children.size()) {
                 for (int i = 0; i < options.sr_c; i++) {
                     removeMinArm(false);
                 }
                 resetStats(depth);
-            } else if (Au.size() > 1) {
+            } else if (Au.size() > 1 && Au.size() < options.sr_c) {
                 removeMinArm(false);
                 resetStats(depth);
             }
