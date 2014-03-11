@@ -245,8 +245,10 @@ public class TreeNode {
             }
             if (budget == 1)
                 k++;
-            if(Au.size() > 2  && k % 2 == 0 && totVisits > 2 * children.size()) {
-                removeMinArm(true);
+            if (Au.size() > options.sr_depth && k % options.sr_depth == 0) {// && totVisits > options.sr_depth * children.size()) {
+                for (int i = 0; i < options.sr_depth; i++) {
+                    removeMinArm(false);
+                }
                 resetStats(depth);
             }
             return arm;
@@ -359,7 +361,7 @@ public class TreeNode {
 
     private void resetStats(int depth) {
         // Don't reset the learned statistics
-        if(depth == options.sr_depth)
+        if (depth == options.sr_depth)
             return;
         // Reset the stats for the arms that are not solved
         for (TreeNode arm : A) {

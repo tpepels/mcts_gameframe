@@ -265,6 +265,8 @@ public class SimGame {
 //                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new MastUCT(options));
                 } else if (tag.startsWith("c")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
+                } else if (tag.startsWith("src")) {
+                    options.sr_c = Integer.parseInt(tag.substring(3));
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
