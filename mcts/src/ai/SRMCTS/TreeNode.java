@@ -216,7 +216,7 @@ public class TreeNode {
             //
             if (k > 2 && A.size() > 2) {
                 removeMinArm(false, false);
-                resetStats(depth);
+//                resetStats(depth);
             }
             //
             if (As.size() > 0)
@@ -243,22 +243,21 @@ public class TreeNode {
                 if (arm.budget > 0)
                     break;
             }
-            //
-            if (budget == 1)
+            if (budget == 1) {
                 k++;
-            //
-            if (totVisits > options.sr_c * Au.size()) {
-                if (Au.size() > options.sr_c && k % options.sr_c == 0) {
-                    for (int i = 0; i < options.sr_c; i++) {
-                        removeMinArm(false, true);
+                if (totVisits > getArity()) {
+                    if (Au.size() > options.sr_c && k % options.sr_c == 0) {
+                        for (int i = 0; i < options.sr_c; i++) {
+                            removeMinArm(false, true);
+                        }
+//                    resetStats(depth);
+                    } else if (Au.size() > 1 && Au.size() < options.sr_c) {
+                        // Remove half of the remaining arms
+                        for (int i = 0; i < (int) (Au.size() / 2.); i++) {
+                            removeMinArm(false, true); // this can also remove protected arms
+                        }
+                        resetStats(depth);
                     }
-                    resetStats(depth);
-                } else if (Au.size() > 1 && Au.size() < options.sr_c) {
-                    // Remove half of the remaining arms
-                    for (int i = 0; i < (int)(Au.size() / 2.); i++) {
-                        removeMinArm(false, true); // this can also remove protected arms
-                    }
-                    resetStats(depth);
                 }
             }
             return arm;
@@ -354,12 +353,12 @@ public class TreeNode {
                 break;
             }
             // Skip protected arms
-            if(skipProtected && arm.getMove().isProtected())
+            if (skipProtected && arm.getMove().isProtected())
                 continue;
 
             if (arm.stats.visits() > 0) {
                 if (ucb)
-                    value = arm.stats.mean() + Math.sqrt(FastLog.log(totVisits) / arm.getnVisits());
+                    value = arm.stats.mean() + Math.sqrt(FastLog.log(roundSimulations) / arm.roundSimulations);
                 else
                     value = arm.stats.mean();
                 if (value < minVal) {
@@ -367,8 +366,6 @@ public class TreeNode {
                     minVal = value;
                 }
             }
-
-            roundSimulations = 0;
         }
         A.remove(minArm);
         Au.remove(minArm);
