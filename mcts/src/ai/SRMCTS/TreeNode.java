@@ -250,7 +250,7 @@ public class TreeNode {
                     for (int i = 0; i < options.sr_c; i++)
                         removeMinArm(false, true);
                     //resetStats(depth);
-                } else if (Au.size() > 1 && Au.size() < options.sr_c) {
+                } else if (Au.size() > 1 && Au.size() <= options.sr_c) {
                     // Remove half of the remaining arms
                     for (int i = 0; i < (int) (Au.size() / 2.); i++)
                         removeMinArm(false, false); // this can also remove protected arms
