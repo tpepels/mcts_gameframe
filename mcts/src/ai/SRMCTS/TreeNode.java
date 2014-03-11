@@ -245,8 +245,7 @@ public class TreeNode {
             }
             if (budget == 1)
                 k++;
-            if(Au.size() > 1 && k % 2 == 0 && totVisits > 2 * children.size()) {
-                removeMinArm(true);
+            if(Au.size() > 2  && k % 2 == 0 && totVisits > 2 * children.size()) {
                 removeMinArm(true);
                 resetStats(depth);
             }
