@@ -259,7 +259,7 @@ public class TreeNode {
                     break;
             }
             // Removal policy
-            if (budget == 1) {
+            if (budget == 1 && roundSimulations > 1) {
                 if (options.policy == 1 && Au.size() > 1)
                     removeMinArm(false, false);
                 else if (options.policy == 2 && Au.size() > 2) {
