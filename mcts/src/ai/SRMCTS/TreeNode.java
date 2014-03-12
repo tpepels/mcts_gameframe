@@ -186,7 +186,7 @@ public class TreeNode {
         }
         // After expanding the root, set the Successive Rejects parameters
         if (depth == 0) {
-            K = getArity() - 1;
+            K = getArity();
             log_k = .0;
             for (int i = 2; i <= K; i++) {
                 log_k += 1. / i;
@@ -213,6 +213,7 @@ public class TreeNode {
             // Make sure we don't go over the arity
             if (k == children.size())
                 k = (double) getArity() - 1;
+
             if (options.policy == 1) {
                 // If no child was returned, the budget for each arm is spent
                 budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
@@ -220,16 +221,15 @@ public class TreeNode {
                 double log = Math.ceil(FastLog.log(K) / FastLog.log(2));
                 budget = (int) (totalSimulations / log);
             }
+
             k++;
             // Removal policy
-            if (k > 2) {
-                if (Au.size() > 2) {
-                    if (options.policy == 1)
+            if (k > 2 && Au.size() > 2) {
+                if (options.policy == 1)
+                    removeMinArm(false, false);
+                else if (options.policy == 2) {
+                    for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                         removeMinArm(false, false);
-                    else if (options.policy == 2) {
-                        for (int i = 0; i < (int) (Au.size() / 2.); i++) {
-                            removeMinArm(false, false);
-                        }
                     }
                 }
             }
@@ -260,18 +260,11 @@ public class TreeNode {
             }
             // Removal policy
             if (budget == 1) {
-                if (Au.size() > 1) {
-                    if (options.policy == 1)
+                if (options.policy == 1 && Au.size() > 1)
+                    removeMinArm(false, false);
+                else if (options.policy == 2 && Au.size() > 2) {
+                    for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                         removeMinArm(false, false);
-                    else if (options.policy == 2 && Au.size() > 2) {
-                        for (int i = 0; i < (int) (Au.size() / 2.); i++) {
-//                            if (Au.size() > 4) {
-//                                removeMinArm(false, true);
-//                            } else {
-                                removeMinArm(false, false);
-//                            }
-
-                        }
                     }
                 }
             }

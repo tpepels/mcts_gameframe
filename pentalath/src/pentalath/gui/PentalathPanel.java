@@ -1,5 +1,6 @@
 package pentalath.gui;
 
+import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
@@ -59,7 +60,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
             aiPlayer1.newGame(1, "pentalath");
         }
         if (!p2Human) {
-            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2 = new SRMCTSPlayer();
             MCTSOptions options2 = new MCTSOptions();
             options2.setGame("pentalath");
             aiPlayer2.setOptions(options2);
