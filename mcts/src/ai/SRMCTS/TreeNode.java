@@ -197,7 +197,7 @@ public class TreeNode {
     }
 
     private double log_k, k = 1;
-    private int K, ctr = -1, rootCtr = 0;
+    private int K, rootCtr = 0;
 
     private TreeNode select(int depth) {
         if (depth == 0) {
@@ -213,12 +213,24 @@ public class TreeNode {
             // Make sure we don't go over the arity
             if (k == children.size())
                 k = (double) getArity() - 1;
-            // If no child was returned, the budget for each arm is spent
-            budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
+            if (options.policy == 1) {
+                // If no child was returned, the budget for each arm is spent
+                budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
+            } else if (options.policy == 2) {
+                budget = (int) (Math.ceil(FastLog.log(K) / FastLog.log(2)) - 1);
+            }
             k++;
-            //
-            if (k > 2 && A.size() > 1) {
-                removeMinArm(false, false);
+            // Removal policy
+            if (k > 2) {
+                if (A.size() > 1) {
+                    if(options.policy == 1)
+                        removeMinArm(false, false);
+                    else if (options.policy == 2) {
+                        for(int i = 0; i < (int)(Au.size() / 2.); i ++) {
+                            removeMinArm(false, false);
+                        }
+                    }
+                }
             }
             //
             if (As.size() > 0)
@@ -245,10 +257,18 @@ public class TreeNode {
                 if (arm.budget > 0)
                     break;
             }
-            if (budget == 1 && roundSimulations > 1 && Au.size() > 1) {
-                removeMinArm(false, false);
+            // Removal policy
+            if (budget == 1) {
+                if (Au.size() > 1) {
+                    if(options.policy == 1)
+                        removeMinArm(false, false);
+                    else if (options.policy == 2) {
+                        for(int i = 0; i < (int)(Au.size() / 2.); i ++) {
+                            removeMinArm(false, false);
+                        }
+                    }
+                }
             }
-            //
 //            if (budget == 1 && roundSimulations >= options.sr_c * Au.size()) {
 //                k++;
 //                if (Au.size() > options.sr_c && k % options.sr_c == 0) {
@@ -320,7 +340,7 @@ public class TreeNode {
                 break;
         }
         // Divide the budget, for the first round, start at a random position
-        ctr = (ctr < 0) ? MCTSOptions.r.nextInt(Au.size()) : ctr;
+        int ctr = rootCtr;
         TreeNode arm;
         // Set new budgets for the arms
         while (b > 0) {
