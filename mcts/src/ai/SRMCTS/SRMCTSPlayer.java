@@ -85,11 +85,11 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
         // Return the best move found
         TreeNode bestChild = root.selectBestMove();
         bestMove = bestChild.getMove();
-
+        System.out.println("Did " + simulations + " simulations");
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
-            System.out.println("Did " + simulations + " simulations");
+
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
         }
