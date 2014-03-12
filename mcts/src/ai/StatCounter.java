@@ -67,7 +67,6 @@ public class StatCounter {
 
     public void push(double num) {
         m_n++;
-
         if (Math.signum(num) > 0)
             m_wins++;
         else if (num != 0)

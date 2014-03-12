@@ -16,6 +16,7 @@ public class TreeNode {
     public static int myPlayer = 0;
     //
     private final MCTSOptions options;
+    private final TreeNode parent;
     private final UCT uct;
     public final int player;
     public StatCounter stats;
@@ -35,17 +36,19 @@ public class TreeNode {
         TreeNode.myPlayer = player;
         stats = new StatCounter();
         this.uct = new UCT(options);
+        this.parent = null;
     }
 
     /**
      * Constructor for internal node
      */
-    public TreeNode(int player, IMove move, MCTSOptions options) {
+    public TreeNode(int player, IMove move, MCTSOptions options, TreeNode parent) {
         this.player = player;
         this.move = move;
         this.options = options;
         this.stats = new StatCounter();
         this.uct = new UCT(options);
+        this.parent = parent;
     }
 
     /**
@@ -155,7 +158,7 @@ public class TreeNode {
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (board.doAIMove(moves.get(i), player)) {
-                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options);
+                TreeNode child = new TreeNode(nextPlayer, moves.get(i), options, this);
                 // Check for a winner, (Solver)
                 winner = board.checkWin();
                 if (winner == player) {
@@ -214,9 +217,8 @@ public class TreeNode {
             budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
             k++;
             //
-            if (k > 1 && A.size() > 1) {
+            if (k > 2 && A.size() > 1) {
                 removeMinArm(false, false);
-                // resetStats(depth);
             }
             //
             if (As.size() > 0)
@@ -243,20 +245,21 @@ public class TreeNode {
                 if (arm.budget > 0)
                     break;
             }
-            //
-            if (budget == 1 && roundSimulations >= options.sr_c * Au.size()) {
-                k++;
-                if (Au.size() > options.sr_c && k % options.sr_c == 0) {
-                    for (int i = 0; i < options.sr_c; i++)
-                        removeMinArm(false, true);
-                    //resetStats(depth);
-                } else if (Au.size() > 1 && Au.size() <= options.sr_c) {
-                    // Remove half of the remaining arms
-                    for (int i = 0; i < (int) (Au.size() / 2.); i++)
-                        removeMinArm(false, false); // this can also remove protected arms
-                    //resetStats(depth);
-                }
+            if (budget == 1 && roundSimulations > 1 && Au.size() > 1) {
+                removeMinArm(false, false);
             }
+            //
+//            if (budget == 1 && roundSimulations >= options.sr_c * Au.size()) {
+//                k++;
+//                if (Au.size() > options.sr_c && k % options.sr_c == 0) {
+//                    for (int i = 0; i < options.sr_c; i++)
+//                        removeMinArm(false, true);
+//                } else if (Au.size() > 1 && Au.size() <= options.sr_c) {
+//                    // Remove half of the remaining arms
+//                    for (int i = 0; i < (int) (Au.size() / 2.); i++)
+//                        removeMinArm(false, false); // this can also remove protected arms
+//                }
+//            }
             return arm;
         } else {
             return uct.select(children, totVisits);
@@ -350,10 +353,12 @@ public class TreeNode {
                 continue;
 
             if (arm.stats.visits() > 0) {
+                // To account for different visitcounts, we can use UCB
                 if (ucb)
                     value = arm.stats.mean() + Math.sqrt(FastLog.log(roundSimulations) / arm.roundSimulations);
                 else
                     value = arm.stats.mean();
+                //
                 if (value < minVal) {
                     minArm = arm;
                     minVal = value;
@@ -362,16 +367,13 @@ public class TreeNode {
         }
         A.remove(minArm);
         Au.remove(minArm);
-    }
-
-    private void resetStats(int depth) {
-        // Don't reset the learned statistics
-        if (depth == options.sr_depth)
-            return;
-        // Reset the stats for the arms that are not solved
-        for (TreeNode arm : A) {
-            if (Math.abs(arm.stats.mean()) != INF)
-                arm.stats.reset();
+        // Subtract the stats of the removed arm from all parents
+        if (Math.abs(minArm.stats.mean()) != INF) {
+            TreeNode p = parent;
+            while (p != null) {
+                p.stats.subtract(minArm.stats);
+                p = p.parent;
+            }
         }
     }
 
