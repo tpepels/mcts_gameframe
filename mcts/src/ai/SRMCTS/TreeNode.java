@@ -217,7 +217,8 @@ public class TreeNode {
                 // If no child was returned, the budget for each arm is spent
                 budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
             } else if (options.policy == 2) {
-                budget = (int) (Math.ceil(FastLog.log(K) / FastLog.log(2)) - 1);
+                double log = Math.ceil(FastLog.log(K) / FastLog.log(2));
+                budget = (int) (totalSimulations / log);
             }
             k++;
             // Removal policy
