@@ -264,7 +264,10 @@ public class TreeNode {
                     removeMinArm(false, false);
                 else if (options.policy == 2 && Au.size() > 2) {
                     for (int i = 0; i < (int) (Au.size() / 2.); i++) {
-                        removeMinArm(false, false);
+                        if (Au.size() >= 4)
+                            removeMinArm(false, true);
+                        else
+                            removeMinArm(false, false);
                     }
                 }
             }

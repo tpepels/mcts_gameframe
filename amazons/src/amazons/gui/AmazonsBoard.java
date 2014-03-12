@@ -1,5 +1,7 @@
 package amazons.gui;
 
+import ai.SRMCTS.SRMCTSPlayer;
+import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
@@ -24,7 +26,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
     private int[] clickPos = {-1, -1, -1};
     //
     private Board board;
-    private MCTSPlayer aiPlayer1, aiPlayer2;
+    private AIPlayer aiPlayer1, aiPlayer2;
     private IMove lastMove;
     private Image whiteQueen, blackQueen;
     private Color arrowColor = Color.decode("#D50400");
@@ -57,7 +59,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         aiPlayer1.setOptions(options1);
 
         // Definition for player 2
-        aiPlayer2 = new MCTSPlayer();
+        aiPlayer2 = new SRMCTSPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("amazons");
         aiPlayer2.setOptions(options2);

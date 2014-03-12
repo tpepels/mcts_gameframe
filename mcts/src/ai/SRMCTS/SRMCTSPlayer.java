@@ -67,7 +67,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                     break; // Break if you find a winning move
             }
 
-            options.numSimulations = simulations + (int) (0.05 * simulations);
+            options.numSimulations = simulations;
         } else {
             options.numSimulations = options.simulations;
             // Run as many simulations as allowed
@@ -80,16 +80,14 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                     break; // Break if you find a winning move
             }
         }
-        if(simulations < options.simulations)
-            System.out.print("");
         // Return the best move found
         TreeNode bestChild = root.selectBestMove();
         bestMove = bestChild.getMove();
-        System.out.println("Did " + simulations + " simulations");
+
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
-
+            System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
         }
