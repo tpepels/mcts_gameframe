@@ -223,11 +223,11 @@ public class TreeNode {
             k++;
             // Removal policy
             if (k > 2) {
-                if (A.size() > 1) {
-                    if(options.policy == 1)
+                if (Au.size() > 2) {
+                    if (options.policy == 1)
                         removeMinArm(false, false);
                     else if (options.policy == 2) {
-                        for(int i = 0; i < (int)(Au.size() / 2.); i ++) {
+                        for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
                         }
                     }
@@ -261,11 +261,16 @@ public class TreeNode {
             // Removal policy
             if (budget == 1) {
                 if (Au.size() > 1) {
-                    if(options.policy == 1)
+                    if (options.policy == 1)
                         removeMinArm(false, false);
-                    else if (options.policy == 2) {
-                        for(int i = 0; i < (int)(Au.size() / 2.); i ++) {
-                            removeMinArm(false, false);
+                    else if (options.policy == 2 && Au.size() > 2) {
+                        for (int i = 0; i < (int) (Au.size() / 2.); i++) {
+//                            if (Au.size() > 4) {
+//                                removeMinArm(false, true);
+//                            } else {
+                                removeMinArm(false, false);
+//                            }
+
                         }
                     }
                 }

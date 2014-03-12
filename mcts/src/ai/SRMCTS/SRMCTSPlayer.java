@@ -67,7 +67,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                     break; // Break if you find a winning move
             }
 
-            options.numSimulations = simulations + (int) (0.1 * simulations);
+            options.numSimulations = simulations + (int) (0.05 * simulations);
         } else {
             options.numSimulations = options.simulations;
             // Run as many simulations as allowed
