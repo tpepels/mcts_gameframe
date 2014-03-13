@@ -72,7 +72,7 @@ public class TreeNode {
             // Execute the move represented by the child
             board.doAIMove(child.getMove(), player);
             // When a leaf is reached return the result of the playout
-            if (!child.simulated && depth >= options.sr_depth) {
+            if (!child.simulated && depth > options.sr_depth) {
                 result = child.playOut(board);
                 child.updateStats(-result);
                 child.simulated = true;
@@ -87,14 +87,15 @@ public class TreeNode {
             result = child.stats.mean();
             child.budget--;
         }
-        // (Solver) If one of the children is a win, then I'm a win
+
+        // (Solver) If one of the children is a win, then I'm a loss for the opponent
         if (result == INF) {
             budget--;
             // Remove from list of unsolved nodes
-            if (Au != null)
-                removeSolvedArm(child);
-            if (As != null)
+            if (Au != null) {
                 As.add(child);
+                removeSolvedArm(child);
+            }
             stats.setValue(-INF);
             return result;
         } else if (result == -INF) {
@@ -111,7 +112,7 @@ public class TreeNode {
                     TreeNode winner = tn.expand(board, depth + 1);
                     board.undoMove();
                     // We found a winning node below the child, this means the child is a loss.
-                    if (winner != null && winner.stats.mean() == -INF) {
+                    if (winner != null) {
                         tn.stats.setValue(-INF);
                         // Remove from list of unsolved nodes
                         if (Au != null)
@@ -125,7 +126,7 @@ public class TreeNode {
                     return -1;
                 }
             }
-            // (Solver) If all children lead to a loss for the opponent, then I'm a win
+            // (Solver) If all children lead to a loss for me, then I'm a win for the opponent
             stats.setValue(INF);
             return result;
         }
@@ -188,7 +189,8 @@ public class TreeNode {
         if (depth == 0) {
             K = getArity();
             log_k = .0;
-            for (int i = 2; i <= K; i++) {
+            log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
+            for (int i = 2; i < K; i++) {
                 log_k += 1. / i;
             }
         }
@@ -196,7 +198,7 @@ public class TreeNode {
         return winNode;
     }
 
-    private double log_k, k = 1;
+    private double log_k, log_n, k = 1;
     private int K, rootCtr = 0;
 
     private TreeNode select(int depth) {
@@ -211,17 +213,14 @@ public class TreeNode {
             }
             newRound = true;
             // Make sure we don't go over the arity
-            if (k == children.size())
-                k = (double) getArity() - 1;
-
+            if (k == getArity())
+                k = K - 1;
+            // If no child was returned, the budget for each arm is spent
             if (options.policy == 1) {
-                // If no child was returned, the budget for each arm is spent
                 budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
             } else if (options.policy == 2) {
-                double log = Math.ceil(FastLog.log(K) / FastLog.log(2));
-                budget = (int) (totalSimulations / log);
+                budget = (int) (totalSimulations / log_n);
             }
-
             k++;
             // Removal policy
             if (k > 2 && Au.size() > 2) {
@@ -233,14 +232,6 @@ public class TreeNode {
                     }
                 }
             }
-            //
-            if (As.size() > 0)
-                return As.get(MCTSOptions.r.nextInt(As.size()));
-            //
-            if (Au.size() == 0) {
-                // Abandon ship, all is lost!
-                return children.get(0);
-            }
             divideBudget(budget);
             // Do the selection again, this time an arm will be selected
             return select(depth);
@@ -251,12 +242,21 @@ public class TreeNode {
                 newRound = false;
             }
             TreeNode arm = null;
-            for (int i = 0; i < Au.size(); i++) {
-                arm = Au.get(rootCtr % Au.size());
-                rootCtr++;
-                // Make sure the budget per arm is spent
+            // Select solved arm first
+            for (int i = 0; i < As.size(); i++) {
+                arm = As.get(i);
                 if (arm.budget > 0)
                     break;
+            }
+            //
+            if (arm == null || arm.budget == 0) {
+                for (int i = 0; i < Au.size(); i++) {
+                    arm = Au.get(rootCtr % Au.size());
+                    rootCtr++;
+                    // Make sure the budget per arm is spent
+                    if (arm.budget > 0)
+                        break;
+                }
             }
             // Removal policy
             if (budget == 1 && roundSimulations > 1) {
@@ -264,10 +264,7 @@ public class TreeNode {
                     removeMinArm(false, false);
                 else if (options.policy == 2 && Au.size() > 2) {
                     for (int i = 0; i < (int) (Au.size() / 2.); i++) {
-                        if (Au.size() >= 4)
-                            removeMinArm(false, true);
-                        else
-                            removeMinArm(false, false);
+                        removeMinArm(false, false);
                     }
                 }
             }
@@ -364,20 +361,21 @@ public class TreeNode {
         double minVal = Double.POSITIVE_INFINITY, value;
         List<TreeNode> l = (Au.size() > 0) ? Au : A;
         for (TreeNode arm : l) {
-            arm.roundSimulations = 0;
             // Throw out solved arms first, these will not be selected anyway
             if (arm.stats.mean() == -INF) {
                 minArm = arm;
                 break;
             }
+
             // Skip protected arms
             if (skipProtected && arm.getMove().isProtected())
                 continue;
 
-            if (arm.stats.visits() > 0) {
-                // To account for different visitcounts, we can use UCB
+            // Only consider arms we visited this round
+            if (arm.totVisits > 0) {
+                // To account for different visit counts, we can use UCB
                 if (ucb)
-                    value = arm.stats.mean() + Math.sqrt(FastLog.log(roundSimulations) / arm.roundSimulations);
+                    value = arm.stats.mean() + Math.sqrt(FastLog.log(totVisits) / arm.totVisits);
                 else
                     value = arm.stats.mean();
                 //
@@ -386,12 +384,16 @@ public class TreeNode {
                     minVal = value;
                 }
             }
+            arm.roundSimulations = 0;
         }
+
+        // Remove from selection
         A.remove(minArm);
         Au.remove(minArm);
+
         // Subtract the stats of the removed arm from all parents
         if (Math.abs(minArm.stats.mean()) != INF) {
-            TreeNode p = parent;
+            TreeNode p = this;
             while (p != null) {
                 p.stats.subtract(minArm.stats);
                 p = p.parent;
@@ -457,7 +459,7 @@ public class TreeNode {
         // Select from the non-solved arms
         TreeNode bestChild = null;
         double max = Double.NEGATIVE_INFINITY, value;
-        List<TreeNode> l = (getnVisits() > 0. && Au.size() > 0) ? Au : getChildren();
+        List<TreeNode> l = (getnVisits() > 0. && Au.size() > 0) ? Au : A;
         for (TreeNode t : l) {
             if (t.stats.mean() == TreeNode.INF)
                 value = TreeNode.INF + MCTSOptions.r.nextDouble();
@@ -482,6 +484,21 @@ public class TreeNode {
         stats.push(value);
         totVisits++;
         roundSimulations++;
+//        if (Au != null && parent != null) {
+//            int c = 0, sum = 0, nv = 0;
+//            for (TreeNode t : Au) {
+//                c += t.budget;
+//                nv += t.stats.totalVisits();
+//                sum += t.stats.m_sum;
+//            }
+////            if(nv!=stats.totalVisits())
+////                System.out.println(nv + " " + stats.totalVisits());
+////            if(sum != -stats.m_sum)
+////                System.out.println(sum + " " + -stats.m_sum);
+//
+//            if (c != budget)
+//                System.err.println("??");
+//        }
     }
 
     public boolean isLeaf() {

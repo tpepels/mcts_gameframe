@@ -162,8 +162,8 @@ public class TreeNode {
                 // (AUCT) Skip virtual child
                 if (options.auct && tn.isVirtual())
                     continue;
-                // If the child is not expanded, make sure it is
-                if (options.solverFix && tn.isLeaf() && tn.stats.mean() != INF) {
+                // If the child is not expanded or solved, make sure it is expanded
+                if (options.solverFix && tn.isLeaf() && Math.abs(tn.stats.mean()) != INF) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
                     TreeNode winner = tn.expand(board, depth + 2, this.player);

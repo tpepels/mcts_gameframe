@@ -16,7 +16,7 @@ public class StatCounter {
     private boolean windowed = false;
     //
     private int m_wins, m_losses;
-    private double m_sum, m_m2, m_mean;
+    public double m_sum, m_m2, m_mean;
     private int m_n;
     private final MCTSOptions options;
 
@@ -97,7 +97,10 @@ public class StatCounter {
     }
 
     public void subtract(StatCounter statCounter) {
-        this.m_sum -= statCounter.m_sum;
+        m_wins -= statCounter.m_losses;
+        m_losses -= statCounter.m_wins;
+        // Add, because its in view of opponent
+        this.m_sum += statCounter.m_sum;
         this.m_n -= statCounter.m_n;
         m_mean = m_sum / m_n;
     }
