@@ -454,7 +454,7 @@ public class TreeNode {
         // Select from the non-solved arms
         TreeNode bestChild = null;
         double max = Double.NEGATIVE_INFINITY, value;
-        List<TreeNode> l = (getnVisits() > 0. && Au.size() > 0) ? Au : A;
+        List<TreeNode> l = (getnVisits() > 0. && Au.size() > 0) ? Au : children;
         for (TreeNode t : l) {
             if (t.stats.mean() == TreeNode.INF)
                 value = TreeNode.INF + MCTSOptions.r.nextDouble();
