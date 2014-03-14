@@ -1,3 +1,5 @@
+import ai.SRCRMCTS.SRCRMCTSPlayer;
+import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
@@ -14,12 +16,11 @@ public class Game {
         MCTSPlayer aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("domineering");
-        options1.history = true;
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("domineering");
-        MCTSPlayer aiPlayer2 = new MCTSPlayer();
+        AIPlayer aiPlayer2 = new SRMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
         AIPlayer aiPlayer;

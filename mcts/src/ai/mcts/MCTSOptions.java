@@ -104,6 +104,8 @@ public class MCTSOptions {
             // mastEps = 1. - .7;
             kr = 8.0;
             kq = 2.0;
+        } else if (game.equals("domineering")) {
+
         }
         resetSimulations(game);
     }
@@ -144,6 +146,11 @@ public class MCTSOptions {
                 numSimulations = simulations;
             else
                 numSimulations = 17 * timeInterval;
+        } else if (game.equals("domineering")) {
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 22 * timeInterval;
         }
         simsLeft = numSimulations;
     }
