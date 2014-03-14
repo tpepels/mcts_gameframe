@@ -174,6 +174,9 @@ foreach my $match (sort keys %matchmap) {
             $wins{$p1} += 1; 
             $totalpoints{$p1} += 2;
           }
+          #elsif ($winner eq "DISCARDED") { 
+          #  $discards++;
+          #}
           else {
             $totalpoints{$p1} += 1;
             $totalpoints{$p2} += 1;
@@ -188,10 +191,10 @@ foreach my $match (sort keys %matchmap) {
     }
   }
 
-  print "$gm-$p1-$p2 " . $wins{$p1} . " " . $wins{$p2} . " " . $ties;
+  #print "matchup summary: $p1-$p2 " . $wins{$p1} . " " . $wins{$p2} . " " . $ties;
   my $diff = ($wins{$p1} - $wins{$p2});
   my $games = ($wins{$p1} + $wins{$p2} + $ties);
-  print "  (diff $diff, games $games)  ";
+  #print "  (diff $diff, games $games)  ";
 
   # statsline
 
@@ -199,7 +202,12 @@ foreach my $match (sort keys %matchmap) {
   my $left = $p1;
   my $right = $p2;
   my $total = $wins{$left} + $wins{$right} + $ties;
+  
   winstats($wins{$left}, $wins{$right}, $total, \@statslist);
+  
+  # just for the kalah exps
+  #winstats($wins{$left}, $wins{$right}, $wins{$left}+$wins{$right}, \@statslist);
+
   my $statsline = $statslist[3];
 
   my $lperc = $statslist[0]*100.0;
@@ -209,8 +217,11 @@ foreach my $match (sort keys %matchmap) {
   #print "$left " . $wins{$left} . ", $right " . $wins{$right} . ", ties = $ties, total = $total. $statsline\n"; 
   my $lwinscount = sprintf("(%d)", $wins{$left});
   my $rwinscount = sprintf("(%d)", $wins{$right});
-  printf("%3.2f  %3.2f  +/-  %3.2f\n", $lperc, $rperc, $ci95perc);
+  printf("%40s vs. %40s: %5d %5d %5d (diff %5d, games %5d) %3.2lf %3.2lf +/- %3.2lf\n", 
+    $p1, $p2, $wins{$p1}, $wins{$p2}, $ties, $diff, $games, $lperc, $rperc, $ci95perc);
 }
+
+#print "discards = $discards\n";
 
 # enable this if we want later
 #foreach my $key (sort {$totalpoints{$b} <=> $totalpoints{$a}} keys %totalpoints) {

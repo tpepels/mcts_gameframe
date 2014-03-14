@@ -208,8 +208,9 @@ public class TreeNode {
                 arm = Au.get(rootCtr % Au.size());
                 rootCtr++;
                 // Make sure the budget per arm is spent
-                if (arm.budget > 0)
+                if (arm.budget > 0) {
                     return arm;
+                }
             }
             newRound = true;
             // Make sure we don't go over the arity
@@ -223,7 +224,7 @@ public class TreeNode {
             }
             k++;
             // Removal policy
-            if (k > 2 && Au.size() > 2) {
+            if (k > 2 && Au.size() > 2 && totVisits > 0) {
                 if (options.policy == 1)
                     removeMinArm(false, false);
                 else if (options.policy == 2) {
@@ -262,7 +263,7 @@ public class TreeNode {
             if (budget == 1 && roundSimulations > 1) {
                 if (options.policy == 1 && Au.size() > 1)
                     removeMinArm(false, false);
-                else if (options.policy == 2 && Au.size() > 2) {
+                else if (options.policy == 2 && Au.size() > 2 && totVisits > (int)(Au.size() / 2.)) {
                     for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                         removeMinArm(false, false);
                     }
@@ -361,6 +362,7 @@ public class TreeNode {
         double minVal = Double.POSITIVE_INFINITY, value;
         List<TreeNode> l = (Au.size() > 0) ? Au : A;
         for (TreeNode arm : l) {
+
             // Throw out solved arms first, these will not be selected anyway
             if (arm.stats.mean() == -INF) {
                 minArm = arm;
