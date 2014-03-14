@@ -96,6 +96,8 @@ closedir(DIR);
 
 my %totalpoints = ();
 my %totalgames = ();
+my $crashes = 0;
+my @crashfiles = (); 
 
 foreach my $match (sort keys %matchmap) { 
 
@@ -147,6 +149,11 @@ foreach my $match (sort keys %matchmap) {
 
           last;
         }
+        elsif ($line =~ m/Exception/) {
+          $crashes += 1; 
+          push(@crashfiles, "$scratchdir/$runname.log"); 
+          last;
+        }
       }
       close(FILE); 
     }
@@ -186,6 +193,11 @@ foreach my $match (sort keys %matchmap) {
 
           last;
         }
+        elsif ($line =~ m/Exception/) {
+          $crashes += 1; 
+          push(@crashfiles, "$scratchdir/$runname.log"); 
+          last;
+        }
       }
       close(FILE); 
     }
@@ -220,6 +232,15 @@ foreach my $match (sort keys %matchmap) {
   printf("%20s %20s vs. %20s: %5d %5d %5d (diff %5d, games %5d) %3.2lf %3.2lf +/- %3.2lf\n", 
     $gm, $p1, $p2, $wins{$p1}, $wins{$p2}, $ties, $diff, $games, $lperc, $rperc, $ci95perc);
 }
+
+if ($crashes > 0) { 
+  print "\n";
+  print "Crashes: $crashes\n"; 
+  for (my $i = 0; $i < scalar(@crashfiles); $i++) { 
+    print "crash in " . $crashfiles[$i] . "\n";
+  }
+}
+  
 
 #print "discards = $discards\n";
 
