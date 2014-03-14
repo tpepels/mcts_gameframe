@@ -21,7 +21,7 @@ public class TreeNode {
     public final int player;
     public StatCounter stats;
     //
-    private boolean expanded = false, simulated = false, newRound = false;
+    private boolean expanded = false, simulated = false, newRound = false, removal = false;
     public List<TreeNode> children, A, Au, As;
     private int totVisits = 0, totalSimulations = 0, roundSimulations = 0, budget = 0;
     private IMove move;
@@ -235,13 +235,25 @@ public class TreeNode {
                     }
                 }
             }
-            divideBudget(budget);
+            divideBudget(budget, true);
             // Do the selection again, this time an arm will be selected
             return select(depth);
         } else if (depth <= options.sr_depth) {
+            // New round, remove an arm
+            if(removal) {
+                // Removal policy
+                if (options.policy == 1 && Au.size() > 1)
+                    removeMinArm(false, false);
+                else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
+                    for (int i = 0; i < (int) (Au.size() / 2.); i++) {
+                        removeMinArm(false, false);
+                    }
+                }
+                removal = false;
+            }
             // When a new round starts, redistribute the budget
             if (newRound) {
-                divideBudget(budget);
+                divideBudget(budget, true);
                 newRound = false;
             }
             TreeNode arm = null;
@@ -261,27 +273,6 @@ public class TreeNode {
                         break;
                 }
             }
-            // Removal policy
-            if (budget == 1 && roundSimulations > 1) {
-                if (options.policy == 1 && Au.size() > 1)
-                    removeMinArm(false, false);
-                else if (options.policy == 2 && Au.size() > 2 && totVisits > (int)(Au.size() / 2.)) {
-                    for (int i = 0; i < (int) (Au.size() / 2.); i++) {
-                        removeMinArm(false, false);
-                    }
-                }
-            }
-//            if (budget == 1 && roundSimulations >= options.sr_c * Au.size()) {
-//                k++;
-//                if (Au.size() > options.sr_c && k % options.sr_c == 0) {
-//                    for (int i = 0; i < options.sr_c; i++)
-//                        removeMinArm(false, true);
-//                } else if (Au.size() > 1 && Au.size() <= options.sr_c) {
-//                    // Remove half of the remaining arms
-//                    for (int i = 0; i < (int) (Au.size() / 2.); i++)
-//                        removeMinArm(false, false); // this can also remove protected arms
-//                }
-//            }
             return arm;
         } else {
             return uct.select(children, totVisits);
@@ -290,6 +281,7 @@ public class TreeNode {
 
     private void removeSolvedArm(TreeNode arm) {
         if (Au.remove(arm)) {
+            stats.subtract(arm.stats);
             double maxVisits = -1;
             TreeNode returnArm = null;
             // See if we can return an arm to Au
@@ -309,17 +301,18 @@ public class TreeNode {
                 Au.add(returnArm);
                 A.add(returnArm);
                 returnArm.budget = arm.budget;
+                stats.add(returnArm.stats);
                 arm.budget = 0;
                 returnArm.newRound = true;
             } else if (arm.budget > 0) {
                 // Divide the rest of the budget if no arm was returned
-                divideBudget(arm.budget);
+                divideBudget(arm.budget, false);
                 arm.budget = 0;
             }
         }
     }
 
-    private void divideBudget(int b) {
+    private void divideBudget(int b, boolean remove) {
         // All children are solved!
         if (Au.size() == 0 || b == 0)
             return;
@@ -355,6 +348,7 @@ public class TreeNode {
             arm.budget++;
             b--;
             arm.newRound = true;
+            arm.removal = remove;
         }
     }
 
@@ -395,12 +389,10 @@ public class TreeNode {
         A.remove(minArm);
         Au.remove(minArm);
         // Subtract the stats of the removed arm from all parents
-        if (Math.abs(minArm.stats.mean()) != INF) {
-            TreeNode p = this;
-            while (p != null) {
-                p.stats.subtract(minArm.stats);
-                p = p.parent;
-            }
+        TreeNode p = this;
+        while (p != null) {
+            p.stats.subtract(minArm.stats);
+            p = p.parent;
         }
     }
 
@@ -494,10 +486,12 @@ public class TreeNode {
 //                nv += t.stats.totalVisits();
 //                sum += t.stats.m_sum;
 //            }
-////            if(nv!=stats.totalVisits())
-////                System.out.println(nv + " " + stats.totalVisits());
-////            if(sum != -stats.m_sum)
-////                System.out.println(sum + " " + -stats.m_sum);
+//            double diff = Math.abs(nv - stats.totalVisits());
+//            if(diff > 10.)
+//                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
+//            diff = Math.abs(sum + stats.m_sum);
+//            if(diff > 100.)
+//                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
 //
 //            if (c != budget)
 //                System.err.println("??");

@@ -92,7 +92,6 @@ public class StatCounter {
     }
 
     public void setValue(double val) {
-        m_sum = val;
         m_mean = val;
     }
 
@@ -102,6 +101,15 @@ public class StatCounter {
         // Add, because its in view of opponent
         this.m_sum += statCounter.m_sum;
         this.m_n -= statCounter.m_n;
+        m_mean = m_sum / m_n;
+    }
+
+    public void add(StatCounter statCounter) {
+        m_wins += statCounter.m_losses;
+        m_losses += statCounter.m_wins;
+        // Subtract, because its in view of opponent
+        this.m_sum -= statCounter.m_sum;
+        this.m_n += statCounter.m_n;
         m_mean = m_sum / m_n;
     }
 
