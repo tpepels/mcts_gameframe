@@ -63,8 +63,8 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                 board.newDeterminization(myPlayer);
 
                 // Make one simulation from root to leaf.
-                if (Math.abs(root.MCTS(board, 0)) == TreeNode.INF)
-                    break; // Break if you find a winning move
+                if (Math.abs(root.MCTS(board, 0)) == TreeNode.INF  || root.getArity() == 1)
+                    break; // Break if you find a winning move, or only 1 move left
             }
             //
             if(simulations > options.timeInterval)
@@ -77,8 +77,8 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                 options.simsLeft--;
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
-                if (Math.abs(root.MCTS(board, 0)) == TreeNode.INF)
-                    break; // Break if you find a winning move
+                if (Math.abs(root.MCTS(board, 0)) == TreeNode.INF || root.getArity() == 1)
+                    break; // Break if you find a winning move, or only 1 move left
             }
         }
         // Return the best move found

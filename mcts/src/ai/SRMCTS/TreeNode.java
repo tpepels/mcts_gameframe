@@ -392,7 +392,6 @@ public class TreeNode {
         // Remove from selection
         A.remove(minArm);
         Au.remove(minArm);
-
         // Subtract the stats of the removed arm from all parents
         if (Math.abs(minArm.stats.mean()) != INF) {
             TreeNode p = this;
