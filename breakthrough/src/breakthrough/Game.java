@@ -20,7 +20,7 @@ public class Game {
         aiPlayer1.setOptions(options1);
 //        options1.timeInterval = 2500;
         options1.fixedSimulations = true;
-        options1.simulations = 20000;
+        options1.simulations = 60000;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
@@ -28,7 +28,7 @@ public class Game {
         aiPlayer2.setOptions(options2);
 //        options2.timeInterval = 2500;
         options2.fixedSimulations = true;
-        options2.simulations = 20000;
+        options2.simulations = 60000;
 
         AIPlayer aiPlayer;
         Move m = null;

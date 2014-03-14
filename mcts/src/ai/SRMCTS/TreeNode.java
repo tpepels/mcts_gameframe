@@ -55,10 +55,9 @@ public class TreeNode {
      * Run the MCTS algorithm on the given node
      */
     public double MCTS(IBoard board, int depth) {
-        // First add some leafs if required
-        if (isLeaf()) {
+        // First add some nodes if required
+        if (isLeaf())
             expand(board, depth);
-        }
         //
         TreeNode child;
         if (isTerminal())       // Game is terminal, no more moves can be played
@@ -87,7 +86,6 @@ public class TreeNode {
             result = child.stats.mean();
             child.budget--;
         }
-
         // (Solver) If one of the children is a win, then I'm a loss for the opponent
         if (result == INF) {
             budget--;
@@ -190,7 +188,7 @@ public class TreeNode {
             K = getArity();
             log_k = .0;
             log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
-            if(log_n == 0) // This happens in checkers, when capture is obligated
+            if (log_n == 0) // This happens in checkers, when capture is obligated
                 log_n = 1;
             for (int i = 2; i < K; i++) {
                 log_k += 1. / i;
@@ -235,12 +233,13 @@ public class TreeNode {
                     }
                 }
             }
-            divideBudget(budget, true);
+            boolean remove = (k > 2);
+            divideBudget(budget, remove);
             // Do the selection again, this time an arm will be selected
             return select(depth);
         } else if (depth <= options.sr_depth) {
             // New round, remove an arm
-            if(removal) {
+            if (removal) {
                 // Removal policy
                 if (options.policy == 1 && Au.size() > 1)
                     removeMinArm(false, false);
@@ -331,6 +330,8 @@ public class TreeNode {
             arm.budget++;
             b--;
             arm.newRound = true;
+            if (remove)
+                arm.removal = true;
             if (b == 0)
                 break;
         }
@@ -348,7 +349,8 @@ public class TreeNode {
             arm.budget++;
             b--;
             arm.newRound = true;
-            arm.removal = remove;
+            if (remove)
+                arm.removal = true;
         }
     }
 
@@ -384,7 +386,6 @@ public class TreeNode {
             }
             arm.roundSimulations = 0;
         }
-
         // Remove from selection
         A.remove(minArm);
         Au.remove(minArm);
@@ -479,6 +480,9 @@ public class TreeNode {
         stats.push(value);
         totVisits++;
         roundSimulations++;
+    }
+
+//    private void checkNode() {
 //        if (Au != null && parent != null) {
 //            int c = 0, sum = 0, nv = 0;
 //            for (TreeNode t : Au) {
@@ -487,16 +491,15 @@ public class TreeNode {
 //                sum += t.stats.m_sum;
 //            }
 //            double diff = Math.abs(nv - stats.totalVisits());
-//            if(diff > 10.)
+//            if(diff >= 1.)
 //                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
 //            diff = Math.abs(sum + stats.m_sum);
-//            if(diff > 100.)
+//            if(diff >= 1.)
 //                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
-//
-//            if (c != budget)
-//                System.err.println("??");
+////            if (c != budget)
+////                System.err.println("??");
 //        }
-    }
+//    }
 
     public boolean isLeaf() {
         return children == null || !expanded;

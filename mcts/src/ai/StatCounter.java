@@ -42,6 +42,17 @@ public class StatCounter {
         return newSc;
     }
 
+    public StatCounter copy() {
+        StatCounter newSc = new StatCounter();
+        newSc.m_sum = m_sum;
+        newSc.m_mean = m_mean;
+        newSc.m_m2 = m_m2;
+        newSc.m_n = m_n;
+        newSc.m_wins = m_wins;
+        newSc.m_losses = m_losses;
+        return newSc;
+    }
+
     public void reset() {
         m_sum = 0.0;
         m_m2 = 0.0;
@@ -99,8 +110,8 @@ public class StatCounter {
         m_wins -= statCounter.m_losses;
         m_losses -= statCounter.m_wins;
         // Add, because its in view of opponent
-        this.m_sum += statCounter.m_sum;
-        this.m_n -= statCounter.m_n;
+        m_sum += statCounter.m_sum;
+        m_n -= statCounter.m_n;
         m_mean = m_sum / m_n;
     }
 
@@ -108,8 +119,8 @@ public class StatCounter {
         m_wins += statCounter.m_losses;
         m_losses += statCounter.m_wins;
         // Subtract, because its in view of opponent
-        this.m_sum -= statCounter.m_sum;
-        this.m_n += statCounter.m_n;
+        m_sum -= statCounter.m_sum;
+        m_n += statCounter.m_n;
         m_mean = m_sum / m_n;
     }
 
