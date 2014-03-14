@@ -190,6 +190,8 @@ public class TreeNode {
             K = getArity();
             log_k = .0;
             log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
+            if(log_n == 0) // This happens in checkers, when capture is obligated
+                log_n = 1;
             for (int i = 2; i < K; i++) {
                 log_k += 1. / i;
             }
