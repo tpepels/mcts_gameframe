@@ -217,10 +217,10 @@ public class TreeNode {
             newRound = true;
             // Make sure we don't go over the arity
             if (k == getArity())
-                k = K - 1;
+                k--;
             // If no child was returned, the budget for each arm is spent
             if (options.policy == 1) {
-                budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
+                budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - (K - 1)) / (K - k)));
             } else if (options.policy == 2) {
                 budget = (int) (totalSimulations / log_n);
             }
