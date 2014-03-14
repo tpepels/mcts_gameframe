@@ -140,17 +140,17 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-	"mcts_h,mcts_h_sw500"
+	"mcts_h_sl,srmcts_h_sl"
 );
 
 my @games = (
 #	"lostcities",
-#	"checkers",	
-	"breakthrough"
-#	"pentalath",
-#	"cannon",
-#	"chinesecheckers",
-#	"amazons",
+	"checkers",	
+	"breakthrough",
+	"pentalath",
+	"cannon",
+	"chinesecheckers"
+#	"amazons"
  );
 
 print "queuing jobs... \n";
