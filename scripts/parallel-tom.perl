@@ -140,7 +140,10 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-	"mcts_h_sl,srmcts_h_sl"
+	"mcts_h_sl,srmcts_h_sl_d0_p1",
+	"mcts_h_sl,srmcts_h_sl_d1_p1",
+	"mcts_h_sl,srmcts_h_sl_d0_p2",
+	"mcts_h_sl,srmcts_h_sl_d1_p2"
 #	"mcts_h_sl,srmcts_h_sl_c0.2",
 #	"mcts_h_sl,srmcts_h_sl_c0.4",
 #	"mcts_h_sl,srmcts_h_sl_c0.6",

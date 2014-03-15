@@ -253,16 +253,10 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
-//                } else if (tag.equals("sr")) {
-//                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SuccessiveRejects(options, new UCT(options)));
-//                } else if (tag.equals("su")) {
-//                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new SqrtUCT(options, new UCT(options)));
-//                } else if (tag.equals("hg")) {
-//                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new HalfGreedySelect(options, new UCT(options)));
-//                } else if (tag.equals("uct")) {
-//                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new UCT(options));
-//                } else if (tag.equals("mact")) {
-//                    ((SRCRMCTSPlayer) playerRef).setSelectionPolicy(new MastUCT(options));
+                } else if (tag.equals("p")) {
+                    options.policy = Integer.parseInt(tag.substring(1));
+                } else if (tag.equals("d")) {
+                    options.sr_depth = Integer.parseInt(tag.substring(1));
                 } else if (tag.startsWith("c")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
                 } else if (tag.startsWith("mast")) {
