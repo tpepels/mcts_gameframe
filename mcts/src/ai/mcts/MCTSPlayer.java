@@ -1,6 +1,5 @@
 package ai.mcts;
 
-import ai.MovingAverageSorted;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
@@ -196,26 +195,6 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
                 System.out.println("c*                : " + options.qualityCov.getCovariance() / options.qualityCov.variance2());
             }
-            if (options.swUCT) {
-                System.out.println("Windows        : " + MovingAverageSorted.instances);
-                System.out.println("Small instances: " + ((MovingAverageSorted.smallInstances / (double) MovingAverageSorted.instances) * 100.) + "%");
-                System.out.println("Windows grown  : " + ((MovingAverageSorted.grown / (double) MovingAverageSorted.smallInstances) * 100.) + "%");
-                System.out.println("Windows cycled : " + ((MovingAverageSorted.full / (double) MovingAverageSorted.instances) * 100.) + "%");
-            }
-            MovingAverageSorted.grown = 0;
-            MovingAverageSorted.instances = 0;
-            MovingAverageSorted.full = 0;
-            MovingAverageSorted.smallInstances = 0;
-//            if (options.swUCT) {
-//                System.out.println("Windows        : " + MovingAverage.instances);
-//                System.out.println("Small instances: " + ((MovingAverage.smallInstances / (double) MovingAverage.instances) * 100.) + "%");
-//                System.out.println("Windows grown  : " + ((MovingAverage.grown / (double) MovingAverage.smallInstances) * 100.) + "%");
-//                System.out.println("Windows cycled : " + ((MovingAverage.full / (double) MovingAverage.instances) * 100.) + "%");
-//            }
-//            MovingAverage.grown = 0;
-//            MovingAverage.instances = 0;
-//            MovingAverage.full = 0;
-//            MovingAverage.smallInstances = 0;
         }
         // Turn the qb/rb/sw-uct back on
         options.qualityBonus = qb;

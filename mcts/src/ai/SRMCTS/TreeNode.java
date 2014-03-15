@@ -358,6 +358,7 @@ public class TreeNode {
         // Remove an arm
         TreeNode minArm = null;
         double minVal = Double.POSITIVE_INFINITY, value;
+        //
         List<TreeNode> l = (Au.size() > 0) ? Au : A;
         for (TreeNode arm : l) {
 
