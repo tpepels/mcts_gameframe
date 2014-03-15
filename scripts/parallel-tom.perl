@@ -141,15 +141,21 @@ my @jobs = ();
 # you can also use a loop to fill this with different player types
 my @matchups = (
 	"mcts_h_sl,srmcts_h_sl"
+#	"mcts_h_sl,srmcts_h_sl_c0.2",
+#	"mcts_h_sl,srmcts_h_sl_c0.4",
+#	"mcts_h_sl,srmcts_h_sl_c0.6",
+#	"mcts_h_sl,srmcts_h_sl_c0.8",
+#	"mcts_h_sl,srmcts_h_sl_c1.0",
+#	"mcts_h_sl,srmcts_h_sl_c1.2"
 );
 
 my @games = (
 #	"lostcities",
-	"checkers",	
-	"breakthrough",
-	"pentalath",
-	"cannon",
-	"chinesecheckers"
+#	"checkers",	
+	"breakthrough"
+#	"pentalath"
+#	"cannon",
+#	"chinesecheckers",
 #	"amazons"
  );
 
