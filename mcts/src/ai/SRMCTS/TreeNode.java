@@ -280,7 +280,7 @@ public class TreeNode {
 
     private void removeSolvedArm(TreeNode arm) {
         if (Au.remove(arm)) {
-            stats.subtract(arm.stats);
+            //stats.subtract(arm.stats);
             double maxVisits = -1;
             TreeNode returnArm = null;
             // See if we can return an arm to Au
@@ -300,7 +300,7 @@ public class TreeNode {
                 Au.add(returnArm);
                 A.add(returnArm);
                 returnArm.budget = arm.budget;
-                stats.add(returnArm.stats);
+                //stats.add(returnArm.stats);
                 arm.budget = 0;
                 returnArm.newRound = true;
             } else if (arm.budget > 0) {
@@ -391,11 +391,11 @@ public class TreeNode {
         A.remove(minArm);
         Au.remove(minArm);
         // Subtract the stats of the removed arm from all parents
-        TreeNode p = this;
-        while (p != null) {
-            p.stats.subtract(minArm.stats);
-            p = p.parent;
-        }
+        //        TreeNode p = this;
+        //        while (p != null) {
+        //            p.stats.subtract(minArm.stats);
+        //            p = p.parent;
+        //        }
     }
 
     @SuppressWarnings("ConstantConditions")
