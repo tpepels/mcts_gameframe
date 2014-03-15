@@ -186,11 +186,11 @@ public class TreeNode {
         // After expanding the root, set the Successive Rejects parameters
         if (depth == 0) {
             K = getArity();
-            log_k = .0;
+            log_k = .5;
             log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
             if (log_n == 0) // This happens in checkers, when capture is obligated
                 log_n = 1;
-            for (int i = 2; i < K; i++) {
+            for (int i = 2; i <= K; i++) {
                 log_k += 1. / i;
             }
         }
@@ -199,7 +199,8 @@ public class TreeNode {
     }
 
     private double log_k, log_n, k = 1;
-    private int K, rootCtr = 0;
+    private int K, rootCtr = 0, nk = 0;
+    private boolean recursive = false;
 
     private TreeNode select(int depth) {
         if (depth == 0) {
@@ -209,16 +210,19 @@ public class TreeNode {
                 rootCtr++;
                 // Make sure the budget per arm is spent
                 if (arm.budget > 0) {
+                    recursive = false;
                     return arm;
                 }
             }
             newRound = true;
-            // Make sure we don't go over the arity
-            if (k == getArity())
-                k--;
+//            // Make sure we don't go over the arity
+//            if (k == getArity())
+//                k--;
             // If no child was returned, the budget for each arm is spent
             if (options.policy == 1) {
-                budget = (int) Math.ceil((1. / log_k) * ((totalSimulations - (K - 1)) / (K - k)));
+                int n = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
+                budget = (Au.size() * (n - nk));
+                nk = n;
             } else if (options.policy == 2) {
                 budget = (int) (totalSimulations / log_n);
             }
@@ -235,6 +239,9 @@ public class TreeNode {
             }
             boolean remove = (k > 2);
             divideBudget(budget, remove);
+            if(recursive)
+                System.out.println();
+            recursive = true;
             // Do the selection again, this time an arm will be selected
             return select(depth);
         } else if (depth <= options.sr_depth) {
