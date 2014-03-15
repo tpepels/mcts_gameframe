@@ -215,11 +215,10 @@ public class TreeNode {
                 }
             }
             newRound = true;
-//            // Make sure we don't go over the arity
-//            if (k == getArity())
-//                k--;
             // If no child was returned, the budget for each arm is spent
-            if (options.policy == 1) {
+            if (k >= getArity())
+                budget = 1;
+            else if (options.policy == 1) {
                 int n = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
                 budget = (Au.size() * (n - nk));
                 nk = n;
@@ -228,7 +227,7 @@ public class TreeNode {
             }
             k++;
             // Removal policy
-            if (k > 2 && Au.size() > 2 && totVisits > 0) {
+            if (k > 2 && Au.size() > 1 && totVisits > 0) {
                 if (options.policy == 1)
                     removeMinArm(false, false);
                 else if (options.policy == 2) {
@@ -239,12 +238,13 @@ public class TreeNode {
             }
             boolean remove = (k > 2);
             divideBudget(budget, remove);
-            if(recursive)
-                System.out.println();
+            if (recursive)
+                throw new RuntimeException("Double recursive");
             recursive = true;
             // Do the selection again, this time an arm will be selected
             return select(depth);
         } else if (depth <= options.sr_depth) {
+            boolean rem = removal;
             // New round, remove an arm
             if (removal) {
                 // Removal policy
@@ -259,7 +259,7 @@ public class TreeNode {
             }
             // When a new round starts, redistribute the budget
             if (newRound) {
-                divideBudget(budget, true);
+                divideBudget(budget, rem);
                 newRound = false;
             }
             TreeNode arm = null;
@@ -283,6 +283,7 @@ public class TreeNode {
         } else {
             return uct.select(children, totVisits);
         }
+
     }
 
     private void removeSolvedArm(TreeNode arm) {
@@ -415,10 +416,8 @@ public class TreeNode {
         IMove currentMove;
         boolean terminateEarly = false;
         while (!gameEnded && !terminateEarly) {
-
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
-
             while (!moveMade) {
                 // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
@@ -456,6 +455,12 @@ public class TreeNode {
         return score;
     }
 
+    private void updateStats(double value) {
+        stats.push(value);
+        totVisits++;
+        roundSimulations++;
+    }
+
     public TreeNode selectBestMove() {
         // Return a solved node
         if (As.size() > 0)
@@ -484,12 +489,6 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(double value) {
-        stats.push(value);
-        totVisits++;
-        roundSimulations++;
-    }
-
 //    private void checkNode() {
 //        if (Au != null && parent != null) {
 //            int c = 0, sum = 0, nv = 0;
@@ -504,8 +503,8 @@ public class TreeNode {
 //            diff = Math.abs(sum + stats.m_sum);
 //            if(diff >= 1.)
 //                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
-////            if (c != budget)
-////                System.err.println("??");
+//            if (c != budget)
+//                System.err.println("??");
 //        }
 //    }
 
