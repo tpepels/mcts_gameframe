@@ -155,10 +155,10 @@ my @matchups = (
 my @games = (
 #	"lostcities",
 #	"checkers",	
-	"breakthrough"
+#	"breakthrough"
 #	"pentalath"
 #	"cannon",
-#	"chinesecheckers",
+	"chinesecheckers"
 #	"amazons"
  );
 
