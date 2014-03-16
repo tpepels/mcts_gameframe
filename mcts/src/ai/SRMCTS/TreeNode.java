@@ -252,7 +252,7 @@ public class TreeNode {
             // New round, remove an arm
             if (removal) {
                 k++;
-                if (k > 1) {
+                if (k > 2) {
                     // Removal policy
                     if (options.policy == 1 && Au.size() > 1)
                         removeMinArm(false, false);
@@ -290,7 +290,6 @@ public class TreeNode {
         } else {
             return uct.select(children, totVisits);
         }
-
     }
 
     private void removeSolvedArm(TreeNode arm) {
