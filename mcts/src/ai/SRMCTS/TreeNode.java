@@ -238,7 +238,7 @@ public class TreeNode {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1, true);
+                        newSelection(Au.size() - 1, false);
                     }
                 } else if (options.policy == 2) {
                     if (options.remove) {
@@ -246,7 +246,7 @@ public class TreeNode {
                             removeMinArm(false, false);
                         }
                     } else {
-                        newSelection((int) (Au.size() / 2.), true);
+                        newSelection((int) (Au.size() / 2.), false);
                     }
                 }
             }
@@ -267,7 +267,7 @@ public class TreeNode {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1, true);
+                        newSelection(Au.size() - 1, false);
                     }
                 } else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
                     if (options.remove) {
@@ -275,7 +275,7 @@ public class TreeNode {
                             removeMinArm(false, false);
                         }
                     } else {
-                        newSelection((int) (Au.size() / 2.), true);
+                        newSelection((int) (Au.size() / 2.), false);
                     }
                 }
                 removal = false;
