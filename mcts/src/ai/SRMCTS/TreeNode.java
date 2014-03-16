@@ -9,6 +9,8 @@ import ai.mcts.MCTSOptions;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TreeNode {
@@ -232,11 +234,19 @@ public class TreeNode {
             k++;
             // Removal policy
             if (k > 2 && Au.size() > 1 && totVisits > 0) {
-                if (options.policy == 1)
-                    removeMinArm(false, false);
-                else if (options.policy == 2) {
-                    for (int i = 0; i < (int) (Au.size() / 2.); i++) {
+                if (options.policy == 1) {
+                    if (options.remove) {
                         removeMinArm(false, false);
+                    } else {
+                        newSelection(Au.size() - 1);
+                    }
+                } else if (options.policy == 2) {
+                    if (options.remove) {
+                        for (int i = 0; i < (int) (Au.size() / 2.); i++) {
+                            removeMinArm(false, false);
+                        }
+                    } else {
+                        newSelection((int)(Au.size() / 2.));
                     }
                 }
             }
@@ -407,6 +417,23 @@ public class TreeNode {
         while (p != null) {
             p.stats.subtract(minArm.stats);
             p = p.parent;
+        }
+    }
+
+    private void newSelection(int n) {
+        Collections.sort(children, new Comparator<TreeNode>() {
+            @Override
+            public int compare(TreeNode o1, TreeNode o2) {
+                return (o1.stats.mean() > o2.stats.mean()) ? -1 : 1;
+            }
+        });
+        A.clear();
+        Au.clear();
+        //stats.reset();
+        for (int i = 0; i < n; i++) {
+            //stats.add(children.get(i).stats);
+            A.add(children.get(i));
+            Au.add(children.get(i));
         }
     }
 
