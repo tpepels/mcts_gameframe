@@ -233,7 +233,7 @@ public class TreeNode {
             }
             k++;
             // Removal policy
-            if (k > 2 && Au.size() > 1 && totVisits > 0) {
+            if (k > 2 && Au.size() > 2 && totVisits > 0) {
                 if (options.policy == 1) {
                     if (options.remove) {
                         removeMinArm(false, false);
@@ -432,6 +432,8 @@ public class TreeNode {
         Collections.sort(children, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
+                if(o1.stats.mean() == o2.stats.mean())
+                    return 0;
                 return (o1.stats.mean() > o2.stats.mean()) ? -1 : 1;
             }
         });
