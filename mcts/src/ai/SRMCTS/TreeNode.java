@@ -448,19 +448,18 @@ public class TreeNode {
         Au.clear();
         // stats.reset();
         int i = 0, index = 0;
-        while (i < n) {
+        while (i < n && index < children.size()) {
             // Skip proven losses
             if(children.get(index).stats.mean() == -INF) {
                 index++;
                 continue;
             }
-            index++;
-            i++;
             //stats.add(children.get(i).stats);
             A.add(children.get(index));
             Au.add(children.get(index));
             children.get(index).roundSimulations = 0;
-
+            index++;
+            i++;
         }
     }
 
