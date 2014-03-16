@@ -238,7 +238,7 @@ public class TreeNode {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1);
+                        newSelection(Au.size() - 1, true);
                     }
                 } else if (options.policy == 2) {
                     if (options.remove) {
@@ -246,7 +246,7 @@ public class TreeNode {
                             removeMinArm(false, false);
                         }
                     } else {
-                        newSelection((int)(Au.size() / 2.));
+                        newSelection((int) (Au.size() / 2.), true);
                     }
                 }
             }
@@ -267,7 +267,7 @@ public class TreeNode {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1);
+                        newSelection(Au.size() - 1, true);
                     }
                 } else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
                     if (options.remove) {
@@ -275,7 +275,7 @@ public class TreeNode {
                             removeMinArm(false, false);
                         }
                     } else {
-                        newSelection((int)(Au.size() / 2.));
+                        newSelection((int) (Au.size() / 2.), true);
                     }
                 }
                 removal = false;
@@ -428,13 +428,16 @@ public class TreeNode {
         }
     }
 
-    private void newSelection(int n) {
+    private void newSelection(int n, final boolean ucb) {
         Collections.sort(children, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                if(o1.stats.mean() == o2.stats.mean())
-                    return 0;
-                return (o1.stats.mean() > o2.stats.mean()) ? -1 : 1;
+                double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                if (ucb) {
+                    v1 = v1 + Math.sqrt(FastLog.log(totVisits) / o1.totVisits);
+                    v2 = v2 + Math.sqrt(FastLog.log(totVisits) / o2.totVisits);
+                }
+                return Double.compare(v2, v1);
             }
         });
         A.clear();
@@ -531,7 +534,7 @@ public class TreeNode {
         // Select from the non-solved arms
         TreeNode bestChild = null;
         double max = Double.NEGATIVE_INFINITY, value;
-        List<TreeNode> l = (getnVisits() > 0. && Au.size() > 0) ? Au : children;
+        List<TreeNode> l = (getnVisits() > 0. && Au.size() > 0 && options.remove) ? Au : children;
         for (TreeNode t : l) {
             if (t.stats.mean() == TreeNode.INF)
                 value = TreeNode.INF + MCTSOptions.r.nextDouble();
