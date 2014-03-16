@@ -442,9 +442,14 @@ public class TreeNode {
         });
         A.clear();
         Au.clear();
-        //stats.reset();
+        // stats.reset();
         for (int i = 0; i < n; i++) {
+            // Skip proven losses
+            if(children.get(i).stats.mean() == -INF)
+                continue;
+
             //stats.add(children.get(i).stats);
+
             A.add(children.get(i));
             Au.add(children.get(i));
             children.get(i).roundSimulations = 0;
