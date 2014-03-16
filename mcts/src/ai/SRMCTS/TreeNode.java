@@ -253,10 +253,10 @@ public class TreeNode {
             if (removal) {
                 // Removal policy
                 if (options.policy == 1 && Au.size() > 1)
-                    removeMinArm(false, false);
+                    removeMinArm(true, false);
                 else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
                     for (int i = 0; i < (int) (Au.size() / 2.); i++) {
-                        removeMinArm(false, false);
+                        removeMinArm(true, false);
                     }
                 }
                 removal = false;
