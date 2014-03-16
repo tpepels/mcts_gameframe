@@ -433,9 +433,13 @@ public class TreeNode {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
                 double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                if(o2.stats.mean() == -INF)
+                    return -1;
+                if(o1.stats.mean() == -INF)
+                    return 1;
                 if (ucb) {
-                    v1 = v1 + Math.sqrt(FastLog.log(totVisits) / o1.totVisits);
-                    v2 = v2 + Math.sqrt(FastLog.log(totVisits) / o2.totVisits);
+                    v1 = v1 + .5 * Math.sqrt(FastLog.log(totVisits) / o1.totVisits);
+                    v2 = v2 + .5 * Math.sqrt(FastLog.log(totVisits) / o2.totVisits);
                 }
                 return Double.compare(v2, v1);
             }
@@ -443,16 +447,20 @@ public class TreeNode {
         A.clear();
         Au.clear();
         // stats.reset();
-        for (int i = 0; i < n; i++) {
+        int i = 0, index = 0;
+        while (i < n) {
             // Skip proven losses
-            if(children.get(i).stats.mean() == -INF)
+            if(children.get(index).stats.mean() == -INF) {
+                index++;
                 continue;
-
+            }
+            index++;
+            i++;
             //stats.add(children.get(i).stats);
+            A.add(children.get(index));
+            Au.add(children.get(index));
+            children.get(index).roundSimulations = 0;
 
-            A.add(children.get(i));
-            Au.add(children.get(i));
-            children.get(i).roundSimulations = 0;
         }
     }
 

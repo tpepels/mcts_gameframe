@@ -18,6 +18,7 @@ public class Game {
         options1.setGame("breakthrough");
         AIPlayer aiPlayer1 = new SRMCTSPlayer();
         aiPlayer1.setOptions(options1);
+        options1.uctC = .6;
 //        options1.timeInterval = 2500;
         options1.fixedSimulations = true;
         options1.simulations = 20000;
