@@ -14,6 +14,7 @@ import java.util.List;
 public class TreeNode {
     public static final double INF = 999999;
     public static int myPlayer = 0;
+    private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
     //
     private final MCTSOptions options;
     private final TreeNode parent;
@@ -70,6 +71,9 @@ public class TreeNode {
         if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
             // Execute the move represented by the child
             board.doAIMove(child.getMove(), player);
+            //
+            if (options.history)
+                movesMade[player - 1].add(child.getMove());
             // When a leaf is reached return the result of the playout
             if (!child.simulated && depth > options.sr_depth) {
                 result = child.playOut(board);
@@ -188,7 +192,7 @@ public class TreeNode {
             K = getArity();
             log_k = .5;
             log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
-            if (log_n == 0) // This happens in checkers, when capture is obligated
+            if (log_n == 0) // This happens in checkers, when capture is mandatory
                 log_n = 1;
             for (int i = 2; i <= K; i++) {
                 log_k += 1. / i;
@@ -399,11 +403,11 @@ public class TreeNode {
         A.remove(minArm);
         Au.remove(minArm);
         // Subtract the stats of the removed arm from all parents
-        //        TreeNode p = this;
-        //        while (p != null) {
-        //            p.stats.subtract(minArm.stats);
-        //            p = p.parent;
-        //        }
+        TreeNode p = this;
+        while (p != null) {
+            p.stats.subtract(minArm.stats);
+            p = p.parent;
+        }
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -433,6 +437,11 @@ public class TreeNode {
                 currentMove = moves.get(moveIndex);
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
+
+                    // Keep track of moves made
+                    if (options.history && !options.to_history)
+                        movesMade[currentPlayer - 1].add(currentMove);
+
                     nMoves++;
                     moveMade = true;
                     winner = board.checkPlayoutWin();
@@ -449,9 +458,25 @@ public class TreeNode {
         if (winner == player) score = 1.0;
         else if (winner == IBoard.DRAW) score = 0.0;
         else score = -1;
+
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
+
+        // Update the history values for the moves made during the match
+        if (options.history) {
+            double p1Score = (winner == IBoard.P1_WIN) ? Math.signum(score) : -Math.signum(score);
+            for (int i = 0; i < movesMade[0].size(); i++) {
+                options.resetHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
+            }
+            for (int i = 0; i < movesMade[1].size(); i++) {
+                options.resetHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
+            }
+            // Clear the lists
+            movesMade[0].clear();
+            movesMade[1].clear();
+        }
+
         return score;
     }
 

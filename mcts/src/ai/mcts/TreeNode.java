@@ -8,7 +8,6 @@ import ai.framework.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Stack;
 
 public class TreeNode {
     public static final double INF = 999999;
@@ -633,10 +632,10 @@ public class TreeNode {
         if (options.history) {
             double p1Score = (winner == IBoard.P1_WIN) ? Math.signum(score) : -Math.signum(score);
             for (int i = 0; i < movesMade[0].size(); i++) {
-                options.updateMast(1, movesMade[0].get(i).getUniqueId(), p1Score);
+                options.resetHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
             }
             for (int i = 0; i < movesMade[1].size(); i++) {
-                options.updateMast(2, movesMade[1].get(i).getUniqueId(), -p1Score);
+                options.resetHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
             }
             // Clear the lists
             movesMade[0].clear();

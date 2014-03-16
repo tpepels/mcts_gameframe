@@ -31,7 +31,7 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
 
         // Reset the MAST arrays
         if (options.MAST)
-            options.resetMast(board.getMaxUniqueMoveId());
+            options.resetHistory(board.getMaxUniqueMoveId());
 
         // Create a new root, or reuse the old tree
         if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {

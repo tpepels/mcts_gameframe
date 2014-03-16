@@ -14,7 +14,7 @@ public abstract class IMove {
     public abstract boolean isChance();
 
     public double getHistoryVal(int player, MCTSOptions options) {
-        return options.getMastValue(player, getUniqueId());
+        return options.getHistoryValue(player, getUniqueId());
     }
 
     public abstract boolean isProtected();

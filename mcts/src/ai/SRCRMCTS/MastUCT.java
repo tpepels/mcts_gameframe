@@ -33,10 +33,10 @@ public class MastUCT implements SelectionPolicy {
             } else {
                 value = c.stats.mean();
                 if(options.MAST) {
-                    double v = options.getMastVisits(node.player, c.getMove().getUniqueId());
+                    double v = options.getHistoryVisits(node.player, c.getMove().getUniqueId());
                     double nv = c.getnVisits();
                     if(v > nv) {
-                        value = .75 * value + .25 * options.getMastValue(node.player, c.getMove().getUniqueId());
+                        value = .75 * value + .25 * options.getHistoryValue(node.player, c.getMove().getUniqueId());
                     }
                 }
                 // Compute the uct value with the (new) average value

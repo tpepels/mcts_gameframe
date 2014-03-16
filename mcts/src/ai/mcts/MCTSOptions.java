@@ -162,22 +162,22 @@ public class MCTSOptions {
             return -1;
     }
 
-    public void resetMast(int maxId) {
+    public void resetHistory(int maxId) {
         mastValues = new double[2][maxId];
         mastVisits = new double[2][maxId];
     }
 
-    public void updateMast(int player, int moveId, double value) {
+    public void resetHistory(int player, int moveId, double value) {
         mastValues[player - 1][moveId] +=
                 (value - mastValues[player - 1][moveId]) /
                         (++mastVisits[player - 1][moveId]);
     }
 
-    public double getMastValue(int player, int id) {
+    public double getHistoryValue(int player, int id) {
         return mastValues[player - 1][id];
     }
 
-    public double getMastVisits(int player, int id) {
+    public double getHistoryVisits(int player, int id) {
         return mastVisits[player - 1][id];
     }
 }
