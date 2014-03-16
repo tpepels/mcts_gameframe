@@ -263,11 +263,19 @@ public class TreeNode {
             if (removal) {
                 k++;
                 // Removal policy
-                if (options.policy == 1 && Au.size() > 1)
-                    removeMinArm(true, false);
-                else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
-                    for (int i = 0; i < (int) (Au.size() / 2.); i++) {
-                        removeMinArm(true, false);
+                if (options.policy == 1 && Au.size() > 1) {
+                    if (options.remove) {
+                        removeMinArm(false, false);
+                    } else {
+                        newSelection(Au.size() - 1);
+                    }
+                } else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
+                    if (options.remove) {
+                        for (int i = 0; i < (int) (Au.size() / 2.); i++) {
+                            removeMinArm(false, false);
+                        }
+                    } else {
+                        newSelection((int)(Au.size() / 2.));
                     }
                 }
                 removal = false;
@@ -434,6 +442,7 @@ public class TreeNode {
             //stats.add(children.get(i).stats);
             A.add(children.get(i));
             Au.add(children.get(i));
+            children.get(i).roundSimulations = 0;
         }
     }
 
