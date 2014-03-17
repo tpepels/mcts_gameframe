@@ -109,15 +109,16 @@ public class TreeNode {
 
         double result;
         // (Solver) Check for proven win / loss / draw
-        if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
+        if (Math.abs(child.stats.mean()) != INF) {
             // Execute the move represented by the child
-            board.doAIMove(child.getMove(), player);
+            if(!isTerminal())
+                board.doAIMove(child.getMove(), player);
 
             if (options.history)
                 movesMade[player - 1].add(child.getMove());
 
             // When a leaf is reached return the result of the playout
-            if (!child.isSimulated()) {
+            if (!child.isSimulated() || child.isTerminal()) {
                 result = child.playOut(board, depth + 1);
                 // check for non-negamax
                 // here, result is in view of the child
@@ -139,75 +140,76 @@ public class TreeNode {
                     result = child.MCTS(board, depth + 1, this.player);
             }
             // set the board back to its previous configuration
-            board.undoMove();
+            if(!isTerminal())
+                board.undoMove();
         } else {
             result = child.stats.mean();
         }
 
         // result is now in view of me in all cases
+        if (options.solver) {
+            // (Solver) If one of the children is a win, then I'm a win
+            if (result == INF) {
+                // If I have a win, my parent has a loss.
+                // check for non-negamax
+                if (previousPlayer != this.player)
+                    stats.setValue(-INF);
+                else
+                    stats.setValue(INF);
+                return result;
+            } else if (result == -INF) {
+                // (Solver) Check if all children are a loss
+                for (TreeNode tn : children) {
+                    // (AUCT) Skip virtual child
+                    if (options.auct && tn.isVirtual())
+                        continue;
+                    // If the child is not expanded or solved, make sure it is expanded
+                    if (options.solverFix && tn.isLeaf() && Math.abs(tn.stats.mean()) != INF) {
+                        // Execute the move represented by the child
+                        board.doAIMove(tn.getMove(), player);
+                        TreeNode winner = tn.expand(board, depth + 2, this.player);
+                        board.undoMove();
+                        // We found a winning node below the child, this means the child is a loss.
+                        if (winner != null) {
+                            // check for non-negamax
+                            if (player != tn.player)
+                                tn.stats.setValue(-INF);
+                            else
+                                tn.stats.setValue(INF);
+                        }
+                    }
+                    // Are all children a loss?
+                    if (tn.stats.mean() != result) {
+                        // (AUCT) Update the virtual node with a loss
+                        if (options.auct && children.get(0).isVirtual()) {
+                            TreeNode virtChild = children.get(0);
+                            // check for non-negamax
+                            if (player != virtChild.player)
+                                virtChild.stats.push(-1);
+                            else
+                                virtChild.stats.push(1);
+                        }
+                        // Return a single loss, if not all children are a loss
+                        // check for non-negamax; can't explain why the return value has a different sign
+                        if (previousPlayer != this.player) {
+                            updateStats(1, previousPlayer, depth);  // in view of parent
+                            return -1;                       // view of me.
+                        } else {
+                            updateStats(-1, previousPlayer, depth);  // view of parent
+                            return -1;                        // view of me
+                        }
+                    }
+                }
+                // (Solver) If all children lead to a loss for the opponent, then I'm a win
+                // check for non-negamax
+                if (previousPlayer != this.player)
+                    stats.setValue(INF);
+                else
+                    stats.setValue(-INF);
 
-        // (Solver) If one of the children is a win, then I'm a win
-        if (result == INF) {
-            // If I have a win, my parent has a loss. 
-            // check for non-negamax
-            if (previousPlayer != this.player)
-                stats.setValue(-INF);
-            else
-                stats.setValue(INF);
-            return result;
-        } else if (result == -INF) {
-            // (Solver) Check if all children are a loss
-            for (TreeNode tn : children) {
-                // (AUCT) Skip virtual child
-                if (options.auct && tn.isVirtual())
-                    continue;
-                // If the child is not expanded or solved, make sure it is expanded
-                if (options.solverFix && tn.isLeaf() && Math.abs(tn.stats.mean()) != INF) {
-                    // Execute the move represented by the child
-                    board.doAIMove(tn.getMove(), player);
-                    TreeNode winner = tn.expand(board, depth + 2, this.player);
-                    board.undoMove();
-                    // We found a winning node below the child, this means the child is a loss.
-                    if (winner != null) {
-                        // check for non-negamax
-                        if (player != tn.player)
-                            tn.stats.setValue(-INF);
-                        else
-                            tn.stats.setValue(INF);
-                    }
-                }
-                // Are all children a loss?
-                if (tn.stats.mean() != result) {
-                    // (AUCT) Update the virtual node with a loss
-                    if (options.auct && children.get(0).isVirtual()) {
-                        TreeNode virtChild = children.get(0);
-                        // check for non-negamax
-                        if (player != virtChild.player)
-                            virtChild.stats.push(-1);
-                        else
-                            virtChild.stats.push(1);
-                    }
-                    // Return a single loss, if not all children are a loss
-                    // check for non-negamax; can't explain why the return value has a different sign
-                    if (previousPlayer != this.player) {
-                        updateStats(1, previousPlayer, depth);  // in view of parent
-                        return -1;                       // view of me.
-                    } else {
-                        updateStats(-1, previousPlayer, depth);  // view of parent
-                        return -1;                        // view of me
-                    }
-                }
+                return result; // always return in view of me
             }
-            // (Solver) If all children lead to a loss for the opponent, then I'm a win
-            // check for non-negamax
-            if (previousPlayer != this.player)
-                stats.setValue(INF);
-            else
-                stats.setValue(-INF);
-
-            return result; // always return in view of me
         }
-
         // Why is result not negated? For the negamax case, should be -result; check with Tom
         // before: updateStats(result); 
 
@@ -244,10 +246,11 @@ public class TreeNode {
             vNode.velocity = velocity;
             children.add(vNode);
         }
-
-        int winner;
         double value, best_imVal = -INF, best_pbVal = -INF, best_maxBackpropQs = -INF;
-
+        int winner = board.checkWin();
+        // Board is terminal, don't expand
+        if(winner != IBoard.NONE_WIN)
+            return null;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
@@ -261,20 +264,24 @@ public class TreeNode {
                 // non-negamax
                 nextPlayer = board.getPlayerToMove();
                 child.player = nextPlayer;
-                // Check for a winner, (Solver)
-                winner = board.checkWin();
-                //
-                if (winner == player) {
-                    value = INF;
-                    // This is a win for the expanding node
-                    winNode = child;
-                } else if (winner == nextPlayer) {
-                    value = -INF;
-                } else {
-                    value = 0.;
+                winner = IBoard.NONE_WIN;
+                if (options.solver) {
+                    // Check for a winner, (Solver)
+                    winner = board.checkWin();
+                    //
+                    if (winner == player) {
+                        value = INF;
+                        // This is a win for the expanding node
+                        winNode = child;
+                    } else if (winner == nextPlayer) {
+                        value = -INF;
+                    } else {
+                        value = 0.;
+                    }
+
+                    // Set the value of the child (0 = nothing, +/-INF win/loss)
+                    child.stats.setValue(value);
                 }
-                // Set the value of the child (0 = nothing, +/-INF win/loss)
-                child.stats.setValue(value);
                 // implicit minimax
                 if (options.implicitMM) {
                     // check for non-negamax

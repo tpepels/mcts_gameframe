@@ -58,6 +58,10 @@ public class TreeNode {
      * Run the MCTS algorithm on the given node
      */
     public double MCTS(IBoard board, int depth) {
+        if (depth == 0) {
+            movesMade[0].clear();
+            movesMade[1].clear();
+        }
         // First add some nodes if required
         if (isLeaf())
             expand(board, depth);
@@ -70,14 +74,17 @@ public class TreeNode {
         //
         double result;
         // (Solver) Check for proven win / loss / draw
-        if (Math.abs(child.stats.mean()) != INF && !child.isTerminal()) {
+        if (Math.abs(child.stats.mean()) != INF) {
             // Execute the move represented by the child
-            board.doAIMove(child.getMove(), player);
+            if(!isTerminal())
+                board.doAIMove(child.getMove(), player);
+            else
+                System.out.println();
             //
             if (options.history)
                 movesMade[player - 1].add(child.getMove());
             // When a leaf is reached return the result of the playout
-            if (!child.simulated && depth > options.sr_depth) {
+            if ((!child.simulated && depth > options.sr_depth) || child.isTerminal()) {
                 result = child.playOut(board);
                 child.updateStats(-result);
                 child.simulated = true;
@@ -87,52 +94,55 @@ public class TreeNode {
                 result = -child.MCTS(board, depth + 1);
             }
             // set the board back to its previous configuration
-            board.undoMove();
+            if(!isTerminal())
+                board.undoMove();
         } else {
             result = child.stats.mean();
             child.budget--;
         }
-        // (Solver) If one of the children is a win, then I'm a loss for the opponent
-        if (result == INF) {
-            budget--;
-            // Remove from list of unsolved nodes
-            if (Au != null) {
-                As.add(child);
-                removeSolvedArm(child);
-            }
-            stats.setValue(-INF);
-            return result;
-        } else if (result == -INF) {
-            budget--;
-            // Remove from list of unsolved nodes
-            if (Au != null)
-                removeSolvedArm(child);
-            // (Solver) Check if all children are a loss
-            for (TreeNode tn : children) {
-                // If the child is not expanded, make sure it is
-                if (tn.isLeaf() && tn.stats.mean() != INF) {
-                    // Execute the move represented by the child
-                    board.doAIMove(tn.getMove(), player);
-                    TreeNode winner = tn.expand(board, depth + 1);
-                    board.undoMove();
-                    // We found a winning node below the child, this means the child is a loss.
-                    if (winner != null) {
-                        tn.stats.setValue(-INF);
-                        // Remove from list of unsolved nodes
-                        if (Au != null)
-                            removeSolvedArm(tn);
+        if (options.solver) {
+            // (Solver) If one of the children is a win, then I'm a loss for the opponent
+            if (result == INF) {
+                budget--;
+                // Remove from list of unsolved nodes
+                if (Au != null) {
+                    As.add(child);
+                    removeSolvedArm(child);
+                }
+                stats.setValue(-INF);
+                return result;
+            } else if (result == -INF) {
+                budget--;
+                // Remove from list of unsolved nodes
+                if (Au != null)
+                    removeSolvedArm(child);
+                // (Solver) Check if all children are a loss
+                for (TreeNode tn : children) {
+                    // If the child is not expanded, make sure it is
+                    if (tn.isLeaf() && tn.stats.mean() != INF) {
+                        // Execute the move represented by the child
+                        board.doAIMove(tn.getMove(), player);
+                        TreeNode winner = tn.expand(board, depth + 1);
+                        board.undoMove();
+                        // We found a winning node below the child, this means the child is a loss.
+                        if (winner != null) {
+                            tn.stats.setValue(-INF);
+                            // Remove from list of unsolved nodes
+                            if (Au != null)
+                                removeSolvedArm(tn);
+                        }
+                    }
+                    // Are all children a loss?
+                    if (tn.stats.mean() != result) {
+                        // Return a single loss, if not all children are a loss
+                        updateStats(1);
+                        return -1;
                     }
                 }
-                // Are all children a loss?
-                if (tn.stats.mean() != result) {
-                    // Return a single loss, if not all children are a loss
-                    updateStats(1);
-                    return -1;
-                }
+                // (Solver) If all children lead to a loss for me, then I'm a win for the opponent
+                stats.setValue(INF);
+                return result;
             }
-            // (Solver) If all children lead to a loss for me, then I'm a win for the opponent
-            stats.setValue(INF);
-            return result;
         }
         budget--;
         // Update the results for the current node
@@ -143,6 +153,9 @@ public class TreeNode {
 
     private TreeNode expand(IBoard board, int depth) {
         expanded = true;
+        int winner = board.checkWin();
+
+
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // If one of the nodes is a win, we don't have to select
         TreeNode winNode = null;
@@ -157,26 +170,29 @@ public class TreeNode {
             Au = new ArrayList<TreeNode>(moves.size());     // Unsolved nodes
             As = new ArrayList<TreeNode>(moves.size());     // Solved nodes
         }
-        int winner;
+        // Board is terminal, don't expand
+        if(winner != IBoard.NONE_WIN)
+            return null;
         double value;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (board.doAIMove(moves.get(i), player)) {
                 TreeNode child = new TreeNode(nextPlayer, moves.get(i), options, this);
-                // Check for a winner, (Solver)
-                winner = board.checkWin();
-                if (winner == player) {
-                    value = INF;
-                    // This is a win for the expanding node
-                    winNode = child;
-                } else if (winner == nextPlayer) {
-                    value = -INF;
-                } else {
-                    value = 0.;
+                value = 0.;
+                if (options.solver) {
+                    // Check for a winner, (Solver)
+                    winner = board.checkWin();
+                    if (winner == player) {
+                        value = INF;
+                        // This is a win for the expanding node
+                        winNode = child;
+                    } else if (winner == nextPlayer) {
+                        value = -INF;
+                    }
+                    // Set the value of the child (0 = nothing, +/-INF win/loss)
+                    child.stats.setValue(value);
                 }
-                // Set the value of the child (0 = nothing, +/-INF win/loss)
-                child.stats.setValue(value);
                 //
                 if (depth <= options.sr_depth) {
                     Au.add(child);
@@ -238,7 +254,7 @@ public class TreeNode {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1, true);
+                        newSelection(Au.size() - 1, false);
                     }
                 } else if (options.policy == 2) {
                     if (options.remove) {
@@ -246,7 +262,7 @@ public class TreeNode {
                             removeMinArm(false, false);
                         }
                     } else {
-                        newSelection((int) (Au.size() / 2.), true);
+                        newSelection((int) (Au.size() / 2.), false);
                     }
                 }
             }
@@ -267,7 +283,7 @@ public class TreeNode {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1, true);
+                        newSelection(Au.size() - 1, false);
                     }
                 } else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
                     if (options.remove) {
@@ -275,7 +291,7 @@ public class TreeNode {
                             removeMinArm(false, false);
                         }
                     } else {
-                        newSelection((int) (Au.size() / 2.), true);
+                        newSelection((int) (Au.size() / 2.), false);
                     }
                 }
                 removal = false;
@@ -433,9 +449,9 @@ public class TreeNode {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
                 double v1 = o1.stats.mean(), v2 = o2.stats.mean();
-                if(o2.stats.mean() == -INF)
+                if (o2.stats.mean() == -INF)
                     return -1;
-                if(o1.stats.mean() == -INF)
+                if (o1.stats.mean() == -INF)
                     return 1;
                 if (ucb) {
                     v1 = v1 + .5 * Math.sqrt(FastLog.log(totVisits) / o1.totVisits);
@@ -450,7 +466,7 @@ public class TreeNode {
         int i = 0, index = 0;
         while (i < n && index < children.size()) {
             // Skip proven losses
-            if(children.get(index).stats.mean() == -INF) {
+            if (children.get(index).stats.mean() == -INF) {
                 index++;
                 continue;
             }

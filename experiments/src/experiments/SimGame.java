@@ -133,6 +133,7 @@ public class SimGame {
             MCTSOptions options = new MCTSOptions();
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
+            options.solver = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
@@ -186,6 +187,8 @@ public class SimGame {
                         options.windowSize = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("sl")) {
                     options.fixedSimulations = true;
+                } else if (tag.equals("s")) {
+                    options.solver = true;
                 } else if (tag.equals("pbd")) { 
                     options.progBias = true;
                     options.pbDecay = true;
@@ -241,6 +244,7 @@ public class SimGame {
             MCTSOptions options = new MCTSOptions();
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
+            options.solver = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
@@ -259,6 +263,8 @@ public class SimGame {
                     options.sr_depth = Integer.parseInt(tag.substring(1));
                 } else if (tag.startsWith("c")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
+                } else if (tag.equals("s")) {
+                    options.solver = true;
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
