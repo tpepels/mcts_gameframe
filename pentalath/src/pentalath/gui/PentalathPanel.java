@@ -49,7 +49,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         addMouseListener(this);
         t = new Timer(1000, this);
         t.start();
-        makeAIMove();
+        //makeAIMove();
     }
 
     private void resetPlayers() {

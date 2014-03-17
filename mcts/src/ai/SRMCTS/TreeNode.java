@@ -152,8 +152,6 @@ public class TreeNode {
     private TreeNode expand(IBoard board, int depth) {
         expanded = true;
         int winner = board.checkWin();
-
-
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // If one of the nodes is a win, we don't have to select
         TreeNode winNode = null;
@@ -245,18 +243,19 @@ public class TreeNode {
             } else if (options.policy == 2) {
                 budget = (int) (totalSimulations / log_n);
             } else if (options.policy == 3) {
-                budget = (int) (totalSimulations / K);
+                budget = totalSimulations / K;
             }
-            k++;
+
             // Removal policy
-            if (k > 2 && Au.size() > 2 && totVisits > 0) {
-                if (options.policy == 1 || options.policy == 3) {
+            if (k > 1 && Au.size() > 2 && totVisits > 0) {
+                if ((options.policy == 1 || options.policy == 3) && k % options.rc == 0 & Au.size() > options.rc) {
                     if (options.remove) {
-                        removeMinArm(false, false);
+                        for (int i = 0; i < options.rc; i++)
+                            removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1, false);
+                        newSelection(Au.size() - options.rc, false);
                     }
-                } else if (options.policy == 2) {
+                } else if (options.policy == 2 || Au.size() <= options.rc) {
                     if (options.remove) {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
@@ -266,11 +265,13 @@ public class TreeNode {
                     }
                 }
             }
-            boolean remove = (k > 2);
+
+            boolean remove = (k > 1);
             divideBudget(budget, remove);
             if (recursive)
                 throw new RuntimeException("Double recursive");
             recursive = true;
+            k++;
             // Do the selection again, this time an arm will be selected
             return select(depth);
         } else if (depth <= options.sr_depth) {
@@ -279,13 +280,14 @@ public class TreeNode {
             if (removal) {
                 k++;
                 // Removal policy
-                if ((options.policy == 1  || options.policy == 3) && Au.size() > 1) {
+                if ((options.policy == 1 || options.policy == 3) && k % options.rc == 0 & Au.size() > options.rc) {
                     if (options.remove) {
-                        removeMinArm(false, false);
+                        for (int i = 0; i < options.rc; i++)
+                            removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - 1, false);
+                        newSelection(Au.size() - options.rc, false);
                     }
-                } else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
+                } else if ((options.policy == 2 || Au.size() <= options.rc) && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
                     if (options.remove) {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
@@ -437,11 +439,11 @@ public class TreeNode {
         A.remove(minArm);
         Au.remove(minArm);
         // Subtract the stats of the removed arm from all parents
-        TreeNode p = this;
-        while (p != null) {
-            p.stats.subtract(minArm.stats);
-            p = p.parent;
-        }
+//        TreeNode p = this;
+//        while (p != null) {
+//            p.stats.subtract(minArm.stats);
+//            p = p.parent;
+//        }
     }
 
     private void newSelection(int n, final boolean ucb) {

@@ -265,6 +265,8 @@ public class SimGame {
                     options.uctC = Double.parseDouble(tag.substring(1));
                 } else if (tag.equals("s")) {
                     options.solver = true;
+                } else if (tag.startsWith("rc")) {
+                    options.rc = Integer.parseInt(tag.substring(2));
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
