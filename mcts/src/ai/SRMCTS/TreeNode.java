@@ -281,6 +281,7 @@ public class TreeNode {
             boolean rem = removal;
             // New round, remove an arm
             if (removal) {
+                k++;
                 // Removal policy
                 if ((options.policy == 1 || options.policy == 3) && k % rc == 0 && Au.size() > rc) {
                     if (options.remove) {
@@ -301,7 +302,6 @@ public class TreeNode {
                     }
                 }
                 removal = false;
-                k++;
             }
             // When a new round starts, redistribute the budget
             if (newRound) {
