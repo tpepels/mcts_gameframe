@@ -80,13 +80,13 @@ public class SimGame {
             } else if (args[i].equals("--seed")) {
                 i++;
                 seed = Long.parseLong(args[i]);
-				MCTSOptions.r.setSeed(seed);
-            } else if (args[i].equals("--printboard")) { 
-                printBoard = true; 
-            } else if (args[i].equals("--mctsdebug")) { 
-                mctsDebug = true; 
+                MCTSOptions.r.setSeed(seed);
+            } else if (args[i].equals("--printboard")) {
+                printBoard = true;
+            } else if (args[i].equals("--mctsdebug")) {
+                mctsDebug = true;
             } else {
-                throw new RuntimeException("Unknown option: " + args[i]); 
+                throw new RuntimeException("Unknown option: " + args[i]);
             }
         }
     }
@@ -160,7 +160,7 @@ public class SimGame {
                     else
                         throw new RuntimeException("IM: problem parsing det threshold");
                 } else if (tag.startsWith("df")) {
-                    options.detFreq = Integer.parseInt(tag.substring(2)); 
+                    options.detFreq = Integer.parseInt(tag.substring(2));
                 } else if (tag.startsWith("ege")) {
                     options.epsGreedyEval = true;
                     options.egeEpsilon = Double.parseDouble(tag.substring(3));
@@ -189,7 +189,7 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.equals("s")) {
                     options.solver = true;
-                } else if (tag.equals("pbd")) { 
+                } else if (tag.equals("pbd")) {
                     options.progBias = true;
                     options.pbDecay = true;
                     options.progBiasWeight = 0.66;
@@ -203,7 +203,7 @@ public class SimGame {
                     options.imPruning = true;
                 } else if (tag.startsWith("mbp")) {
                     options.maxBackprop = true;
-                    options.maxBackpropT = Integer.parseInt(tag.substring(3)); 
+                    options.maxBackpropT = Integer.parseInt(tag.substring(3));
                 } else if (tag.startsWith("np")) {
                     options.nodePriors = true;
                     options.nodePriorsVisits = Integer.parseInt(tag.substring(2));
@@ -267,6 +267,8 @@ public class SimGame {
                     options.solver = true;
                 } else if (tag.startsWith("rc")) {
                     options.rc = Integer.parseInt(tag.substring(2));
+                } else if (tag.equals("r")) {
+                    options.remove = true;
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
@@ -276,10 +278,10 @@ public class SimGame {
             }
             // and set the options for this player
             playerRef.setOptions(options);
-        } else if (parts[0].equals("random")) { 
-            playerRef = new RandomPlayer(); 
-        } else if (parts[0].equals("keyboard")) { 
-            playerRef = new KeyboardPlayer(); 
+        } else if (parts[0].equals("random")) {
+            playerRef = new RandomPlayer();
+        } else if (parts[0].equals("keyboard")) {
+            playerRef = new KeyboardPlayer();
         } else {
             throw new RuntimeException("Unrecognized player: " + label);
         }
@@ -378,9 +380,9 @@ public class SimGame {
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
         System.out.println("Game over. Winner is " + board.checkWin());
     }
-    
+
     public void run_kalah() {
-        
+
         System.out.println("Starting kalah game simulation...");
 
         System.out.println("P1: " + p1label);
@@ -388,24 +390,24 @@ public class SimGame {
         System.out.println("");
 
         // generate a random board. 
-        int[] initb = new int[12]; 
+        int[] initb = new int[12];
         for (int i = 0; i < 12; i++)
-            initb[i] = 0; 
+            initb[i] = 0;
 
-        for (int i = 0; i < 48; i++) { 
-            int index = (int)(MCTSOptions.r.nextDouble() * 12); 
+        for (int i = 0; i < 48; i++) {
+            int index = (int) (MCTSOptions.r.nextDouble() * 12);
             initb[index]++;
         }
 
         kalah.game.Board initBoard = new kalah.game.Board();
         initBoard.initialize(initb);
 
-        System.out.println("Generated board: \n" + initBoard); 
+        System.out.println("Generated board: \n" + initBoard);
 
         loadPlayer(1, p1label);
         loadPlayer(2, p2label);
 
-        kalah.game.Board board = (kalah.game.Board)initBoard.copy();
+        kalah.game.Board board = (kalah.game.Board) initBoard.copy();
 
         // Initialize the fast... stuff
         FastTanh.tanh(1.);
@@ -432,23 +434,23 @@ public class SimGame {
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
         //System.out.println("Game over. Winner is " + board.checkWin());
-        
-        int firstgame_p1score = board.getEndScore(1); 
+
+        int firstgame_p1score = board.getEndScore(1);
         int firstgame_p2score = board.getEndScore(2);
 
-        System.out.println("*** First game done. Scores are: " + firstgame_p1score + " " + firstgame_p2score); 
+        System.out.println("*** First game done. Scores are: " + firstgame_p1score + " " + firstgame_p2score);
         System.out.println("");
 
-        System.out.println("Reloading initial board and swaping players..."); 
-        
+        System.out.println("Reloading initial board and swaping players...");
+
         // swap!
         loadPlayer(1, p2label);
         loadPlayer(2, p1label);
 
-        board = (kalah.game.Board)initBoard.copy();
+        board = (kalah.game.Board) initBoard.copy();
 
         System.out.println(board);
-        
+
         //try { Thread.sleep(5000); } catch(Exception e) { } 
 
         // Initialize the fast... stuff
@@ -476,27 +478,27 @@ public class SimGame {
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
         //System.out.println("Game over. Winner is " + board.checkWin());
-        
-        int secondgame_p1score = board.getEndScore(1); 
+
+        int secondgame_p1score = board.getEndScore(1);
         int secondgame_p2score = board.getEndScore(2);
 
-        System.out.println("***  game done. Scores are: " + secondgame_p1score + " " + secondgame_p2score); 
+        System.out.println("***  game done. Scores are: " + secondgame_p1score + " " + secondgame_p2score);
         System.out.println("");
 
         System.out.println("First game scores, " + p1label + ": " + firstgame_p1score + " " + p2label + ": " + firstgame_p2score);
-        System.out.println("Second game scores, " + p2label + ": " + secondgame_p1score + " " + p1label + ": " + secondgame_p2score); 
-  
+        System.out.println("Second game scores, " + p2label + ": " + secondgame_p1score + " " + p1label + ": " + secondgame_p2score);
+
         // Check for a p1label win
-        if (   (firstgame_p1score > firstgame_p2score && secondgame_p2score >= secondgame_p1score)
-            || (secondgame_p2score > secondgame_p1score && firstgame_p1score >= firstgame_p2score))
+        if ((firstgame_p1score > firstgame_p2score && secondgame_p2score >= secondgame_p1score)
+                || (secondgame_p2score > secondgame_p1score && firstgame_p1score >= firstgame_p2score))
             System.out.println("Game over. Winner is 1");
-        // Check for a p2label win
-        else if (   (firstgame_p2score > firstgame_p1score && secondgame_p1score >= secondgame_p2score)
-                 || (secondgame_p1score > secondgame_p2score && firstgame_p2score >= firstgame_p1score))  
+            // Check for a p2label win
+        else if ((firstgame_p2score > firstgame_p1score && secondgame_p1score >= secondgame_p2score)
+                || (secondgame_p1score > secondgame_p2score && firstgame_p2score >= firstgame_p1score))
             System.out.println("Game over. Winner is 2");
-        // else, discard
-        else 
-            System.out.println("Game over. Winner is 3"); 
+            // else, discard
+        else
+            System.out.println("Game over. Winner is 3");
 
     }
 
