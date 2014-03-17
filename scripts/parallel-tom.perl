@@ -140,25 +140,42 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-	"mcts_h_sl,srmcts_h_sl_d0_p1",
-	"mcts_h_sl,srmcts_h_sl_d1_p1",
-	"mcts_h_sl,srmcts_h_sl_d0_p2",
-	"mcts_h_sl,srmcts_h_sl_d1_p2"
-#	"mcts_h_sl,srmcts_h_sl_c0.2",
-#	"mcts_h_sl,srmcts_h_sl_c0.4",
-#	"mcts_h_sl,srmcts_h_sl_c0.6",
-#	"mcts_h_sl,srmcts_h_sl_c0.8",
-#	"mcts_h_sl,srmcts_h_sl_c1.0",
-#	"mcts_h_sl,srmcts_h_sl_c1.2"
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc2",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc6",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc8",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc10",
+	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc2",
+	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4",
+	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc6",
+	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc8",
+	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc10",
+	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc12",
+	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc14"
+#	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc2",
+#	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc4",
+#	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc6",
+#	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc8"
+#	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc10",
+#	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc10_r"
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p2_s",
+#	"mcts_h_sl_s,srmcts_h_sl_d1_p2_s"
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4_c0.1",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4_c0.2",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4_c0.4",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4_c0.6",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4_c0.8",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4_c1.2",
+#	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc4_c1.4"
 );
 
 my @games = (
 #	"lostcities",
 #	"checkers",	
-#	"breakthrough"
+	"breakthrough"
 #	"pentalath"
 #	"cannon",
-	"chinesecheckers"
+#	"chinesecheckers"
 #	"amazons"
  );
 
