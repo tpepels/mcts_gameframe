@@ -245,6 +245,7 @@ public class SimGame {
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.solver = false;
+            options.remove = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);

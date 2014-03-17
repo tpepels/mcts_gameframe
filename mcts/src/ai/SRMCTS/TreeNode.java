@@ -206,6 +206,7 @@ public class TreeNode {
             K = getArity();
             log_k = .5;
             log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
+            rc = options.rc;
             if (log_n == 0) // This happens in checkers, when capture is mandatory
                 log_n = 1;
             for (int i = 2; i <= K; i++) {
@@ -217,7 +218,7 @@ public class TreeNode {
     }
 
     private double log_k, log_n, k = 1;
-    private int K, rootCtr = 0, nk = 0;
+    private int K, rootCtr = 0, nk = 0, rc;
     private boolean recursive = false;
 
     private TreeNode select(int depth) {
@@ -248,14 +249,16 @@ public class TreeNode {
 
             // Removal policy
             if (k > 1 && Au.size() > 2 && totVisits > 0) {
-                if ((options.policy == 1 || options.policy == 3) && k % options.rc == 0 & Au.size() > options.rc) {
+                if ((options.policy == 1 || options.policy == 3) && k % rc == 0 && Au.size() > rc) {
                     if (options.remove) {
                         for (int i = 0; i < options.rc; i++)
                             removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - options.rc, false);
+                        newSelection(Au.size() - rc, false);
                     }
-                } else if (options.policy == 2 || Au.size() <= options.rc) {
+                    if(rc > 1)
+                        rc = (int)Math.round(rc / 2.);
+                } else if (options.policy == 2 || Au.size() <= rc) {
                     if (options.remove) {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
@@ -278,16 +281,17 @@ public class TreeNode {
             boolean rem = removal;
             // New round, remove an arm
             if (removal) {
-                k++;
                 // Removal policy
-                if ((options.policy == 1 || options.policy == 3) && k % options.rc == 0 & Au.size() > options.rc) {
+                if ((options.policy == 1 || options.policy == 3) && k % rc == 0 && Au.size() > rc) {
                     if (options.remove) {
                         for (int i = 0; i < options.rc; i++)
                             removeMinArm(false, false);
                     } else {
-                        newSelection(Au.size() - options.rc, false);
+                        newSelection(Au.size() - rc, false);
                     }
-                } else if ((options.policy == 2 || Au.size() <= options.rc) && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
+                    if(rc > 1)
+                        rc = (int)Math.round(rc / 2.);
+                } else if ((options.policy == 2 || Au.size() <= rc) && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
                     if (options.remove) {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
@@ -297,6 +301,7 @@ public class TreeNode {
                     }
                 }
                 removal = false;
+                k++;
             }
             // When a new round starts, redistribute the budget
             if (newRound) {
