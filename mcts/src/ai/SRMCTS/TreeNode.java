@@ -206,13 +206,14 @@ public class TreeNode {
             K = getArity();
             log_k = .5;
             log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
-            rc = options.rc;
+
             if (log_n == 0) // This happens in checkers, when capture is mandatory
                 log_n = 1;
             for (int i = 2; i <= K; i++) {
                 log_k += 1. / i;
             }
         }
+        rc = options.rc;
         // If one of the nodes is a win, return it.
         return winNode;
     }
