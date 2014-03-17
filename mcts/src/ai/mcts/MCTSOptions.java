@@ -17,7 +17,7 @@ public class MCTSOptions {
     public Covariance moveCov = new Covariance(), qualityCov = new Covariance(), moveCov1 = new Covariance();
     public double kr = 2.0, kq = 2.0;
     // note: useHeuristics has a different default (false) when using SimGame
-    public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, treeReuse = false, solver = false;
+    public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, treeReuse = false, solver = true;
     public boolean ucbTuned = false, auct = false, swUCT = false;
     // Plot stats to a file
     public boolean mapping = false;
@@ -28,7 +28,7 @@ public class MCTSOptions {
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
-    public int sr_depth = 1, policy = 1;
+    public int sr_depth = 1, policy = 2;
     public boolean remove = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results

@@ -185,7 +185,7 @@ public class SimGame {
                     options.swUCT = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.windowSize = Double.parseDouble(tag.substring(2));
-                } else if (tag.startsWith("sl")) {
+                } else if (tag.equals("sl")) {
                     options.fixedSimulations = true;
                 } else if (tag.equals("s")) {
                     options.solver = true;
@@ -253,7 +253,7 @@ public class SimGame {
             // now, parse the tags
             for (int i = 1; i < parts.length; i++) {
                 String tag = parts[i];
-                if (tag.startsWith("sl")) {
+                if (tag.equals("sl")) {
                     options.fixedSimulations = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;

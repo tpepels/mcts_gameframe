@@ -76,10 +76,8 @@ public class TreeNode {
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
             // Execute the move represented by the child
-            if(!isTerminal())
+            if (!isTerminal())
                 board.doAIMove(child.getMove(), player);
-            else
-                System.out.println();
             //
             if (options.history)
                 movesMade[player - 1].add(child.getMove());
@@ -94,7 +92,7 @@ public class TreeNode {
                 result = -child.MCTS(board, depth + 1);
             }
             // set the board back to its previous configuration
-            if(!isTerminal())
+            if (!isTerminal())
                 board.undoMove();
         } else {
             result = child.stats.mean();
@@ -171,7 +169,7 @@ public class TreeNode {
             As = new ArrayList<TreeNode>(moves.size());     // Solved nodes
         }
         // Board is terminal, don't expand
-        if(winner != IBoard.NONE_WIN)
+        if (winner != IBoard.NONE_WIN)
             return null;
         double value;
         // Add all moves as children to the current node
@@ -246,11 +244,13 @@ public class TreeNode {
                 nk = n;
             } else if (options.policy == 2) {
                 budget = (int) (totalSimulations / log_n);
+            } else if (options.policy == 3) {
+                budget = (int) (totalSimulations / K);
             }
             k++;
             // Removal policy
             if (k > 2 && Au.size() > 2 && totVisits > 0) {
-                if (options.policy == 1) {
+                if (options.policy == 1 || options.policy == 3) {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
@@ -279,7 +279,7 @@ public class TreeNode {
             if (removal) {
                 k++;
                 // Removal policy
-                if (options.policy == 1 && Au.size() > 1) {
+                if ((options.policy == 1  || options.policy == 3) && Au.size() > 1) {
                     if (options.remove) {
                         removeMinArm(false, false);
                     } else {
