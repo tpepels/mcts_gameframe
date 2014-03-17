@@ -251,14 +251,14 @@ public class TreeNode {
             if (k > 1 && Au.size() > 2 && totVisits > 0) {
                 if ((options.policy == 1 || options.policy == 3) && k % rc == 0 && Au.size() > rc) {
                     if (options.remove) {
-                        for (int i = 0; i < options.rc; i++)
+                        for (int i = 0; i < rc; i++)
                             removeMinArm(false, false);
                     } else {
                         newSelection(Au.size() - rc, false);
                     }
                     if(rc > 1)
                         rc = (int)Math.round(rc / 2.);
-                } else if (options.policy == 2 || Au.size() <= rc) {
+                } else if (options.policy == 2) {
                     if (options.remove) {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
@@ -284,14 +284,14 @@ public class TreeNode {
                 // Removal policy
                 if ((options.policy == 1 || options.policy == 3) && k % rc == 0 && Au.size() > rc) {
                     if (options.remove) {
-                        for (int i = 0; i < options.rc; i++)
+                        for (int i = 0; i < rc; i++)
                             removeMinArm(false, false);
                     } else {
                         newSelection(Au.size() - rc, false);
                     }
                     if(rc > 1)
                         rc = (int)Math.round(rc / 2.);
-                } else if ((options.policy == 2 || Au.size() <= rc) && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
+                } else if (options.policy == 2 && Au.size() > 2 && totVisits > (int) (Au.size() / 2.)) {
                     if (options.remove) {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
