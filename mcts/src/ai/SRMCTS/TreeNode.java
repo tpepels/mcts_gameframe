@@ -24,7 +24,7 @@ public class TreeNode {
     public final int player;
     public StatCounter stats;
     //
-    private boolean expanded = false, simulated = false, newRound = false, removal = false;
+    private boolean expanded = false, simulated = false, newRound = false;
     public List<TreeNode> children, A, As;
     private int totVisits = 0, totalSimulations = 0, roundSimulations = 0, budget = 0;
     private IMove move;
@@ -239,89 +239,27 @@ public class TreeNode {
             if (k >= getArity())
                 budget = 1;
             else if (options.policy == 1) { // Successive rejects
-
                 int n = (int) Math.ceil((1. / log_k) * ((totalSimulations - K) / (K + 1 - k)));
                 budget = (A.size() * (n - nk));
                 nk = n;
-
             } else if (options.policy == 2) // Sequential halving
-
                 budget = (int) (totalSimulations / log_n);
-
             else if (options.policy == 3 || options.policy == 4) { // Policy 4
-
                 if (K > 2)
-                    budget = (int) Math.ceil(totalSimulations / (K - 2.));
+                    budget = (int) Math.ceil(totalSimulations / (K - 1.));
                 else
                     budget = (int) (totalSimulations / K);
-
             }
-
-            // Removal policy
-            if (k > 1 && totVisits > 0) {
-                if ((options.policy == 1 || options.policy == 3 || options.policy == 4) && k % rc == 0 && A.size() > rc) {
-
-                    if (options.remove) {
-                        for (int i = 0; i < rc; i++)
-                            removeMinArm(false, false);
-                    } else
-                        newSelection(A.size() - rc);
-
-                    if (rc > 1)
-                        rc = (int) Math.floor(rc / 2.);
-
-                } else if (options.policy == 2 && A.size() > 1) {
-
-                    if (options.remove) {
-                        for (int i = 0; i < (int) (A.size() / 2.); i++) {
-                            removeMinArm(false, false);
-                        }
-                    } else
-                        newSelection((int) (A.size() / 2.));
-
-                }
-            }
-
-            boolean remove = (k > 1);
-            divideBudget(budget, remove);
+            divideBudget(budget);
             if (recursive)
                 throw new RuntimeException("Double recursive");
             recursive = true;
-            k++;
             // Do the selection again, this time an arm will be selected
             return select(depth);
         } else if (depth <= options.sr_depth) {
-            boolean rem = removal;
-            // New round, remove an arm
-            if (removal) {
-                // Removal policy
-                if ((options.policy == 1 || options.policy == 3 || options.policy == 4) && k % rc == 0 && A.size() > rc) {
-
-                    if (options.remove) {
-                        for (int i = 0; i < rc; i++)
-                            removeMinArm(false, false);
-                    } else
-                        newSelection(A.size() - rc);
-
-                    if (rc > 1)
-                        rc = (int) Math.floor(rc / 2.);
-
-                } else if (options.policy == 2 && A.size() > 1) {
-
-                    if (options.remove) {
-                        for (int i = 0; i < (int) (A.size() / 2.); i++) {
-                            removeMinArm(false, false);
-                        }
-                    } else
-                        newSelection((int) (A.size() / 2.));
-
-                }
-                removal = false;
-                k++;
-            }
             // When a new round starts, redistribute the budget
             if (newRound) {
-                divideBudget(budget, rem); // New rounds can be started by the solver, don't throw out any arms in that case
+                divideBudget(budget); // New rounds can be started by the solver, don't throw out any arms in that case
                 newRound = false;
             }
             TreeNode arm = null;
@@ -373,13 +311,13 @@ public class TreeNode {
                 returnArm.newRound = true;
             } else if (arm.budget > 0) {
                 // Divide the rest of the budget if no arm was returned
-                divideBudget(arm.budget, false);
+                divideBudget(arm.budget);
                 arm.budget = 0;
             }
         }
     }
 
-    private void divideBudget(int b, boolean remove) {
+    private void divideBudget(int b) {
         // All children are solved!
         if (A.size() == 0 || b == 0)
             return;
@@ -398,8 +336,6 @@ public class TreeNode {
             arm.budget++;
             b--;
             arm.newRound = true;
-            if (remove)
-                arm.removal = true;
             if (b == 0)
                 break;
         }
@@ -417,8 +353,6 @@ public class TreeNode {
             arm.budget++;
             b--;
             arm.newRound = true;
-            if (remove)
-                arm.removal = true;
         }
     }
 
@@ -569,6 +503,31 @@ public class TreeNode {
         stats.push(value);
         totVisits++;
         roundSimulations++;
+        // New round, remove an arm
+        if (budget == 0) {
+            // Removal policy
+            if ((options.policy == 1 || options.policy == 3 || options.policy == 4)
+                    && k % rc == 0 && A.size() > rc) {
+                // Remove or replace the current selection
+                if (options.remove) {
+                    for (int i = 0; i < rc; i++)
+                        removeMinArm(false, false);
+                } else
+                    newSelection(A.size() - rc);
+
+                if (rc > 1)
+                    rc = (int) Math.floor(rc / 2.);
+
+            } else if (options.policy == 2 && A.size() > 1) {
+                // Remove or replace the current selection
+                if (options.remove) {
+                    for (int i = 0; i < (int) (A.size() / 2.); i++)
+                        removeMinArm(false, false);
+                } else
+                    newSelection((int) (A.size() / 2.));
+            }
+            k++;
+        }
     }
 
     public TreeNode selectBestMove() {
