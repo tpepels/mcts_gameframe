@@ -24,12 +24,12 @@ public class UCT {
             // Always select a proven win
             if(c.stats.mean() == TreeNode.INF)
                 uctValue = TreeNode.INF + MCTSOptions.r.nextDouble();
-            else if (c.getnVisits() == 0) {
+            else if (c.getTotalVisits() == 0) {
                 // First, visit all children at least once
                 uctValue = 100 + MCTSOptions.r.nextDouble();
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(np) / c.getnVisits());
+                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(np) / c.getTotalVisits());
             }
             // Remember the highest UCT value
             if (uctValue > max) {
