@@ -213,10 +213,12 @@ public class TreeNode {
                 log_k += 1. / i;
             }
         }
-        if (options.policy == 3)
-            rc = options.rc;
-        if (options.policy == 4)
-            rc = (int)(Au.size() / (double)options.rc);
+        if (Au != null) {
+            if (options.policy == 3)
+                rc = options.rc;
+            if (options.policy == 4)
+                rc = (int) (Au.size() / (double) options.rc);
+        }
         // If one of the nodes is a win, return it.
         return winNode;
     }
@@ -263,7 +265,7 @@ public class TreeNode {
                     }
 
                     if (rc > 1)
-                        rc = (int)(rc / 2.);
+                        rc = (int) (rc / 2.);
 
                 } else if (options.policy == 2) {
 
@@ -301,7 +303,7 @@ public class TreeNode {
                     }
 
                     if (rc > 1)
-                        rc = (int)(rc / 2.);
+                        rc = (int) (rc / 2.);
 
                 } else if (options.policy == 2 && Au.size() > 1) {
 
