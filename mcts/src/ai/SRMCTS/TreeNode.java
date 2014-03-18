@@ -217,7 +217,7 @@ public class TreeNode {
             if (options.policy == 3)
                 rc = options.rc;
             if (options.policy == 4)
-                rc = (int) (Au.size() / (double) options.rc);
+                rc = (int) Math.ceil(Au.size() / (double) options.rc);
         }
         // If one of the nodes is a win, return it.
         return winNode;
@@ -250,32 +250,34 @@ public class TreeNode {
             } else if (options.policy == 2) {
                 budget = (int) (totalSimulations / log_n);
             } else if (options.policy == 3 || options.policy == 4) {
-                budget = totalSimulations / K;
+                if (K > 2) {
+                    budget = (int) Math.ceil(totalSimulations / (K - 2.));
+                } else {
+                    budget = totalSimulations / K;
+                }
             }
 
             // Removal policy
-            if (k > 1 && Au.size() > 2 && totVisits > 0) {
+            if (k > 1 && totVisits > 0) {
                 if ((options.policy == 1 || options.policy == 3 || options.policy == 4) && k % rc == 0 && Au.size() > rc) {
 
                     if (options.remove) {
                         for (int i = 0; i < rc; i++)
                             removeMinArm(false, false);
-                    } else {
-                        newSelection(Au.size() - rc, false);
-                    }
+                    } else
+                        newSelection(Au.size() - rc);
 
                     if (rc > 1)
-                        rc = (int) (rc / 2.);
+                        rc = (int) Math.floor(rc / 2.);
 
-                } else if (options.policy == 2) {
+                } else if (options.policy == 2 && Au.size() > 1) {
 
                     if (options.remove) {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
                         }
-                    } else {
-                        newSelection((int) (Au.size() / 2.), false);
-                    }
+                    } else
+                        newSelection((int) (Au.size() / 2.));
 
                 }
             }
@@ -298,12 +300,11 @@ public class TreeNode {
                     if (options.remove) {
                         for (int i = 0; i < rc; i++)
                             removeMinArm(false, false);
-                    } else {
-                        newSelection(Au.size() - rc, false);
-                    }
+                    } else
+                        newSelection(Au.size() - rc);
 
                     if (rc > 1)
-                        rc = (int) (rc / 2.);
+                        rc = (int) Math.floor(rc / 2.);
 
                 } else if (options.policy == 2 && Au.size() > 1) {
 
@@ -311,9 +312,8 @@ public class TreeNode {
                         for (int i = 0; i < (int) (Au.size() / 2.); i++) {
                             removeMinArm(false, false);
                         }
-                    } else {
-                        newSelection((int) (Au.size() / 2.), false);
-                    }
+                    } else
+                        newSelection((int) (Au.size() / 2.));
 
                 }
                 removal = false;
@@ -467,20 +467,15 @@ public class TreeNode {
 //        }
     }
 
-    private void newSelection(int n, final boolean ucb) {
+    private void newSelection(int n) {
         Collections.sort(children, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                double v1 = o1.stats.mean(), v2 = o2.stats.mean();
                 if (o2.stats.mean() == -INF)
                     return -1;
                 if (o1.stats.mean() == -INF)
                     return 1;
-                if (ucb) {
-                    v1 = v1 + .5 * Math.sqrt(FastLog.log(totVisits) / o1.totVisits);
-                    v2 = v2 + .5 * Math.sqrt(FastLog.log(totVisits) / o2.totVisits);
-                }
-                return Double.compare(v2, v1);
+                return Double.compare(o2.stats.mean(), o1.stats.mean());
             }
         });
         A.clear();

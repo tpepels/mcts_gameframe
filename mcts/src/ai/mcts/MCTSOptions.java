@@ -28,8 +28,8 @@ public class MCTSOptions {
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
-    public int sr_depth = 1, policy = 4, rc = 3;
-    public boolean remove = true;
+    public int sr_depth = 0, policy = 4, rc = 3;
+    public boolean remove = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST
