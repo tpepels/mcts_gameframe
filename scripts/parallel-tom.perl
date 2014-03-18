@@ -178,9 +178,9 @@ my @games = (
 #	"lostcities",
 #	"checkers",	
 #	"breakthrough"
-	"pentalath"
+#	"pentalath"
 #	"cannon",
-#	"chinesecheckers"
+	"chinesecheckers"
 #	"amazons"
  );
 
