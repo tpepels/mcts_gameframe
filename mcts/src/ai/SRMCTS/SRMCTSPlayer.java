@@ -90,7 +90,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Player " + myPlayer);
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
-            System.out.println("Root visits: " + root.getnVisits());
+            System.out.println("Root visits: " + root.getTotalVisits());
         }
         root = null;
         // Release the board's memory
