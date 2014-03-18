@@ -145,18 +145,18 @@ my @matchups = (
 #	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc6",
 #	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc8",
 #	"mcts_h_sl_s,srmcts_h_sl_d0_p3_s_rc10",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc2",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc3",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc4",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc6",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc8",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc10",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc2_r",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc3_r",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc4_r",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc6_r",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc8_r",
-	"mcts_h_sl_s,srmcts_h_sl_d0_p4_s_rc10_r"
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc2",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc3",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc4",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc6",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc8",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc10",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc2_r",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc3_r",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc4_r",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc6_r",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc8_r",
+	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc10_r"
 #	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc2",
 #	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc4",
 #	"mcts_h_sl_s,srmcts_h_sl_d1_p3_s_rc6",
@@ -177,10 +177,10 @@ my @matchups = (
 my @games = (
 #	"lostcities",
 #	"checkers",	
-#	"breakthrough"
+	"breakthrough"
 #	"pentalath"
 #	"cannon",
-	"chinesecheckers"
+#	"chinesecheckers"
 #	"amazons"
  );
 
