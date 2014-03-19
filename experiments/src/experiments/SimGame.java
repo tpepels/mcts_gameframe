@@ -180,6 +180,7 @@ public class SimGame {
                     options.uctC = Double.parseDouble(tag.substring(3));
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
+                    options.history = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
                 } else if (tag.startsWith("sw")) {
                     options.swUCT = true;
@@ -272,6 +273,7 @@ public class SimGame {
                     options.remove = true;
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
+                    options.history = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
