@@ -390,12 +390,19 @@ public class TreeNode {
         }
         // Remove from selection
         A.remove(minArm);
-        // Subtract the stats of the removed arm from all parents
-        TreeNode p = this;
-        while (p != null) {
-            p.stats.subtract(minArm.stats);
-            p = p.parent;
+        if(ply < options.sr_depth) {
+            for(TreeNode t: A) {
+                if(Math.abs(t.stats.mean()) == INF)
+                    continue;
+                t.stats.reset();
+            }
         }
+        // Subtract the stats of the removed arm from all parents
+//        TreeNode p = this;
+//        while (p != null) {
+//            p.stats.subtract(minArm.stats);
+//            p = p.parent;
+//        }
     }
 
     private void newSelection(int n) {
@@ -423,8 +430,9 @@ public class TreeNode {
                 index++;
                 continue;
             }
-            if(i == 0)
+            if(i == 0) {
                 stats.add(children.get(i).stats);
+            }
             A.add(children.get(index));
             index++;
             i++;
