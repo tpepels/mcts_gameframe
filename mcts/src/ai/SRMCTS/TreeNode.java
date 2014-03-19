@@ -85,9 +85,9 @@ public class TreeNode {
             // When a leaf is reached return the result of the playout
             if ((!child.simulated && depth > options.sr_depth) || child.isTerminal()) {
                 result = child.playOut(board);
+                child.budget--;
                 child.updateStats(-result);
                 child.simulated = true;
-                child.budget--;
             } else {
                 // The next child
                 result = -child.MCTS(board, depth + 1);
@@ -392,11 +392,11 @@ public class TreeNode {
         // Remove from selection
         A.remove(minArm);
         // Subtract the stats of the removed arm from all parents
-//        TreeNode p = this;
-//        while (p != null) {
-//            p.stats.subtract(minArm.stats);
-//            p = p.parent;
-//        }
+        TreeNode p = this;
+        while (p != null) {
+            p.stats.subtract(minArm.stats);
+            p = p.parent;
+        }
     }
 
     private void newSelection(int n) {
@@ -414,7 +414,7 @@ public class TreeNode {
             }
         });
         A.clear();
-        //stats.reset();
+        stats.reset();
         int i = 0, index = 0;
         while (i < n && index < children.size()) {
             // Skip proven losses
@@ -422,7 +422,7 @@ public class TreeNode {
                 index++;
                 continue;
             }
-            //stats.add(children.get(i).stats);
+            stats.add(children.get(i).stats);
             A.add(children.get(index));
             index++;
             i++;
