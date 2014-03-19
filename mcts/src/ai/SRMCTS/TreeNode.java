@@ -390,13 +390,13 @@ public class TreeNode {
         }
         // Remove from selection
         A.remove(minArm);
-        if(ply < options.sr_depth) {
-            for(TreeNode t: A) {
-                if(Math.abs(t.stats.mean()) == INF)
-                    continue;
-                t.stats.reset();
-            }
-        }
+//        if(ply < options.sr_depth) {
+//            for(TreeNode t: A) {
+//                if(Math.abs(t.stats.mean()) == INF)
+//                    continue;
+//                t.stats.reset();
+//            }
+//        }
         // Subtract the stats of the removed arm from all parents
 //        TreeNode p = this;
 //        while (p != null) {
@@ -422,7 +422,7 @@ public class TreeNode {
             }
         });
         A.clear();
-        stats.reset();
+        //stats.reset();
         int i = 0, index = 0;
         while (i < n && index < children.size()) {
             // Skip proven losses
@@ -430,14 +430,13 @@ public class TreeNode {
                 index++;
                 continue;
             }
-            if(i == 0) {
-                stats.add(children.get(i).stats);
-            }
+//            if(i == 0) {
+//                stats.add(children.get(i).stats);
+//            }
             A.add(children.get(index));
             index++;
             i++;
         }
-        //checkNode();
     }
 
     @SuppressWarnings("ConstantConditions")
