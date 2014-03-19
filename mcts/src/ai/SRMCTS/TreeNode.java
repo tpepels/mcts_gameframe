@@ -22,7 +22,7 @@ public class TreeNode {
     private final MCTSOptions options;
     private final TreeNode parent;
     private final UCT uct;
-    public final int player;
+    public final int player, ply;
     public StatCounter stats;
     //
     private boolean expanded = false, simulated = false, newRound = false;
@@ -41,6 +41,7 @@ public class TreeNode {
         stats = new StatCounter();
         this.uct = new UCT(options);
         this.parent = null;
+        this.ply = 0;
     }
 
     /**
@@ -53,6 +54,7 @@ public class TreeNode {
         this.stats = new StatCounter();
         this.uct = new UCT(options);
         this.parent = parent;
+        this.ply = parent.ply + 1;
     }
 
     /**
@@ -246,10 +248,7 @@ public class TreeNode {
             } else if (options.policy == 2) // Sequential halving
                 budget = (int) (totalSimulations / log_n);
             else if (options.policy == 3 || options.policy == 4) { // Policy 4
-                if (K > 2)
-                    budget = (int) Math.ceil(totalSimulations / (K - 1.));
-                else
-                    budget = (int) (totalSimulations / K);
+                budget = (int) Math.ceil(totalSimulations / (K - 2.));
             }
             divideBudget(budget);
             if (recursive)
@@ -400,6 +399,8 @@ public class TreeNode {
     }
 
     private void newSelection(int n) {
+        if(Math.abs(stats.mean()) == INF)
+            return;
         Collections.sort(children, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
@@ -422,7 +423,8 @@ public class TreeNode {
                 index++;
                 continue;
             }
-            stats.add(children.get(i).stats);
+            if(i == 0)
+                stats.add(children.get(i).stats);
             A.add(children.get(index));
             index++;
             i++;
@@ -544,7 +546,7 @@ public class TreeNode {
                     for (int i = 0; i < (int) (A.size() / 2.); i++)
                         removeMinArm(false, false);
                 } else
-                    newSelection((int) (A.size() / 2.));
+                    newSelection((int)Math.ceil(A.size() / 2.));
             }
             k++;
         }
