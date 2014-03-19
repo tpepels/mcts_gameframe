@@ -85,7 +85,7 @@ public class TreeNode {
             if (options.history)
                 movesMade[player - 1].add(child.getMove());
             // When a leaf is reached return the result of the playout
-            if ((!child.simulated && depth > options.sr_depth) || child.isTerminal()) {
+            if (((!child.simulated || options.depth_limited) && depth + 1 > options.sr_depth) || child.isTerminal()) {
                 result = child.playOut(board);
                 child.budget--;
                 child.updateStats(-result);
