@@ -65,14 +65,14 @@ public class StatCounter {
 
     public void initWinsLosses(double winrate, int visits) {
         // test
-        m_wins = (int)(winrate*visits); 
+        m_wins = (int) (winrate * visits);
         m_losses = visits - m_wins;
-        m_sum = (m_wins - m_losses); 
+        m_sum = (m_wins - m_losses);
         m_n = visits;
-        m_mean = m_sum / m_n; 
-        
-        double p = ((double)m_wins) / visits; 
-        m_m2 = p*(1-p)*m_n;
+        m_mean = m_sum / m_n;
+
+        double p = ((double) m_wins) / visits;
+        m_m2 = p * (1 - p) * m_n;
     }
 
 
@@ -116,12 +116,17 @@ public class StatCounter {
     }
 
     public void add(StatCounter statCounter) {
-        m_wins += statCounter.m_losses;
-        m_losses += statCounter.m_wins;
-        // Subtract, because its in view of opponent
-        m_sum -= statCounter.m_sum;
-        m_n += statCounter.m_n;
-        m_mean = m_sum / m_n;
+
+        if (Math.abs(statCounter.mean()) == TreeNode.INF)
+            this.setValue(-statCounter.mean());
+        else {
+            m_wins += statCounter.m_losses;
+            m_losses += statCounter.m_wins;
+            // Subtract, because its in view of opponent
+            m_sum -= statCounter.m_sum;
+            m_n += statCounter.m_n;
+            m_mean = m_sum / m_n;
+        }
     }
 
     public double variance() {
