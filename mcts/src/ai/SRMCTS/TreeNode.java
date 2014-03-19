@@ -16,6 +16,7 @@ import java.util.List;
 public class TreeNode {
     public static final double INF = 999999;
     public static int myPlayer = 0;
+    private static final MoveList mastMoves = new MoveList(100);
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
     //
     private final MCTSOptions options;
@@ -391,11 +392,11 @@ public class TreeNode {
         // Remove from selection
         A.remove(minArm);
         // Subtract the stats of the removed arm from all parents
-        TreeNode p = this;
-        while (p != null) {
-            p.stats.subtract(minArm.stats);
-            p = p.parent;
-        }
+//        TreeNode p = this;
+//        while (p != null) {
+//            p.stats.subtract(minArm.stats);
+//            p = p.parent;
+//        }
     }
 
     private void newSelection(int n) {
@@ -413,7 +414,7 @@ public class TreeNode {
             }
         });
         A.clear();
-        stats.reset();
+        //stats.reset();
         int i = 0, index = 0;
         while (i < n && index < children.size()) {
             // Skip proven losses
@@ -421,7 +422,7 @@ public class TreeNode {
                 index++;
                 continue;
             }
-            stats.add(children.get(i).stats);
+            //stats.add(children.get(i).stats);
             A.add(children.get(index));
             index++;
             i++;
@@ -432,13 +433,13 @@ public class TreeNode {
     @SuppressWarnings("ConstantConditions")
     private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
-        int currentPlayer = board.getPlayerToMove(), moveIndex, nMoves = 0;
+        int currentPlayer = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
-        boolean terminateEarly = false;
-        while (!gameEnded && !terminateEarly) {
+        double mastMax, mastVal;
+        while (!gameEnded) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
@@ -452,8 +453,26 @@ public class TreeNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-                moveIndex = MCTSOptions.r.nextInt(moves.size());
-                currentMove = moves.get(moveIndex);
+
+                currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
+                if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
+                    mastMoves.clear();
+                    mastMax = Double.NEGATIVE_INFINITY;
+                    // Select the move with the highest MAST value
+                    for (int i = 0; i < moves.size(); i++) {
+                        mastVal = moves.get(i).getHistoryVal(currentPlayer, options);
+                        // If bigger, we have a winner, if equal, flip a coin
+                        if (mastVal > mastMax) {
+                            mastMoves.clear();
+                            mastMax = mastVal;
+                            mastMoves.add(moves.get(i));
+                        } else if (mastVal == mastMax) {
+                            mastMoves.add(moves.get(i));
+                        }
+                    }
+                    currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
+                }
+
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
 
@@ -469,7 +488,7 @@ public class TreeNode {
                 } else {
                     // The move was illegal, remove it from the list.
                     moveMade = false;
-                    moves.remove(moveIndex);
+                    moves.remove(currentMove);
                 }
             }
         }
@@ -503,8 +522,9 @@ public class TreeNode {
         stats.push(value);
         totVisits++;
         roundSimulations++;
+
         // New round, remove an arm
-        if (budget == 0) {
+        if (budget == 0 && A != null && roundSimulations > 1) {
             // Removal policy
             if ((options.policy == 1 || options.policy == 3 || options.policy == 4)
                     && k % rc == 0 && A.size() > rc) {

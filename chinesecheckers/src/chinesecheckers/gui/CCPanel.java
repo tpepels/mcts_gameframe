@@ -1,5 +1,6 @@
 package chinesecheckers.gui;
 
+import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.*;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
@@ -44,7 +45,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {
-            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2 = new SRMCTSPlayer();
             aiPlayer2.setOptions(p2Options);
         }
         addMouseListener(this);
