@@ -85,7 +85,7 @@ public class TreeNode {
             if (options.history)
                 movesMade[player - 1].add(child.getMove());
             // When a leaf is reached return the result of the playout
-            if (((!child.simulated || options.depth_limited) && depth >= options.sr_depth) || child.isTerminal()) {
+            if (((!child.simulated || options.depth_limited) && depth > options.sr_depth) || child.isTerminal()) {
                 result = child.playOut(board);
                 child.budget--;
                 child.updateStats(-result);
@@ -101,14 +101,13 @@ public class TreeNode {
             result = child.stats.mean();
             child.budget--;
         }
+        budget--;
         if (options.solver) {
             // (Solver) If one of the children is a win, then I'm a loss for the opponent
             if (result == INF) {
-                budget--;
                 stats.setValue(-INF);
                 return result;
             } else if (result == -INF) {
-                budget--;
                 // Remove from list of unsolved nodes
                 if (A != null)
                     removeSolvedArm(child);
@@ -140,7 +139,6 @@ public class TreeNode {
                 return result;
             }
         }
-        budget--;
         // Update the results for the current node
         updateStats(result);
         // Back-propagate the result
@@ -249,7 +247,7 @@ public class TreeNode {
             } else if (options.policy == 2) // Sequential halving
                 budget = (int) (totalSimulations / log_n);
             else if (options.policy == 3 || options.policy == 4) { // Policy 4
-                budget = (int) Math.ceil(totalSimulations / (K - 2.));
+                budget = (int) Math.ceil(totalSimulations / K);
             }
             divideBudget(budget);
             if (recursive)
@@ -530,10 +528,11 @@ public class TreeNode {
         roundSimulations++;
 
         // New round, remove an arm
-        if (budget == 0 && A != null && roundSimulations > 1) {
+        if (budget == 0 && A != null && roundSimulations > 1 && A.size() > 2) {
             // Removal policy
             if ((options.policy == 1 || options.policy == 3 || options.policy == 4)
                     && k % rc == 0 && A.size() > rc) {
+
                 // Remove or replace the current selection
                 if (options.remove) {
                     for (int i = 0; i < rc; i++)
@@ -541,8 +540,10 @@ public class TreeNode {
                 } else
                     newSelection(A.size() - rc);
 
-                if (rc > 1)
-                    rc = (int) Math.floor(rc / 2.);
+                k = 0;
+
+                if (rc >= A.size())
+                    rc = (int) Math.ceil(rc / 2.);
 
             } else if (options.policy == 2 && A.size() > 1) {
                 // Remove or replace the current selection
@@ -552,6 +553,7 @@ public class TreeNode {
                 } else
                     newSelection((int)Math.ceil(A.size() / 2.));
             }
+
             k++;
         }
     }
