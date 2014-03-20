@@ -85,7 +85,7 @@ public class TreeNode {
             if (options.history)
                 movesMade[player - 1].add(child.getMove());
             // When a leaf is reached return the result of the playout
-            if (((!child.simulated || options.depth_limited) && depth + 1 > options.sr_depth) || child.isTerminal()) {
+            if (((!child.simulated || options.depth_limited) && depth >= options.sr_depth) || child.isTerminal()) {
                 result = child.playOut(board);
                 child.budget--;
                 child.updateStats(-result);
@@ -203,11 +203,12 @@ public class TreeNode {
             log_k = .5;
             log_n = Math.ceil(FastLog.log(K) / FastLog.log(2));
 
-            if (log_n == 0) // This happens in checkers, when capture is mandatory
+            // This happens in checkers, when capture is mandatory
+            if (log_n == 0)
                 log_n = 1;
-            for (int i = 2; i <= K; i++) {
+
+            for (int i = 2; i <= K; i++)
                 log_k += 1. / i;
-            }
         }
         if (A != null) {
             if (options.policy == 1)
@@ -390,19 +391,12 @@ public class TreeNode {
         }
         // Remove from selection
         A.remove(minArm);
-//        if(ply < options.sr_depth) {
-//            for(TreeNode t: A) {
-//                if(Math.abs(t.stats.mean()) == INF)
-//                    continue;
-//                t.stats.reset();
-//            }
-//        }
         // Subtract the stats of the removed arm from all parents
-//        TreeNode p = this;
-//        while (p != null) {
-//            p.stats.subtract(minArm.stats);
-//            p = p.parent;
-//        }
+        TreeNode p = this;
+        while (p != null) {
+            p.stats.subtract(minArm.stats);
+            p = p.parent;
+        }
     }
 
     private void newSelection(int n) {
@@ -422,17 +416,20 @@ public class TreeNode {
             }
         });
         A.clear();
-        //stats.reset();
+        stats.reset();
         int i = 0, index = 0;
         while (i < n && index < children.size()) {
             // Skip proven losses
             if (children.get(index).stats.mean() == -INF) {
                 index++;
                 continue;
+            } else if(children.get(index).stats.mean() == INF) {
+                // Proven loss, don't continue
+                stats.setValue(-INF);
+                break;
+            } else {
+                stats.add(children.get(i).stats);
             }
-//            if(i == 0) {
-//                stats.add(children.get(i).stats);
-//            }
             A.add(children.get(index));
             index++;
             i++;
