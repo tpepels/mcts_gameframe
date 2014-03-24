@@ -106,27 +106,38 @@ public class StatCounter {
         m_mean = val;
     }
 
-    public void subtract(StatCounter statCounter) {
-        m_wins -= statCounter.m_losses;
-        m_losses -= statCounter.m_wins;
-        // Add, because its in view of opponent
-        m_sum += statCounter.m_sum;
+    public void subtract(StatCounter statCounter, boolean isOpp) {
+        if (isOpp) {
+            m_wins -= statCounter.m_losses;
+            m_losses -= statCounter.m_wins;
+            // Add, because its in view of opponent
+            m_sum += statCounter.m_sum;
+        } else {
+            m_wins -= statCounter.m_wins;
+            m_losses -= statCounter.m_losses;
+            // Add, because its in view of opponent
+            m_sum -= statCounter.m_sum;
+        }
         m_n -= statCounter.m_n;
+        if(m_n < 0)
+            System.out.println();
         m_mean = m_sum / m_n;
     }
 
-    public void add(StatCounter statCounter) {
-
-        if (Math.abs(statCounter.mean()) == TreeNode.INF)
-            this.setValue(-statCounter.mean());
-        else {
+    public void add(StatCounter statCounter, boolean isOpp) {
+        if (isOpp) {
             m_wins += statCounter.m_losses;
             m_losses += statCounter.m_wins;
             // Subtract, because its in view of opponent
             m_sum -= statCounter.m_sum;
-            m_n += statCounter.m_n;
-            m_mean = m_sum / m_n;
+        } else {
+            m_wins += statCounter.m_wins;
+            m_losses += statCounter.m_losses;
+            // Add, because its in view of opponent
+            m_sum += statCounter.m_sum;
         }
+        m_n += statCounter.m_n;
+        m_mean = m_sum / m_n;
     }
 
     public double variance() {
