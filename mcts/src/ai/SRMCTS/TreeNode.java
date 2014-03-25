@@ -14,7 +14,7 @@ import java.util.List;
 
 public class TreeNode {
     public static final double INF = 999999;
-    public static int myPlayer = 0;
+    public static int myPlayer = 0, rootRounds = 0;
     private static final MoveList mastMoves = new MoveList(100);
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
     //
@@ -367,16 +367,13 @@ public class TreeNode {
         Collections.sort(A, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                // Always include unvisited nodes, exclude loss-nodes
-                if (o2.stats.mean() == -INF || o1.totVisits == 0)
-                    return -1;
-                if (o1.stats.mean() == -INF || o2.totVisits == 0)
-                    return 1;
+                double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                if(o1.totVisits == 0)
+                    v1 = 1;
+                if(o2.totVisits == 0)
+                    v2 = 1;
 
-                if (o1.stats.mean() == o2.stats.mean())
-                    return Double.compare(o2.getTotalVisits(), o1.getTotalVisits());
-
-                return Double.compare(o2.stats.mean(), o1.stats.mean());
+                return Double.compare(v2, v1);
             }
         });
         int N = A.size();
@@ -390,16 +387,13 @@ public class TreeNode {
         Collections.sort(S, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                // Always include unvisited nodes, exclude loss-nodes
-                if (o2.stats.mean() == -INF || o1.totVisits == 0)
-                    return -1;
-                if (o1.stats.mean() == -INF || o2.totVisits == 0)
-                    return 1;
+                double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                if(o1.totVisits == 0)
+                    v1 = 1;
+                if(o2.totVisits == 0)
+                    v2 = 1;
 
-                if (o1.stats.mean() == o2.stats.mean())
-                    return Double.compare(o2.getTotalVisits(), o1.getTotalVisits());
-
-                return Double.compare(o2.stats.mean(), o1.stats.mean());
+                return Double.compare(v2, v1);
             }
         });
         A.clear();
@@ -445,7 +439,6 @@ public class TreeNode {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
