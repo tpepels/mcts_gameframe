@@ -14,7 +14,7 @@ import java.util.List;
 
 public class TreeNode {
     public static final double INF = 999999;
-    public static int myPlayer = 0;
+    public static int myPlayer = 0, rootRounds = 0;
     private static final MoveList mastMoves = new MoveList(100);
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
     //
@@ -216,7 +216,7 @@ public class TreeNode {
         //
         if (A != null) {
             rc = (int) (A.size() / (double) options.rc);
-            if(rc == 0)
+            if (rc == 0)
                 rc = 1;
             newRound();
         }
@@ -367,15 +367,6 @@ public class TreeNode {
         Collections.sort(A, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                // Always include unvisited nodes, exclude loss-nodes
-                if (o2.stats.mean() == -INF || o1.totVisits == 0)
-                    return -1;
-                if (o1.stats.mean() == -INF || o2.totVisits == 0)
-                    return 1;
-
-                if (o1.stats.mean() == o2.stats.mean())
-                    return Double.compare(o2.getTotalVisits(), o1.getTotalVisits());
-
                 return Double.compare(o2.stats.mean(), o1.stats.mean());
             }
         });
@@ -390,15 +381,6 @@ public class TreeNode {
         Collections.sort(S, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                // Always include unvisited nodes, exclude loss-nodes
-                if (o2.stats.mean() == -INF || o1.totVisits == 0)
-                    return -1;
-                if (o1.stats.mean() == -INF || o2.totVisits == 0)
-                    return 1;
-
-                if (o1.stats.mean() == o2.stats.mean())
-                    return Double.compare(o2.getTotalVisits(), o1.getTotalVisits());
-
                 return Double.compare(o2.stats.mean(), o1.stats.mean());
             }
         });
@@ -445,7 +427,6 @@ public class TreeNode {
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
     private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
