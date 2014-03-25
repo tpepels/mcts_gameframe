@@ -257,10 +257,9 @@ public class TreeNode {
                     removeArms(rc);
                 } else
                     newSelection(A.size() - rc);
-
-                if (A.size() > options.rc)
-                    rc = (int) (A.size() / (double) options.rc);
-                else
+                
+                rc = (int) (A.size() / (double) options.rc);
+                if (rc == 0)
                     rc = 1;
             }
             newRound();
