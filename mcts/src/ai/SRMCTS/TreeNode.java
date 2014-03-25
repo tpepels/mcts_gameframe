@@ -373,11 +373,9 @@ public class TreeNode {
                 }
             });
             A.clear();
-            int i = 0, index = 0;
-            while (i < n && index < S.size()) {
-                A.add(S.get(index));
-                index++;
-                i++;
+            int i = 0;
+            while (i < n) {
+                A.add(S.get(i++));
             }
         } else {
             Collections.sort(A, new Comparator<TreeNode>() {
@@ -392,8 +390,11 @@ public class TreeNode {
                     return Double.compare(v2, v1);
                 }
             });
-            for (int i = n; i < A.size(); i++)
-                A.remove(i);
+            int i = n, N = A.size();
+            while (i < N) {
+                A.remove(A.size() - 1);
+                i++;
+            }
         }
     }
 
