@@ -141,6 +141,8 @@ public class TreeNode {
                         if (A != null) {
                             // Fix the value of rc to account for removed arms
                             rc = (int) (A.size() / (double) options.rc);
+                            if (rc == 0)
+                                rc = 1;
                             resetRound();
                         }
                         // Return a single loss, if not all children are a loss
@@ -214,6 +216,8 @@ public class TreeNode {
         //
         if (A != null) {
             rc = (int) (A.size() / (double) options.rc);
+            if(rc == 0)
+                rc = 1;
             newRound();
         }
         // If one of the nodes is a win, return it.
@@ -257,7 +261,7 @@ public class TreeNode {
                     removeArms(rc);
                 } else
                     newSelection(A.size() - rc);
-                
+
                 rc = (int) (A.size() / (double) options.rc);
                 if (rc == 0)
                     rc = 1;
@@ -349,6 +353,8 @@ public class TreeNode {
             if (t.A != null) {
                 // Reset the remove counter
                 t.rc = (int) (t.A.size() / (double) options.rc);
+                if (t.rc == 0)
+                    t.rc = 1;
                 // Start a new round in all children recursively
                 t.newRound();
             }
