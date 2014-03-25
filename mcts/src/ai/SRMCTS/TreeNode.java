@@ -251,7 +251,6 @@ public class TreeNode {
         stats.push(value);
         totVisits++;
         roundSimulations++;
-        checkNode();
         // New round, remove an arm
         if (round == 0 && A != null) {
             // Removal policy
@@ -310,10 +309,14 @@ public class TreeNode {
                 // Return all children to A
                 t.A.clear();
                 t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
-
-                for (int i = 0; i < rootRounds - 1 - t.ply; i++)
-                    t.newSelection(t.A.size() - (int) (t.A.size() / (double) options.rc), options.remove);
-
+                int selection = t.A.size();
+                for (int i = 0; i < (rootRounds - 2) - t.ply; i++) {
+                    selection -= (int) (selection / (double) options.rc);
+                }
+                //
+                if (selection < t.A.size())
+                    t.newSelection(selection, options.remove);
+                // System.out.println(rootRounds + " " + selection);
             }
             // Reset the budgets of the children just in case
             t.budget = 0;
@@ -521,7 +524,6 @@ public class TreeNode {
         TreeNode bestChild = null;
         double max = Double.NEGATIVE_INFINITY, value;
         List<TreeNode> l = (getTotalVisits() > 0. && A.size() > 0 && options.remove) ? A : children;
-//        List<TreeNode> l = (getTotalVisits() > 0. && A.size() > 0) ? A : children;
         for (TreeNode t : l) {
             if (t.stats.mean() == TreeNode.INF)
                 value = TreeNode.INF + MCTSOptions.r.nextDouble();
@@ -542,24 +544,24 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void checkNode() {
-        if (A != null && parent != null && A.size() > 0) {
-            int c = 0, sum = 0, nv = 0;
-            for (TreeNode t : A) {
-                c += t.budget;
-                nv += t.stats.totalVisits();
-                sum += t.stats.m_sum;
-            }
-//            double diff = Math.abs(nv - stats.totalVisits());
-//            if (diff >= 1.)
-//                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
-//            diff = Math.abs(sum + stats.m_sum);
-//            if (diff >= 1.)
-//                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
-            if (c != round)
-                System.err.println("??");
-        }
-    }
+//    private void checkNode() {
+//        if (A != null && parent != null && A.size() > 0) {
+//            int c = 0, sum = 0, nv = 0;
+//            for (TreeNode t : A) {
+//                c += t.budget;
+//                nv += t.stats.totalVisits();
+//                sum += t.stats.m_sum;
+//            }
+////            double diff = Math.abs(nv - stats.totalVisits());
+////            if (diff >= 1.)
+////                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
+////            diff = Math.abs(sum + stats.m_sum);
+////            if (diff >= 1.)
+////                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
+//            if (c != round)
+//                System.err.println("??");
+//        }
+//    }
 
     public boolean isLeaf() {
         return children == null || !expanded;

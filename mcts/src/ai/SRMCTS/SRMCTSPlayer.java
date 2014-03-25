@@ -59,9 +59,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
-
                 board.newDeterminization(myPlayer);
-
                 // Make one simulation from root to leaf.
                 if (Math.abs(root.MCTS(board, 0)) == TreeNode.INF  || root.getArity() == 1)
                     break; // Break if you find a winning move, or only 1 move left
