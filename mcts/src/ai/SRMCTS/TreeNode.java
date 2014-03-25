@@ -216,7 +216,7 @@ public class TreeNode {
         //
         if (A != null) {
             rc = (int) (A.size() / (double) options.rc);
-            if (rc == 0)
+            if(rc == 0)
                 rc = 1;
             newRound();
         }
@@ -367,7 +367,13 @@ public class TreeNode {
         Collections.sort(A, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                return Double.compare(o2.stats.mean(), o1.stats.mean());
+                double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                if(o1.totVisits == 0)
+                    v1 = 1;
+                if(o2.totVisits == 0)
+                    v2 = 1;
+
+                return Double.compare(v2, v1);
             }
         });
         int N = A.size();
@@ -381,7 +387,13 @@ public class TreeNode {
         Collections.sort(S, new Comparator<TreeNode>() {
             @Override
             public int compare(TreeNode o1, TreeNode o2) {
-                return Double.compare(o2.stats.mean(), o1.stats.mean());
+                double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                if(o1.totVisits == 0)
+                    v1 = 1;
+                if(o2.totVisits == 0)
+                    v2 = 1;
+
+                return Double.compare(v2, v1);
             }
         });
         A.clear();
