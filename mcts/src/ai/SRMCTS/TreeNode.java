@@ -258,7 +258,7 @@ public class TreeNode {
                 } else
                     newSelection(A.size() - rc);
 
-                if (A.size() > 2)
+                if (A.size() > options.rc)
                     rc = (int) (A.size() / (double) options.rc);
                 else
                     rc = 1;
