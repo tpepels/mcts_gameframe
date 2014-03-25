@@ -296,9 +296,10 @@ public class TreeNode {
     private void newRound() {
 
         if (S.size() > 1) {
-            if (move == null)
+            if (move == null) {
                 round = (int) Math.ceil((rc * totalBudget) / (S.size() - 1));
-            else
+                rootRounds++;
+            } else
                 round = (int) Math.ceil((rc * totalBudget) / S.size());
         } else
             round = totalBudget;
@@ -309,6 +310,10 @@ public class TreeNode {
                 // Return all children to A
                 t.A.clear();
                 t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
+
+                for (int i = 0; i < rootRounds - 1 - t.ply; i++)
+                    t.newSelection(t.A.size() - (int) (t.A.size() / (double) options.rc), options.remove);
+
             }
             // Reset the budgets of the children just in case
             t.budget = 0;

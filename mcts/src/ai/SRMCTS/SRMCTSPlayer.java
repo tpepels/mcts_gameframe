@@ -25,7 +25,7 @@ public class SRMCTSPlayer implements AIPlayer, Runnable {
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
-
+        TreeNode.rootRounds = 0;
         if (options.fixedSimulations) {
             options.numSimulations = options.simulations;
         }
