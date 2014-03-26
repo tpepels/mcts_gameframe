@@ -119,9 +119,8 @@ public class StatCounter {
             m_sum -= statCounter.m_sum;
         }
         m_n -= statCounter.m_n;
-        if(m_n < 0)
-            System.out.println();
-        m_mean = m_sum / m_n;
+        if (m_n > 0)
+            m_mean = m_sum / m_n;
     }
 
     public void add(StatCounter statCounter, boolean isOpp) {
@@ -137,7 +136,8 @@ public class StatCounter {
             m_sum += statCounter.m_sum;
         }
         m_n += statCounter.m_n;
-        m_mean = m_sum / m_n;
+        if (m_n > 0)
+            m_mean = m_sum / m_n;
     }
 
     public double variance() {
