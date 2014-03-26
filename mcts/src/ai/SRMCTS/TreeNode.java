@@ -306,7 +306,7 @@ public class TreeNode {
                 round = (int) Math.ceil((rc * totalBudget) / (S.size() - 1));
                 rootRounds++;
             } else
-                round = (int) Math.ceil((rc * totalBudget) / (S.size() + options.sr_c));
+                round = (int) Math.ceil((rc * totalBudget) / (S.size()));
         } else
             round = totalBudget;
 
@@ -314,7 +314,7 @@ public class TreeNode {
         for (TreeNode t : A) {
             if (t.A != null) {
                 int selection = t.S.size();
-                if (rootRounds - t.ply > 1)
+                if (rootRounds - t.ply > options.sr_c)
                     selection -= (int) (selection / (double) options.rc);
 //                System.out.println(rootRounds + " " + selection);
                 if (selection < t.S.size())
@@ -374,40 +374,18 @@ public class TreeNode {
         if (Math.abs(stats.mean()) == INF)
             return;
         if (!remove) {
-            Collections.sort(children, new Comparator<TreeNode>() {
-                @Override
-                public int compare(TreeNode o1, TreeNode o2) {
-                    double v1 = o1.stats.mean(), v2 = o2.stats.mean();
-                    if (o1.totVisits == 0)
-                        v1 = 1;
-                    if (o2.totVisits == 0)
-                        v2 = 1;
-
-                    return Double.compare(v2, v1);
-                }
-            });
+            Collections.sort(children, comparator);
             S.clear();
-            stats.reset();
+            //stats.reset();
             int i = 0;
             TreeNode arm;
             while (i < n) {
                 arm = children.get(i++);
                 S.add(arm);
-                stats.add(arm.stats, true);
+                //stats.add(arm.stats, true);
             }
         } else {
-            Collections.sort(S, new Comparator<TreeNode>() {
-                @Override
-                public int compare(TreeNode o1, TreeNode o2) {
-                    double v1 = o1.stats.mean(), v2 = o2.stats.mean();
-                    if (o1.totVisits == 0)
-                        v1 = 1;
-                    if (o2.totVisits == 0)
-                        v2 = 1;
-
-                    return Double.compare(v2, v1);
-                }
-            });
+            Collections.sort(S, comparator);
             int i = n, N = S.size();
             while (i < N) {
                 stats.subtract(S.remove(S.size() - 1).stats, true);
@@ -416,40 +394,31 @@ public class TreeNode {
         }
     }
 
+    private final Comparator<TreeNode> comparator = new Comparator<TreeNode>() {
+        @Override
+        public int compare(TreeNode o1, TreeNode o2) {
+            double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+            if (o1.totVisits == 0)
+                v1 = 1;
+            if (o2.totVisits == 0)
+                v2 = 1;
+
+            return Double.compare(v2, v1);
+        }
+    };
+
     private void newSelection(int n, boolean remove) {
         if (Math.abs(stats.mean()) == INF)
             return;
         if (!remove) {
-            Collections.sort(S, new Comparator<TreeNode>() {
-                @Override
-                public int compare(TreeNode o1, TreeNode o2) {
-                    double v1 = o1.stats.mean(), v2 = o2.stats.mean();
-                    if (o1.totVisits == 0)
-                        v1 = 1;
-                    if (o2.totVisits == 0)
-                        v2 = 1;
-
-                    return Double.compare(v2, v1);
-                }
-            });
+            Collections.sort(S, comparator);
             A.clear();
             int i = 0;
             while (i < n) {
                 A.add(S.get(i++));
             }
         } else {
-            Collections.sort(A, new Comparator<TreeNode>() {
-                @Override
-                public int compare(TreeNode o1, TreeNode o2) {
-                    double v1 = o1.stats.mean(), v2 = o2.stats.mean();
-                    if (o1.totVisits == 0)
-                        v1 = 1;
-                    if (o2.totVisits == 0)
-                        v2 = 1;
-
-                    return Double.compare(v2, v1);
-                }
-            });
+            Collections.sort(A,comparator);
             int i = n, N = A.size();
             while (i < N) {
                 A.remove(A.size() - 1);

@@ -54,6 +54,8 @@ public class StatCounter {
     }
 
     public void reset() {
+        m_wins = 0;
+        m_losses = 0;
         m_sum = 0.0;
         m_m2 = 0.0;
         m_mean = 0.0;
