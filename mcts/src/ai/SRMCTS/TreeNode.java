@@ -306,7 +306,7 @@ public class TreeNode {
                 round = (int) Math.ceil((rc * totalBudget) / (S.size() - 1));
                 rootRounds++;
             } else
-                round = (int) Math.ceil((rc * totalBudget) / (S.size()));
+                round = (int) Math.ceil((rc * totalBudget) / (S.size() + options.sr_c));
         } else
             round = totalBudget;
 
@@ -314,7 +314,7 @@ public class TreeNode {
         for (TreeNode t : A) {
             if (t.A != null) {
                 int selection = t.S.size();
-                if (rootRounds - t.ply > options.sr_c)
+                if (rootRounds - t.ply > 1)
                     selection -= (int) (selection / (double) options.rc);
 //                System.out.println(rootRounds + " " + selection);
                 if (selection < t.S.size())
