@@ -312,6 +312,9 @@ public class TreeNode {
                 int selection = t.S.size();
                 if(rootRounds - t.ply > 2)
                     selection -= (int) (selection / (double) options.rc);
+                if(selection == 0)
+                    System.out.println();
+                System.out.println(rootRounds + " " + selection);
                 if (selection < t.S.size())
                     t.reduceS(selection, options.remove);
 
@@ -453,21 +456,24 @@ public class TreeNode {
         S.remove(arm);
         if (A.remove(arm)) {
             // See if we can return an arm to A
-            if (A.size() < S.size()) {
-                double maxVisits = -1;
+            if (A.size() < children.size()) {
+                double score = Double.NEGATIVE_INFINITY;
                 TreeNode returnArm = null;
-                for (TreeNode a : S) {
+                for (TreeNode a : children) {
                     // Return a non-solved arm
                     if (!A.contains(a)) {
-                        if (a.getTotalVisits() > maxVisits) {
-                            maxVisits = a.getTotalVisits();
+                        if (a.stats.mean() > score) {
+                            score = a.stats.mean();
                             returnArm = a;
                         }
                     }
                 }
                 // We can return an arm to A that was previously discarded
-                if (returnArm != null)
+                if (returnArm != null) {
                     A.add(returnArm);
+                    if(!S.contains(returnArm))
+                        S.add(returnArm);
+                }
             }
         }
     }
