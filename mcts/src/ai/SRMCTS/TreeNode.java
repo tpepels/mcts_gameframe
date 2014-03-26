@@ -150,6 +150,9 @@ public class TreeNode {
                         return -1;
                     }
                 }
+                // Add the node to the solved children for the parent
+                if(parent != null && parent.As != null)
+                    parent.As.add(this);
                 // (Solver) If all children lead to a loss for me, then I'm a win for the opponent
                 stats.setValue(INF);
                 return result;
@@ -306,17 +309,15 @@ public class TreeNode {
         // Reset the arms
         for (TreeNode t : A) {
             if (t.A != null) {
+                int selection = t.S.size();
+                if(rootRounds - t.ply > 2)
+                    selection -= (int) (selection / (double) options.rc);
+                if (selection < t.S.size())
+                    t.reduceS(selection, options.remove);
+
                 // Return all children to A
                 t.A.clear();
                 t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
-                int selection = t.A.size();
-                for (int i = 0; i < (rootRounds - 2) - t.ply; i++) {
-                    selection -= (int) (selection / (double) options.rc);
-                }
-                //
-                if (selection < t.A.size())
-                    t.newSelection(selection, options.remove);
-                // System.out.println(rootRounds + " " + selection);
             }
             // Reset the budgets of the children just in case
             t.budget = 0;
@@ -360,6 +361,48 @@ public class TreeNode {
                     t.rc = 1;
                 // Start a new round in all children recursively
                 t.newRound();
+            }
+        }
+    }
+
+    private void reduceS(int n, boolean remove) {
+        if (Math.abs(stats.mean()) == INF)
+            return;
+        if (!remove) {
+            Collections.sort(children, new Comparator<TreeNode>() {
+                @Override
+                public int compare(TreeNode o1, TreeNode o2) {
+                    double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                    if (o1.totVisits == 0)
+                        v1 = 1;
+                    if (o2.totVisits == 0)
+                        v2 = 1;
+
+                    return Double.compare(v2, v1);
+                }
+            });
+            S.clear();
+            int i = 0;
+            while (i < n) {
+                S.add(children.get(i++));
+            }
+        } else {
+            Collections.sort(S, new Comparator<TreeNode>() {
+                @Override
+                public int compare(TreeNode o1, TreeNode o2) {
+                    double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+                    if (o1.totVisits == 0)
+                        v1 = 1;
+                    if (o2.totVisits == 0)
+                        v2 = 1;
+
+                    return Double.compare(v2, v1);
+                }
+            });
+            int i = n, N = S.size();
+            while (i < N) {
+                S.remove(S.size() - 1);
+                i++;
             }
         }
     }
