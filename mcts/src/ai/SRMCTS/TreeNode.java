@@ -387,13 +387,13 @@ public class TreeNode {
                 }
             });
             S.clear();
-            stats.reset();
+//            stats.reset();
             int i = 0;
             TreeNode arm;
             while (i < n) {
                 arm = children.get(i++);
                 S.add(arm);
-                stats.add(arm.stats, true);
+//                stats.add(arm.stats, true);
             }
         } else {
             Collections.sort(S, new Comparator<TreeNode>() {
@@ -410,7 +410,7 @@ public class TreeNode {
             });
             int i = n, N = S.size();
             while (i < N) {
-                stats.subtract(S.remove(S.size() - 1).stats, true);
+//                stats.subtract(S.remove(S.size() - 1).stats, true);
                 i++;
             }
         }
