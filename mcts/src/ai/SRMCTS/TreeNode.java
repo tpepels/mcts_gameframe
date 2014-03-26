@@ -266,6 +266,7 @@ public class TreeNode {
                 rc = (int) (A.size() / (double) options.rc);
                 if (rc == 0)
                     rc = 1;
+//                System.out.println(ply + " " + A.size());
             }
             newRound();
         }
@@ -296,7 +297,6 @@ public class TreeNode {
                 }
             }
         }
-
     }
 
     private void newRound() {
@@ -306,19 +306,19 @@ public class TreeNode {
                 round = (int) Math.ceil((rc * totalBudget) / (S.size() - 1));
                 rootRounds++;
             } else
-                round = (int) Math.ceil((rc * totalBudget) / S.size());
+                round = (int) Math.ceil((rc * totalBudget) / (S.size() + options.sr_c));
         } else
             round = totalBudget;
 
         // Reset the arms
         for (TreeNode t : A) {
             if (t.A != null) {
-                int selection = t.S.size();
-                if (rootRounds - t.ply > 1)
-                    selection -= (int) (selection / (double) options.rc);
-//                System.out.println(rootRounds + " " + selection);
-                if (selection < t.S.size())
-                    t.reduceS(selection, options.remove);
+//                int selection = t.S.size();
+//                if (rootRounds - t.ply > 1)
+//                    selection -= (int) (selection / (double) options.rc);
+////                System.out.println(rootRounds + " " + selection);
+//                if (selection < t.S.size())
+//                    t.reduceS(selection, options.remove);
 
                 // Return all children to A
                 t.A.clear();
@@ -395,7 +395,6 @@ public class TreeNode {
                 S.add(arm);
                 stats.add(arm.stats, true);
             }
-//            checkNode();
         } else {
             Collections.sort(S, new Comparator<TreeNode>() {
                 @Override
@@ -414,7 +413,6 @@ public class TreeNode {
                 stats.subtract(S.remove(S.size() - 1).stats, true);
                 i++;
             }
-//            checkNode();
         }
     }
 
@@ -487,7 +485,6 @@ public class TreeNode {
                 }
             }
         }
-//        checkNode();
     }
 
     private double playOut(IBoard board) {

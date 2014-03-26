@@ -265,6 +265,8 @@ public class SimGame {
                     options.sr_depth = Integer.parseInt(tag.substring(1));
                 } else if (tag.startsWith("c")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
+                } else if (tag.startsWith("src")) {
+                    options.sr_c = Double.parseDouble(tag.substring(3));
                 } else if (tag.equals("s")) {
                     options.solver = true;
                 } else if (tag.startsWith("rc")) {
