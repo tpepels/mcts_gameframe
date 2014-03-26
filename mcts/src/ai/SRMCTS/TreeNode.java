@@ -313,12 +313,12 @@ public class TreeNode {
         // Reset the arms
         for (TreeNode t : A) {
             if (t.A != null) {
-//                int selection = t.S.size();
-//                if (rootRounds - t.ply > 1)
-//                    selection -= (int) (selection / (double) options.rc);
-////                System.out.println(rootRounds + " " + selection);
-//                if (selection < t.S.size())
-//                    t.reduceS(selection, options.remove);
+                int selection = t.S.size();
+                if (rootRounds - t.ply > 1)
+                    selection -= (int) (selection / (double) options.rc);
+//                System.out.println(rootRounds + " " + selection);
+                if (selection < t.S.size())
+                    t.reduceS(selection, options.remove);
 
                 // Return all children to A
                 t.A.clear();
