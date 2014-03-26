@@ -395,7 +395,7 @@ public class TreeNode {
                 S.add(arm);
                 stats.add(arm.stats, true);
             }
-            checkNode();
+//            checkNode();
         } else {
             Collections.sort(S, new Comparator<TreeNode>() {
                 @Override
@@ -414,7 +414,7 @@ public class TreeNode {
                 stats.subtract(S.remove(S.size() - 1).stats, true);
                 i++;
             }
-            checkNode();
+//            checkNode();
         }
     }
 
@@ -487,7 +487,7 @@ public class TreeNode {
                 }
             }
         }
-        checkNode();
+//        checkNode();
     }
 
     private double playOut(IBoard board) {
@@ -605,24 +605,24 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void checkNode() {
-        if (A != null && parent != null && A.size() > 0) {
-            int c = 0, sum = 0, nv = 0;
-            for (TreeNode t : S) {
-                c += t.budget;
-                nv += t.stats.totalVisits();
-                sum += t.stats.m_sum;
-            }
-            double diff = Math.abs(nv - stats.totalVisits());
-            if (diff >= 1.)
-                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
-            diff = Math.abs(sum + stats.m_sum);
-            if (diff >= 1.)
-                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
-//            if (c != round)
-//                System.err.println("??");
-        }
-    }
+//    private void checkNode() {
+//        if (A != null && parent != null && A.size() > 0) {
+//            int c = 0, sum = 0, nv = 0;
+//            for (TreeNode t : S) {
+//                c += t.budget;
+//                nv += t.stats.totalVisits();
+//                sum += t.stats.m_sum;
+//            }
+//            double diff = Math.abs(nv - stats.totalVisits());
+//            if (diff >= 1.)
+//                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
+//            diff = Math.abs(sum + stats.m_sum);
+//            if (diff >= 1.)
+//                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
+////            if (c != round)
+////                System.err.println("??");
+//        }
+//    }
 
     public boolean isLeaf() {
         return children == null || !expanded;
