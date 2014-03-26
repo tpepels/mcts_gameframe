@@ -29,6 +29,7 @@ public class MCTSOptions {
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
     public int sr_depth = 1, policy = 4, rc = 2;
+    public double sr_c = 1;
     public boolean remove = false, depth_limited = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
