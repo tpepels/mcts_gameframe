@@ -120,6 +120,7 @@ public class TreeNode {
                 // Remove from list of unsolved nodes
                 if (A != null)
                     removeSolvedArm(child);
+                boolean allLoss = true;
                 // (Solver) Check if all children are a loss
                 for (TreeNode tn : children) {
                     // If the child is not expanded, make sure it is
@@ -137,21 +138,24 @@ public class TreeNode {
                         }
                     }
                     // Are all children a loss?
-                    if (tn.stats.mean() != result) {
-                        if (A != null) {
-                            // Fix the value of rc to account for removed arms
-                            rc = (int) (A.size() / (double) options.rc);
-                            if (rc == 0)
-                                rc = 1;
-                            resetRound();
-                        }
-                        // Return a single loss, if not all children are a loss
-                        updateStats(1);
-                        return -1;
+                    if (tn.stats.mean() != result)
+                        allLoss = false;
+                }
+                // Are all children a loss?
+                if (!allLoss) {
+                    // Return a single loss, if not all children are a loss
+                    updateStats(1);
+                    if (A != null) {
+                        // Fix the value of rc to account for removed arms
+                        rc = (int) (A.size() / (double) options.rc);
+                        if (rc == 0)
+                            rc = 1;
+                        resetRound();
                     }
+                    return -1;
                 }
                 // Add the node to the solved children for the parent
-                if(parent != null && parent.As != null)
+                if (parent != null && parent.As != null)
                     parent.As.add(this);
                 // (Solver) If all children lead to a loss for me, then I'm a win for the opponent
                 stats.setValue(INF);
@@ -310,11 +314,9 @@ public class TreeNode {
         for (TreeNode t : A) {
             if (t.A != null) {
                 int selection = t.S.size();
-                if(rootRounds - t.ply > 2)
+                if (rootRounds - t.ply > 1)
                     selection -= (int) (selection / (double) options.rc);
-                if(selection == 0)
-                    System.out.println();
-                System.out.println(rootRounds + " " + selection);
+//                System.out.println(rootRounds + " " + selection);
                 if (selection < t.S.size())
                     t.reduceS(selection, options.remove);
 
@@ -385,10 +387,15 @@ public class TreeNode {
                 }
             });
             S.clear();
+            stats.reset();
             int i = 0;
+            TreeNode arm;
             while (i < n) {
-                S.add(children.get(i++));
+                arm = children.get(i++);
+                S.add(arm);
+                stats.add(arm.stats, true);
             }
+            checkNode();
         } else {
             Collections.sort(S, new Comparator<TreeNode>() {
                 @Override
@@ -404,9 +411,10 @@ public class TreeNode {
             });
             int i = n, N = S.size();
             while (i < N) {
-                S.remove(S.size() - 1);
+                stats.subtract(S.remove(S.size() - 1).stats, true);
                 i++;
             }
+            checkNode();
         }
     }
 
@@ -453,11 +461,12 @@ public class TreeNode {
     }
 
     private void removeSolvedArm(TreeNode arm) {
-        S.remove(arm);
+        if (S.remove(arm))
+            stats.subtract(arm.stats, true);
         if (A.remove(arm)) {
             // See if we can return an arm to A
-            if (A.size() < children.size()) {
-                double score = Double.NEGATIVE_INFINITY;
+            if (A.size() + 1 < children.size()) {
+                double score = -INF + 1;
                 TreeNode returnArm = null;
                 for (TreeNode a : children) {
                     // Return a non-solved arm
@@ -471,11 +480,14 @@ public class TreeNode {
                 // We can return an arm to A that was previously discarded
                 if (returnArm != null) {
                     A.add(returnArm);
-                    if(!S.contains(returnArm))
+                    if (!S.contains(returnArm)) {
+                        stats.add(returnArm.stats, true);
                         S.add(returnArm);
+                    }
                 }
             }
         }
+        checkNode();
     }
 
     private double playOut(IBoard board) {
@@ -593,24 +605,24 @@ public class TreeNode {
         return bestChild;
     }
 
-//    private void checkNode() {
-//        if (A != null && parent != null && A.size() > 0) {
-//            int c = 0, sum = 0, nv = 0;
-//            for (TreeNode t : A) {
-//                c += t.budget;
-//                nv += t.stats.totalVisits();
-//                sum += t.stats.m_sum;
-//            }
-////            double diff = Math.abs(nv - stats.totalVisits());
-////            if (diff >= 1.)
-////                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
-////            diff = Math.abs(sum + stats.m_sum);
-////            if (diff >= 1.)
-////                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
+    private void checkNode() {
+        if (A != null && parent != null && A.size() > 0) {
+            int c = 0, sum = 0, nv = 0;
+            for (TreeNode t : S) {
+                c += t.budget;
+                nv += t.stats.totalVisits();
+                sum += t.stats.m_sum;
+            }
+            double diff = Math.abs(nv - stats.totalVisits());
+            if (diff >= 1.)
+                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
+            diff = Math.abs(sum + stats.m_sum);
+            if (diff >= 1.)
+                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
 //            if (c != round)
 //                System.err.println("??");
-//        }
-//    }
+        }
+    }
 
     public boolean isLeaf() {
         return children == null || !expanded;

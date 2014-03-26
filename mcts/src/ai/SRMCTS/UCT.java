@@ -24,7 +24,7 @@ public class UCT {
             // Always select a proven win
             if(c.stats.mean() == TreeNode.INF)
                 uctValue = TreeNode.INF + MCTSOptions.r.nextDouble();
-            else if (c.getTotalVisits() == 0) {
+            else if (c.getTotalVisits() == 0 && c.stats.mean() != -TreeNode.INF) {
                 // First, visit all children at least once
                 uctValue = 100 + MCTSOptions.r.nextDouble();
             } else {
@@ -37,7 +37,6 @@ public class UCT {
                 max = uctValue;
             }
         }
-
         return selected;
     }
 }
