@@ -6,6 +6,7 @@ import ai.framework.IMove;
 import ai.framework.MoveList;
 import ai.mcts.MCTSOptions;
 
+import javax.sound.midi.SysexMessage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -147,7 +148,7 @@ public class TreeNode {
                     updateStats(1);
                     if (A != null) {
                         // Fix the value of rc to account for removed arms
-                        rc = (int) Math.ceil(A.size() / (double) options.rc);
+                        rc = (int) Math.floor(A.size() / (double) options.rc);
                         if (rc == 0)
                             rc = 1;
                         resetRound();
@@ -222,7 +223,7 @@ public class TreeNode {
         }
         //
         if (A != null) {
-            rc = (int) (A.size() / (double) options.rc);
+            rc = (int) Math.floor(A.size() / (double) options.rc);
             if (rc == 0)
                 rc = 1;
             newRound();
@@ -260,10 +261,29 @@ public class TreeNode {
         roundSimulations++;
         // New round, remove an arm
         if (round == 0 && A != null) {
+            // Reset the arms
+            for (TreeNode t : A) {
+                if (t.A != null) {
+                    // Reduce the size of S
+                    int selection = t.S.size();
+                    if (rootRounds - t.ply > 1)
+                        selection -= (int) Math.floor(selection / (double) options.rc);
+
+                    if (selection > 0 && selection < t.S.size())
+                        t.reduceS(selection, options.remove);
+                    // System.out.println(rootRounds + " " + selection);
+                    // Return all children to A
+                    t.A.clear();
+                    t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
+                }
+                // Reset the budgets of the children just in case
+                t.budget = 0;
+                t.roundSimulations = 0;
+            }
             // Removal policy
             if (A.size() > rc) {
                 newSelection(A.size() - rc, options.remove);
-                rc = (int) Math.ceil(A.size() / (double) options.rc);
+                rc = (int) Math.floor(A.size() / (double) options.rc);
                 if (rc == 0)
                     rc = 1;
             }
@@ -298,36 +318,29 @@ public class TreeNode {
         }
     }
 
-    private void newRound() {
+    private int initBudget = 0, bPerArm = 0;
 
-        if (S.size() > 1) {
+    private void newRound() {
+        if (A.size() == 1 || S.size() == 1) {
+            round = totalBudget;
+            bPerArm = totVisits + totalBudget;
+        } else {
             if (move == null) {
-                round = (int) Math.ceil((rc * totalBudget) / (S.size() - 1.));
+                round = (int) Math.floor(totalBudget / Math.ceil((options.rc / 2.) * log2(S.size() - 1.)));
+                bPerArm += (int) Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size() - 1.))));
                 rootRounds++;
             } else {
-                round = (int)Math.max(1, Math.ceil((rc * totalBudget) / (double)(S.size())));
+                round = (int) Math.floor(totalBudget / (log2((options.rc / 2.) * S.size())));
+                bPerArm += (int) Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size()))));
             }
-        } else
-            round = totalBudget;
-        // Reset the arms
-        for (TreeNode t : A) {
-            if (t.A != null) {
-                int selection = t.S.size();
-                if (rootRounds - t.ply > 1)
-                    selection -= (int) Math.ceil(selection / (double) options.rc);
-//                System.out.println(rootRounds + " " + selection);
-                if (selection > 0 && selection < t.S.size())
-                    t.reduceS(selection, options.remove);
-                // Return all children to A
-                t.A.clear();
-                t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
-            }
-            // Reset the budgets of the children just in case
-            t.budget = 0;
-            t.roundSimulations = 0;
         }
         // Divide the budget for the round over the children
         if (round > 0 && (A.size() > 0 || As.size() > 0)) {
+            // Divide the budget over the available arms
+            for (TreeNode t : A) {
+                // Reset the budgets of the children
+                t.budget = 0;
+            }
             int b = round;
             // First divide over solved nodes that were not seen before
             for (TreeNode arm : As) {
@@ -338,28 +351,38 @@ public class TreeNode {
                 if (b == 0)
                     break;
             }
-            // Divide the budget over the available arms
-            int ctr = rootCtr;
+            boolean vis = true;
             TreeNode arm;
             // Set new budgets for the arms
-            while (b > 0) {
-                arm = A.get(ctr % A.size());
-                ctr++;
-                // Skip over solved arms, they already have some budget
-                if (A.size() > As.size() && arm.stats.mean() == INF)
-                    continue;
-                arm.budget++;
-                b--;
+            while (b > 0 && vis) {
+                vis = false;
+                for (int i = 0; i < A.size(); i++) {
+                    arm = A.get(i);
+                    // Skip over solved arms, they already have some budget
+                    if (A.size() > As.size() && arm.stats.mean() == INF)
+                        continue;
+                    if (arm.totVisits + arm.budget >= bPerArm)
+                        continue;
+                    vis = true;
+                    arm.budget++;
+                    b--;
+                    if (b == 0)
+                        break;
+                }
             }
+            // Give the rest of the budget to the empirically best arm
+            A.get(0).budget += b;
         }
         // Reset the total budgets for the arms, and the A's
         for (TreeNode t : A) {
             // Reset the total budget for this round
             // totalBudget does not change during the round
             t.totalBudget = t.budget;
+            t.initBudget = t.totVisits;
+            t.bPerArm = 0;
             if (t.A != null) {
                 // Reset the remove counter
-                t.rc = (int) Math.ceil(t.A.size() / (double) options.rc);
+                t.rc = (int) Math.floor(t.A.size() / (double) options.rc);
                 if (t.rc == 0)
                     t.rc = 1;
                 // Start a new round in all children recursively
@@ -368,19 +391,23 @@ public class TreeNode {
         }
     }
 
+    private double log2(double x) {
+        return (Math.log(x) / Math.log(2));
+    }
+
     private void reduceS(int n, boolean remove) {
         if (Math.abs(stats.mean()) == INF)
             return;
         if (!remove) {
             Collections.sort(children, comparator);
             S.clear();
-            //stats.reset();
+            stats.reset();
             int i = 0;
             TreeNode arm;
             while (i < n) {
                 arm = children.get(i++);
                 S.add(arm);
-                //stats.add(arm.stats, true);
+                stats.add(arm.stats, true);
             }
         } else {
             Collections.sort(S, comparator);
@@ -416,7 +443,7 @@ public class TreeNode {
                 A.add(S.get(i++));
             }
         } else {
-            Collections.sort(A,comparator);
+            Collections.sort(A, comparator);
             int i = n, N = A.size();
             while (i < N) {
                 A.remove(A.size() - 1);
@@ -426,7 +453,8 @@ public class TreeNode {
     }
 
     private void removeSolvedArm(TreeNode arm) {
-        S.remove(arm);
+        if (S.remove(arm))
+            stats.subtract(arm.stats, true);
         if (A.remove(arm)) {
             // See if we can return an arm to A
             if (A.size() + 1 < children.size()) {
@@ -444,9 +472,8 @@ public class TreeNode {
                 // We can return an arm to A that was previously discarded
                 if (returnArm != null) {
                     A.add(returnArm);
-                    if (!S.contains(returnArm)) {
+                    if (!S.contains(returnArm))
                         S.add(returnArm);
-                    }
                 }
             }
         }
