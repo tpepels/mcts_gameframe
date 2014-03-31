@@ -225,7 +225,10 @@ public class TreeNode {
             rc = (int) Math.floor(A.size() / (double) options.rc);
             if (rc == 0)
                 rc = 1;
-            newRound();
+            if (options.top_offs)
+                newRound();
+            else
+                newRound_forget();
         }
         // If one of the nodes is a win, return it.
         return winNode;
@@ -286,9 +289,11 @@ public class TreeNode {
                 if (rc == 0)
                     rc = 1;
             }
-            newRound();
+            if (options.top_offs)
+                newRound();
+            else
+                newRound_forget();
         }
-
     }
 
     private void resetRound() {
@@ -334,13 +339,13 @@ public class TreeNode {
                 bPerArm += (int) Math.max(1, Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size())))));
             }
         }
+        for (TreeNode t : A) {
+            // Reset the budgets of the children
+            t.budget = 0;
+        }
         // Divide the budget for the round over the children
         if (round > 0 && (A.size() > 0 || As.size() > 0)) {
             // Divide the budget over the available arms
-            for (TreeNode t : A) {
-                // Reset the budgets of the children
-                t.budget = 0;
-            }
             int b = round;
             // First divide over solved nodes that were not seen before
             for (TreeNode arm : As) {
@@ -403,6 +408,66 @@ public class TreeNode {
                     t.rc = 1;
                 // Start a new round in all children recursively
                 t.newRound();
+            }
+        }
+    }
+
+    private void newRound_forget() {
+        if (A.size() == 1 || S.size() == 1) {
+            round = totalBudget;
+            bPerArm = totVisits + totalBudget;
+        } else {
+            if (move == null) {
+                round = (int) Math.floor(totalBudget / Math.ceil((options.rc / 2.) * log2(S.size() - 1.)));
+                rootRounds++;
+            } else {
+                round = (int) Math.floor(totalBudget / (log2((options.rc / 2.) * S.size())));
+            }
+        }
+        // Reset the arms
+        for (TreeNode t : A) {
+            // Reset the budgets of the children just in case
+            t.budget = 0;
+            t.roundSimulations = 0;
+        }
+        // Divide the budget for the round over the children
+        if (round > 0 && (A.size() > 0 || As.size() > 0)) {
+            int b = round;
+            // First divide over solved nodes that were not seen before
+            for (TreeNode arm : As) {
+                if (arm.getTotalVisits() > 0)
+                    continue;
+                arm.budget++;
+                b--;
+                if (b == 0)
+                    break;
+            }
+            // Divide the budget over the available arms
+            int ctr = rootCtr;
+            TreeNode arm;
+            // Set new budgets for the arms
+            while (b > 0) {
+                arm = A.get(ctr % A.size());
+                ctr++;
+                // Skip over solved arms, they already have some budget
+                if (A.size() > As.size() && arm.stats.mean() == INF)
+                    continue;
+                arm.budget++;
+                b--;
+            }
+        }
+        // Reset the total budgets for the arms, and the A's
+        for (TreeNode t : A) {
+            // Reset the total budget for this round
+            // totalBudget does not change during the round
+            t.totalBudget = t.budget;
+            if (t.A != null) {
+                // Reset the remove counter
+                t.rc = (int) Math.floor(t.A.size() / (double) options.rc);
+                if (t.rc == 0)
+                    t.rc = 1;
+                // Start a new round in all children recursively
+                t.newRound_forget();
             }
         }
     }

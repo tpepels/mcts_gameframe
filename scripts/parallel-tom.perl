@@ -140,24 +140,12 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-  	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc2",
-	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc3",
-	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc4",
-	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc5",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc3",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc4",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc6",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc8",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc10",
-	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc2_r",
-	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc3_r",
-	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc4_r",
-	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc5_r"
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc3_r",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc4_r",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc6_r",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc8_r",
-#	"mcts_h_sl_s,srmcts_h_sl_d1_p4_s_rc10_r"
+  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2",
+  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_t",
+  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_r_t",
+  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_r",
+  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_r_sr",
+  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_sr"
 );
 
 my @games = (

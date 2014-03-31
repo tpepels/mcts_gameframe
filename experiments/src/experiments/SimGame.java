@@ -267,6 +267,8 @@ public class SimGame {
                     options.stat_reset = true;
                 } else if (tag.equals("s")) {
                     options.solver = true;
+                } else if (tag.equals("t")) {
+                    options.top_offs = true;
                 } else if (tag.startsWith("rc")) {
                     options.rc = Integer.parseInt(tag.substring(2));
                 } else if (tag.equals("r")) {
