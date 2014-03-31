@@ -5,6 +5,7 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 import ai.mcts.MCTSOptions;
+import sun.reflect.generics.tree.Tree;
 
 import javax.sound.midi.SysexMessage;
 import java.text.DecimalFormat;
@@ -89,9 +90,7 @@ public class TreeNode {
                 movesMade[player - 1].add(child.getMove());
 
             // When a leaf is reached return the result of the playout
-            if ((options.depth_limited && depth == options.sr_depth) ||
-                    (!options.depth_limited && (!child.simulated && depth > options.sr_depth)) ||
-                    child.isTerminal()) {
+            if ((!child.simulated && depth > options.sr_depth) || child.isTerminal()) {
                 result = child.playOut(board);
                 child.budget--;
                 child.round--;
@@ -289,6 +288,7 @@ public class TreeNode {
             }
             newRound();
         }
+
     }
 
     private void resetRound() {
@@ -331,7 +331,7 @@ public class TreeNode {
                 rootRounds++;
             } else {
                 round = (int) Math.floor(totalBudget / (log2((options.rc / 2.) * S.size())));
-                bPerArm += (int) Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size()))));
+                bPerArm += (int) Math.max(1, Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size())))));
             }
         }
         // Divide the budget for the round over the children
@@ -370,8 +370,24 @@ public class TreeNode {
                         break;
                 }
             }
-            // Give the rest of the budget to the empirically best arm
-            A.get(0).budget += b;
+            if (rootRounds > 1)
+                // Give the rest of the budget to the empirically best arm
+                A.get(0).budget += b;
+            else {
+                // Split the rest evenly
+                int ctr = 0;
+                while (b > 0) {
+                    arm = A.get(ctr % A.size());
+                    ctr++;
+                    // Skip over solved arms, they already have some budget
+                    if (A.size() > As.size() && arm.stats.mean() == INF)
+                        continue;
+                    arm.budget++;
+                    b--;
+                    if (b == 0)
+                        break;
+                }
+            }
         }
         // Reset the total budgets for the arms, and the A's
         for (TreeNode t : A) {
@@ -401,20 +417,24 @@ public class TreeNode {
         if (!remove) {
             Collections.sort(children, comparator);
             S.clear();
-            stats.reset();
             int i = 0;
             TreeNode arm;
             while (i < n) {
                 arm = children.get(i++);
                 S.add(arm);
-                stats.add(arm.stats, true);
             }
         } else {
             Collections.sort(S, comparator);
             int i = n, N = S.size();
             while (i < N) {
-                stats.subtract(S.remove(S.size() - 1).stats, true);
+                S.remove(S.size() - 1);
                 i++;
+            }
+        }
+        if (options.stat_reset) {
+            stats.reset();
+            for (TreeNode arm : S) {
+                stats.add(arm.stats, true);
             }
         }
     }
@@ -453,8 +473,7 @@ public class TreeNode {
     }
 
     private void removeSolvedArm(TreeNode arm) {
-        if (S.remove(arm))
-            stats.subtract(arm.stats, true);
+        S.remove(arm);
         if (A.remove(arm)) {
             // See if we can return an arm to A
             if (A.size() + 1 < children.size()) {
@@ -594,19 +613,19 @@ public class TreeNode {
         return bestChild;
     }
 
-//    private void checkNode() {
-//        if (A != null && parent != null && A.size() > 0) {
+//    private void checkNode(List<TreeNode> list, StatCounter stats) {
+//        if (list != null && parent != null && list.size() > 0) {
 //            int c = 0, sum = 0, nv = 0;
-//            for (TreeNode t : S) {
+//            for (TreeNode t : list) {
 //                c += t.budget;
 //                nv += t.stats.totalVisits();
 //                sum += t.stats.m_sum;
 //            }
 //            double diff = Math.abs(nv - stats.totalVisits());
-//            if (diff >= 1.)
+//            if (diff > 1.)
 //                System.out.println("Visits: " + nv + " mine: " + stats.totalVisits());
 //            diff = Math.abs(sum + stats.m_sum);
-//            if (diff >= 1.)
+//            if (diff > 1.)
 //                System.out.println("Sum: " + sum + " mine: " + -stats.m_sum);
 ////            if (c != round)
 ////                System.err.println("??");

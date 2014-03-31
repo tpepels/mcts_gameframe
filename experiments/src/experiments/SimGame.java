@@ -259,14 +259,12 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
-                } else if (tag.startsWith("p")) {
-                    options.policy = Integer.parseInt(tag.substring(1));
                 } else if (tag.startsWith("d")) {
                     options.sr_depth = Integer.parseInt(tag.substring(1));
                 } else if (tag.startsWith("c")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
-                } else if (tag.startsWith("src")) {
-                    options.sr_c = Double.parseDouble(tag.substring(3));
+                } else if (tag.equals("sr")) {
+                    options.stat_reset = true;
                 } else if (tag.equals("s")) {
                     options.solver = true;
                 } else if (tag.startsWith("rc")) {
