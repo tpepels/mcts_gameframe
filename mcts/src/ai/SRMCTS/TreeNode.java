@@ -90,7 +90,8 @@ public class TreeNode {
                 movesMade[player - 1].add(child.getMove());
 
             // When a leaf is reached return the result of the playout
-            if ((!child.simulated && depth > options.sr_depth) || child.isTerminal()) {
+            if (((!child.simulated && depth > options.sr_depth) || child.isTerminal()) ||
+                    (options.shot && (budget == 1 || !child.simulated || child.isTerminal()))) {
                 result = child.playOut(board);
                 child.budget--;
                 child.round--;
@@ -266,21 +267,20 @@ public class TreeNode {
             // Reset the arms
             for (TreeNode t : A) {
                 if (t.A != null) {
-                    // Reduce the size of S
-                    int selection = t.S.size();
-                    if (rootRounds - t.ply > 1)
-                        selection -= (int) Math.floor(selection / (double) options.rc);
+                    if (options.rec_halving) {
+                        // Reduce the size of S
+                        int selection = t.S.size();
+                        if (rootRounds - t.ply > 1)
+                            selection -= (int) Math.floor(selection / (double) options.rc);
 
-                    if (selection > 0 && selection < t.S.size())
-                        t.reduceS(selection, options.remove);
+                        if (selection > 0 && selection < t.S.size())
+                            t.reduceS(selection, options.remove);
+                    }
                     // System.out.println(rootRounds + " " + selection);
                     // Return all children to A
                     t.A.clear();
                     t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
                 }
-                // Reset the budgets of the children just in case
-                t.budget = 0;
-                t.roundSimulations = 0;
             }
             // Removal policy
             if (A.size() > rc) {
@@ -289,6 +289,7 @@ public class TreeNode {
                 if (rc == 0)
                     rc = 1;
             }
+            //
             if (options.top_offs)
                 newRound();
             else
@@ -331,17 +332,18 @@ public class TreeNode {
             bPerArm = totVisits + totalBudget;
         } else {
             if (move == null) {
-                round = (int) Math.floor(totalBudget / Math.ceil((options.rc / 2.) * log2(S.size() - 1.)));
-                bPerArm += (int) Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size() - 1.))));
+                round = (int) Math.max(1, Math.floor(totalBudget / Math.ceil((options.rc / 2.) * log2(S.size() - 1.))));
+                bPerArm += (int) Math.max(1, Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size() - 1.)))));
                 rootRounds++;
             } else {
-                round = (int) Math.floor(totalBudget / (log2((options.rc / 2.) * S.size())));
+                round = (int) Math.max(1, Math.floor(totalBudget / (log2((options.rc / 2.) * S.size()))));
                 bPerArm += (int) Math.max(1, Math.floor((initBudget + totalBudget) / (A.size() * Math.ceil((options.rc / 2.) * log2(S.size())))));
             }
         }
         for (TreeNode t : A) {
             // Reset the budgets of the children
             t.budget = 0;
+            t.roundSimulations = 0;
         }
         // Divide the budget for the round over the children
         if (round > 0 && (A.size() > 0 || As.size() > 0)) {
@@ -418,10 +420,10 @@ public class TreeNode {
             bPerArm = totVisits + totalBudget;
         } else {
             if (move == null) {
-                round = (int) Math.floor(totalBudget / Math.ceil((options.rc / 2.) * log2(S.size() - 1.)));
+                round = (int) Math.max(1, Math.floor(totalBudget / Math.ceil((options.rc / 2.) * log2(S.size() - 1.))));
                 rootRounds++;
             } else {
-                round = (int) Math.floor(totalBudget / (log2((options.rc / 2.) * S.size())));
+                round = (int) Math.max(1, Math.floor(totalBudget / (log2((options.rc / 2.) * S.size()))));
             }
         }
         // Reset the arms
@@ -509,9 +511,9 @@ public class TreeNode {
         public int compare(TreeNode o1, TreeNode o2) {
             double v1 = o1.stats.mean(), v2 = o2.stats.mean();
             if (o1.totVisits == 0)
-                v1 = 1;
+                v1 = INF;
             if (o2.totVisits == 0)
-                v2 = 1;
+                v2 = INF;
 
             return Double.compare(v2, v1);
         }

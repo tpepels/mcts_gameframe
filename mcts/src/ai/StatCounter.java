@@ -99,11 +99,12 @@ public class StatCounter {
         m_sum += num;
         double delta = num - m_mean;
         m_mean += delta / m_n;
-        if (Double.isNaN(m_mean))
-            System.err.println();
         m_m2 += delta * (num - m_mean);
         //
         if (ma != null) ma.add(num);
+        //
+        if (Double.isNaN(m_mean))
+            throw new RuntimeException("Mean is NaN in push");
     }
 
     public void setValue(double val) {
@@ -125,10 +126,8 @@ public class StatCounter {
         m_n -= statCounter.m_n;
         if (m_n > 0)
             m_mean = m_sum / m_n;
-        else if (m_n < 0)
-            System.err.println();
         if (Double.isNaN(m_mean))
-            System.err.println();
+            throw new RuntimeException("Mean is NaN in subtract");
     }
 
     public void add(StatCounter statCounter, boolean isOpp) {
@@ -146,10 +145,8 @@ public class StatCounter {
         m_n += statCounter.m_n;
         if (m_n > 0)
             m_mean = m_sum / m_n;
-        else if (m_n < 0)
-            System.err.println();
         if (Double.isNaN(m_mean))
-            System.err.println();
+            throw new RuntimeException("Mean is NaN in add");
     }
 
     public double variance() {
@@ -162,7 +159,7 @@ public class StatCounter {
 
     public double mean() {
         if (Double.isNaN(m_mean))
-            System.err.println();
+            throw new RuntimeException("Mean is NaN in getMean");
         if (ma == null || Math.abs(m_mean) == TreeNode.INF)
             return m_mean;
         else

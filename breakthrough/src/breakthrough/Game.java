@@ -22,6 +22,7 @@ public class Game {
 //        options1.timeInterval = 2500;
         options1.fixedSimulations = true;
         options1.simulations = 25000;
+        options1.enableShot();
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");

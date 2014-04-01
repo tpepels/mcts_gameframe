@@ -277,6 +277,8 @@ public class SimGame {
                     options.MAST = true;
                     options.history = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
+                } else if (tag.startsWith("shot")) {
+                    options.enableShot();
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
