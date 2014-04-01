@@ -280,7 +280,7 @@ public class TreeNode {
                 }
             }
             // Removal policy
-            if (A.size() > rc) {
+            if (A.size() > rc && totVisits > rc) { // Only remove if we have enough visits
                 newSelection(A.size() - rc, options.remove);
                 rc = (int) Math.floor(A.size() / (double) options.rc);
                 if (rc == 0)
@@ -357,11 +357,13 @@ public class TreeNode {
             }
             boolean vis = true;
             TreeNode arm;
+            int ctr = rootCtr;
             // Set new budgets for the arms
             while (b > 0 && vis) {
                 vis = false;
                 for (int i = 0; i < A.size(); i++) {
-                    arm = A.get(i);
+                    arm = A.get(ctr % A.size());
+                    ctr++;
                     // Skip over solved arms, they already have some budget
                     if (A.size() > As.size() && arm.stats.mean() == INF)
                         continue;
@@ -379,7 +381,7 @@ public class TreeNode {
                 A.get(0).budget += b;
             else {
                 // Split the rest evenly
-                int ctr = 0;
+                ctr = 0;
                 while (b > 0) {
                     arm = A.get(ctr % A.size());
                     ctr++;
