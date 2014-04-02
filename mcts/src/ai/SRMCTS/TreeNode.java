@@ -5,6 +5,7 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 import ai.mcts.MCTSOptions;
+
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -145,9 +146,7 @@ public class TreeNode {
                     updateStats(1);
                     if (A != null) {
                         // Fix the value of rc to account for removed arms
-                        rc = (int) Math.floor(A.size() / (double) options.rc);
-                        if (rc == 0)
-                            rc = 1;
+                        setRc();
                         resetRound();
                     }
                     return -1;
@@ -209,7 +208,7 @@ public class TreeNode {
                 //
                 if (depth <= options.sr_depth) {
                     A.add(child);
-                    if (value == INF)
+                    if (value == INF) // Add solved nodes to the solved set
                         As.add(child);
                     S.add(child);
                 }
@@ -220,9 +219,8 @@ public class TreeNode {
         }
         //
         if (A != null) {
-            rc = (int) Math.floor(A.size() / (double) options.rc);
-            if (rc == 0)
-                rc = 1;
+            // Set the initial remove-count
+            setRc();
             if (options.top_offs)
                 newRound();
             else
@@ -264,33 +262,57 @@ public class TreeNode {
             // Reset the arms
             for (TreeNode t : A) {
                 if (t.A != null) {
+                    // Reduce the size of S so unwanted children are not revisited
                     if (options.rec_halving) {
                         // Reduce the size of S
                         int selection = t.S.size();
-                        if (rootRounds - t.ply > 1)
+                        if (rootRounds - t.ply > 0)
                             selection -= (int) Math.floor(selection / (double) options.rc);
+                        //
+                        if (selection > 0 && selection < t.S.size()) {
+                            newSelection(t.S, (options.remove) ? t.S : t.children, selection);
+                            // Reset the statistics to match the new set S
+                            if (options.stat_reset) {
+                                stats.reset();
+                                for (TreeNode arm : S)
+                                    stats.add(arm.stats, true);
+                            }
+//                            System.out.println(rootRounds + " " + t.S.size());
+                        }
 
-                        if (selection > 0 && selection < t.S.size())
-                            t.reduceS(selection, options.remove);
                     }
-                    // System.out.println(rootRounds + " " + selection);
                     // Return all children to A
                     t.A.clear();
                     t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
                 }
             }
             // Removal policy
-            if (A.size() > rc && totVisits > rc) { // Only remove if we have enough visits
-                newSelection(A.size() - rc, options.remove);
-                rc = (int) Math.floor(A.size() / (double) options.rc);
-                if (rc == 0)
-                    rc = 1;
+            if (A.size() > rc && totVisits >= A.size()) { // Only remove if we have enough visits
+                newSelection(A, (options.remove) ? A : S, A.size() - rc);
+                // New remove count
+                setRc();
             }
-            //
+            // Start a new round
             if (options.top_offs)
                 newRound();
             else
                 newRound_forget();
+        }
+    }
+
+    private void newSelection(List<TreeNode> C, List<TreeNode> P, int n) {
+        Collections.sort(P, comparator);
+        if (!options.remove) {
+            C.clear();
+            int i = 0;
+            while (i < n)
+                C.add(P.get(i++));
+        } else {
+            int i = n, N = P.size();
+            while (i < N) {
+                C.remove(P.size() - 1);
+                i++;
+            }
         }
     }
 
@@ -319,6 +341,12 @@ public class TreeNode {
                 }
             }
         }
+    }
+
+    private void setRc() {
+        rc = (int) Math.floor(A.size() / (double) options.rc);
+        if (rc == 0)
+            rc = 1;
     }
 
     private int initBudget = 0, bPerArm = 0;
@@ -459,14 +487,11 @@ public class TreeNode {
         }
         // Reset the total budgets for the arms, and the A's
         for (TreeNode t : A) {
-            // Reset the total budget for this round
-            // totalBudget does not change during the round
+            // Reset the total budget for this round totalBudget does not change during the round
             t.totalBudget = t.budget;
             if (t.A != null) {
                 // Reset the remove counter
-                t.rc = (int) Math.floor(t.A.size() / (double) options.rc);
-                if (t.rc == 0)
-                    t.rc = 1;
+                t.setRc();
                 // Start a new round in all children recursively
                 t.newRound_forget();
             }
@@ -477,38 +502,11 @@ public class TreeNode {
         return (Math.log(x) / Math.log(2));
     }
 
-    private void reduceS(int n, boolean remove) {
-        if (Math.abs(stats.mean()) == INF)
-            return;
-        if (!remove) {
-            Collections.sort(children, comparator);
-            S.clear();
-            int i = 0;
-            TreeNode arm;
-            while (i < n) {
-                arm = children.get(i++);
-                S.add(arm);
-            }
-        } else {
-            Collections.sort(S, comparator);
-            int i = n, N = S.size();
-            while (i < N) {
-                S.remove(S.size() - 1);
-                i++;
-            }
-        }
-        if (options.stat_reset) {
-            stats.reset();
-            for (TreeNode arm : S) {
-                stats.add(arm.stats, true);
-            }
-        }
-    }
-
     private final Comparator<TreeNode> comparator = new Comparator<TreeNode>() {
         @Override
         public int compare(TreeNode o1, TreeNode o2) {
             double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+            // Place unvisited nodes in the front
             if (o1.totVisits == 0)
                 v1 = INF;
             if (o2.totVisits == 0)
@@ -517,26 +515,6 @@ public class TreeNode {
             return Double.compare(v2, v1);
         }
     };
-
-    private void newSelection(int n, boolean remove) {
-        if (Math.abs(stats.mean()) == INF)
-            return;
-        if (!remove) {
-            Collections.sort(S, comparator);
-            A.clear();
-            int i = 0;
-            while (i < n) {
-                A.add(S.get(i++));
-            }
-        } else {
-            Collections.sort(A, comparator);
-            int i = n, N = A.size();
-            while (i < N) {
-                A.remove(A.size() - 1);
-                i++;
-            }
-        }
-    }
 
     private void removeSolvedArm(TreeNode arm) {
         S.remove(arm);
