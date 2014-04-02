@@ -88,8 +88,7 @@ public class TreeNode {
                 movesMade[player - 1].add(child.getMove());
 
             // When a leaf is reached return the result of the playout
-            if (((!child.simulated && depth > options.sr_depth) || child.isTerminal()) ||
-                    (options.shot && (budget == 1 || !child.simulated || child.isTerminal()))) {
+            if (child.isTerminal() || ((!child.simulated && depth > options.sr_depth)) || (options.shot && (budget == 1 || !child.simulated))) {
                 result = child.playOut(board);
                 child.budget--;
                 child.round--;
@@ -279,11 +278,25 @@ public class TreeNode {
                             }
 //                            System.out.println(rootRounds + " " + t.S.size());
                         }
-
+                    } else {
+                        Collections.sort(S, comparator);
                     }
                     // Return all children to A
                     t.A.clear();
                     t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
+
+                }
+                if(options.max_back && rootRounds - t.ply > 0) {
+                    stats.reset();
+                    double max = Double.NEGATIVE_INFINITY;
+                    TreeNode maxT = null;
+                    for(TreeNode arm: A) {
+                        if(arm.stats.mean() > max) {
+                            maxT = arm;
+                            max = arm.stats.mean();
+                        }
+                    }
+                    stats.add(maxT.stats, true);
                 }
             }
             // Removal policy
@@ -298,6 +311,8 @@ public class TreeNode {
                 newRound();
             else
                 newRound_forget();
+            if(totalBudget == 0)
+                throw new RuntimeException("wut");
         }
     }
 
@@ -337,6 +352,7 @@ public class TreeNode {
             }
             // Reset the budgets for the arms
             for (TreeNode t : A) {
+                t.totalBudget = t.budget;
                 if (t.A != null) {
                     t.resetRound();
                 }
@@ -405,24 +421,32 @@ public class TreeNode {
                         break;
                 }
             }
-            if (rootRounds > 1)
-                // Give the rest of the budget to the empirically best arm
-                A.get(0).budget += b;
-            else {
-                // Split the rest evenly
-                ctr = 0;
-                while (b > 0) {
-                    arm = A.get(ctr % A.size());
-                    ctr++;
-                    // Skip over solved arms, they already have some budget
-                    if (A.size() > As.size() && arm.stats.mean() == INF)
-                        continue;
-                    arm.budget++;
-                    b--;
-                    if (b == 0)
-                        break;
-                }
-            }
+            // Don't spend the rest of the budget
+            round -= b;
+            //budget -= b;
+
+            if(round == 0)
+                newRound();
+//            if (rootRounds > 1) {
+//                // Give the rest of the budget to the empirically best arm
+//                A.get(0).budget += b;
+//                if(b > 0)
+//                    System.out.println(b);
+//            } else {
+//                // Split the rest evenly
+//                ctr = 0;
+//                while (b > 0) {
+//                    arm = A.get(ctr % A.size());
+//                    ctr++;
+//                    // Skip over solved arms, they already have some budget
+//                    if (A.size() > As.size() && arm.stats.mean() == INF)
+//                        continue;
+//                    arm.budget++;
+//                    b--;
+//                    if (b == 0)
+//                        break;
+//                }
+//            }
         }
         // Reset the total budgets for the arms, and the A's
         for (TreeNode t : A) {

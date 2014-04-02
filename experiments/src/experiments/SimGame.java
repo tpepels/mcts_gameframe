@@ -271,6 +271,8 @@ public class SimGame {
                     options.top_offs = true;
                 } else if (tag.startsWith("rc")) {
                     options.rc = Integer.parseInt(tag.substring(2));
+                } else if(tag.equals("max")) {
+                    options.max_back = true;
                 } else if (tag.equals("r")) {
                     options.remove = true;
                 } else if (tag.startsWith("mast")) {
