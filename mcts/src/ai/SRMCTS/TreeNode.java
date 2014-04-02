@@ -289,6 +289,7 @@ public class TreeNode {
             // Removal policy
             if (A.size() > rc && totVisits >= A.size()) { // Only remove if we have enough visits
                 newSelection(A, (options.remove) ? A : S, A.size() - rc);
+                rootCtr = 0;
                 // New remove count
                 setRc();
             }
