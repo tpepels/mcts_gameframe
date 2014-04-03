@@ -145,7 +145,7 @@ public class TreeNode {
                     updateStats(1);
                     if (A != null) {
                         // Fix the value of rc to account for removed arms
-                        setRc();
+                        rc = (int) Math.max(1., Math.floor(A.size() / (double) options.rc));
                         resetRound();
                     }
                     return -1;
@@ -219,7 +219,7 @@ public class TreeNode {
         //
         if (A != null) {
             // Set the initial remove-count
-            setRc();
+            rc = (int) Math.max(1., Math.floor(A.size() / (double) options.rc));
             if (options.top_offs)
                 newRound();
             else
@@ -264,11 +264,11 @@ public class TreeNode {
                     // Reduce the size of S so unwanted children are not revisited
                     if (options.rec_halving) {
                         // Reduce the size of S
-                        int selection = t.S.size();
-                        if (rootRounds - t.ply > 0)
-                            selection -= (int) Math.floor(selection / (double) options.rc);
-                        //
-                        if (selection > 0 && selection < t.S.size()) {
+                        int selection = t.children.size(), rr = rootRounds - t.ply;
+                        for (int i = 0; i < rr; i++)
+                            selection -= (int) Math.max(1., Math.floor(selection / (double) options.rc));
+                        // Reduce S if the reduction is smaller than its current size
+                        if (selection < t.S.size()) {
                             newSelection(t.S, (options.remove) ? t.S : t.children, selection);
                             // Reset the statistics to match the new set S
                             if (options.stat_reset) {
@@ -279,7 +279,7 @@ public class TreeNode {
 //                            System.out.println(rootRounds + " " + t.S.size());
                         }
                     } else {
-                        Collections.sort(S, comparator);
+                        Collections.sort(t.S, comparator);
                     }
                     // Return all children to A
                     t.A.clear();
@@ -304,7 +304,7 @@ public class TreeNode {
                 newSelection(A, (options.remove) ? A : S, A.size() - rc);
                 rootCtr = 0;
                 // New remove count
-                setRc();
+                rc = (int) Math.max(1., Math.floor(A.size() / (double) options.rc));
             }
             // Start a new round
             if (options.top_offs)
@@ -358,12 +358,6 @@ public class TreeNode {
                 }
             }
         }
-    }
-
-    private void setRc() {
-        rc = (int) Math.floor(A.size() / (double) options.rc);
-        if (rc == 0)
-            rc = 1;
     }
 
     private int initBudget = 0, bPerArm = 0;
@@ -425,8 +419,10 @@ public class TreeNode {
             round -= b;
             //budget -= b;
 
-            if(round == 0)
+            if(round == 0) {
                 newRound();
+                return;
+            }
 //            if (rootRounds > 1) {
 //                // Give the rest of the budget to the empirically best arm
 //                A.get(0).budget += b;
@@ -516,7 +512,7 @@ public class TreeNode {
             t.totalBudget = t.budget;
             if (t.A != null) {
                 // Reset the remove counter
-                t.setRc();
+                t.rc = (int) Math.max(1., Math.floor(A.size() / (double) options.rc));
                 // Start a new round in all children recursively
                 t.newRound_forget();
             }
