@@ -263,12 +263,10 @@ public class TreeNode {
                 if (t.A != null) {
                     // Reduce the size of S so unwanted children are not revisited
                     if (options.rec_halving) {
-                        // Reduce the size of S
-                        int selection = t.children.size(), rr = rootRounds - t.ply;
-                        for (int i = 0; i < rr; i++)
-                            selection -= (int) Math.max(1., Math.floor(selection / (double) options.rc));
-                        // Reduce S if the reduction is smaller than its current size
-                        if (selection < t.S.size()) {
+                        int selection = t.S.size();
+                        if (rootRounds - t.ply > 0)
+                            selection -= (int) Math.floor(selection / (double) options.rc);
+                        if (selection > 0 && selection < t.S.size()) {
                             newSelection(t.S, (options.remove) ? t.S : t.children, selection);
                             // Reset the statistics to match the new set S
                             if (options.stat_reset) {
@@ -286,12 +284,12 @@ public class TreeNode {
                     t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
 
                 }
-                if(options.max_back && rootRounds - t.ply > 0) {
+                if (options.max_back && rootRounds - t.ply > 0) {
                     stats.reset();
                     double max = Double.NEGATIVE_INFINITY;
                     TreeNode maxT = null;
-                    for(TreeNode arm: A) {
-                        if(arm.stats.mean() > max) {
+                    for (TreeNode arm : A) {
+                        if (arm.stats.mean() > max) {
                             maxT = arm;
                             max = arm.stats.mean();
                         }
@@ -311,7 +309,7 @@ public class TreeNode {
                 newRound();
             else
                 newRound_forget();
-            if(totalBudget == 0)
+            if (totalBudget == 0)
                 throw new RuntimeException("wut");
         }
     }
@@ -419,7 +417,7 @@ public class TreeNode {
             round -= b;
             //budget -= b;
 
-            if(round == 0) {
+            if (round == 0) {
                 newRound();
                 return;
             }
