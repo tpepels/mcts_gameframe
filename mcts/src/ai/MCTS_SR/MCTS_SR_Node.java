@@ -20,7 +20,7 @@ public class MCTS_SR_Node {
     private List<MCTS_SR_Node> C, S;
     private MCTS_SR_Node bestArm;
     private MCTSOptions options;
-    private int player, localVisits = 0, cycles = 0;
+    private int player, localVisits = 0, cycles = 0, sr_visits = 0;
     private final StatCounter stats;
     private IMove move;
 
@@ -35,34 +35,39 @@ public class MCTS_SR_Node {
      * Run the MCTS algorithm on the given node
      */
     public double MCTS_SR(IBoard board, int depth, int budget, int[] playouts) {
-        double result = 0;
+        double result;
         // First add some nodes if required
         if (isLeaf())
             expand(board);
         // :: Recursive reduction
-        int s_t = S.size(), s = s_t, rr = cycles - 1;
-        if (options.rec_halving && depth > 0 && rr > 0) {
+        int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t, rr = cycles - 1;
+        if (rr > 0) {
             for (int i = 0; i < rr; i++)
-                s_t -= (int) Math.max(1, Math.floor(s_t / (double) options.rc));
-            s = s_t;
-            // System.out.println(depth + " " + rootRounds + " " + s_t);
+                r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
+            // System.out.println(depth + " " + cycles + " " + s_t);
+        }
+        if(options.rec_halving) {
+            s_t = r_s_t;
+            s = r_s_t;
+            init_s_t = r_s_t;
         }
         // UCT if beyond simple regret depth
-        if (Math.floor((stats.totalVisits() + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
+        //if (Math.floor((stats.totalVisits() + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
+        if(depth > 1) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
                 playouts[0]++;
+                localVisits++;
+                sr_visits++;
                 // :: Solver
                 if (Math.abs(stats.mean()) == INF)
                     return result;
             }
         } else {
-            // System.out.println(depth);
             // Pull each arm according to budget inside simple regret tree
             // :: Initial Budget
             int b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
-            //
             int budgetUsed = 0, n;
             MCTS_SR_Node arm;
             // Sort S such that proven losses are at the end, and unvisited nodes at the front
@@ -81,15 +86,17 @@ public class MCTS_SR_Node {
                         bestArm = arm;
                         stats.setValue(-INF);
                         return INF;
-                    } // A loss should not happen here due to reduction of selection
-                    int b_b = Math.min(b, budget - budgetUsed) - arm.localVisits;   // Rest
+                    }
+                    if(b < arm.sr_visits)
+                        continue;
+                    int b_b = (Math.min(b - arm.sr_visits, budget - budgetUsed) - arm.localVisits);   // Rest
                     // :: Recursion
                     board.doAIMove(arm.getMove(), player);
                     int[] pl = {0};
                     result = -arm.MCTS_SR(board, depth + 1, b_b, pl);
                     budgetUsed += pl[0];
-                    arm.localVisits += pl[0];
                     playouts[0] += pl[0];
+                    sr_visits += pl[0];
                     board.undoMove();
                     // :: Solver recursion
                     if (Math.abs(result) == INF) {
@@ -101,7 +108,9 @@ public class MCTS_SR_Node {
                             // :: Solver: Recompute the budget for the rest of the arms
                             if (Math.abs(result) == INF) {
                                 // :: Solver: Resume the round with reduced S
-                                s_t = S.size();
+                                init_s_t = Math.min(S.size(), init_s_t);
+                                r_s_t = Math.min(S.size(), r_s_t);
+                                s_t = Math.min(S.size(), init_s_t);
                                 s = Math.min(s, s_t);
                                 b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
                                 // Restart at the first arm to redistribute the budget
@@ -110,6 +119,8 @@ public class MCTS_SR_Node {
                         }
                     }
                 }
+                // :: Removal policy: Reduction
+                s -= (int) Math.floor(s / (double) options.rc);
                 // :: Removal policy: Sorting
                 if (options.remove)
                     Collections.sort(S.subList(0, s), comparator);
@@ -118,18 +129,15 @@ public class MCTS_SR_Node {
                 // Make sure we don't go over budget
                 if (budgetUsed >= budget)
                     break;
-                // :: Removal policy: Reduction
-                s -= (int) Math.floor(s / (double) options.rc);
                 // :: Re-budgeting
-                b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
-                //
+                b += (int) Math.max(1, Math.floor((sr_visits + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
             cycles++;
             if (Math.abs(stats.mean()) != INF) {
                 stats.reset();
                 // :: SR Backpropagation
                 if (options.stat_reset) {
-                    for (int i = 0; i < s_t; i++)
+                    for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
                 } else {
                     for (int i = 0; i < S.size(); i++)
@@ -360,15 +368,12 @@ public class MCTS_SR_Node {
 
     public MCTS_SR_Node selectBestMove() {
         if (bestArm != null) {
-
-            if (bestArm.stats.totalVisits() < 1000)
-                System.out.println();
             return bestArm;
         }
         // Select from the non-solved arms
         MCTS_SR_Node bestChild = null;
         double max = Double.NEGATIVE_INFINITY, value;
-        for (MCTS_SR_Node t : S) {
+        for (MCTS_SR_Node t : C) {
             if (t.stats.mean() == INF)
                 value = INF + MCTSOptions.r.nextDouble();
             else if (t.stats.mean() == -INF)
@@ -403,6 +408,7 @@ public class MCTS_SR_Node {
     @Override
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("###,##0.00000");
-        return move + "\tVal: " + df2.format(stats.mean()) + "\tStatVis: " + stats.totalVisits() + "\tCylces: " + cycles;
+        return move + "\tVal: " + df2.format(stats.mean()) + "\tStatVis: " + stats.totalVisits() +
+                "\tSRVisits: " + sr_visits + "\tCylces: " + cycles;
     }
 }

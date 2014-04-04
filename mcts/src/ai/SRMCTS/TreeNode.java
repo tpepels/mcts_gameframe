@@ -282,8 +282,8 @@ public class TreeNode {
                     // Return all children to A
                     t.A.clear();
                     t.A.addAll(t.S); // S contains all non-solved and unvisited solved children
-
                 }
+                //
                 if (options.max_back && rootRounds - t.ply > 0) {
                     stats.reset();
                     double max = Double.NEGATIVE_INFINITY;

@@ -4,6 +4,7 @@ import ai.FastSigm;
 import ai.FastLog;
 import ai.FastSigm;
 import ai.FastTanh;
+import ai.MCTS_SR.MCTS_SR_Player;
 import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
@@ -241,12 +242,14 @@ public class SimGame {
             playerRef.setOptions(options);
         } else if (parts[0].equals("srmcts")) {
             //
-            playerRef = new SRMCTSPlayer();
+            playerRef = new MCTS_SR_Player();
             MCTSOptions options = new MCTSOptions();
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.solver = false;
             options.remove = false;
+            options.rec_halving = false;
+            options.stat_reset = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
@@ -265,6 +268,8 @@ public class SimGame {
                     options.uctC = Double.parseDouble(tag.substring(1));
                 } else if (tag.equals("sr")) {
                     options.stat_reset = true;
+                } else if (tag.equals("rr")) {
+                    options.rec_halving = true;
                 } else if (tag.equals("s")) {
                     options.solver = true;
                 } else if (tag.equals("t")) {

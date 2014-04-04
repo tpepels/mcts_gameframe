@@ -1,5 +1,6 @@
 package breakthrough;
 
+import ai.MCTS_SR.MCTS_SR_Player;
 import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
@@ -16,13 +17,13 @@ public class Game {
 
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("breakthrough");
-        AIPlayer aiPlayer1 = new SRMCTSPlayer();
+        AIPlayer aiPlayer1 = new MCTS_SR_Player();
         aiPlayer1.setOptions(options1);
         options1.solver = true;
-//        options1.timeInterval = 2500;
+        options1.rec_halving = true;
         options1.fixedSimulations = true;
         options1.simulations = 25000;
-        options1.enableShot();
+//        options1.enableShot();
 //        options1.max_back = true;
 
         MCTSOptions options2 = new MCTSOptions();
@@ -30,7 +31,6 @@ public class Game {
         AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
         options2.solver = true;
-//        options2.timeInterval = 2500;
         options2.fixedSimulations = true;
         options2.simulations = 25000;
 

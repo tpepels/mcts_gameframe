@@ -1,5 +1,7 @@
 package amazons.gui;
 
+import ai.MCTS_SR.MCTS_SR_Player;
+import ai.SRCRMCTS.SRCRMCTSPlayer;
 import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.framework.IMove;
@@ -55,13 +57,16 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("amazons");
-        options1.history = true;
+        options1.fixedSimulations = true;
+        options1.simulations = 25000;
         aiPlayer1.setOptions(options1);
 
         // Definition for player 2
-        aiPlayer2 = new SRMCTSPlayer();
+        aiPlayer2 = new MCTS_SR_Player();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("amazons");
+        options2.fixedSimulations = true;
+        options2.simulations = 25000;
         aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
