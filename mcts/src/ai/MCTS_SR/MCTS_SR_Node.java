@@ -229,7 +229,7 @@ public class MCTS_SR_Node {
         // Use UCT down the tree
         double uctValue;
         // Select a child according to the UCT Selection policy
-        for (MCTS_SR_Node c : S) {
+        for (MCTS_SR_Node c : C) {
             // Always select a proven win
             if (c.stats.mean() == INF)
                 uctValue = INF + MCTSOptions.r.nextDouble();
