@@ -65,7 +65,12 @@ public class MCTS_SR_Node {
         } else {
             // Pull each arm according to budget inside simple regret tree
             // :: Initial Budget
-            int b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+            int b = 0;
+            if (options.top_offs)
+                b = (int) Math.max(1, Math.floor((sr_visits + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+            else
+                b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+            //
             int budgetUsed = 0, n;
             MCTS_SR_Node arm;
             // Sort S such that proven losses are at the end, and unvisited nodes at the front
@@ -81,7 +86,7 @@ public class MCTS_SR_Node {
                 n = 0;
                 // :: Round
                 while (n < s) {
-                    arm = S.get(n);
+                    arm = S.get(s - 1 - n);
                     n++;
                     // :: Solver win
                     if (arm.stats.mean() == INF) {
@@ -89,9 +94,14 @@ public class MCTS_SR_Node {
                         stats.setValue(-INF);
                         return INF;
                     }
-                    if (b < arm.sr_visits)
+                    if (options.top_offs && b < arm.sr_visits)
                         continue;
-                    int b_b = (Math.min(b - arm.sr_visits, budget - budgetUsed) - arm.localVisits);   // Rest
+                    // Determine the actual budget per arm
+                    int b_b;
+                    if (options.top_offs)
+                        b_b = (Math.min(b - arm.sr_visits, budget - budgetUsed) - arm.localVisits);   // Rest
+                    else
+                        b_b = (Math.min(b, budget - budgetUsed) - arm.localVisits);   // Rest
                     // :: Recursion
                     board.doAIMove(arm.getMove(), player);
                     int[] pl = {0};
@@ -132,7 +142,10 @@ public class MCTS_SR_Node {
                 if (budgetUsed >= budget)
                     break;
                 // :: Re-budgeting
-                b += (int) Math.max(1, Math.floor((sr_visits + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+                if (options.top_offs)
+                    b += (int) Math.max(1, Math.floor((sr_visits + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+                else
+                    b += (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
             cycles++;
             if (Math.abs(stats.mean()) != INF) {
