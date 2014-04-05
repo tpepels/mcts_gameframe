@@ -3,7 +3,9 @@ package ai.mcts;
 import ai.FastLog;
 import ai.FastSigm;
 import ai.StatCounter;
-import ai.framework.*;
+import ai.framework.IBoard;
+import ai.framework.IMove;
+import ai.framework.MoveList;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -98,9 +100,11 @@ public class TreeNode {
         }
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
-            if (isTerminal()) // Game is terminal, no more moves can be played
-                child = this;
-            else
+            if (isTerminal()) {// Game is terminal, no more moves can be played
+                int score = (board.checkWin() == player) ? -1 : 1;
+                updateStats(score, depth - 1, player);      // TODO Only works with alternating games
+                return score;
+            } else
                 child = select(board, depth + 1);
         }
         //
@@ -111,7 +115,7 @@ public class TreeNode {
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
             // Execute the move represented by the child
-            if(!isTerminal())
+            if (!isTerminal())
                 board.doAIMove(child.getMove(), player);
 
             if (options.history)
@@ -140,7 +144,7 @@ public class TreeNode {
                     result = child.MCTS(board, depth + 1, this.player);
             }
             // set the board back to its previous configuration
-            if(!isTerminal())
+            if (!isTerminal())
                 board.undoMove();
         } else {
             result = child.stats.mean();
@@ -249,7 +253,7 @@ public class TreeNode {
         double value, best_imVal = -INF, best_pbVal = -INF, best_maxBackpropQs = -INF;
         int winner = board.checkWin();
         // Board is terminal, don't expand
-        if(winner != IBoard.NONE_WIN)
+        if (winner != IBoard.NONE_WIN)
             return null;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {

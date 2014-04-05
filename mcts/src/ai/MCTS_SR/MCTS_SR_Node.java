@@ -50,8 +50,8 @@ public class MCTS_SR_Node {
             init_s_t = r_s_t;
         }
         // Do UCT
-        //if (Math.floor((stats.totalVisits() + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
-        if (budget < s_t || depth > 1) {
+        if (isTerminal() || budget < s_t || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
+            // if (budget < s_t || depth > 1) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -75,7 +75,7 @@ public class MCTS_SR_Node {
             MCTS_SR_Node arm;
             // Sort S such that proven losses are at the end, and unvisited nodes at the front
             // :: Removal policy: Sorting
-            if (options.remove)
+            if (options.remove || depth > 0)
                 Collections.sort(S.subList(0, s_t), comparator);
             else
                 Collections.sort(S, comparator);
@@ -135,7 +135,7 @@ public class MCTS_SR_Node {
                 }
 
                 // :: Removal policy: Sorting
-                if (options.remove)
+                if (options.remove || depth > 0)
                     Collections.sort(S.subList(0, s), comparator);
                 else
                     Collections.sort(S, comparator);
@@ -149,7 +149,7 @@ public class MCTS_SR_Node {
                 else
                     b += (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
-            cycles++;
+            cycles = (int) Math.min(++cycles, Math.ceil((options.rc / 2.) * log2(S.size())));   // TODO is this correct
             // :: SR Back propagation
             if (Math.abs(stats.mean()) != INF) {
                 stats.reset();
@@ -169,6 +169,8 @@ public class MCTS_SR_Node {
     }
 
     private boolean solverCheck(double result, IBoard board) {
+        if (!options.solver)
+            return false;
         // (Solver) If one of the children is a win, then I'm a loss for the opponent
         if (result == INF) {
             stats.setValue(-INF);
@@ -208,7 +210,13 @@ public class MCTS_SR_Node {
         if (isLeaf())
             expand(board);
         double result;
-        MCTS_SR_Node child = uct_select();
+        MCTS_SR_Node child = null;
+        if (isTerminal()) {
+            int score = (board.checkWin() == player) ? -1 : 1;
+            updateStats(score);
+            return score;
+        } else
+            child = uct_select();
         child.sr_visits++;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
