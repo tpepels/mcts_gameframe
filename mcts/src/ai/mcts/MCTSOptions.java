@@ -29,7 +29,7 @@ public class MCTSOptions {
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
     public int sr_depth = 1, rc = 2;
-    public boolean remove = true, stat_reset = true, top_offs = false, shot = false, rec_halving = false, max_back = false;
+    public boolean remove = false, stat_reset = false, top_offs = true, shot = false, rec_halving = false, max_back = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST

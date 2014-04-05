@@ -65,9 +65,9 @@ public class MCTS_SR_Node {
         } else {
             // Pull each arm according to budget inside simple regret tree
             // :: Initial Budget
-            int b = 0;
+            int b, init_vis = sr_visits;
             if (options.top_offs)
-                b = (int) Math.max(1, Math.floor((sr_visits + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+                b = (int) Math.max(1, Math.floor((init_vis + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             else
                 b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             //
@@ -86,7 +86,7 @@ public class MCTS_SR_Node {
                 n = 0;
                 // :: Round
                 while (n < s) {
-                    arm = S.get(s - 1 - n);
+                    arm = S.get(n);
                     n++;
                     // :: Solver win
                     if (arm.stats.mean() == INF) {
@@ -94,13 +94,12 @@ public class MCTS_SR_Node {
                         stats.setValue(-INF);
                         return INF;
                     }
-                    if (options.top_offs && b < arm.sr_visits)
-                        continue;
-                    // Determine the actual budget per arm
                     int b_b;
-                    if (options.top_offs)
+                    if (options.top_offs) {
+                        if (b <= arm.sr_visits)
+                            continue;
                         b_b = (Math.min(b - arm.sr_visits, budget - budgetUsed) - arm.localVisits);   // Rest
-                    else
+                    } else
                         b_b = (Math.min(b, budget - budgetUsed) - arm.localVisits);   // Rest
                     // :: Recursion
                     board.doAIMove(arm.getMove(), player);
@@ -130,20 +129,23 @@ public class MCTS_SR_Node {
                             }
                         }
                     }
+                    // Make sure we don't go over budget
+                    if (budgetUsed >= budget)
+                        break;
                 }
+
                 // :: Removal policy: Sorting
                 if (options.remove)
                     Collections.sort(S.subList(0, s), comparator);
                 else
                     Collections.sort(S, comparator);
+
                 // :: Removal policy: Reduction
                 s -= (int) Math.floor(s / (double) options.rc);
-                // Make sure we don't go over budget
-                if (budgetUsed >= budget)
-                    break;
+
                 // :: Re-budgeting
                 if (options.top_offs)
-                    b += (int) Math.max(1, Math.floor((sr_visits + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+                    b += (int) Math.max(1, Math.floor((init_vis + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
                 else
                     b += (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
@@ -240,7 +242,7 @@ public class MCTS_SR_Node {
         MCTS_SR_Node selected = null;
         double max = Double.NEGATIVE_INFINITY;
         // Use UCT down the tree
-        double uctValue;
+        double uctValue, np = Math.max(sr_visits, stats.totalVisits());
         // Select a child according to the UCT Selection policy
         for (MCTS_SR_Node c : C) {
             // Always select a proven win
@@ -251,7 +253,7 @@ public class MCTS_SR_Node {
                 uctValue = 100 + MCTSOptions.r.nextDouble();
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(stats.totalVisits()) / c.stats.totalVisits());
+                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(np) / c.stats.totalVisits());
             }
             // Remember the highest UCT value
             if (uctValue > max) {
