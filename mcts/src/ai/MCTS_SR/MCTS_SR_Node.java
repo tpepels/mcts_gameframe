@@ -49,9 +49,8 @@ public class MCTS_SR_Node {
             s = r_s_t;
             init_s_t = r_s_t;
         }
-        // Do UCT
-        if (isTerminal() || budget < s_t || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
-            // if (budget < s_t || depth > 1) {
+
+        if (depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t)) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -63,6 +62,7 @@ public class MCTS_SR_Node {
                     return result;
             }
         } else {
+            // System.out.println("sr" + depth);
             // Pull each arm according to budget inside simple regret tree
             // :: Initial Budget
             int b, init_vis = sr_visits;
@@ -150,6 +150,7 @@ public class MCTS_SR_Node {
                     b += (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
             cycles = (int) Math.min(++cycles, Math.ceil((options.rc / 2.) * log2(S.size())));   // TODO is this correct
+
             // :: SR Back propagation
             if (Math.abs(stats.mean()) != INF) {
                 stats.reset();
