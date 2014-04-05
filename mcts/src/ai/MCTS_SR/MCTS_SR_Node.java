@@ -49,7 +49,7 @@ public class MCTS_SR_Node {
             s = r_s_t;
             init_s_t = r_s_t;
         }
-        // UCT if beyond simple regret depth
+        // Do UCT
         //if (Math.floor((stats.totalVisits() + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
         if (depth > 1) {
             // Run UCT MCTS budget times
@@ -150,9 +150,9 @@ public class MCTS_SR_Node {
                     b += (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
             cycles++;
+            // :: SR Back propagation
             if (Math.abs(stats.mean()) != INF) {
                 stats.reset();
-                // :: SR Backpropagation
                 if (options.stat_reset) {
                     for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
@@ -161,7 +161,9 @@ public class MCTS_SR_Node {
                         stats.add(S.get(i).stats, true);
                 }
             }
-            bestArm = S.get(0);
+            // :: Final arm selection
+            if(!S.isEmpty())
+                bestArm = S.get(0);
         }
         return 0;
     }
@@ -210,7 +212,6 @@ public class MCTS_SR_Node {
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
             board.doAIMove(child.getMove(), player);
-
             if (child.isTerminal() || !child.simulated) {
                 // :: Play-out
                 result = child.playOut(board);
@@ -218,7 +219,6 @@ public class MCTS_SR_Node {
                 child.simulated = true;
             } else // :: Recursion
                 result = -child.UCT_MCTS(board, depth + 1);
-
             board.undoMove();
         } else {
             result = child.stats.mean();
@@ -411,11 +411,11 @@ public class MCTS_SR_Node {
     }
 
     public boolean isLeaf() {
-        return S == null || !expanded;
+        return C == null || !expanded;
     }
 
     public boolean isTerminal() {
-        return S != null && S.size() == 0;
+        return C != null && C.size() == 0;
     }
 
     public IMove getMove() {
