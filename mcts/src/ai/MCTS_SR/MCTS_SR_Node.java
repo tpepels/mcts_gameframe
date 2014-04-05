@@ -40,20 +40,18 @@ public class MCTS_SR_Node {
         if (isLeaf())
             expand(board);
         // :: Recursive reduction
-        int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t, rr = cycles - 1;
-        if (rr > 0) {
-            for (int i = 0; i < rr; i++)
-                r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
-            // System.out.println(depth + " " + cycles + " " + s_t);
-        }
-        if(options.rec_halving) {
+        int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t, rr = cycles - 2;
+        for (int i = 0; i < rr; i++)
+            r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
+        // System.out.println(depth + " " + cycles + " " + s_t);
+        if (options.rec_halving) {
             s_t = r_s_t;
             s = r_s_t;
             init_s_t = r_s_t;
         }
         // UCT if beyond simple regret depth
         //if (Math.floor((stats.totalVisits() + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
-        if(depth > 1) {
+        if (depth > 1) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -71,7 +69,11 @@ public class MCTS_SR_Node {
             int budgetUsed = 0, n;
             MCTS_SR_Node arm;
             // Sort S such that proven losses are at the end, and unvisited nodes at the front
-            Collections.sort(S, comparator);
+            // :: Removal policy: Sorting
+            if (options.remove)
+                Collections.sort(S.subList(0, s_t), comparator);
+            else
+                Collections.sort(S, comparator);
             // :: Cycle
             while (s > 0 && budgetUsed < budget) {
                 for (MCTS_SR_Node a : S)
@@ -87,7 +89,7 @@ public class MCTS_SR_Node {
                         stats.setValue(-INF);
                         return INF;
                     }
-                    if(b < arm.sr_visits)
+                    if (b < arm.sr_visits)
                         continue;
                     int b_b = (Math.min(b - arm.sr_visits, budget - budgetUsed) - arm.localVisits);   // Rest
                     // :: Recursion
@@ -119,13 +121,13 @@ public class MCTS_SR_Node {
                         }
                     }
                 }
-                // :: Removal policy: Reduction
-                s -= (int) Math.floor(s / (double) options.rc);
                 // :: Removal policy: Sorting
                 if (options.remove)
                     Collections.sort(S.subList(0, s), comparator);
                 else
                     Collections.sort(S, comparator);
+                // :: Removal policy: Reduction
+                s -= (int) Math.floor(s / (double) options.rc);
                 // Make sure we don't go over budget
                 if (budgetUsed >= budget)
                     break;
