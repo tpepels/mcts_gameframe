@@ -51,7 +51,7 @@ public class MCTS_SR_Node {
         }
         // Do UCT
         //if (Math.floor((stats.totalVisits() + budget) / (log2((options.rc / 2.) * s_t))) < 2. * s_t) {
-        if (depth > 1) {
+        if (budget < s_t || depth > 1) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -162,7 +162,7 @@ public class MCTS_SR_Node {
                 }
             }
             // :: Final arm selection
-            if(!S.isEmpty())
+            if (!S.isEmpty())
                 bestArm = S.get(0);
         }
         return 0;
@@ -209,6 +209,7 @@ public class MCTS_SR_Node {
             expand(board);
         double result;
         MCTS_SR_Node child = uct_select();
+        child.sr_visits++;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
             board.doAIMove(child.getMove(), player);
@@ -245,15 +246,18 @@ public class MCTS_SR_Node {
         double uctValue, np = Math.max(sr_visits, stats.totalVisits());
         // Select a child according to the UCT Selection policy
         for (MCTS_SR_Node c : C) {
+            double nc = Math.max(c.sr_visits, c.stats.totalVisits());
             // Always select a proven win
             if (c.stats.mean() == INF)
                 uctValue = INF + MCTSOptions.r.nextDouble();
             else if (c.stats.totalVisits() == 0 && c.stats.mean() != -INF) {
                 // First, visit all children at least once
                 uctValue = 100 + MCTSOptions.r.nextDouble();
+            } else if (c.stats.mean() == -INF) {
+                uctValue = -INF;
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(np) / c.stats.totalVisits());
+                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(np) / nc);
             }
             // Remember the highest UCT value
             if (uctValue > max) {
@@ -263,7 +267,6 @@ public class MCTS_SR_Node {
         }
         return selected;
     }
-
 
     private MCTS_SR_Node expand(IBoard board) {
         expanded = true;
