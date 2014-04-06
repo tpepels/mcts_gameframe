@@ -245,6 +245,7 @@ public class SimGame {
             options.rec_halving = false;
             options.stat_reset = false;
             options.max_back = false;
+            options.top_offs = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
