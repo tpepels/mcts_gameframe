@@ -154,7 +154,7 @@ public class MCTS_SR_Node {
                 } else if (options.max_back && bestArm != null) {
                     stats.add(bestArm.stats, true);
                 } else if (options.range_back && bestArm != null) {
-                    double range = bestArm.stats.mean() - (1. - (options.bp_range * bestArm.stats.mean()));
+                    double range = bestArm.stats.mean() - (1. - Math.abs(options.bp_range * bestArm.stats.mean()));
                     for (int i = 0; i < S.size(); i++) {
                         if (S.get(i).stats.mean() > range)
                             stats.add(S.get(i).stats, true);
