@@ -1,13 +1,11 @@
 package breakthrough;
 
 import ai.MCTS_SR.MCTS_SR_Player;
-import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
-import ai.SRCRMCTS.*;
 
 public class Game {
 
@@ -20,7 +18,7 @@ public class Game {
         AIPlayer aiPlayer1 = new MCTS_SR_Player();
         aiPlayer1.setOptions(options1);
         options1.solver = false;
-        options1.rec_halving = true;
+        options1.max_back = true;
         options1.fixedSimulations = true;
         options1.simulations = 25000;
 //        options1.enableShot();

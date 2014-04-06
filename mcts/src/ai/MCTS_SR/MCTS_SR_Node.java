@@ -79,6 +79,8 @@ public class MCTS_SR_Node {
                 Collections.sort(S.subList(0, s_t), comparator);
             else
                 Collections.sort(S, comparator);
+            //
+            cycles = (int) Math.min(++cycles, Math.ceil((options.rc / 2.) * log2(S.size())));   // TODO is this correct
             // :: Cycle
             while (s > 0 && budgetUsed < budget) {
                 for (MCTS_SR_Node a : S)
@@ -149,7 +151,10 @@ public class MCTS_SR_Node {
                 else
                     b += (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
-            cycles = (int) Math.min(++cycles, Math.ceil((options.rc / 2.) * log2(S.size())));   // TODO is this correct
+
+            // :: Final arm selection
+            if (!S.isEmpty())
+                bestArm = S.get(0);
 
             // :: SR Back propagation
             if (Math.abs(stats.mean()) != INF) {
@@ -157,14 +162,15 @@ public class MCTS_SR_Node {
                 if (options.stat_reset) {
                     for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
+                } else if (options.max_back) {
+                    if (bestArm != null)
+                        this.stats.add(bestArm.stats, true);
                 } else {
                     for (int i = 0; i < S.size(); i++)
                         stats.add(S.get(i).stats, true);
                 }
             }
-            // :: Final arm selection
-            if (!S.isEmpty())
-                bestArm = S.get(0);
+
         }
         return 0;
     }
