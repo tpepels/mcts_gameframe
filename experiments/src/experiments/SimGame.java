@@ -1,9 +1,6 @@
 package experiments;
 
-import ai.FastSigm;
-import ai.FastLog;
-import ai.FastSigm;
-import ai.FastTanh;
+import ai.*;
 import ai.MCTS_SR.MCTS_SR_Player;
 import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
@@ -12,9 +9,6 @@ import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import mcts2e.BRUE.MCTS2ePlayer;
-import ai.SRCRMCTS.*;
-import ai.RandomPlayer;
-import ai.KeyboardPlayer;
 
 /*
 FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
@@ -250,6 +244,7 @@ public class SimGame {
             options.remove = false;
             options.rec_halving = false;
             options.stat_reset = false;
+            options.max_back = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
