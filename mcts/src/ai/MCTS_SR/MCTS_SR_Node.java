@@ -40,7 +40,7 @@ public class MCTS_SR_Node {
         if (isLeaf())
             expand(board);
         // :: Recursive reduction
-        int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t, rr = cycles - 2;
+        int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t, rr = cycles - 1;
         for (int i = 0; i < rr; i++)
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
         // System.out.println(depth + " " + cycles + " " + s_t);
