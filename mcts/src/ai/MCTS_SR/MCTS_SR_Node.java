@@ -92,8 +92,8 @@ public class MCTS_SR_Node {
                     if (b <= arm.sr_visits)
                         continue;
                     int b_b = b - arm.sr_visits;
-//                    if(move == null && s == 2 && n == 0)
-//                        b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
+                    if (move == null && s == 2 && n == 1)
+                        b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
                     b_b = Math.min(b_b, budget - budgetUsed) - arm.localVisits;
                     // :: Recursion
                     board.doAIMove(arm.getMove(), player);
@@ -140,7 +140,7 @@ public class MCTS_SR_Node {
                 // :: Re-budgeting
                 b += (int) Math.max(1, Math.floor((init_vis + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
-
+            System.out.println((budget - budgetUsed));
             // :: Final arm selection
             if (!S.isEmpty())
                 bestArm = S.get(0);
