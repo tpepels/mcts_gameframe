@@ -1,7 +1,6 @@
 package pentalath.gui;
 
 import ai.MCTS_SR.MCTS_SR_Player;
-import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
@@ -10,7 +9,6 @@ import ai.mcts.MCTSPlayer;
 import com.rush.HexGridCell;
 import pentalath.game.Board;
 import pentalath.game.Move;
-
 
 import javax.swing.*;
 import java.awt.*;
@@ -68,6 +66,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
             MCTSOptions options2 = new MCTSOptions();
             options2.simulations = 25000;
             options2.fixedSimulations = true;
+            options2.range_back = true;
             options2.setGame("pentalath");
             aiPlayer2.setOptions(options2);
             aiPlayer2.newGame(2, "pentalath");
