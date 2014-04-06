@@ -17,18 +17,13 @@ public class Game {
         options1.setGame("breakthrough");
         AIPlayer aiPlayer1 = new MCTS_SR_Player();
         aiPlayer1.setOptions(options1);
-        options1.solver = false;
-        options1.max_back = true;
         options1.fixedSimulations = true;
         options1.simulations = 25000;
-//        options1.enableShot();
-//        options1.max_back = true;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
         AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
-        options2.solver = false;
         options2.fixedSimulations = true;
         options2.simulations = 25000;
 

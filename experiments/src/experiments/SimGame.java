@@ -245,7 +245,6 @@ public class SimGame {
             options.rec_halving = false;
             options.stat_reset = false;
             options.max_back = false;
-            options.top_offs = false;
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
@@ -268,11 +267,9 @@ public class SimGame {
                     options.rec_halving = true;
                 } else if (tag.equals("s")) {
                     options.solver = true;
-                } else if (tag.equals("t")) {
-                    options.top_offs = true;
                 } else if (tag.startsWith("rc")) {
                     options.rc = Integer.parseInt(tag.substring(2));
-                } else if(tag.equals("max")) {
+                } else if (tag.equals("max")) {
                     options.max_back = true;
                 } else if (tag.equals("r")) {
                     options.remove = true;
