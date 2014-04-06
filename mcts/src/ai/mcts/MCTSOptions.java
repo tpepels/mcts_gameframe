@@ -28,8 +28,9 @@ public class MCTSOptions {
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
-    public int sr_depth = 1, rc = 2;
-    public boolean remove = true, stat_reset = false, shot = false, rec_halving = false, max_back = false;
+    public int rc = 2;
+    public double bp_range = 1.;
+    public boolean remove = true, stat_reset = false, shot = false, rec_halving = false, max_back = false, range_back = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST
@@ -178,7 +179,6 @@ public class MCTSOptions {
         this.shot = true;
         this.remove = true;
         this.rc = 2;
-        this.sr_depth = 10000;
         this.rec_halving = false;
         this.stat_reset = false;
     }

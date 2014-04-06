@@ -88,7 +88,7 @@ public class TreeNode {
                 movesMade[player - 1].add(child.getMove());
 
             // When a leaf is reached return the result of the playout
-            if (child.isTerminal() || ((!child.simulated && depth > options.sr_depth)) || (options.shot && (budget == 1 || !child.simulated))) {
+            if (child.isTerminal() || ((!child.simulated && depth > 1)) || (options.shot && (budget == 1 || !child.simulated))) {
                 result = child.playOut(board);
                 child.budget--;
                 child.round--;
@@ -176,7 +176,7 @@ public class TreeNode {
         if (children == null)
             children = new ArrayList<TreeNode>(moves.size());
         //
-        if (depth <= options.sr_depth) {
+        if (depth <= 1) {
             A = new ArrayList<TreeNode>(moves.size());      // Selected nodes
             As = new ArrayList<TreeNode>(moves.size());     // Solved nodes
             S = new ArrayList<TreeNode>(moves.size());      // Unsolved nodes
@@ -205,7 +205,7 @@ public class TreeNode {
                     child.stats.setValue(value);
                 }
                 //
-                if (depth <= options.sr_depth) {
+                if (depth <= 1) {
                     A.add(child);
                     if (value == INF) // Add solved nodes to the solved set
                         As.add(child);
@@ -229,7 +229,7 @@ public class TreeNode {
     private int rootCtr = 0, rc, round = 0;
 
     private TreeNode select(int depth) {
-        if (depth <= options.sr_depth) {
+        if (depth <= 1) {
             // Select solved arm first
             for (TreeNode arm : As) {
                 if (arm.budget > 0)

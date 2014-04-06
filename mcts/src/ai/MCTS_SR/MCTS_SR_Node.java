@@ -140,7 +140,7 @@ public class MCTS_SR_Node {
                 // :: Re-budgeting
                 b += (int) Math.max(1, Math.floor((init_vis + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             }
-            System.out.println((budget - budgetUsed));
+
             // :: Final arm selection
             if (!S.isEmpty())
                 bestArm = S.get(0);
@@ -153,6 +153,12 @@ public class MCTS_SR_Node {
                         stats.add(S.get(i).stats, true);
                 } else if (options.max_back && bestArm != null) {
                     stats.add(bestArm.stats, true);
+                } else if (options.range_back && bestArm != null) {
+                    double range = bestArm.stats.mean() - (1. - (options.bp_range * bestArm.stats.mean()));
+                    for (int i = 0; i < S.size(); i++) {
+                        if (S.get(i).stats.mean() > range)
+                            stats.add(S.get(i).stats, true);
+                    }
                 } else {
                     for (int i = 0; i < S.size(); i++)
                         stats.add(S.get(i).stats, true);

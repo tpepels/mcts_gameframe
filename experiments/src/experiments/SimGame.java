@@ -257,8 +257,6 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
-                } else if (tag.startsWith("d")) {
-                    options.sr_depth = Integer.parseInt(tag.substring(1));
                 } else if (tag.startsWith("c")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
                 } else if (tag.equals("sr")) {
