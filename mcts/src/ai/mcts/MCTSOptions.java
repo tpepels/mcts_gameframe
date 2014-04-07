@@ -76,6 +76,7 @@ public class MCTSOptions {
      * @param game The game to set the default parameters for
      */
     public void setGame(String game) {
+        rc = 2;
         if (game.equals("cannon")) {
             uctC = .8;
             kr = 3.0;
@@ -84,6 +85,7 @@ public class MCTSOptions {
             uctC = .8;
             kr = 1.2;
             kq = 2.8;
+            rc = 3;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             kr = 2.8;
