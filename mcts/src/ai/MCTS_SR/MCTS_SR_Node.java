@@ -94,7 +94,9 @@ public class MCTS_SR_Node {
                 myStats.push(-result);
             }
             return 0;
-        } else if (!options.shot && (depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t))) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
+            // } else if (!options.shot && (depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t))) {
+        } else if (!options.shot && (Math.floor((sr_visits + budget) / (s_t * log2((options.rc / 2.) * s_t))) < options.rc
+                || isTerminal() || (depth > 0 && sr_visits < s_t))) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -196,7 +198,7 @@ public class MCTS_SR_Node {
 
                     for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
-                } else if (options.max_back && bestArm != null && cycles > 2) {
+                } else if (options.max_back && bestArm != null) {
 
                     stats.add(bestArm.stats, true);
                 } else if (options.range_back && bestArm != null) {
