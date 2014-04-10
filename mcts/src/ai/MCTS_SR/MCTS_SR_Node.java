@@ -21,7 +21,7 @@ public class MCTS_SR_Node {
     private MCTS_SR_Node bestArm;
     private MCTSOptions options;
     private int player, localVisits = 0, cycles = 0, sr_visits = 0;
-    private final StatCounter stats;
+    private final StatCounter stats, myStats;
     private IMove move;
 
     public MCTS_SR_Node(int player, IMove move, MCTSOptions options) {
@@ -29,12 +29,13 @@ public class MCTS_SR_Node {
         this.move = move;
         this.options = options;
         this.stats = new StatCounter();
+        this.myStats = new StatCounter();
     }
 
     /**
      * Run the MCTS algorithm on the given node
      */
-    public double MCTS_SR(IBoard board, int depth, int budget, int[] playOuts) {
+    public double MCTS_SR(IBoard board, int depth, int budget, int[] plStats) {
         double result;
         // First add some nodes if required
         if (isLeaf())
@@ -49,37 +50,49 @@ public class MCTS_SR_Node {
             s = r_s_t;
             init_s_t = r_s_t;
         }
-
-        if (options.shot && (depth > 0 && sr_visits < s_t) || (isTerminal() || budget == 1)) {
+        // Dont start any rounds if there is only 1 child
+        if (S.size() == 1) {
+            int[] pl = {0};
+            MCTS_SR(board, depth + 1, budget, pl);
+            plStats[0] += pl[0];
+            sr_visits += pl[0];
+            localVisits += pl[0];
             //
-            if (isTerminal() || budget == 1) {
-                result = playOut(board);
-                playOuts[0]++;
+            stats.reset();
+            stats.add(myStats, false);
+            stats.add(S.get(0).stats, true);
+        } else if (options.shot && ((depth > 0 && sr_visits < s_t) || isTerminal() || budget == 1)) {
+            //
+            if (isTerminal()) {
+                int score = (board.checkWin() == player) ? -1 : 1;
+                plStats[0]++;
                 localVisits++;
                 sr_visits++;
-                updateStats(-result);
-                return 0;
+                updateStats(score);
+                myStats.push(score);
+                return score;
             }
-            if ((depth > 0 && sr_visits < s_t)) {
-                // Run budget playouts
+            //
+            if ((depth > 0 && sr_visits < s_t) || budget == 1) {
                 for (int i = 0; i < budget; i++) {
                     result = playOut(board);
-                    playOuts[0]++;
+                    plStats[0]++;
                     localVisits++;
                     sr_visits++;
                     updateStats(-result);
+                    myStats.push(-result);
                 }
                 return 0;
             }
-        } else if (!options.shot && ((depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t)) || S.size() == 1)) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
+        } else if (!options.shot && ((depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t)))) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
-                playOuts[0]++;
+                plStats[0]++;
                 localVisits++;
                 sr_visits++;
                 // :: Solver
-                if (Math.abs(stats.mean()) == INF)
+                if (Math.abs(this.stats.mean()) == INF)
                     return result;
             }
         } else {
@@ -106,7 +119,7 @@ public class MCTS_SR_Node {
                     // :: Solver win
                     if (arm.stats.mean() == INF) {
                         bestArm = arm;
-                        stats.setValue(-INF);
+                        this.stats.setValue(-INF);
                         return INF;
                     }
                     // Determine the actual budget to be used
@@ -120,9 +133,11 @@ public class MCTS_SR_Node {
                     board.doAIMove(arm.getMove(), player);
                     int[] pl = {0};
                     result = -arm.MCTS_SR(board, depth + 1, b_b, pl);
+                    // Many visit stats, wow
                     budgetUsed += pl[0];
-                    playOuts[0] += pl[0];
+                    plStats[0] += pl[0];
                     sr_visits += pl[0];
+                    localVisits += pl[0];
                     board.undoMove();
                     // :: Solver recursion
                     if (Math.abs(result) == INF) {
@@ -166,6 +181,7 @@ public class MCTS_SR_Node {
             // :: SR Back propagation
             if (Math.abs(stats.mean()) != INF) {
                 stats.reset();
+                stats.add(myStats, false);
                 if (options.stat_reset) {
                     for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
@@ -243,6 +259,7 @@ public class MCTS_SR_Node {
                 // :: Play-out
                 result = child.playOut(board);
                 child.updateStats(-result);
+                child.myStats.push(-result);
                 child.simulated = true;
             } else // :: Recursion
                 result = -child.UCT_MCTS(board, depth + 1);
