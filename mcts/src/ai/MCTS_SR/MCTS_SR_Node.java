@@ -196,7 +196,7 @@ public class MCTS_SR_Node {
 
                     for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
-                } else if (options.max_back && bestArm != null && cycles > 1) {
+                } else if (options.max_back && bestArm != null && cycles > 2) {
 
                     stats.add(bestArm.stats, true);
                 } else if (options.range_back && bestArm != null) {
