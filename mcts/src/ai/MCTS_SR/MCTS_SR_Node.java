@@ -51,9 +51,9 @@ public class MCTS_SR_Node {
             init_s_t = r_s_t;
         }
         // Dont start any rounds if there is only 1 child
-        if (S.size() == 1 && budget > 1) {
+        if (!isTerminal() && S.size() == 1 && budget > 1) {
             int[] pl = {0};
-            MCTS_SR(board, depth + 1, budget, pl);
+            S.get(0).MCTS_SR(board, depth + 1, budget, pl);
             plStats[0] += pl[0];
             sr_visits += pl[0];
             localVisits += pl[0];
