@@ -138,7 +138,7 @@ public class MCTS_SR_Node {
                     if (b <= arm.sr_visits)
                         continue;
                     int b_b = b - arm.sr_visits;
-                    if (move == null && s == 2 && n == 1)
+                    if (s == 2 && n == 1)
                         b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
                     b_b = Math.min(b_b, budget - budgetUsed) - arm.localVisits;
                     // :: Recursion
