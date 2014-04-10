@@ -94,7 +94,7 @@ public class MCTS_SR_Node {
                 myStats.push(-result);
             }
             return 0;
-        } else if (!options.shot && ((depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t)))) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
+        } else if (!options.shot && (depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t))) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -110,14 +110,12 @@ public class MCTS_SR_Node {
             int init_vis = sr_visits, budgetUsed = 0, n;
             int b = (int) Math.max(1, Math.floor((init_vis + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
             // Sort S such that proven losses are at the end, and unvisited nodes at the front
-            if (options.remove || depth > 0)
+            if (options.remove)
                 Collections.sort(S.subList(0, s_t), comparator);
             else
                 Collections.sort(S, comparator);
             // Keep track of the number of cycles at each node
             cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
-            if (cycles < 0)
-                System.out.println();
             MCTS_SR_Node arm;
             // :: Cycle
             while (s > 1 && budgetUsed < budget) {
@@ -148,8 +146,6 @@ public class MCTS_SR_Node {
                     board.undoMove();
                     // Many visit stats, wow
                     budgetUsed += pl[0];
-                    if (pl[0] == 0)
-                        System.out.println("0 used");
                     plStats[0] += pl[0];
                     sr_visits += pl[0];
                     localVisits += pl[0];
@@ -176,7 +172,7 @@ public class MCTS_SR_Node {
                 }
 
                 // :: Removal policy: Sorting
-                if (options.remove || depth > 0)
+                if (options.remove)
                     Collections.sort(S.subList(0, s), comparator);
                 else
                     Collections.sort(S, comparator);
@@ -197,17 +193,21 @@ public class MCTS_SR_Node {
                 stats.reset();
                 stats.add(myStats, false);
                 if (options.stat_reset) {
+
                     for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
-                } else if (options.max_back && bestArm != null) {
+                } else if (options.max_back && bestArm != null && cycles > 1) {
+
                     stats.add(bestArm.stats, true);
                 } else if (options.range_back && bestArm != null) {
+
                     double range = bestArm.stats.mean() - (1. - (options.bp_range * bestArm.stats.mean()));
                     for (int i = 0; i < S.size(); i++) {
                         if (S.get(i).stats.mean() > range)
                             stats.add(S.get(i).stats, true);
                     }
                 } else {
+
                     for (int i = 0; i < S.size(); i++)
                         stats.add(S.get(i).stats, true);
                 }
