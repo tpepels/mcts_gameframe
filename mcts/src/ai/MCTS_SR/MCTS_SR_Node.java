@@ -53,7 +53,10 @@ public class MCTS_SR_Node {
         // Dont start any rounds if there is only 1 child
         if (!isTerminal() && S.size() == 1 && budget > 1) {
             int[] pl = {0};
-            S.get(0).MCTS_SR(board, depth + 1, budget, pl);
+            // :: Recursion
+            board.doAIMove(S.get(0).getMove(), player);
+            result = S.get(0).MCTS_SR(board, depth + 1, budget, pl);
+            board.undoMove();
             plStats[0] += pl[0];
             sr_visits += pl[0];
             localVisits += pl[0];
@@ -61,6 +64,11 @@ public class MCTS_SR_Node {
             stats.reset();
             stats.add(myStats, false);
             stats.add(S.get(0).stats, true);
+            bestArm = S.get(0); // The only arm is the best!
+            // :: Solver recursion
+            if (Math.abs(result) == INF)
+                solverCheck(result, board);
+            return result;
         } else if (options.shot && ((depth > 0 && sr_visits < s_t) || isTerminal() || budget == 1)) {
             //
             if (isTerminal()) {

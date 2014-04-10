@@ -1,8 +1,6 @@
 package amazons.gui;
 
 import ai.MCTS_SR.MCTS_SR_Player;
-import ai.SRCRMCTS.SRCRMCTSPlayer;
-import ai.SRMCTS.SRMCTSPlayer;
 import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
@@ -64,6 +62,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         // Definition for player 2
         aiPlayer2 = new MCTS_SR_Player();
         MCTSOptions options2 = new MCTSOptions();
+        options2.enableShot();
         options2.setGame("amazons");
         options2.fixedSimulations = true;
         options2.simulations = 25000;
