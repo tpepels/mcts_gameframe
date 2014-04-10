@@ -43,14 +43,35 @@ public class MCTS_SR_Node {
         int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t, rr = cycles - 1;
         for (int i = 0; i < rr; i++)
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
-        // System.out.println(depth + " " + cycles + " " + s_t);
+        //
         if (options.rec_halving) {
             s_t = r_s_t;
             s = r_s_t;
             init_s_t = r_s_t;
         }
 
-        if (depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t)) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
+        if (options.shot && (depth > 0 && sr_visits < s_t) || (isTerminal() || budget == 1)) {
+            //
+            if (isTerminal() || budget == 1) {
+                result = playOut(board);
+                playOuts[0]++;
+                localVisits++;
+                sr_visits++;
+                updateStats(-result);
+                return 0;
+            }
+            if ((depth > 0 && sr_visits < s_t)) {
+                // Run budget playouts
+                for (int i = 0; i < budget; i++) {
+                    result = playOut(board);
+                    playOuts[0]++;
+                    localVisits++;
+                    sr_visits++;
+                    updateStats(-result);
+                }
+                return 0;
+            }
+        } else if (!options.shot && ((depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t)) || S.size() == 1)) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -71,7 +92,7 @@ public class MCTS_SR_Node {
             else
                 Collections.sort(S, comparator);
             // Keep track of the number of cycles at each node
-            cycles = (int) Math.min(++cycles, Math.ceil((options.rc / 2.) * log2(S.size())));
+            cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
             MCTS_SR_Node arm;
             // :: Cycle
             while (s > 1 && budgetUsed < budget) {
@@ -110,17 +131,14 @@ public class MCTS_SR_Node {
                                 bestArm = arm;
                             return result;
                         } else {
-                            // :: Solver: Recompute the budget for the rest of the arms
-                            if (Math.abs(result) == INF) {
-                                // :: Solver: Resume the round with reduced S
-                                init_s_t = Math.min(S.size(), init_s_t);
-                                r_s_t = Math.min(S.size(), r_s_t);
-                                s_t = Math.min(S.size(), init_s_t);
-                                s = Math.min(s, s_t);
-                                b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
-                                // Restart at the first arm to redistribute the budget
-                                n = 0;
-                            }
+                            // :: Solver: Resume the round with reduced S
+                            init_s_t = Math.min(S.size(), init_s_t);
+                            r_s_t = Math.min(S.size(), r_s_t);
+                            s_t = Math.min(S.size(), init_s_t);
+                            s = Math.min(s, s_t);
+                            b = (int) Math.max(1, Math.floor(budget / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
+                            // Restart at the first arm to redistribute the budget
+                            n = 0;
                         }
                     }
                     // Make sure we don't go over budget
