@@ -183,6 +183,8 @@ public class MCTSOptions {
         this.rc = 2;
         this.rec_halving = false;
         this.stat_reset = false;
+        this.max_back = false;
+        this.range_back = false;
     }
 
     public double getHistoryValue(int player, int id) {

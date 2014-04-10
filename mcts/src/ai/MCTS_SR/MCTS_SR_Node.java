@@ -55,43 +55,45 @@ public class MCTS_SR_Node {
             int[] pl = {0};
             // :: Recursion
             board.doAIMove(S.get(0).getMove(), player);
-            result = S.get(0).MCTS_SR(board, depth + 1, budget, pl);
+            result = -S.get(0).MCTS_SR(board, depth + 1, budget, pl);
             board.undoMove();
             plStats[0] += pl[0];
             sr_visits += pl[0];
             localVisits += pl[0];
             //
-            stats.reset();
-            stats.add(myStats, false);
-            stats.add(S.get(0).stats, true);
             bestArm = S.get(0); // The only arm is the best!
             // :: Solver recursion
             if (Math.abs(result) == INF)
                 solverCheck(result, board);
+            else {
+                stats.reset();
+                stats.add(myStats, false);
+                stats.add(S.get(0).stats, true);
+            }
             return result;
-        } else if (options.shot && ((depth > 0 && sr_visits < s_t) || isTerminal() || budget == 1)) {
-            //
-            if (isTerminal()) {
-                int score = (board.checkWin() == player) ? -1 : 1;
+        } else if (options.shot && options.solver && Math.abs(stats.mean()) == INF) {
+            plStats[0]++;
+            localVisits++;
+            sr_visits++;
+            return stats.mean();
+        } else if (options.shot && isTerminal()) {
+            int score = (board.checkWin() == player) ? -1 : 1;
+            plStats[0]++;
+            localVisits++;
+            sr_visits++;
+            updateStats(score);
+            myStats.push(score);
+            return score;
+        } else if (options.shot && ((depth > 0 && sr_visits < s_t) || budget == 1)) {
+            for (int i = 0; i < budget; i++) {
+                result = playOut(board);
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
-                updateStats(score);
-                myStats.push(score);
-                return score;
+                updateStats(-result);
+                myStats.push(-result);
             }
-            //
-            if ((depth > 0 && sr_visits < s_t) || budget == 1) {
-                for (int i = 0; i < budget; i++) {
-                    result = playOut(board);
-                    plStats[0]++;
-                    localVisits++;
-                    sr_visits++;
-                    updateStats(-result);
-                    myStats.push(-result);
-                }
-                return 0;
-            }
+            return 0;
         } else if (!options.shot && ((depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t)))) { // || Math.floor((sr_visits + budget) / (log2((options.rc / 2.) * s_t))) < 3. * s_t)) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
@@ -114,6 +116,8 @@ public class MCTS_SR_Node {
                 Collections.sort(S, comparator);
             // Keep track of the number of cycles at each node
             cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
+            if (cycles < 0)
+                System.out.println();
             MCTS_SR_Node arm;
             // :: Cycle
             while (s > 1 && budgetUsed < budget) {
@@ -125,7 +129,7 @@ public class MCTS_SR_Node {
                     arm = S.get(n);
                     n++;
                     // :: Solver win
-                    if (arm.stats.mean() == INF) {
+                    if (options.solver && arm.stats.mean() == INF) {
                         bestArm = arm;
                         this.stats.setValue(-INF);
                         return INF;
@@ -138,17 +142,19 @@ public class MCTS_SR_Node {
                         b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
                     b_b = Math.min(b_b, budget - budgetUsed) - arm.localVisits;
                     // :: Recursion
-                    board.doAIMove(arm.getMove(), player);
                     int[] pl = {0};
+                    board.doAIMove(arm.getMove(), player);
                     result = -arm.MCTS_SR(board, depth + 1, b_b, pl);
+                    board.undoMove();
                     // Many visit stats, wow
                     budgetUsed += pl[0];
+                    if (pl[0] == 0)
+                        System.out.println("0 used");
                     plStats[0] += pl[0];
                     sr_visits += pl[0];
                     localVisits += pl[0];
-                    board.undoMove();
-                    // :: Solver recursion
-                    if (Math.abs(result) == INF) {
+                    // :: Solver
+                    if (options.solver && Math.abs(result) == INF) {
                         if (solverCheck(result, board)) {   // Returns true if node is solved
                             if (result == INF)
                                 bestArm = arm;
@@ -361,6 +367,8 @@ public class MCTS_SR_Node {
                 board.undoMove();
             }
         }
+        if (S.size() == 0)
+            S.addAll(C);
         // If one of the nodes is a win, return it.
         return winNode;
     }
