@@ -133,30 +133,35 @@ public class MCTS_SR_Node {
                     arm = S.get(n);
                     n++;
                     // :: Solver win
-                    if (options.solver && arm.stats.mean() == INF) {
-                        bestArm = arm;
-                        this.stats.setValue(-INF);
-                        return INF;
+                    if (Math.abs(arm.stats.mean()) != INF) {
+                        if (options.solver && arm.stats.mean() == INF) {
+                            bestArm = arm;
+                            this.stats.setValue(-INF);
+                            return INF;
+                        }
+                        // Determine the actual budget to be used
+                        if (b <= arm.sr_visits)
+                            continue;
+                        int b_b = b - arm.sr_visits;
+                        if (s == 2 && n == 1)
+                            b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
+                        b_b = Math.min(b_b, budget - budgetUsed) - arm.localVisits;
+                        // :: Recursion
+                        int[] pl = {0};
+                        board.doAIMove(arm.getMove(), player);
+                        result = -arm.MCTS_SR(board, depth + 1, b_b, pl);
+                        board.undoMove();
+                        // Many visit stats, wow
+                        budgetUsed += pl[0];
+                        plStats[0] += pl[0];
+                        sr_visits += pl[0];
+                        localVisits += pl[0];
+                    } else {
+                        // The node is already solved
+                        result = arm.stats.mean();
                     }
-                    // Determine the actual budget to be used
-                    if (b <= arm.sr_visits)
-                        continue;
-                    int b_b = b - arm.sr_visits;
-                    if (s == 2 && n == 1)
-                        b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
-                    b_b = Math.min(b_b, budget - budgetUsed) - arm.localVisits;
-                    // :: Recursion
-                    int[] pl = {0};
-                    board.doAIMove(arm.getMove(), player);
-                    result = -arm.MCTS_SR(board, depth + 1, b_b, pl);
-                    board.undoMove();
-                    // Many visit stats, wow
-                    budgetUsed += pl[0];
-                    plStats[0] += pl[0];
-                    sr_visits += pl[0];
-                    localVisits += pl[0];
                     // :: Solver
-                    if (options.solver && Math.abs(result) == INF) {
+                    if (Math.abs(result) == INF) {
                         if (solverCheck(result, board)) {   // Returns true if node is solved
                             if (result == INF)
                                 bestArm = arm;
