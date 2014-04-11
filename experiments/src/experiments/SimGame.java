@@ -267,6 +267,8 @@ public class SimGame {
                     options.solver = true;
                 } else if (tag.startsWith("rc")) {
                     options.rc = Integer.parseInt(tag.substring(2));
+                } else if (tag.startsWith("bl")) {
+                    options.bl = Integer.parseInt(tag.substring(2));
                 } else if (tag.startsWith("rb")) {
                     options.range_back = true;
                     options.bp_range = Double.parseDouble(tag.substring(2));

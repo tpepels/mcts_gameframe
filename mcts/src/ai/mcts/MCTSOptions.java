@@ -28,7 +28,7 @@ public class MCTSOptions {
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
-    public int rc = 2;
+    public int rc = 2, bl = 5;
     public double bp_range = 1.;
     public boolean remove = true, stat_reset = false, shot = false, rec_halving = false, max_back = false, range_back = false;
     // MAST stuff

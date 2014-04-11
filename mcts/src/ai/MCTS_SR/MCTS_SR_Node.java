@@ -50,6 +50,8 @@ public class MCTS_SR_Node {
             s = r_s_t;
             init_s_t = r_s_t;
         }
+        if (S != null && S.isEmpty())
+            throw new RuntimeException("S is empty");
         // Dont start any rounds if there is only 1 child
         if (!isTerminal() && S.size() == 1 && budget > 1) {
             int[] pl = {0};
@@ -95,7 +97,7 @@ public class MCTS_SR_Node {
             }
             return 0;
             // } else if (!options.shot && (depth > 1 || isTerminal() || (depth > 0 && sr_visits < s_t))) {
-        } else if (!options.shot && (Math.floor((sr_visits + budget) / (s_t * log2((options.rc / 2.) * s_t))) < options.rc
+        } else if (!options.shot && (Math.floor((sr_visits + budget) / (s_t * log2((options.rc / 2.) * s_t))) < options.bl
                 || isTerminal() || (depth > 0 && sr_visits < s_t))) {
             // Run UCT MCTS budget times
             for (int i = 0; i < budget; i++) {
@@ -198,7 +200,7 @@ public class MCTS_SR_Node {
 
                     for (int i = 0; i < r_s_t; i++)
                         stats.add(S.get(i).stats, true);
-                } else if (options.max_back && bestArm != null && depth < 2) {
+                } else if (options.max_back && bestArm != null) {
 
                     stats.add(bestArm.stats, true);
                 } else if (options.range_back && bestArm != null) {
