@@ -41,8 +41,8 @@ public class MCTS_SR_Node {
         if (isLeaf())
             expand(board);
         // :: Recursive reduction
-        int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t, rr = cycles - 1;
-        for (int i = 0; i < rr; i++)
+        int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t;
+        for (int i = 0; i < cycles; i++)
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
         //
         if (options.rec_halving) {
@@ -50,9 +50,13 @@ public class MCTS_SR_Node {
             s = r_s_t;
             init_s_t = r_s_t;
         }
+
+        // Keep track of the number of cycles at each node
+        cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
+
         if (S != null && S.isEmpty())
-            throw new RuntimeException("S is empty");
-        // Dont start any rounds if there is only 1 child
+            throw new RuntimeException("S is empty C size: " + C.size() + " value " + stats.mean());
+        // Don't start any rounds if there is only 1 child
         if (!isTerminal() && S.size() == 1 && budget > 1) {
             int[] pl = {0};
             // :: Recursion
@@ -118,8 +122,6 @@ public class MCTS_SR_Node {
                 Collections.sort(S.subList(0, s_t), comparator);
             else
                 Collections.sort(S, comparator);
-            // Keep track of the number of cycles at each node
-            cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
             MCTS_SR_Node arm;
             // :: Cycle
             while (s > 1 && budgetUsed < budget) {
