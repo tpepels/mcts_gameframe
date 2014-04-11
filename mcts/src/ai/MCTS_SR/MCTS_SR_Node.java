@@ -43,7 +43,7 @@ public class MCTS_SR_Node {
             expand(board);
         // :: Recursive reduction
         int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t;
-        for (int i = 0; i < cycles - 1; i++)
+        for (int i = 0; i < cycles; i++)
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
         //
         if (options.rec_halving) {
