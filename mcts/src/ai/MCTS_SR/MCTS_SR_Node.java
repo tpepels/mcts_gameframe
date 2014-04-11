@@ -15,6 +15,7 @@ import java.util.List;
 
 public class MCTS_SR_Node {
     public static double INF = 999999;
+    public static int maxDepth = 0;
     //
     private boolean expanded = false, simulated = false;
     private List<MCTS_SR_Node> C, S;
@@ -42,7 +43,7 @@ public class MCTS_SR_Node {
             expand(board);
         // :: Recursive reduction
         int r_s_t = S.size(), s_t = S.size(), init_s_t = S.size(), s = s_t;
-        for (int i = 0; i < cycles; i++)
+        for (int i = 0; i < cycles - 1; i++)
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
         //
         if (options.rec_halving) {
@@ -116,6 +117,9 @@ public class MCTS_SR_Node {
         } else {
             if (S != null && S.isEmpty())
                 throw new RuntimeException("S is empty C size: " + C.size() + " value " + stats.mean() + " terminal: " + isTerminal() + " visits: " + sr_visits);
+            //System.out.println(depth);
+            if (depth > maxDepth)
+                maxDepth = depth;
             // :: Initial Budget
             int init_vis = sr_visits, budgetUsed = 0, n;
             int b = (int) Math.max(1, Math.floor((init_vis + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
@@ -123,7 +127,7 @@ public class MCTS_SR_Node {
             if (options.remove)
                 Collections.sort(S.subList(0, s_t), comparator);
             else
-                Collections.sort(S, comparator);
+                Collections.sort(S.subList(0, r_s_t), comparator);
             MCTS_SR_Node arm;
             // :: Cycle
             while (s > 1 && budgetUsed < budget) {
@@ -136,11 +140,6 @@ public class MCTS_SR_Node {
                     n++;
                     // :: Solver win
                     if (Math.abs(arm.stats.mean()) != INF) {
-                        if (options.solver && arm.stats.mean() == INF) {
-                            bestArm = arm;
-                            this.stats.setValue(-INF);
-                            return INF;
-                        }
                         // Determine the actual budget to be used
                         if (b <= arm.sr_visits)
                             continue;
@@ -188,7 +187,7 @@ public class MCTS_SR_Node {
                 if (options.remove)
                     Collections.sort(S.subList(0, s), comparator);
                 else
-                    Collections.sort(S, comparator);
+                    Collections.sort(S.subList(0, r_s_t), comparator);
 
                 // :: Removal policy: Reduction
                 s -= (int) Math.floor(s / (double) options.rc);
@@ -214,7 +213,7 @@ public class MCTS_SR_Node {
                     stats.add(bestArm.stats, true);
                 } else if (options.range_back && bestArm != null) {
 
-                    double range = bestArm.stats.mean() - (1. - (options.bp_range * bestArm.stats.mean()));
+                    double range = bestArm.stats.mean() - options.bp_range * (1. - bestArm.stats.mean());
                     for (int i = 0; i < S.size(); i++) {
                         if (S.get(i).stats.mean() > range)
                             stats.add(S.get(i).stats, true);

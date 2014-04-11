@@ -19,8 +19,8 @@ public class Game {
         aiPlayer1.setOptions(options1);
         options1.fixedSimulations = true;
         options1.simulations = 25000;
-        options1.max_back = true;
-        options1.bl = 5;
+        options1.range_back = true;
+        options1.bl = 25;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
