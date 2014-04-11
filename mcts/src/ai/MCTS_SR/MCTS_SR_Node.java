@@ -117,7 +117,6 @@ public class MCTS_SR_Node {
         } else {
             if (S != null && S.isEmpty())
                 throw new RuntimeException("S is empty C size: " + C.size() + " value " + stats.mean() + " terminal: " + isTerminal() + " visits: " + sr_visits);
-            //System.out.println(depth);
             if (depth > maxDepth)
                 maxDepth = depth;
             // :: Initial Budget
