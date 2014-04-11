@@ -50,12 +50,8 @@ public class MCTS_SR_Node {
             s = r_s_t;
             init_s_t = r_s_t;
         }
-
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
-
-        if (S != null && S.isEmpty())
-            throw new RuntimeException("S is empty C size: " + C.size() + " value " + stats.mean());
         // Don't start any rounds if there is only 1 child
         if (!isTerminal() && S.size() == 1 && budget > 1) {
             int[] pl = {0};
@@ -82,8 +78,12 @@ public class MCTS_SR_Node {
             localVisits++;
             sr_visits++;
             return stats.mean();
-        } else if (options.shot && isTerminal()) {
-            int score = (board.checkWin() == player) ? -1 : 1;
+        } else if (isTerminal() && Math.abs(stats.mean()) != INF) {
+            // A draw
+            int winner = board.checkWin();
+            int score = (winner == player) ? -1 : 1;
+            if (winner == IBoard.DRAW)
+                score = 0;
             plStats[0]++;
             localVisits++;
             sr_visits++;
@@ -114,6 +114,8 @@ public class MCTS_SR_Node {
                     return result;
             }
         } else {
+            if (S != null && S.isEmpty())
+                throw new RuntimeException("S is empty C size: " + C.size() + " value " + stats.mean() + " terminal: " + isTerminal() + " visits: " + sr_visits);
             // :: Initial Budget
             int init_vis = sr_visits, budgetUsed = 0, n;
             int b = (int) Math.max(1, Math.floor((init_vis + budget) / (s * Math.ceil((options.rc / 2.) * log2(s_t)))));
