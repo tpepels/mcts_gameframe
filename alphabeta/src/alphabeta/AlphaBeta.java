@@ -251,6 +251,7 @@ public class AlphaBeta implements AIPlayer {
         boolean valuefound = false, collision = false;
         int curBestMoveIndex = -1;
         IMove curBestMove = null;
+        boolean tookTPmove = false;
 
         //int[] currentMoves;
         MoveList currentMoves;
@@ -315,10 +316,6 @@ public class AlphaBeta implements AIPlayer {
             // get the moves
             //currentMoves = board.getExpandMoves();
             currentMoves = board.getOrderedMoves();
-
-            if (options.transpositions && tpBestMoveIndex > 0 && tpBestMoveIndex < currentMoves.size())
-                currentMoves.moveToFront(tpBestMoveIndex);
-
             // 
             //int startindex = board.startindex, currentmove;
             IMove currentmove = null;
@@ -331,7 +328,17 @@ public class AlphaBeta implements AIPlayer {
                 //    // If the previous max history value was 0, we can just follow the indexed list
                 //    maxHistVal = board.maxHistVal;
                 // }
-                currentmove = currentMoves.get(i);
+
+                // take the move suggestes by the transpos table first
+                if (!tookTPmove && tpBestMoveIndex > 0 && tpBestMoveIndex < currentMoves.size()) {
+                    currentmove = currentMoves.get(tpBestMoveIndex);
+                    tookTPmove = true;
+                }
+                else if (tookTPmove && i == tpBestMoveIndex)
+                    continue;
+                else
+                    currentmove = currentMoves.get(i);
+
                 if (board.doAIMove(currentmove, player)) {
                     // Returns false if suicide
                     //
