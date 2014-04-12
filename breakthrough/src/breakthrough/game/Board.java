@@ -99,6 +99,15 @@ public class Board implements IBoard {
             return lorentzValues[7-row][col];
     }
 
+    private int getZbId(int r, int c) {
+        int id = (r*8 + c)*3;
+        if (board[r][c] == 'w')
+            id++;
+        if (board[r][c] == 'b')
+            id++;
+        return id;
+    }
+
     private void recomputeProgress(int player) {
         if (player == 1) {
             // white, start from top
@@ -127,6 +136,12 @@ public class Board implements IBoard {
     public boolean doAIMove(IMove move, int player) {
         int[] movearr = move.getMove();
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
+
+        // remove zobrist nums from hash of the squares that are changing
+        int before_from_zbId = getZbId(r,c);
+        int before_to_zbId = getZbId(rp,cp);
+        zbHash = zbHash ^ zbnums[before_from_zbId];
+        zbHash = zbHash ^ zbnums[before_to_zbId];
 
         board[rp][cp] = board[r][c];
         board[r][c] = '.';
@@ -178,6 +193,12 @@ public class Board implements IBoard {
         pastMoves.push(move);
         curPlayer = 3 - curPlayer;
 
+        // add zobrist nums for the new hash
+        int after_from_zbId = getZbId(r,c);
+        int after_to_zbId = getZbId(rp,cp);
+        zbHash = zbHash ^ zbnums[after_from_zbId];
+        zbHash = zbHash ^ zbnums[after_to_zbId];
+
         return true;
     }
 
@@ -189,6 +210,12 @@ public class Board implements IBoard {
 
         int[] movearr = move.getMove();
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
+
+        // remove zobrist nums from hash of the squares that are changing
+        int before_from_zbId = getZbId(r,c);
+        int before_to_zbId = getZbId(rp,cp);
+        zbHash = zbHash ^ zbnums[before_from_zbId];
+        zbHash = zbHash ^ zbnums[before_to_zbId];
 
         board[r][c] = board[rp][cp];
         board[rp][cp] = '.';
@@ -226,6 +253,13 @@ public class Board implements IBoard {
         // remove back the capture bonuses
         capBonus1 = move.getOldCapBonus1();
         capBonus2 = move.getOldCapBonus2();
+
+        // add zobrist nums for the new hash
+        int after_from_zbId = getZbId(r,c);
+        int after_to_zbId = getZbId(rp,cp);
+        zbHash = zbHash ^ zbnums[after_from_zbId];
+        zbHash = zbHash ^ zbnums[after_to_zbId];
+
     }
 
     @Override
@@ -481,9 +515,16 @@ public class Board implements IBoard {
 
             for (int i = 0; i < 192; i++)
                 zbnums[i] = rng.nextLong();
-
-            // now build the initial hash
         }
+
+        // now build the initial hash
+        for (int r = 0; r < 8; r++)
+            for (int c = 0; c < 8; c++) {
+                int id = getZbId(r, c);
+                zbHash = zbHash ^ zbnums[id];
+            }
+
+
 
     }
 
@@ -763,7 +804,7 @@ public class Board implements IBoard {
 
     @Override
     public long hash() {
-        return 0;
+        return zbHash;
     }
 
     public String toString() {

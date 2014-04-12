@@ -25,7 +25,7 @@ public class AlphaBeta implements AIPlayer {
     //
     double DELTA = 60, DEFAULT_DELTA = 60; 
     public int R = 2, MAX_DEPTH = 1000;
-    public boolean nullmoves = false, transpositions = false, historyHeuristic = false,
+    public boolean nullmoves = false, transpositions = true, historyHeuristic = false,
             killermoves = false, aspiration = false;
     boolean interupted = false;
     int[] captures = new int[2];
@@ -56,7 +56,6 @@ public class AlphaBeta implements AIPlayer {
         // Assuming we never go deeper than the size of the board.
         //history = new int[2][Board.SIZE];
         //bfboard = new int[2][Board.SIZE];
-        tt = new Transposition[TT_SIZE];
     }
 
     public void newGame(int myPlayer, String game) {
@@ -125,7 +124,10 @@ public class AlphaBeta implements AIPlayer {
         timeCheck = TIME_CHECK_INT;
         forceHalt = false;
         double prevVal = 0;
-        
+
+        if (transpositions)
+            tt = new Transposition[TT_SIZE];
+
         // endTime = 15000; // for testing
         endTime =  System.currentTimeMillis() + options.timeLimit;
 
@@ -242,26 +244,27 @@ public class AlphaBeta implements AIPlayer {
         //
         Transposition tp = null;
         if (transpositions) {
-            // hashPos = getHashPos(board.zobristHash);
+            hashPos = getHashPos(board.hash());
             tp = tt[hashPos];
             // Check if present in transposition table
             if (tp != null) {
                 tt_lookups++;
                 // Position was evaluated previously
                 // Check for a collision
-                // if (tp.hash != board.zobristHash) {
-                // collisions++;
-                // collision = true;
-                // } else if (depth <= tp.depth) {
-                if (tp.flag == Transposition.REAL)
-                    return tp.value;
-                if (tp.flag == Transposition.L_BOUND && tp.value > alpha)
-                    alpha = tp.value;
-                else if (tp.flag == Transposition.U_BOUND && tp.value < beta)
-                    beta = tp.value;
-                if (alpha >= beta)
-                    return tp.value;
-                // }
+                if (tp.hash != board.hash()) {
+                    collisions++;
+                    collision = true;
+                }
+                else if (depth <= tp.depth) {
+                    if (tp.flag == Transposition.REAL)
+                        return tp.value;
+                    if (tp.flag == Transposition.L_BOUND && tp.value > alpha)
+                        alpha = tp.value;
+                    else if (tp.flag == Transposition.U_BOUND && tp.value < beta)
+                        beta = tp.value;
+                    if (alpha >= beta)
+                        return tp.value;
+                }
             }
         }
         // Check if position is terminal.
@@ -356,7 +359,7 @@ public class AlphaBeta implements AIPlayer {
             tt[hashPos] = tp;
             tp.bestMove = plyBestMove;
             tp.depth = depth;
-            // tp.hash = board.zobristHash;
+            tp.hash = board.hash();
             //
             if (bestValue <= olda) {
                 tp.flag = Transposition.U_BOUND;
