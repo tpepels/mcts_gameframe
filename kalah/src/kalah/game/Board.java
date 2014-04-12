@@ -8,6 +8,7 @@ import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 public class Board implements IBoard {
@@ -38,12 +39,37 @@ public class Board implements IBoard {
     public final int[] oppHouse2 = { 0, 0, 0, 0, 0, 0, 5, 4, 3, 2, 1, 0 }; 
             
     private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(10);
-    private static final MoveList static_moves = new MoveList(10);   
+    private static final MoveList static_moves = new MoveList(10);
+
+    public static long[] zbnums = null;
+    public long zbHash = 0;
 
     private Stack<IMove> pastMoves;
     public int nMoves, winner, curPlayer;
     public int[] board;
     public int store1, store2;
+
+    private int getZbId(int house) {
+        int maxStones = N_HOUSES*2*N_SPIECES;
+        int id = maxStones * house;
+
+        if (house == (N_HOUSES*2))
+            id += store1;
+        else if (house == (N_HOUSES*2)+1)
+            id += store2;
+        else
+            id += board[house];
+
+        return id;
+    }
+
+    @Override
+    public long hash() {
+        long zbHash = 0;
+        for (int i = 0; i < (N_HOUSES*2+2); i++)
+            zbHash ^= zbnums[getZbId(i)];
+        return zbHash;
+    }
     
     public void initialize(int setboard[]) {
         board = new int[N_HOUSES*2]; 
@@ -57,7 +83,15 @@ public class Board implements IBoard {
         nMoves = 0;
         winner = NONE_WIN;
         curPlayer = 1;
-        
+
+        if (zbnums == null) {
+            Random rng = new Random();
+            // max number per spot = N_HOUSES*2*N_SPIECES
+            int maxStones = N_HOUSES*2*N_SPIECES;
+            zbnums = new long[maxStones*(N_HOUSES*2+2)];
+            for (int i = 0; i < maxStones*(N_HOUSES*2+2); i++)
+                zbnums[i] = rng.nextLong();
+        }
     }
 
     @Override
@@ -729,12 +763,7 @@ public class Board implements IBoard {
 
     @Override
     public MoveList getOrderedMoves() {
-        return null;
-    }
-
-    @Override
-    public long hash() {
-        return 0;
+        return getExpandMoves();
     }
 
     private String formatInt(int x) { 

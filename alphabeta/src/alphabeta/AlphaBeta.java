@@ -252,20 +252,24 @@ public class AlphaBeta implements AIPlayer {
         int curBestMoveIndex = -1;
         IMove curBestMove = null;
 
+        int playerHere = board.getPlayerToMove();
+
         //int[] currentMoves;
         MoveList currentMoves;
         int tpBestMoveIndex = -1;
+        long bhash = -1;
         //
         Transposition tp = null;
         if (options.transpositions) {
-            hashPos = getHashPos(board.hash());
+            bhash = board.hash();
+            hashPos = getHashPos(bhash);
             tp = tt[hashPos];
             // Check if present in transposition table
             if (tp != null) {
                 tt_lookups++;
                 // Position was evaluated previously
                 // Check for a collision
-                if (tp.hash != board.hash()) {
+                if (tp.hash != bhash) {
                     collisions++;
                     collision = true;
                 }
@@ -300,7 +304,7 @@ public class AlphaBeta implements AIPlayer {
                 }
             }
         }
-        // Leaf-node, evaluate the node
+        // Leaf-node, the node
         if (depth == 0 && !valuefound) {
             bestValue = color * board.evaluate(myPlayer, options.evVer);
             valuefound = true;
@@ -344,8 +348,15 @@ public class AlphaBeta implements AIPlayer {
                     // Returns false if suicide
                     //
                     //
-                    value = -alphaBeta(board, depth - 1, -beta, -alpha, getOpponent(player),
-                            currentmove, nullMove);
+                    int nextPlayer = board.getPlayerToMove();
+
+                    if (playerHere != nextPlayer)
+                        value = -alphaBeta(board, depth - 1, -beta, -alpha, getOpponent(player),
+                                currentmove, nullMove);
+                    else
+                        value = alphaBeta(board, depth - 1, alpha, beta, player,
+                                currentmove, nullMove);
+
                     //
                     if (value > bestValue) {
                         // for detemining the move to return
@@ -386,7 +397,7 @@ public class AlphaBeta implements AIPlayer {
             tt[hashPos] = tp;
             tp.bestMove = plyBestMove;
             tp.depth = depth;
-            tp.hash = board.hash();
+            tp.hash = bhash;
             //
             if (bestValue <= olda) {
                 tp.flag = Transposition.U_BOUND;
