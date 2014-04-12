@@ -63,8 +63,15 @@ public class AlphaBeta implements AIPlayer {
 
     private long MASK = TT_SIZE - 1;
 
+
+
     private int getHashPos(long hash) {
         return (int) (hash & MASK);
+    }
+
+    private void resetTT() {
+        for (int i = 0; i < TT_SIZE; i++)
+            tt = null;
     }
 
     public void resetStats() {
@@ -125,7 +132,7 @@ public class AlphaBeta implements AIPlayer {
         forceHalt = false;
         double prevVal = 0;
 
-        if (transpositions)
+        if (transpositions && tt == null)
             tt = new Transposition[TT_SIZE];
 
         // endTime = 15000; // for testing
@@ -205,7 +212,10 @@ public class AlphaBeta implements AIPlayer {
             System.out.println("--------------------------------");
         }
         // Free the transposition table for the gc.
-        tt = null;
+        //tt = null;
+        if (transpositions)
+            resetTT();
+
         if (!interupted && parallel)
             callback.makeMove(finalBestMove);
     }
