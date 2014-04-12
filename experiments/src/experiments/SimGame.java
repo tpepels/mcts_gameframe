@@ -300,6 +300,9 @@ public class SimGame {
                 if (tag.equals("tt")) {
                     options.transpositions = true;
                 }
+                else if (tag.startsWith("ev")) {
+                    options.evVer = Integer.parseInt(tag.substring(2));
+                }
             }
 
             playerRef.setOptions(options);

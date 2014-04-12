@@ -8,4 +8,5 @@ public class AlphaBetaOptions extends MCTSOptions {
     public boolean debugInfoAB = false;
     public boolean debugInfoMove = true;
     public boolean transpositions = false;
+    public int evVer = 0;
 }
