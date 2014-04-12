@@ -25,7 +25,7 @@ public class AlphaBeta implements AIPlayer {
     //
     double DELTA = 60, DEFAULT_DELTA = 60; 
     public int R = 2, MAX_DEPTH = 1000;
-    public boolean nullmoves = false, transpositions = true, historyHeuristic = false,
+    public boolean nullmoves = false, historyHeuristic = false,
             killermoves = false, aspiration = false;
     boolean interupted = false;
     int[] captures = new int[2];
@@ -132,7 +132,7 @@ public class AlphaBeta implements AIPlayer {
         forceHalt = false;
         double prevVal = 0;
 
-        if (transpositions && tt == null)
+        if (options.transpositions && tt == null)
             tt = new Transposition[TT_SIZE];
 
         // endTime = 15000; // for testing
@@ -213,7 +213,7 @@ public class AlphaBeta implements AIPlayer {
         }
         // Free the transposition table for the gc.
         //tt = null;
-        if (transpositions)
+        if (options.transpositions)
             resetTT();
 
         if (!interupted && parallel)
@@ -253,7 +253,7 @@ public class AlphaBeta implements AIPlayer {
         MoveList currentMoves;
         //
         Transposition tp = null;
-        if (transpositions) {
+        if (options.transpositions) {
             hashPos = getHashPos(board.hash());
             tp = tt[hashPos];
             // Check if present in transposition table
@@ -364,7 +364,7 @@ public class AlphaBeta implements AIPlayer {
         //if (plyBestMove > -1)
         //    history[player - 1][plyBestMove]++;
         // Replace if deeper or doesn't exist
-        if (transpositions && (tp == null || (collision && depth > tp.depth))) {
+        if (options.transpositions && (tp == null || (collision && depth > tp.depth))) {
             tp = new Transposition();
             tt[hashPos] = tp;
             tp.bestMove = plyBestMove;

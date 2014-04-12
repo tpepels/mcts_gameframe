@@ -294,6 +294,14 @@ public class SimGame {
             AlphaBetaOptions options = new AlphaBetaOptions();
             playerRef = new AlphaBeta();
             options.timeLimit = timeLimit;
+
+            for (int i = 1; i < parts.length; i++) {
+                String tag = parts[i];
+                if (tag.equals("tt")) {
+                    options.transpositions = true;
+                }
+            }
+
             playerRef.setOptions(options);
         } else if (parts[0].equals("random")) {
             playerRef = new RandomPlayer();
