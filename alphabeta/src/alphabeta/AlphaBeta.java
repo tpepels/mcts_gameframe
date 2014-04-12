@@ -19,7 +19,7 @@ public class AlphaBeta implements AIPlayer {
     private final double N_INF = -2000000, P_INF = 2000000;
     // The base win value, decreased with D_DECR per depth
     private final double WIN_VAL = 1000000, D_DECR = 5000;
-    // Some contant values
+    // Some contant values (TT_size = 2^25)
     private final int TT_SIZE = 33554432, TIME_CHECK_INT = 1000, BASE_TIME = 15000;
     private final DecimalFormat decForm = new DecimalFormat("#,###,###,###,##0");
     //
@@ -56,16 +56,17 @@ public class AlphaBeta implements AIPlayer {
         // Assuming we never go deeper than the size of the board.
         //history = new int[2][Board.SIZE];
         //bfboard = new int[2][Board.SIZE];
+        tt = new Transposition[TT_SIZE];
     }
 
     public void newGame(int myPlayer, String game) {
     }
 
-    // private long MASK = TT_SIZE - 1;
+    private long MASK = TT_SIZE - 1;
 
-    // private int getHashPos(long hash) {
-    // return (int) (hash & MASK);
-    // }
+    private int getHashPos(long hash) {
+        return (int) (hash & MASK);
+    }
 
     public void resetStats() {
         totalDepth = 0;
@@ -293,7 +294,8 @@ public class AlphaBeta implements AIPlayer {
                         killermove[inv_depth][1], tp.bestMove);
             }*/
             // get the moves
-            currentMoves = board.getExpandMoves();
+            //currentMoves = board.getExpandMoves();
+            currentMoves = board.getOrderedMoves();
             IMove curBestMove = null;
 
             // 

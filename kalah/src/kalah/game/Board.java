@@ -727,6 +727,16 @@ public class Board implements IBoard {
         return 0;
     }
 
+    @Override
+    public MoveList getOrderedMoves() {
+        return null;
+    }
+
+    @Override
+    public long hash() {
+        return 0;
+    }
+
     private String formatInt(int x) { 
         if (x >= 10) 
             return ("" + x);

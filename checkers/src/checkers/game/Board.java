@@ -379,6 +379,16 @@ public class Board implements IBoard {
     }
 
     @Override
+    public MoveList getOrderedMoves() {
+        return null;
+    }
+
+    @Override
+    public long hash() {
+        return 0;
+    }
+
+    @Override
     public void newDeterminization(int myPlayer) {
         // Fully observable
     }
