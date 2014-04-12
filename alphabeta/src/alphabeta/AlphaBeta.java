@@ -290,7 +290,8 @@ public class AlphaBeta implements AIPlayer {
         // Check if position is terminal.
         if (move != null) {
             int winstate = board.checkWin();
-            if (winstate != IBoard.NONE_WIN) {
+
+            /*if (winstate != IBoard.NONE_WIN) {
                 if (winstate == player) {
                     // Prefer shallow wins!
                     bestValue = (WIN_VAL - (D_DECR * inv_depth));
@@ -302,6 +303,14 @@ public class AlphaBeta implements AIPlayer {
                     bestValue = -(WIN_VAL - (D_DECR * inv_depth));
                     return bestValue;
                 }
+            }*/
+            if (winstate != IBoard.NONE_WIN) {
+                if (winstate == player)
+                    return 1.1;
+                else if (winstate == IBoard.DRAW)
+                    return 0;
+                else
+                    return -1.1;
             }
         }
         // Leaf-node, the node
