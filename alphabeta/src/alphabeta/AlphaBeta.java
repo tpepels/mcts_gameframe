@@ -1,4 +1,4 @@
-package alphabeta; 
+package alphabeta;
 
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
@@ -25,8 +25,8 @@ public class AlphaBeta implements AIPlayer {
     //
     double DELTA = 60, DEFAULT_DELTA = 60; 
     public int R = 2, MAX_DEPTH = 1000;
-    public boolean nullmoves = true, transpositions = true, historyHeuristic = true,
-            killermoves = true, aspiration = true;
+    public boolean nullmoves = false, transpositions = false, historyHeuristic = false,
+            killermoves = false, aspiration = false;
     boolean interupted = false;
     int[] captures = new int[2];
 
@@ -34,12 +34,14 @@ public class AlphaBeta implements AIPlayer {
     private Random r = new Random();
     //private MoveCallback callback;
     private IBoard initBoard;
+    private IMove bestMove, prevBestMove;
     private IMove finalBestMove;
+
     // Statistics
     private double totalNodes;
     private double totalDepth, numMoves, researches;
     // Counters etc.
-    private int maxDepth, nodes, collisions, timeCheck, myPlayer, opponent, bestMove, prevBestMove,
+    private int maxDepth, nodes, collisions, timeCheck, myPlayer, opponent, //bestMove, prevBestMove,
             tt_lookups;
     private long endTime;
     private boolean forceHalt = false, parallel = true;
@@ -111,28 +113,32 @@ public class AlphaBeta implements AIPlayer {
         //this.opponent = (myPlayer == Board.P2) ? Board.P1 : Board.P2;
         this.opponent = 3-this.opponent;
 
-        finalBestMove = null;
-
         //
         interupted = false;
         collisions = 0;
         nodes = 0;
-        bestMove = 0;
+        finalBestMove = null;
+        bestMove = null;
         maxDepth = 0;
         tt_lookups = 0;
         timeCheck = TIME_CHECK_INT;
         forceHalt = false;
+        double prevVal = 0;
         
         // endTime = 15000; // for testing
+        endTime =  System.currentTimeMillis() + options.timeLimit;
+
         //
         // long lastItStartTime = 0, lastItTime = 0;
         double val = 0, alpha = N_INF, beta = P_INF;
         boolean wonlost = false;
-        endTime += System.currentTimeMillis();
+
         while (maxDepth < MAX_DEPTH && !forceHalt && !interupted) {
             maxDepth += 1;
-            System.out.println(":: Max depth: " + maxDepth);
+            if (options.debugInfoAB)
+                System.out.println(":: Max depth: " + maxDepth);
             prevBestMove = bestMove;
+            prevVal = val;
             // lastItStartTime = System.currentTimeMillis();
             //
             val = alphaBeta(initBoard, maxDepth, alpha, beta, myPlayer, null, false);
@@ -156,9 +162,11 @@ public class AlphaBeta implements AIPlayer {
                 beta = val + DELTA;
             }
             //
-            System.out.println(" - Best value so far: " + val);
-            System.out.println(" - Best move so far: " + bestMove);
-            System.out.println(" - Nodes visited: " + decForm.format(nodes));
+            if (options.debugInfoAB) {
+                System.out.println(" - Best value so far: " + val);
+                System.out.println(" - Best move so far: " + bestMove);
+                System.out.println(" - Nodes visited: " + decForm.format(nodes));
+            }
             // We win/lose
             /*if (Math.abs(val) > FW1_VAL) {
                 wonlost = true;
@@ -168,6 +176,7 @@ public class AlphaBeta implements AIPlayer {
         // We can still use the current val if the result is better in vase of forced halt
         if (forceHalt || interupted) {
             bestMove = prevBestMove;
+            val = prevVal;
             maxDepth--;
         }
         //
@@ -176,12 +185,22 @@ public class AlphaBeta implements AIPlayer {
             totalNodes += nodes;
             totalDepth += maxDepth;
         }
+
+        finalBestMove = bestMove;
+
         //
-        System.out.println(":: Forced halt: " + forceHalt);
-        System.out.println(":: TT Lookups: " + decForm.format(tt_lookups));
-        System.out.println(":: Collisions: " + decForm.format(collisions));
-        System.out.println(":: Nodes visited: " + decForm.format(nodes));
-        System.out.println("--------------------------------");
+        if (options.debugInfoMove) {
+            System.out.println(" - MaxDepth: " + maxDepth);
+            System.out.println(" - Final best value: " + val);
+            System.out.println(" - Final best move : " + finalBestMove);
+            System.out.println(" - Nodes visited: " + decForm.format(nodes));
+
+            System.out.println(":: Forced halt: " + forceHalt);
+            System.out.println(":: TT Lookups: " + decForm.format(tt_lookups));
+            System.out.println(":: Collisions: " + decForm.format(collisions));
+            System.out.println(":: Nodes visited: " + decForm.format(nodes));
+            System.out.println("--------------------------------");
+        }
         // Free the transposition table for the gc.
         tt = null;
         if (!interupted && parallel)
@@ -300,7 +319,7 @@ public class AlphaBeta implements AIPlayer {
                     if (value > bestValue) {
                         // for detemining the move to return
                         if (depth == maxDepth && value > bestValue) {
-                            bestMove = i;
+                            bestMove = currentmove;
                             curBestMove = currentmove;
                         }
                         //
@@ -324,6 +343,7 @@ public class AlphaBeta implements AIPlayer {
                     System.err.println("error making move!");
                 }
             }
+
         }
         // Update the history useHeuristics for move-ordering
         //if (plyBestMove > -1)
