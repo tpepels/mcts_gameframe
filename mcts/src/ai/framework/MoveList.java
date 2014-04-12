@@ -42,6 +42,19 @@ public class MoveList {
         return newList;
     }
 
+    public void swap(int i, int j) {
+        IMove tmp = moves[i];
+        moves[i] = moves[j];
+        moves[j] = tmp;
+    }
+
+    public void moveToFront(int i) {
+        IMove mv = moves[i];
+        for (int j = i-1; j >= 0; j--)
+            moves[j+1] = moves[j];
+        moves[0] = mv;
+    }
+
     public int size() {
         return size;
     }

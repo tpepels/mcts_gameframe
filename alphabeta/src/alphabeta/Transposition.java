@@ -9,4 +9,5 @@ public class Transposition {
     public double value;
     public int depth, flag; 
     public IMove bestMove;
+    public int bestMoveIndex;
 }

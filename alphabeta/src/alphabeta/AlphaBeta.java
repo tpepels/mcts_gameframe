@@ -249,8 +249,12 @@ public class AlphaBeta implements AIPlayer {
         int  hashPos = 0, color = (player == myPlayer) ? 1 : -1;
         IMove plyBestMove = null;
         boolean valuefound = false, collision = false;
+        int curBestMoveIndex = -1;
+        IMove curBestMove = null;
+
         //int[] currentMoves;
         MoveList currentMoves;
+        int tpBestMoveIndex = -1;
         //
         Transposition tp = null;
         if (options.transpositions) {
@@ -275,6 +279,8 @@ public class AlphaBeta implements AIPlayer {
                     if (alpha >= beta)
                         return tp.value;
                 }
+
+                tpBestMoveIndex = tp.bestMoveIndex;
             }
         }
         // Check if position is terminal.
@@ -309,7 +315,9 @@ public class AlphaBeta implements AIPlayer {
             // get the moves
             //currentMoves = board.getExpandMoves();
             currentMoves = board.getOrderedMoves();
-            IMove curBestMove = null;
+
+            if (options.transpositions && tpBestMoveIndex > 0 && tpBestMoveIndex < currentMoves.size())
+                currentMoves.moveToFront(tpBestMoveIndex);
 
             // 
             //int startindex = board.startindex, currentmove;
@@ -335,9 +343,10 @@ public class AlphaBeta implements AIPlayer {
                         // for detemining the move to return
                         if (depth == maxDepth && value > bestValue) {
                             bestMove = currentmove;
-                            curBestMove = currentmove;
                         }
                         //
+                        curBestMove = currentmove;
+                        curBestMoveIndex = i;
                         bestValue = value;
                         plyBestMove = currentmove;
                     }
@@ -379,6 +388,9 @@ public class AlphaBeta implements AIPlayer {
                 tp.flag = Transposition.REAL;
             }
             tp.value = bestValue;
+
+            tp.bestMove = curBestMove;
+            tp.bestMoveIndex = curBestMoveIndex;
         }
         return bestValue;
     }
