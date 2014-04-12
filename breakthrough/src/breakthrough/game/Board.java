@@ -103,10 +103,12 @@ public class Board implements IBoard {
 
     private int getZbId(int r, int c) {
         int id = (r*8 + c)*3;
+
         if (board[r][c] == 'w')
-            id++;
-        if (board[r][c] == 'b')
-            id++;
+            id += 1;
+        else if (board[r][c] == 'b')
+            id += 2;
+
         return id;
     }
 
@@ -142,8 +144,8 @@ public class Board implements IBoard {
         // remove zobrist nums from hash of the squares that are changing
         int before_from_zbId = getZbId(r,c);
         int before_to_zbId = getZbId(rp,cp);
-        zbHash = zbHash ^ zbnums[before_from_zbId];
-        zbHash = zbHash ^ zbnums[before_to_zbId];
+        zbHash ^= zbnums[before_from_zbId];
+        zbHash ^= zbnums[before_to_zbId];
 
         board[rp][cp] = board[r][c];
         board[r][c] = '.';
@@ -198,8 +200,8 @@ public class Board implements IBoard {
         // add zobrist nums for the new hash
         int after_from_zbId = getZbId(r,c);
         int after_to_zbId = getZbId(rp,cp);
-        zbHash = zbHash ^ zbnums[after_from_zbId];
-        zbHash = zbHash ^ zbnums[after_to_zbId];
+        zbHash ^= zbnums[after_from_zbId];
+        zbHash ^= zbnums[after_to_zbId];
 
         return true;
     }
@@ -520,10 +522,11 @@ public class Board implements IBoard {
         }
 
         // now build the initial hash
+        zbHash = 0;
         for (int r = 0; r < 8; r++)
             for (int c = 0; c < 8; c++) {
                 int id = getZbId(r, c);
-                zbHash = zbHash ^ zbnums[id];
+                zbHash ^= zbnums[id];
             }
 
 
