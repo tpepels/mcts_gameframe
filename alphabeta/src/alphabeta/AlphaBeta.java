@@ -329,6 +329,7 @@ public class AlphaBeta implements AIPlayer {
                 // }
 
                 // take the move suggestes by the transpos table first -- did not seem to work
+                // must be interacting with the other stuff somehow
                 //if (!tookTPmove && tpBestMoveIndex > 0 && tpBestMoveIndex < currentMoves.size()) {
                 //    currentmove = currentMoves.get(tpBestMoveIndex);
                 //    tookTPmove = true;
@@ -337,6 +338,7 @@ public class AlphaBeta implements AIPlayer {
                 //    continue;
                 //else
                 //    currentmove = currentMoves.get(i);
+                currentmove = currentMoves.get(i);
 
                 if (board.doAIMove(currentmove, player)) {
                     // Returns false if suicide
