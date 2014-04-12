@@ -89,6 +89,8 @@ public class Board implements IBoard {
         // no need to copy the move stack, but need to initialize it
         b.pastMoves = new Stack<IMove>();
 
+        b.zbHash = zbHash;
+
         return b;
     }
 
