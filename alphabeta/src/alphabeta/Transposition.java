@@ -7,7 +7,20 @@ public class Transposition {
 
     public long hash;
     public double value;
-    public int depth, flag; 
+    public int depth, flag;
     public IMove bestMove;
     public int bestMoveIndex;
+
+    Transposition() {
+        reset();
+    }
+
+    public void reset() {
+        hash = -1;
+        bestMoveIndex = -1;
+    }
+
+    public boolean empty() {
+        return hash < 0;
+    }
 }

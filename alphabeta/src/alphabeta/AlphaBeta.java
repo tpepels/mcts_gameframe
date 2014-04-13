@@ -69,9 +69,24 @@ public class AlphaBeta implements AIPlayer {
         return (int) (hash & MASK);
     }
 
+    private void createTT() {
+        tt = new Transposition[TT_SIZE];
+        //for (int i = 0; i < TT_SIZE; i++)
+        //    tt[i] = new Transposition();
+    }
+
     private void resetTT() {
         for (int i = 0; i < TT_SIZE; i++)
-            tt = null;
+            if (tt[i] != null)
+                tt[i].reset();
+    }
+
+    private void destroyTT() {
+        tt = null;
+    }
+
+    private boolean isEmpty(Transposition t) {
+        return (t == null || t.empty());
     }
 
     public void resetStats() {
@@ -133,7 +148,7 @@ public class AlphaBeta implements AIPlayer {
         double prevVal = 0;
 
         if (options.transpositions && tt == null)
-            tt = new Transposition[TT_SIZE];
+            createTT();
 
         // endTime = 15000; // for testing
         endTime =  System.currentTimeMillis() + options.timeLimit;
@@ -214,7 +229,8 @@ public class AlphaBeta implements AIPlayer {
         // Free the transposition table for the gc.
         //tt = null;
         if (options.transpositions)
-            resetTT();
+            destroyTT();
+            //resetTT();
 
         if (!interupted && parallel)
             callback.makeMove(finalBestMove);
@@ -265,7 +281,7 @@ public class AlphaBeta implements AIPlayer {
             hashPos = getHashPos(bhash);
             tp = tt[hashPos];
             // Check if present in transposition table
-            if (tp != null) {
+            if (!isEmpty(tp)) {
                 tt_lookups++;
                 // Position was evaluated previously
                 // Check for a collision
@@ -401,10 +417,14 @@ public class AlphaBeta implements AIPlayer {
         //if (plyBestMove > -1)
         //    history[player - 1][plyBestMove]++;
         // Replace if deeper or doesn't exist
-        if (options.transpositions && (tp == null || (collision && depth > tp.depth))) {
-            tp = new Transposition();
-            tt[hashPos] = tp;
-            tp.bestMove = plyBestMove;
+        if (options.transpositions && (isEmpty(tp) || (collision && depth > tp.depth))) {
+            //tp = new Transposition();
+            //tp.bestMove = plyBestMove; killer moves disables
+            if (tt[hashPos] == null) {
+                tp = new Transposition();
+                tt[hashPos] = tp;
+            }
+
             tp.depth = depth;
             tp.hash = bhash;
             //
@@ -416,7 +436,6 @@ public class AlphaBeta implements AIPlayer {
                 tp.flag = Transposition.REAL;
             }
             tp.value = bestValue;
-
             tp.bestMove = curBestMove;
             tp.bestMoveIndex = curBestMoveIndex;
         }
