@@ -35,17 +35,17 @@ public class Board implements IBoard {
     private String startingBoard = "";
     private int startingPlayer = 0;
 
-    /*private String startingBoard = 
-          "..b..b.." +
-          "bb..b..b" +
-          "......b." +
-          "b.bb.b.b" +
-          "w..w.w.w" +
+    /*private String startingBoard =
+          "..bb.bb." +
+          ".b....bb" +
+          "...w.b.b" +
+          "..w....w" +
+          "......w." +
           "..ww...w" +
           ".ww.ww.." +
           "........" ;
 
-    private int startingPlayer = 1;*/
+    private int startingPlayer = 2;*/
 
     static long[] zbnums = null;
 
@@ -534,7 +534,7 @@ public class Board implements IBoard {
     }
 
     public double evaluateSchadd(int player) { 
-        // inspired by evaluation function in Maarten's thesis
+        // inspired by ion function in Maarten's thesis
         double p1eval = 0;
         if (progress1 == 7 || pieces2 == 0) p1eval = 1;
         else if (progress2 == 7 || pieces1 == 0) p1eval = -1;
