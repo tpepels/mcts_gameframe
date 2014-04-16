@@ -1,6 +1,6 @@
 package chinesecheckers.gui;
 
-import ai.SRMCTS.SRMCTSPlayer;
+import ai.MCTS_SR.MCTS_SR_Player;
 import ai.framework.*;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
@@ -35,9 +35,16 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         //
         p1Options = new MCTSOptions();
         p1Options.setGame("chinesecheckers");
+        p1Options.simulations = 25000;
+        p1Options.fixedSimulations = true;
 
         p2Options = new MCTSOptions();
         p2Options.setGame("chinesecheckers");
+        p2Options.simulations = 25000;
+        p2Options.fixedSimulations = true;
+        p2Options.bl = 40;
+        //p2Options.max_back = true;
+        p2Options.rc = 1;
 
         //
         if (!p1Human) {
@@ -45,7 +52,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {
-            aiPlayer2 = new SRMCTSPlayer();
+            aiPlayer2 = new MCTS_SR_Player();
             aiPlayer2.setOptions(p2Options);
         }
         addMouseListener(this);
@@ -81,7 +88,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {
-            aiPlayer2 = new MCTSPlayer();
+            aiPlayer2 = new MCTS_SR_Player();
             aiPlayer2.setOptions(p2Options);
         }
         //
@@ -167,7 +174,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             this.p2Human = human;
             //
             if (!human) {
-                aiPlayer2 = new MCTSPlayer();
+                aiPlayer2 = new MCTS_SR_Player();
                 p2Options.setGame("chinesecheckers");
                 aiPlayer2.setOptions(p2Options);
             }

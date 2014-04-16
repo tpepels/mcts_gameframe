@@ -28,9 +28,10 @@ public class MCTSOptions {
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
-    public int rc = 2, bl = 5;
+    public int rc = 2, bl = 25;
     public double bp_range = .5;
-    public boolean remove = true, stat_reset = false, shot = false, rec_halving = false, max_back = false, range_back = false;
+    public boolean remove = true, stat_reset = false, shot = false;
+    public boolean rec_halving = false, max_back = false, range_back = false, succ_rej = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST
@@ -85,7 +86,6 @@ public class MCTSOptions {
             uctC = .8;
             kr = 1.2;
             kq = 2.8;
-            rc = 3;
         } else if (game.equals("lostcities")) {
         } else if (game.equals("checkers")) {
             kr = 2.8;
