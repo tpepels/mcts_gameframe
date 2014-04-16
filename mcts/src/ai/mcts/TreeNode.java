@@ -607,7 +607,7 @@ public class TreeNode {
                 if (options.qualityBonus) {
                     // Only compute the quality if QB is active, since it may be costly to do so
                     double q = board.getQuality();
-                    score = Math.signum(score) * q;
+                    score = Math.signum(score) * FastSigm.sigm(-options.kq * q);
 //                    if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
 //                        double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
 //                        double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
