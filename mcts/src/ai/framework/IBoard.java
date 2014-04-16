@@ -141,4 +141,17 @@ public interface IBoard {
      * If this is not applicable to your game, return 1
      */
     public double getQuality();
+
+    /**
+     * Get all moves with preferred moves first. Like PlayoutMoves but without duplicates
+     *
+     * @return a list of all moves (can contain illegal moves)
+     */
+    public MoveList getOrderedMoves();
+
+    /**
+     * Returns a long value corresponding to the Zobrist hash for this state
+     */
+    public long hash();
+
 }

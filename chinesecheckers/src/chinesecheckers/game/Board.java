@@ -459,6 +459,16 @@ public class Board implements IBoard {
         return 1;
     }
 
+    @Override
+    public MoveList getOrderedMoves() {
+        return null;
+    }
+
+    @Override
+    public long hash() {
+        return 0;
+    }
+
     public String toString() {
         return ("toString mostly unimplemented.. :(  nMoves = " + nMoves);
     }

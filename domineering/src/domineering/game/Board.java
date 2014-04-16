@@ -229,6 +229,16 @@ public class Board implements FiniteBoard {
     }
 
     @Override
+    public MoveList getOrderedMoves() {
+        return null;
+    }
+
+    @Override
+    public long hash() {
+        return 0;
+    }
+
+    @Override
     public void newDeterminization(int myPlayer) {
         // Not required
     }

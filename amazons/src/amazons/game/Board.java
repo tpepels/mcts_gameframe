@@ -548,6 +548,16 @@ public class Board implements IBoard {
         return count / (16.);
     }
 
+    @Override
+    public MoveList getOrderedMoves() {
+        return null;
+    }
+
+    @Override
+    public long hash() {
+        return 0;
+    }
+
     private int getFreedom(int player) {
         int from, total = 0;
         for (int i = 0; i < queens[player - 1].length; i++) {

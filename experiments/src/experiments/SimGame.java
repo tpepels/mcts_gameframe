@@ -8,6 +8,8 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
+import alphabeta.AlphaBeta;
+import alphabeta.AlphaBetaOptions;
 import mcts2e.BRUE.MCTS2ePlayer;
 
 /*
@@ -287,6 +289,22 @@ public class SimGame {
                 }
             }
             // and set the options for this player
+            playerRef.setOptions(options);
+        } else if (parts[0].equals("ab")) {
+            AlphaBetaOptions options = new AlphaBetaOptions();
+            playerRef = new AlphaBeta();
+            options.timeLimit = timeLimit;
+
+            for (int i = 1; i < parts.length; i++) {
+                String tag = parts[i];
+                if (tag.equals("tt")) {
+                    options.transpositions = true;
+                }
+                else if (tag.startsWith("ev")) {
+                    options.evVer = Integer.parseInt(tag.substring(2));
+                }
+            }
+
             playerRef.setOptions(options);
         } else if (parts[0].equals("random")) {
             playerRef = new RandomPlayer();

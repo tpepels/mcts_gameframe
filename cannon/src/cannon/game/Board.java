@@ -654,4 +654,14 @@ public class Board implements IBoard {
             return ((double) (numWhitePcs - numBlackPcs)) / (double) (N_PIECES);
         return 1.;
     }
+
+    @Override
+    public MoveList getOrderedMoves() {
+        return null;
+    }
+
+    @Override
+    public long hash() {
+        return 0;
+    }
 }

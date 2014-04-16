@@ -8,6 +8,7 @@ import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 public class Board implements IBoard {
@@ -15,6 +16,11 @@ public class Board implements IBoard {
     private static final MoveList tempList = new MoveList(3);   // Temp move store for heuristic evaluation
     private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
     private static final MoveList static_moves = new MoveList(384);   // 64*6
+    private static final MoveList cap1_moves = new MoveList(384);   // 64*6
+    private static final MoveList cap2_moves = new MoveList(384);   // 64*6
+    private static final MoveList cap3_moves = new MoveList(384);   // 64*6
+    private static final MoveList reg_moves = new MoveList(384);   // 64*6
+    private static final MoveList dec_moves = new MoveList(384);
 
     // these are the values for black (p2)
     private static final char[][] lorentzValues = { {  5, 15, 15,  5,  5, 15, 15,  5}, 
@@ -29,17 +35,19 @@ public class Board implements IBoard {
     private String startingBoard = "";
     private int startingPlayer = 0;
 
-    /*private String startingBoard = 
-          "..b..b.." +
-          "bb..b..b" +
-          "......b." +
-          "b.bb.b.b" +
-          "w..w.w.w" +
+    /*private String startingBoard =
+          "..bb.bb." +
+          ".b....bb" +
+          "...w.b.b" +
+          "..w....w" +
+          "......w." +
           "..ww...w" +
           ".ww.ww.." +
           "........" ;
 
-    private int startingPlayer = 1;*/
+    private int startingPlayer = 2;*/
+
+    static long[] zbnums = null;
 
                                    
         
@@ -51,6 +59,7 @@ public class Board implements IBoard {
     private int progress1, progress2;
     private int lorentzPV1, lorentzPV2;
     public int capBonus1, capBonus2;
+    private long zbHash = 0;
     private Stack<IMove> pastMoves;
 
     static {
@@ -80,6 +89,8 @@ public class Board implements IBoard {
         // no need to copy the move stack, but need to initialize it
         b.pastMoves = new Stack<IMove>();
 
+        b.zbHash = zbHash;
+
         return b;
     }
 
@@ -88,6 +99,17 @@ public class Board implements IBoard {
             return lorentzValues[row][col];
         else 
             return lorentzValues[7-row][col];
+    }
+
+    private int getZbId(int r, int c) {
+        int id = (r*8 + c)*3;
+
+        if (board[r][c] == 'w')
+            id += 1;
+        else if (board[r][c] == 'b')
+            id += 2;
+
+        return id;
     }
 
     private void recomputeProgress(int player) {
@@ -118,6 +140,12 @@ public class Board implements IBoard {
     public boolean doAIMove(IMove move, int player) {
         int[] movearr = move.getMove();
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
+
+        // remove zobrist nums from hash of the squares that are changing
+        int before_from_zbId = getZbId(r,c);
+        int before_to_zbId = getZbId(rp,cp);
+        zbHash ^= zbnums[before_from_zbId];
+        zbHash ^= zbnums[before_to_zbId];
 
         board[rp][cp] = board[r][c];
         board[r][c] = '.';
@@ -169,6 +197,12 @@ public class Board implements IBoard {
         pastMoves.push(move);
         curPlayer = 3 - curPlayer;
 
+        // add zobrist nums for the new hash
+        int after_from_zbId = getZbId(r,c);
+        int after_to_zbId = getZbId(rp,cp);
+        zbHash ^= zbnums[after_from_zbId];
+        zbHash ^= zbnums[after_to_zbId];
+
         return true;
     }
 
@@ -180,6 +214,12 @@ public class Board implements IBoard {
 
         int[] movearr = move.getMove();
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
+
+        // remove zobrist nums from hash of the squares that are changing
+        int before_from_zbId = getZbId(r,c);
+        int before_to_zbId = getZbId(rp,cp);
+        zbHash = zbHash ^ zbnums[before_from_zbId];
+        zbHash = zbHash ^ zbnums[before_to_zbId];
 
         board[r][c] = board[rp][cp];
         board[rp][cp] = '.';
@@ -217,6 +257,13 @@ public class Board implements IBoard {
         // remove back the capture bonuses
         capBonus1 = move.getOldCapBonus1();
         capBonus2 = move.getOldCapBonus2();
+
+        // add zobrist nums for the new hash
+        int after_from_zbId = getZbId(r,c);
+        int after_to_zbId = getZbId(rp,cp);
+        zbHash = zbHash ^ zbnums[after_from_zbId];
+        zbHash = zbHash ^ zbnums[after_to_zbId];
+
     }
 
     @Override
@@ -460,10 +507,34 @@ public class Board implements IBoard {
         nMoves = 0;
         winner = NONE_WIN;
         pastMoves = new Stack<IMove>();
+
+        // initialize the zobrist numbers
+
+        if (zbnums == null) {
+            // init the zobrist numbers
+            Random rng = new Random();
+
+            // 64 locations, 3 states for each location = 192
+            zbnums = new long[192];
+
+            for (int i = 0; i < 192; i++)
+                zbnums[i] = rng.nextLong();
+        }
+
+        // now build the initial hash
+        zbHash = 0;
+        for (int r = 0; r < 8; r++)
+            for (int c = 0; c < 8; c++) {
+                int id = getZbId(r, c);
+                zbHash ^= zbnums[id];
+            }
+
+
+
     }
 
     public double evaluateSchadd(int player) { 
-        // inspired by evaluation function in Maarten's thesis
+        // inspired by ion function in Maarten's thesis
         double p1eval = 0;
         if (progress1 == 7 || pieces2 == 0) p1eval = 1;
         else if (progress2 == 7 || pieces1 == 0) p1eval = -1;
@@ -610,6 +681,135 @@ public class Board implements IBoard {
         else if (winner == P2_WIN)
             return ((double) (pieces2 - pieces1)) / (double) (N_PIECES);
         return 1;
+    }
+
+    @Override
+    public MoveList getOrderedMoves() {
+        static_moves.clear();
+        reg_moves.clear();
+        cap1_moves.clear();
+        cap2_moves.clear();
+        cap3_moves.clear();
+        dec_moves.clear();
+
+
+        for (int r = 0; r < 8; r++) {
+            for (int c = 0; c < 8; c++) {
+                tempList.clear();
+                if (curPlayer == 1 && board[r][c] == 'w') {
+                    if (inBounds(r - 1, c - 1)) {
+                        // northwest
+                        if (board[r - 1][c - 1] == 'b')
+                            tempList.add(new Move(r, c, r - 1, c - 1, Move.CAPTURE, progress1, progress2, capBonus1, capBonus2));
+                        else if (board[r - 1][c - 1] == '.')
+                            tempList.add(new Move(r, c, r - 1, c - 1, Move.MOVE, progress1, progress2, capBonus1, capBonus2));
+                    }
+                    if (inBounds(r - 1, c + 1)) {
+                        // northeast
+                        if (board[r - 1][c + 1] == 'b')
+                            tempList.add(new Move(r, c, r - 1, c + 1, Move.CAPTURE, progress1, progress2, capBonus1, capBonus2));
+                        else if (board[r - 1][c + 1] == '.')
+                            tempList.add(new Move(r, c, r - 1, c + 1, Move.MOVE, progress1, progress2, capBonus1, capBonus2));
+                    }
+                    if (inBounds(r - 1, c) && board[r - 1][c] == '.') {
+                        // north
+                        tempList.add(new Move(r, c, r - 1, c, Move.MOVE, progress1, progress2, capBonus1, capBonus2));
+                    }
+                } else if (curPlayer == 2 && board[r][c] == 'b') {
+                    if (inBounds(r + 1, c - 1)) {
+                        // southwest
+                        if (board[r + 1][c - 1] == 'w')
+                            tempList.add(new Move(r, c, r + 1, c - 1, Move.CAPTURE, progress1, progress2, capBonus1, capBonus2));
+                        else if (board[r + 1][c - 1] == '.')
+                            tempList.add(new Move(r, c, r + 1, c - 1, Move.MOVE, progress1, progress2, capBonus1, capBonus2));
+                    }
+                    if (inBounds(r + 1, c + 1)) {
+                        // southeast
+                        if (board[r + 1][c + 1] == 'w')
+                            tempList.add(new Move(r, c, r + 1, c + 1, Move.CAPTURE, progress1, progress2, capBonus1, capBonus2));
+                        else if (board[r + 1][c + 1] == '.')
+                            tempList.add(new Move(r, c, r + 1, c + 1, Move.MOVE, progress1, progress2, capBonus1, capBonus2));
+                    }
+                    if (inBounds(r + 1, c) && board[r + 1][c] == '.') {
+                        // south
+                        tempList.add(new Move(r, c, r + 1, c, Move.MOVE, progress1, progress2, capBonus1, capBonus2));
+                    }
+                }
+                if (tempList.size() == 0)
+                    continue;
+                //
+                for (int i = 0; i < tempList.size(); i++) {
+                    IMove move = tempList.get(i);
+
+                    // Prefer defenseless capture moves
+                    if (move.getType() == Move.CAPTURE) {
+                        int mr = move.getMove()[0];
+                        int mc = move.getMove()[1];
+                        int mrp = move.getMove()[2];
+                        int mcp = move.getMove()[3];
+                        int pl = board[mr][mc] == 'w' ? 1 : 2;
+
+                        if (pl == 1
+                                && (!inBounds(mrp - 1, mcp - 1) || board[mrp - 1][mcp - 1] == '.')
+                                && (!inBounds(mrp - 1, mcp + 1) || board[mrp - 1][mcp + 1] == '.')) {
+                            cap1_moves.add(move);
+                        } else if (pl == 2
+                                && (!inBounds(mrp + 1, mcp - 1) || board[mrp + 1][mcp - 1] == '.')
+                                && (!inBounds(mrp + 1, mcp + 1) || board[mrp + 1][mcp + 1] == '.')) {
+                            cap1_moves.add(move);
+                        } else if (curPlayer == 1 && mrp >= 4 && mrp <= 7) {
+                            // prefer defensive captures
+                            //poMoves.add(move);
+                            cap2_moves.add(move);
+                        } else if (curPlayer == 2 && mrp >= 0 && mrp <= 3) {
+                            // prefer defensive captures
+                            //poMoves.add(move);
+                            cap2_moves.add(move);
+                        }
+                        else {
+                            cap3_moves.add(move);
+                        }
+
+                        continue;
+                    }
+
+                    // Decisive / anti-decisive moves
+                    if (curPlayer == 1 && (move.getMove()[2] == 0)) {
+                        dec_moves.add(move);
+                    } else if (curPlayer == 2 && (move.getMove()[2] == 7)) {
+                        dec_moves.add(move);
+                    } else if (move.getType() == Move.CAPTURE && (move.getMove()[0] == 7 || move.getMove()[0] == 0)) {
+                        dec_moves.add(move);
+                    }
+                    else {
+                        reg_moves.add(move);
+                    }
+                }
+            }
+        }
+
+        // decisive
+        for (int i = 0; i < dec_moves.size(); i++)
+            static_moves.add(dec_moves.get(i));
+
+        // capture moves
+        for (int i = 0; i < cap1_moves.size(); i++)
+            static_moves.add(cap1_moves.get(i));
+        for (int i = 0; i < cap2_moves.size(); i++)
+            static_moves.add(cap2_moves.get(i));
+        for (int i = 0; i < cap3_moves.size(); i++)
+            static_moves.add(cap3_moves.get(i));
+
+        // regular
+        for (int i = 0; i < reg_moves.size(); i++)
+            static_moves.add(reg_moves.get(i));
+
+        return static_moves.copy();
+    }
+
+    @Override
+    public long hash() {
+        return zbHash;
     }
 
     public String toString() {
