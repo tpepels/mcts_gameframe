@@ -79,6 +79,8 @@ public class StatCounter {
 
 
     public void push(double num) {
+        if (Math.abs(m_mean) == TreeNode.INF)
+            throw new RuntimeException("Push to solved node!");
         m_n++;
         if (Math.signum(num) > 0)
             m_wins++;
