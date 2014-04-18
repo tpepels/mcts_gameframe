@@ -245,16 +245,15 @@ public class MCTS_SR_Node {
             } else if (options.range_back && bestArm != null) {
                 // Backprop a range from the best arm
                 double range = bestArm.stats.mean() - (options.bp_range * (1. - bestArm.stats.mean()));
-                for (int i = 0; i < S.size(); i++) {
-                    if (S.get(i).stats.mean() > range)
-                        stats.add(S.get(i).stats, true);
+                for (MCTS_SR_Node value : S) {
+                    if (value.stats.mean() > range)
+                        stats.add(value.stats, true);
                     else
                         break;  // S is sorted, so don't look further if one node is below the range
                 }
             } else {
                 // Average backprop
-                for (int i = 0; i < S.size(); i++)
-                    stats.add(S.get(i).stats, true);
+                for (MCTS_SR_Node value : S) stats.add(value.stats, true);
             }
         }
         return 0;
@@ -310,7 +309,7 @@ public class MCTS_SR_Node {
         if (isLeaf())
             expand(board);
         double result;
-        MCTS_SR_Node child = null;
+        MCTS_SR_Node child;
         if (isTerminal()) {
             int score = (board.checkWin() == player) ? -1 : 1;
             updateStats(score);
@@ -450,12 +449,12 @@ public class MCTS_SR_Node {
 
     private double playOut(IBoard board) {
         simulated = true;
-        boolean gameEnded = false, moveMade;
+        boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
-        int winner = 0;
-//        int winner = board.checkWin();
-//        gameEnded = (winner != IBoard.NONE_WIN);
+//        int winner = 0;
+        int winner = board.checkWin();
+        gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
         while (!gameEnded) {
             moves = board.getPlayoutMoves(options.useHeuristics);
