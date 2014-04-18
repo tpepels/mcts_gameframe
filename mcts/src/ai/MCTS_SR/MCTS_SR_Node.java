@@ -86,27 +86,21 @@ public class MCTS_SR_Node {
         // The current node has some unvisited children
         if (sr_visits < s_t) {
             for (MCTS_SR_Node n : S) {
-                if (n.sr_visits > 0 || Math.abs(stats.mean()) == INF)
+                if (n.sr_visits > 0 || Math.abs(n.stats.mean()) == INF)
                     continue;
                 // Perform play-outs on all unvisited children
                 board.doAIMove(n.getMove(), player);
-                //result = n.playOut(board);
-                int[] pl = {0};
-                result = -n.MCTS_SR(board, depth + 1, 1, pl);
+                result = n.playOut(board);
                 board.undoMove();
+                // Stats
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
-                // :: Solver
-                if (Math.abs(result) == INF) {
-                    if (solverCheck(result, board)) {
-                        if (result == INF)
-                            bestArm = child;
-                        return result;
-                    }
-                } else {
-                    updateStats(result);
-                }
+                updateStats(result);
+                // Update the child as well
+                n.updateStats(-result);
+                n.myStats.push(-result);
+                n.sr_visits++;
                 // Don't go over budget
                 budget--;
                 if (budget == 0)
@@ -459,7 +453,6 @@ public class MCTS_SR_Node {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
-//        int winner = 0;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
