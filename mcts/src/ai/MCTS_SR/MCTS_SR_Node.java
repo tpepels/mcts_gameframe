@@ -58,13 +58,16 @@ public class MCTS_SR_Node {
             localVisits++;
             sr_visits++;
             return stats.mean();
-        } else if (isTerminal() && Math.abs(stats.mean()) != INF) {     // No solver
+        } else if (isTerminal()) {     // No solver
             // A draw
             int winner = board.checkWin();
             int score = (winner == player) ? -1 : 1;
             if (winner == IBoard.DRAW)
                 score = 0;
-            for (int i = 0; i < budget; i++) {
+            int b = 1;
+            if (score == 1) // In case of win for parent, update budget times
+                b = budget;
+            for (int i = 0; i < b; i++) {
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
