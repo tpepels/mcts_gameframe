@@ -64,11 +64,13 @@ public class MCTS_SR_Node {
             int score = (winner == player) ? -1 : 1;
             if (winner == IBoard.DRAW)
                 score = 0;
-            plStats[0]++;
-            localVisits++;
-            sr_visits++;
-            updateStats(score);
-            myStats.push(score);
+            for (int i = 0; i < budget; i++) {
+                plStats[0]++;
+                localVisits++;
+                sr_visits++;
+                updateStats(score);
+                myStats.push(score);
+            }
             return 0;
         }
         // SHOT, single budget, do a play-out
@@ -87,7 +89,9 @@ public class MCTS_SR_Node {
                 if (n.sr_visits > 0 || Math.abs(stats.mean()) == INF)
                     continue;
                 // Perform play-outs on all unvisited children
+                board.doAIMove(n.getMove(), player);
                 result = n.playOut(board);
+                board.undoMove();
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
@@ -446,11 +450,12 @@ public class MCTS_SR_Node {
 
     private double playOut(IBoard board) {
         simulated = true;
-        boolean gameEnded, moveMade;
+        boolean gameEnded = false, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
-        int winner = board.checkWin();
-        gameEnded = (winner != IBoard.NONE_WIN);
+        int winner = 0;
+//        int winner = board.checkWin();
+//        gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
         while (!gameEnded) {
             moves = board.getPlayoutMoves(options.useHeuristics);
@@ -508,6 +513,13 @@ public class MCTS_SR_Node {
 //            System.out.println(bestArm);
 //            System.out.println(maxNode);
 //        }
+        // For debugging, print the nodes
+        if (options.debug) {
+            List<MCTS_SR_Node> l = (S.isEmpty()) ? C : S;
+            for (MCTS_SR_Node t : l) {
+                System.out.println(t);
+            }
+        }
         if (bestArm != null)
             return bestArm;
         // Select from the non-solved arms
@@ -527,9 +539,6 @@ public class MCTS_SR_Node {
                 max = value;
                 bestChild = t;
             }
-            // For debugging, print the node
-            if (options.debug)
-                System.out.println(t);
         }
         return bestChild;
     }
