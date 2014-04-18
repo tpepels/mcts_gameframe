@@ -89,9 +89,9 @@ public class MCTS_SR_Node {
                 if (n.sr_visits > 0 || Math.abs(stats.mean()) == INF)
                     continue;
                 // Perform play-outs on all unvisited children
-                board.doAIMove(n.getMove(), player);
+                //board.doAIMove(n.getMove(), player);
                 result = n.playOut(board);
-                board.undoMove();
+                //board.undoMove();
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
