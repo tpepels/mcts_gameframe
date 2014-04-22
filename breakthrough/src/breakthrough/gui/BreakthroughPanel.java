@@ -1,5 +1,7 @@
 package breakthrough.gui;
 
+import ai.MCTS_SR.MCTS_SR_Player;
+import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.framework.MoveList;
@@ -22,7 +24,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
     private int[] clickPos = {-1, -1, -1};
     //
     private Board board;
-    private MCTSPlayer aiPlayer1, aiPlayer2;
+    private AIPlayer aiPlayer1, aiPlayer2;
     private IMove lastMove;
 
     public BreakthroughPanel(int squareSize, JFrame frame) {
@@ -42,21 +44,28 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         // Moves need to be generated
         moves = board.getExpandMoves();
         //System.out.println(moves.toArray());
-        for (int i = 0; i < moves.size(); i++) 
+        for (int i = 0; i < moves.size(); i++)
             System.out.println(moves.get(i));
         // Definition for player 1
-       
+
         aiPlayer1 = null;
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("breakthrough");
         aiPlayer1.setOptions(options1);
+        options1.fixedSimulations = true;
+        options1.simulations = 25000;
 
         // Definition for player 2
-        aiPlayer2 = new MCTSPlayer();
+        aiPlayer2 = new MCTS_SR_Player();
         MCTSOptions options2 = new MCTSOptions();
         aiPlayer2.setOptions(options2);
-        
+        options2.fixedSimulations = true;
+        options2.simulations = 25000;
+        options2.bl = 25;
+        options2.remove = false;
+//        options2.range_back = true;
+
         //
         if (aiPlayer1 != null)
             aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
@@ -77,7 +86,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
                 y = row * squareSize;
                 //
                 if (boardPos == clickPos[0]) {
-                    g.setColor(Color.decode("#FFF482"));  
+                    g.setColor(Color.decode("#FFF482"));
                 } else if (boardPos == clickPos[1]) {
                     g.setColor(Color.decode("#BDFF60"));
                 } else if (boardPos == clickPos[2]) {
@@ -174,7 +183,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         // boardCol; the col we're going to, set in mouseover
         int boardPos = boardRow * 8 + boardCol;
         System.out.println("clicked " + boardRow + " " + boardCol);
-        char playerToMoveChar = board.getPlayerToMove() == 1 ? 'w' : 'b'; 
+        char playerToMoveChar = board.getPlayerToMove() == 1 ? 'w' : 'b';
         if (clickNum == 0) {
             if (board.board[boardRow][boardCol] != playerToMoveChar) {
                 // System.out.println("fail 1");
@@ -198,7 +207,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
 
             clickNum = 0;
             clickPos = new int[]{-1, -1, -1};
-            
+
             makeMove(lastMove); 
 
             /*board.doAIMove(lastMove, board.getPlayerToMove());
@@ -240,6 +249,9 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
     public void makeMove(IMove move) {
         lastMove = move;
         board.doAIMove(move, board.getPlayerToMove());
+        clickNum = 0;
+        clickPos = new int[]{-1, -1, -1};
+        repaint();
         //
         int winner = board.checkWin();
         if (winner == Board.P2_WIN) {
@@ -253,9 +265,6 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
             return;
         }
 
-        repaint();
-        clickNum = 0;
-        clickPos = new int[]{-1, -1, -1};
         moves = board.getExpandMoves();
 
         // Run the GC in between moves, to limit the runs during search

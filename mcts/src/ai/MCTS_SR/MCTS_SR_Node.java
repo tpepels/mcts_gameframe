@@ -65,8 +65,8 @@ public class MCTS_SR_Node {
             if (winner == IBoard.DRAW)
                 score = 0;
             int b = 1;
-            if (score == 1) // In case of win for parent, update budget times
-                b = budget;
+//            if (score == 1) // In case of win for parent, update budget times
+//                b = budget;
             for (int i = 0; i < b; i++) {
                 plStats[0]++;
                 localVisits++;
@@ -136,9 +136,8 @@ public class MCTS_SR_Node {
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
         int b = getBudget(sr_visits, budget, s_t, s_t);
-
-        // UCT
-        if (!options.shot && b < options.bl) {
+        // :: UCT
+        if (depth > 0 && !options.shot && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -151,10 +150,9 @@ public class MCTS_SR_Node {
             }
             return 0;
         }
-        // Simple regret
-        if (S != null && S.isEmpty())
-            throw new RuntimeException("S is empty C size: " + C.size() + " value " + stats.mean() + " terminal: " + isTerminal() + " visits: " + sr_visits);
-        if (depth > maxDepth)
+
+        // :: Simple regret
+        if (options.debug && depth > maxDepth)
             maxDepth = depth;
         // :: Initial Budget
         int initVis = sr_visits, budgetUsed = 0, n;

@@ -20,6 +20,7 @@ public class Game {
         options1.fixedSimulations = true;
         options1.simulations = 25000;
         options1.bl = 25;
+        options1.stat_reset = true;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");

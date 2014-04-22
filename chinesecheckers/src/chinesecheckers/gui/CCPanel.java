@@ -42,9 +42,8 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         p2Options.setGame("chinesecheckers");
         p2Options.simulations = 25000;
         p2Options.fixedSimulations = true;
-        p2Options.bl = 40;
-        //p2Options.max_back = true;
-        p2Options.rc = 1;
+        p2Options.bl = 25;
+        p2Options.range_back = true;
 
         //
         if (!p1Human) {
