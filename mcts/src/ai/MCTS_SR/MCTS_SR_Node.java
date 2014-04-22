@@ -180,9 +180,9 @@ public class MCTS_SR_Node {
                         b_1 = Math.max(b_1, (budget - budgetUsed) - (b - S.get(1).sr_visits));
                     // Actual budget
                     int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
-                    if (b_b == 0 && child.localVisits == 0)
-                        throw new RuntimeException("b_b is 0");
-                    else if (b_b == 0)
+                    if (b_b <= 0 && child.localVisits == 0)
+                        throw new RuntimeException("b_b is " + b_b);
+                    else if (b_b <= 0)
                         continue;
                     // :: Recursion
                     int[] pl = {0};
