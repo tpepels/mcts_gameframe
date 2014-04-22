@@ -66,6 +66,8 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
             MCTSOptions options2 = new MCTSOptions();
             options2.simulations = 25000;
             options2.fixedSimulations = true;
+            options2.bl = 25;
+            options2.max_back = true;
             options2.setGame("pentalath");
             aiPlayer2.setOptions(options2);
             aiPlayer2.newGame(2, "pentalath");

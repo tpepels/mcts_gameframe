@@ -65,7 +65,7 @@ public class MCTS_SR_Node {
             if (winner == IBoard.DRAW)
                 score = 0;
             int b = 1;
-//            if (score == 1) // In case of win for parent, update budget times
+//            if (score == 1) // In case of win for parent, update budget times, makes more sense...
 //                b = budget;
             for (int i = 0; i < b; i++) {
                 plStats[0]++;
@@ -87,7 +87,7 @@ public class MCTS_SR_Node {
             return 0;
         }
         // The current node has some unvisited children
-        if (sr_visits < s_t) {
+        if (options.shot && sr_visits < s_t) {
             for (MCTS_SR_Node n : S) {
                 if (n.sr_visits > 0 || Math.abs(n.stats.mean()) == INF)
                     continue;
@@ -137,7 +137,7 @@ public class MCTS_SR_Node {
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
         int b = getBudget(sr_visits, budget, s_t, s_t);
         // :: UCT
-        if (depth > 0 && !options.shot && b < options.bl) {
+        if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -237,6 +237,7 @@ public class MCTS_SR_Node {
         if (Math.abs(stats.mean()) != INF) {
             stats.reset();
             stats.add(myStats, false);
+            // :: Backprop algorithm
             if (options.stat_reset) {
                 // Rejection backprop
                 for (int i = 0; i < r_s_t; i++)
@@ -244,18 +245,15 @@ public class MCTS_SR_Node {
             } else if (options.max_back && bestArm != null) {
                 // Maximum backprop
                 stats.add(bestArm.stats, true);
-            } else if (options.range_back && bestArm != null) {
-                // Backprop a range from the best arm
-                double range = bestArm.stats.mean() - (options.bp_range * (1. - bestArm.stats.mean()));
-                for (MCTS_SR_Node value : S) {
-                    if (value.stats.mean() > range)
-                        stats.add(value.stats, true);
-                    else
-                        break;  // S is sorted, so don't look further if one node is below the range
+            } else if (options.range_back && bestArm != null && bestArm.stats.mean() > 0) {
+                // Average backprop
+                for (MCTS_SR_Node arm : S) {
+                    if (arm.stats.mean() <= 0) break;
+                    stats.add(arm.stats, true);
                 }
             } else {
                 // Average backprop
-                for (MCTS_SR_Node value : S) stats.add(value.stats, true);
+                for (MCTS_SR_Node arm : S) stats.add(arm.stats, true);
             }
         }
         return 0;
@@ -308,16 +306,19 @@ public class MCTS_SR_Node {
 
     private double UCT_MCTS(IBoard board, int depth) {
         // First add some nodes if required
+        MCTS_SR_Node child = null;
         if (isLeaf())
-            expand(board);
+            child = expand(board);
         double result;
-        MCTS_SR_Node child;
-        if (isTerminal()) {
-            int score = (board.checkWin() == player) ? -1 : 1;
-            updateStats(score);
-            return score;
-        } else
-            child = uct_select();
+
+        if (child == null) {
+            if (isTerminal()) {// Game is terminal, no more moves can be played
+                int score = (board.checkWin() == player) ? -1 : 1;
+                updateStats(score);      // TODO Only works with alternating games
+                return score;
+            } else
+                child = uct_select();
+        }
         child.sr_visits++;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
