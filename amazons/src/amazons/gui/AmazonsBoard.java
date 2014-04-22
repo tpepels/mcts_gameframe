@@ -57,6 +57,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         options1.setGame("amazons");
         options1.fixedSimulations = true;
         options1.simulations = 25000;
+        options1.solver = true;
         aiPlayer1.setOptions(options1);
 
         // Definition for player 2
@@ -65,8 +66,8 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         options2.setGame("amazons");
         options2.fixedSimulations = true;
         options2.simulations = 25000;
-        options2.bl = 20;
-        options2.stat_reset = true;
+        options2.enableShot();
+        options2.solver = true;
         aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);

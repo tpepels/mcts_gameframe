@@ -26,6 +26,7 @@ public class MCTS_SR_Player implements AIPlayer, Runnable {
         this.parallel = parallel;
         this.myPlayer = myPlayer;
         MCTS_SR_Node.maxDepth = 0;
+        MCTS_SR_Node.totalPlayouts = 0;
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -51,6 +52,7 @@ public class MCTS_SR_Player implements AIPlayer, Runnable {
             System.out.println("Player " + myPlayer);
             System.out.println("Best child: " + bestChild);
             System.out.println("Play-outs: " + pl[0]);
+            System.out.println("Play-outs check: " + MCTS_SR_Node.totalPlayouts);
             System.out.println("Max sr depth: " + MCTS_SR_Node.maxDepth);
         }
         root = null;

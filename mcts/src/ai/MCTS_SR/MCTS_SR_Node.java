@@ -173,11 +173,15 @@ public class MCTS_SR_Node {
                     // Determine the actual budget to be used
                     if (b <= child.sr_visits)
                         continue;
-                    int b_b = b - child.sr_visits;
+                    int b_1 = b - child.sr_visits;
                     if (s == 2 && n == 1)
-                        b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
+                        b_1 = Math.max(b_1, (budget - budgetUsed) - (b - S.get(1).sr_visits));
                     // Actual budget
-                    b_b = Math.min(b_b, budget - budgetUsed) - child.localVisits;
+                    int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
+                    if (b_b == 0 && child.localVisits == 0)
+                        throw new RuntimeException("b_b is 0");
+                    else if (b_b == 0)
+                        continue;
                     // :: Recursion
                     int[] pl = {0};
                     board.doAIMove(child.getMove(), player);
@@ -450,7 +454,10 @@ public class MCTS_SR_Node {
         }
     };
 
+    public static int totalPlayouts = 0;
+
     private double playOut(IBoard board) {
+        totalPlayouts++;
         simulated = true;
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
