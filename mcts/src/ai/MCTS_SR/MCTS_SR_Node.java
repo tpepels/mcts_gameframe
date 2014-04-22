@@ -37,6 +37,8 @@ public class MCTS_SR_Node {
      * Run the MCTS algorithm on the given node
      */
     public double MCTS_SR(IBoard board, int depth, int budget, int[] plStats) {
+        if (budget <= 0)
+            throw new RuntimeException("Budget is " + budget);
         double result;
         MCTS_SR_Node child = null;
         // First add some nodes if required
