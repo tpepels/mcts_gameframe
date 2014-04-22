@@ -66,9 +66,8 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
             MCTSOptions options2 = new MCTSOptions();
             options2.simulations = 25000;
             options2.fixedSimulations = true;
-//            options2.max_back = true;
-            options2.stat_reset = true;
             options2.bl = 25;
+            options2.max_back = true;
             options2.setGame("pentalath");
             aiPlayer2.setOptions(options2);
             aiPlayer2.newGame(2, "pentalath");
@@ -162,11 +161,13 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         long endtime = board.totalTime;
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
         g2d.drawString(String.format(
-                "%d : %d",
-                TimeUnit.MILLISECONDS.toMinutes(endtime),
-                TimeUnit.MILLISECONDS.toSeconds(endtime)
-                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))),
-                10, 15);
+                        "%d : %d",
+                        TimeUnit.MILLISECONDS.toMinutes(endtime),
+                        TimeUnit.MILLISECONDS.toSeconds(endtime)
+                                - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))
+                ),
+                10, 15
+        );
         g2d.drawString(aiMessage, 10, this.getHeight() - 15);
     }
 

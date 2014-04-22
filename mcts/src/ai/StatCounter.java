@@ -79,6 +79,8 @@ public class StatCounter {
 
 
     public void push(double num) {
+        if (Math.abs(m_mean) == TreeNode.INF)
+            throw new RuntimeException("Mean is INF in push");
         m_n++;
         if (Math.signum(num) > 0)
             m_wins++;
@@ -112,6 +114,10 @@ public class StatCounter {
     }
 
     public void subtract(StatCounter statCounter, boolean isOpp) {
+        if (Math.abs(m_mean) == TreeNode.INF)
+            throw new RuntimeException("Left mean is INF in subtract");
+        if (Math.abs(statCounter.m_mean) == TreeNode.INF)
+            throw new RuntimeException("Right mean is INF in subtract");
         if (isOpp) {
             m_wins -= statCounter.m_losses;
             m_losses -= statCounter.m_wins;
@@ -131,6 +137,10 @@ public class StatCounter {
     }
 
     public void add(StatCounter statCounter, boolean isOpp) {
+        if (Math.abs(m_mean) == TreeNode.INF)
+            throw new RuntimeException("Left mean is INF in add");
+        if (Math.abs(statCounter.m_mean) == TreeNode.INF)
+            throw new RuntimeException("Right mean is INF in add");
         if (isOpp) {
             m_wins += statCounter.m_losses;
             m_losses += statCounter.m_wins;
@@ -160,6 +170,7 @@ public class StatCounter {
     public double mean() {
         if (Double.isNaN(m_mean))
             throw new RuntimeException("Mean is NaN in getMean");
+
         if (ma == null || Math.abs(m_mean) == TreeNode.INF)
             return m_mean;
         else

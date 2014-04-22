@@ -58,13 +58,16 @@ public class MCTS_SR_Node {
             localVisits++;
             sr_visits++;
             return stats.mean();
-        } else if (isTerminal() && Math.abs(stats.mean()) != INF) {     // No solver
+        } else if (isTerminal()) {     // No solver
             // A draw
             int winner = board.checkWin();
             int score = (winner == player) ? -1 : 1;
             if (winner == IBoard.DRAW)
                 score = 0;
-            for (int i = 0; i < budget; i++) {
+            int b = 1;
+//            if (score == 1) // In case of win for parent, update budget times, makes more sense...
+//                b = budget;
+            for (int i = 0; i < b; i++) {
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
@@ -84,29 +87,23 @@ public class MCTS_SR_Node {
             return 0;
         }
         // The current node has some unvisited children
-        if (sr_visits < s_t) {
+        if (options.shot && sr_visits < s_t) {
             for (MCTS_SR_Node n : S) {
-                if (n.sr_visits > 0 || Math.abs(stats.mean()) == INF)
+                if (n.sr_visits > 0 || Math.abs(n.stats.mean()) == INF)
                     continue;
                 // Perform play-outs on all unvisited children
                 board.doAIMove(n.getMove(), player);
-                //result = n.playOut(board);
-                int[] pl = {0};
-                result = -n.MCTS_SR(board, depth + 1, 1, pl);
+                result = n.playOut(board);
                 board.undoMove();
+                // Stats
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
-                // :: Solver
-                if (Math.abs(result) == INF) {
-                    if (solverCheck(result, board)) {
-                        if (result == INF)
-                            bestArm = child;
-                        return result;
-                    }
-                } else {
-                    updateStats(result);
-                }
+                updateStats(result);
+                // Update the child as well
+                n.updateStats(-result);
+                n.myStats.push(-result);
+                n.sr_visits++;
                 // Don't go over budget
                 budget--;
                 if (budget == 0)
@@ -139,9 +136,8 @@ public class MCTS_SR_Node {
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
         int b = getBudget(sr_visits, budget, s_t, s_t);
-
-        // UCT
-        if (!options.shot && b < options.bl) {
+        // :: UCT
+        if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 result = UCT_MCTS(board, depth);
@@ -154,10 +150,9 @@ public class MCTS_SR_Node {
             }
             return 0;
         }
-        // Simple regret
-        if (S != null && S.isEmpty())
-            throw new RuntimeException("S is empty C size: " + C.size() + " value " + stats.mean() + " terminal: " + isTerminal() + " visits: " + sr_visits);
-        if (depth > maxDepth)
+
+        // :: Simple regret
+        if (options.debug && depth > maxDepth)
             maxDepth = depth;
         // :: Initial Budget
         int initVis = sr_visits, budgetUsed = 0, n;
@@ -242,6 +237,7 @@ public class MCTS_SR_Node {
         if (Math.abs(stats.mean()) != INF) {
             stats.reset();
             stats.add(myStats, false);
+            // :: Backprop algorithm
             if (options.stat_reset) {
                 // Rejection backprop
                 for (int i = 0; i < r_s_t; i++)
@@ -249,18 +245,15 @@ public class MCTS_SR_Node {
             } else if (options.max_back && bestArm != null) {
                 // Maximum backprop
                 stats.add(bestArm.stats, true);
-            } else if (options.range_back && bestArm != null) {
-                // Backprop a range from the best arm
-                double range = bestArm.stats.mean() - (options.bp_range * (1. - bestArm.stats.mean()));
-                for (MCTS_SR_Node value : S) {
-                    if (value.stats.mean() > range)
-                        stats.add(value.stats, true);
-                    else
-                        break;  // S is sorted, so don't look further if one node is below the range
+            } else if (options.range_back && bestArm != null && bestArm.stats.mean() > 0) {
+                // Average backprop
+                for (MCTS_SR_Node arm : S) {
+                    if (arm.stats.mean() <= 0) break;
+                    stats.add(arm.stats, true);
                 }
             } else {
                 // Average backprop
-                for (MCTS_SR_Node value : S) stats.add(value.stats, true);
+                for (MCTS_SR_Node arm : S) stats.add(arm.stats, true);
             }
         }
         return 0;
@@ -313,16 +306,19 @@ public class MCTS_SR_Node {
 
     private double UCT_MCTS(IBoard board, int depth) {
         // First add some nodes if required
+        MCTS_SR_Node child = null;
         if (isLeaf())
-            expand(board);
+            child = expand(board);
         double result;
-        MCTS_SR_Node child;
-        if (isTerminal()) {
-            int score = (board.checkWin() == player) ? -1 : 1;
-            updateStats(score);
-            return score;
-        } else
-            child = uct_select();
+
+        if (child == null) {
+            if (isTerminal()) {// Game is terminal, no more moves can be played
+                int score = (board.checkWin() == player) ? -1 : 1;
+                updateStats(score);      // TODO Only works with alternating games
+                return score;
+            } else
+                child = uct_select();
+        }
         child.sr_visits++;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
@@ -459,7 +455,6 @@ public class MCTS_SR_Node {
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
-//        int winner = 0;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;

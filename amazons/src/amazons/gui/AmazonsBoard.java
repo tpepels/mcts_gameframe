@@ -65,6 +65,8 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         options2.setGame("amazons");
         options2.fixedSimulations = true;
         options2.simulations = 25000;
+        options2.bl = 20;
+        options2.stat_reset = true;
         aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);
