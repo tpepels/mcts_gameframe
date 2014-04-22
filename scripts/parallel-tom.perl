@@ -140,23 +140,25 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2",
-  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_t",
-  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_r_t",
-  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_r",
-  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_r_sr",
-  	"mcts_h_sl_s,srmcts_h_sl_d1_s_rc2_sr"
+#	"mcts_h_s,mcts_h_s_qb"
+	"mcts_sl,srmcts_shot_sl"
+#	"mcts_sl_s_h,srmcts_shot_sl_s_h"
+# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl5",
+#	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl10",
+# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl15",
+# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl20",
+# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl25"
 );
 
 my @games = (
 #	"lostcities",
-#	"checkers",	
-	"breakthrough"
-#	"pentalath"
 #	"cannon",
-#	"chinesecheckers"
-#	"amazons"
- );
+#	"checkers",	
+	"breakthrough",
+	"pentalath",
+	"chinesecheckers",
+	"amazons"
+);
 
 print "queuing jobs... \n";
 
