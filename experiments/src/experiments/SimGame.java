@@ -342,11 +342,11 @@ public class SimGame {
             int size = Integer.parseInt(game.substring(11));
             board = new domineering.game.Board(size);
             domineering.game.Board.CRAM = false;
-        } else if (game.equals("cram")) {
+        } else if (game.startsWith("cram")) {
             int size = Integer.parseInt(game.substring(4));
             board = new domineering.game.Board(size);
             domineering.game.Board.CRAM = true;
-        } else if (game.equals("nogo")) {
+        } else if (game.startsWith("nogo")) {
             int size = Integer.parseInt(game.substring(4));
             nogo.game.Board.SIZE = size;
             board = new nogo.game.Board();
