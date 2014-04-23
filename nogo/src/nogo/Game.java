@@ -10,6 +10,7 @@ import nogo.game.Move;
 public class Game {
 
     public static void main(String[] args) {
+        Board.SIZE = 19;
         Board b = new Board();
         b.initialize();
 

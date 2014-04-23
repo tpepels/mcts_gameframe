@@ -11,8 +11,8 @@ import java.util.Stack;
 
 public class Board implements IBoard {
     public static int SIZE = 9, EMPTY = 0, BLACK = P1, WHITE = P2;
-    private static MoveList moveList = new MoveList(SIZE * SIZE);
-    private static List<IMove> po_Moves = new ArrayList<>(SIZE * SIZE);
+    private static MoveList moveList = new MoveList(500);
+    private static List<IMove> po_Moves = new ArrayList<>(500);
     //
     private int[][] board;
     private int nMoves = 0, currentPlayer = BLACK;
