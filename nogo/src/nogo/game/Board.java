@@ -15,6 +15,7 @@ public class Board implements IBoard {
     private static List<IMove> po_Moves = new ArrayList<>(500);
     //
     private int[][] board;
+    private int movesForPlayer = 0;
     private int nMoves = 0, currentPlayer = BLACK;
     //
     private Stack<IMove> movesMade = new Stack<>();
@@ -27,6 +28,7 @@ public class Board implements IBoard {
     public void initialize() {
         nMoves = 0;
         currentPlayer = BLACK;
+        movesForPlayer = 0;
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 board[i][j] = EMPTY;
@@ -39,12 +41,14 @@ public class Board implements IBoard {
         board[move.getMove()[1]][move.getMove()[0]] = currentPlayer;
         currentPlayer = getOpponent(currentPlayer);
         movesMade.push(move);
+        movesForPlayer = 0;
         return true;
     }
 
     @Override
     public MoveList getExpandMoves() {
         boolean free;
+        int opp = getOpponent(currentPlayer);
         moveList.clear();
         for (int y = 0; y < SIZE; y++) {
             for (int x = 0; x < SIZE; x++) {
@@ -54,20 +58,16 @@ public class Board implements IBoard {
                     // Check the freedom of the position
                     free = checkFree(x, y, currentPlayer);
                     // Check the freedom of the surrounding positions
-                    if (x + 1 < SIZE && board[y][x + 1] != EMPTY) {
-                        seenI++;
+                    if (free && x + 1 < SIZE && seen[y][x + 1] != seenI && board[y][x + 1] == opp) {
                         free = checkFree(x + 1, y, board[y][x + 1]);
                     }
-                    if (free && x - 1 >= 0 && board[y][x - 1] != EMPTY) {
-                        seenI++;
+                    if (free && x - 1 >= 0 && seen[y][x - 1] != seenI && board[y][x - 1] == opp) {
                         free = checkFree(x - 1, y, board[y][x - 1]);
                     }
-                    if (free && y + 1 < SIZE && board[y + 1][x] != EMPTY) {
-                        seenI++;
+                    if (free && y + 1 < SIZE && board[y + 1][x] == opp) {
                         free = checkFree(x, y + 1, board[y + 1][x]);
                     }
-                    if (free && y - 1 >= 0 && board[y - 1][x] != EMPTY) {
-                        seenI++;
+                    if (free && y - 1 >= 0 && seen[y - 1][x] != seenI && board[y - 1][x] == opp) {
                         free = checkFree(x, y - 1, board[y - 1][x]);
                     }
                     // This move will not reduce any
@@ -86,28 +86,29 @@ public class Board implements IBoard {
 
     private boolean checkFree(int x, int y, int color) {
         seen[y][x] = seenI;
-        if (x + 1 < SIZE) {
-            if (seen[y][x + 1] != seenI && board[y][x + 1] == color)
-                return checkFree(x + 1, y, color);
-            else if (board[y][x + 1] == EMPTY)
+        if (x + 1 < SIZE && board[y][x + 1] == EMPTY)
+            return true;
+        if (x - 1 >= 0 && board[y][x - 1] == EMPTY)
+            return true;
+        if (y + 1 < SIZE && board[y + 1][x] == EMPTY)
+            return true;
+        if (y - 1 >= 0 && board[y - 1][x] == EMPTY)
+            return true;
+
+        if (x + 1 < SIZE && seen[y][x + 1] != seenI && board[y][x + 1] == color) {
+            if (checkFree(x + 1, y, color))
                 return true;
         }
-        if (x - 1 >= 0) {
-            if (seen[y][x - 1] != seenI && board[y][x - 1] == color)
-                return checkFree(x - 1, y, color);
-            else if (board[y][x - 1] == EMPTY)
+        if (x - 1 >= 0 && seen[y][x - 1] != seenI && board[y][x - 1] == color) {
+            if (checkFree(x - 1, y, color))
                 return true;
         }
-        if (y + 1 < SIZE) {
-            if (seen[y + 1][x] != seenI && board[y + 1][x] == color)
-                return checkFree(x, y + 1, color);
-            else if (board[y + 1][x] == EMPTY)
+        if (y + 1 < SIZE && seen[y + 1][x] != seenI && board[y + 1][x] == color) {
+            if (checkFree(x, y + 1, color))
                 return true;
         }
-        if (y - 1 >= 0) {
-            if (seen[y - 1][x] != seenI && board[y - 1][x] == color)
-                return checkFree(x, y - 1, color);
-            else if (board[y - 1][x] == EMPTY)
+        if (y - 1 >= 0 && seen[y - 1][x] != seenI && board[y - 1][x] == color) {
+            if (checkFree(x, y - 1, color))
                 return true;
         }
         return false;
@@ -115,8 +116,13 @@ public class Board implements IBoard {
 
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
+        // The moves were already generated for a win-check
+        if(movesForPlayer == currentPlayer)
+            return po_Moves;
+
         boolean free;
         po_Moves.clear();
+        int opp = getOpponent(currentPlayer);
         for (int y = 0; y < SIZE; y++) {
             for (int x = 0; x < SIZE; x++) {
                 if (board[y][x] == EMPTY) {
@@ -125,23 +131,19 @@ public class Board implements IBoard {
                     // Check the freedom of the position
                     free = checkFree(x, y, currentPlayer);
                     // Check the freedom of the surrounding positions
-                    if (x + 1 < SIZE && board[y][x + 1] != EMPTY) {
-                        seenI++;
+                    if (free && x + 1 < SIZE && seen[y][x + 1] != seenI && board[y][x + 1] == opp) {
                         free = checkFree(x + 1, y, board[y][x + 1]);
                     }
-                    if (free && x - 1 >= 0 && board[y][x - 1] != EMPTY) {
-                        seenI++;
+                    if (free && x - 1 >= 0 && seen[y][x - 1] != seenI && board[y][x - 1] == opp) {
                         free = checkFree(x - 1, y, board[y][x - 1]);
                     }
-                    if (free && y + 1 < SIZE && board[y + 1][x] != EMPTY) {
-                        seenI++;
+                    if (free && y + 1 < SIZE && board[y + 1][x] == opp) {
                         free = checkFree(x, y + 1, board[y + 1][x]);
                     }
-                    if (free && y - 1 >= 0 && board[y - 1][x] != EMPTY) {
-                        seenI++;
+                    if (free && y - 1 >= 0 && seen[y - 1][x] != seenI && board[y - 1][x] == opp) {
                         free = checkFree(x, y - 1, board[y - 1][x]);
                     }
-                    // This move will not reduce any
+                    //
                     if (free) {
                         po_Moves.add(new Move(x, y));
                     }
@@ -174,50 +176,23 @@ public class Board implements IBoard {
         board[move.getMove()[1]][move.getMove()[0]] = EMPTY;
         currentPlayer = getOpponent(currentPlayer);
         nMoves--;
+        movesForPlayer = 0;
     }
 
     @Override
     public int checkWin() {
-        boolean free;
-        for (int y = 0; y < SIZE; y++) {
-            for (int x = 0; x < SIZE; x++) {
-                if (board[y][x] == EMPTY) {
-                    board[y][x] = currentPlayer;
-                    seenI++;
-                    // Check the freedom of the position
-                    free = checkFree(x, y, currentPlayer);
-                    // Check the freedom of the surrounding positions
-                    if (x + 1 < SIZE && board[y][x + 1] != EMPTY) {
-                        seenI++;
-                        free = checkFree(x + 1, y, board[y][x + 1]);
-                    }
-                    if (free && x - 1 >= 0 && board[y][x - 1] != EMPTY) {
-                        seenI++;
-                        free = checkFree(x - 1, y, board[y][x - 1]);
-                    }
-                    if (free && y + 1 < SIZE && board[y + 1][x] != EMPTY) {
-                        seenI++;
-                        free = checkFree(x, y + 1, board[y + 1][x]);
-                    }
-                    if (free && y - 1 >= 0 && board[y - 1][x] != EMPTY) {
-                        seenI++;
-                        free = checkFree(x, y - 1, board[y - 1][x]);
-                    }
-                    board[y][x] = EMPTY;
-                    // This move will not reduce any
-                    if (free) {
-                        return NONE_WIN;
-                    }
-
-                }
-            }
-        }
-        return getOpponent(currentPlayer);
+        movesForPlayer = 0;
+        getPlayoutMoves(false);
+        movesForPlayer = currentPlayer;
+        if(po_Moves.isEmpty())
+            return getOpponent(currentPlayer);
+        else
+            return NONE_WIN;
     }
 
     @Override
     public int checkPlayoutWin() {
-        return checkWin();
+        return NONE_WIN; // Not needed, if no more moves can be made, opponent of currentPlayer wins
     }
 
     @Override

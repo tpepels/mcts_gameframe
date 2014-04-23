@@ -1,6 +1,5 @@
 package nogo;
 
-import ai.MCTS_SR.MCTS_SR_Player;
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
@@ -10,16 +9,16 @@ import nogo.game.Move;
 public class Game {
 
     public static void main(String[] args) {
-        Board.SIZE = 19;
+        Board.SIZE = 9;
         Board b = new Board();
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("nogo");
-        AIPlayer aiPlayer1 = new MCTS_SR_Player();
+        AIPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
-        options1.fixedSimulations = true;
-        options1.simulations = 25000;
+//        options1.fixedSimulations = true;
+//        options1.simulations = 25000;
         options1.enableShot();
         options1.solver = false;
 
@@ -27,8 +26,8 @@ public class Game {
         options2.setGame("nogo");
         AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
-        options2.fixedSimulations = true;
-        options2.simulations = 25000;
+//        options2.fixedSimulations = true;
+//        options2.simulations = 25000;
         options2.solver = false;
 
         AIPlayer aiPlayer;
