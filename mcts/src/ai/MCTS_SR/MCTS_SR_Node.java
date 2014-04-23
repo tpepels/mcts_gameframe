@@ -37,8 +37,6 @@ public class MCTS_SR_Node {
      * Run the MCTS algorithm on the given node
      */
     public double MCTS_SR(IBoard board, int depth, int budget, int[] plStats) {
-        if (budget <= 0)
-            throw new RuntimeException("Budget is " + budget);
         double result;
         MCTS_SR_Node child = null;
         // First add some nodes if required
@@ -79,7 +77,7 @@ public class MCTS_SR_Node {
             return 0;
         }
         // SHOT, single budget, do a play-out
-        if (options.shot && budget == 1) {
+        if (budget == 1) {
             result = playOut(board);
             plStats[0]++;
             localVisits++;
@@ -175,15 +173,11 @@ public class MCTS_SR_Node {
                     // Determine the actual budget to be used
                     if (b <= child.sr_visits)
                         continue;
-                    int b_1 = b - child.sr_visits;
+                    int b_b = b - child.sr_visits;
                     if (s == 2 && n == 1)
-                        b_1 = Math.max(b_1, (budget - budgetUsed) - (b - S.get(1).sr_visits));
+                        b_b = budget - budgetUsed - (b - S.get(1).sr_visits);
                     // Actual budget
-                    int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
-                    if (b_b <= 0 && child.localVisits == 0)
-                        throw new RuntimeException("b_b is " + b_b);
-                    else if (b_b <= 0)
-                        continue;
+                    b_b = Math.min(b_b, budget - budgetUsed) - child.localVisits;
                     // :: Recursion
                     int[] pl = {0};
                     board.doAIMove(child.getMove(), player);
@@ -456,10 +450,7 @@ public class MCTS_SR_Node {
         }
     };
 
-    public static int totalPlayouts = 0;
-
     private double playOut(IBoard board) {
-        totalPlayouts++;
         simulated = true;
         boolean gameEnded, moveMade;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;

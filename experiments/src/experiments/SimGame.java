@@ -12,17 +12,6 @@ import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;
 import mcts2e.BRUE.MCTS2ePlayer;
 
-/*
-FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
-     by using their fully-qualified names. 
-import amazons.game.Board;
-import cannon.game.Board;
-import chinesecheckers.game.Board;
-import breakthrough.game.Board;
-import lostcities.game.Table;
-import pentalath.game.Board;
-*/
-
 /**
  * Runs a single experiment. Options are sent by command-line.
  */
@@ -357,6 +346,10 @@ public class SimGame {
             int size = Integer.parseInt(game.substring(4));
             board = new domineering.game.Board(size);
             domineering.game.Board.CRAM = true;
+        } else if (game.equals("nogo")) {
+            int size = Integer.parseInt(game.substring(4));
+            nogo.game.Board.SIZE = size;
+            board = new nogo.game.Board();
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
         }
