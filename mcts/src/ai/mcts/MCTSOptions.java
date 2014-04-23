@@ -109,7 +109,9 @@ public class MCTSOptions {
             kr = 8.0;
             kq = 2.0;
         } else if (game.equals("domineering")) {
-
+            uctC = 1.;
+        } else if (game.equals("nogo")) {
+            uctC = 1.;
         }
         resetSimulations(game);
     }

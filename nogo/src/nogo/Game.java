@@ -14,20 +14,21 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.setGame("breakthrough");
+        options1.setGame("nogo");
         AIPlayer aiPlayer1 = new MCTS_SR_Player();
         aiPlayer1.setOptions(options1);
         options1.fixedSimulations = true;
         options1.simulations = 25000;
-        options1.bl = 25;
-        options1.stat_reset = true;
+        options1.enableShot();
+        options1.solver = false;
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.setGame("breakthrough");
+        options2.setGame("nogo");
         AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
         options2.fixedSimulations = true;
         options2.simulations = 25000;
+        options2.solver = false;
 
         AIPlayer aiPlayer;
         Move m = null;
