@@ -8,7 +8,7 @@ do
   CP="$CP:build/$d"
 done
 
-java -Xmx1048m -Xms512m -XX:+UseSerialGC -cp $CP $class $@
+java -Xmx2048m -Xms512m -XX:+UseSerialGC -cp $CP $class $@
 
 # Classes with main 
 #
