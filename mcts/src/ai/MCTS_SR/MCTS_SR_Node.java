@@ -66,10 +66,11 @@ public class MCTS_SR_Node {
             int score = (winner == player) ? -1 : 1;
             if (winner == IBoard.DRAW)
                 score = 0;
-            int b = 1;
+//            int b = 1;
 //            if (score == 1) // In case of win for parent, update budget times, makes more sense...
 //                b = budget;
-            for (int i = 0; i < b; i++) {
+//            for (int i = 0; i < b; i++) {
+            for (int i = 0; i < budget; i++) {
                 plStats[0]++;
                 localVisits++;
                 sr_visits++;
