@@ -100,11 +100,9 @@ public class TreeNode {
         }
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
-            if (isTerminal()) {// Game is terminal, no more moves can be played
-                int score = (board.checkWin() == player) ? -1 : 1;
-                updateStats(score, depth - 1, player);      // TODO Only works with alternating games
-                return score;
-            } else
+            if (isTerminal())
+                child = this;
+            else
                 child = select(board, depth + 1);
         }
         //
@@ -223,7 +221,6 @@ public class TreeNode {
             updateStats(-result, previousPlayer, depth);
         else
             updateStats(result, previousPlayer, depth);
-
         // Back-propagate the result
         // always return in view of me
         return result;

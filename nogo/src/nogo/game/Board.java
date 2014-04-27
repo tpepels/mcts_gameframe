@@ -7,6 +7,7 @@ import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.Stack;
 
 public class Board implements IBoard {
@@ -19,6 +20,10 @@ public class Board implements IBoard {
     private int nMoves = 0, currentPlayer = BLACK;
     //
     private Stack<IMove> movesMade = new Stack<>();
+
+    static long[] zbnums = null;
+    static long blackHash, whiteHash;
+    private long zbHash = 0;
 
     public Board() {
         this.board = new int[SIZE][SIZE];
@@ -34,14 +39,49 @@ public class Board implements IBoard {
                 board[i][j] = EMPTY;
             }
         }
+        // initialize the zobrist numbers
+
+        if (zbnums == null) {
+            // init the zobrist numbers
+            Random rng = new Random();
+
+            // SIZE locations, 3 states for each location
+            zbnums = new long[SIZE * SIZE * 3];
+
+            for (int i = 0; i < zbnums.length; i++)
+                zbnums[i] = rng.nextLong();
+
+            whiteHash = rng.nextLong();
+            blackHash = rng.nextLong();
+        }
+        // now build the initial hash
+        zbHash = 0;
+        for (int r = 0; r < SIZE; r++) {
+            for (int c = 0; c < SIZE; c++) {
+                int id = getZbId(r, c);
+                zbHash ^= zbnums[id];
+            }
+        }
+        currentPlayer = P1;
+        zbHash ^= blackHash;
     }
 
     @Override
     public boolean doAIMove(IMove move, int player) {
+        int before_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
+        zbHash = zbHash ^ zbnums[before_zbId];
+
         board[move.getMove()[1]][move.getMove()[0]] = currentPlayer;
+
+        int after_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
+        zbHash = zbHash ^ zbnums[after_zbId];
+
         currentPlayer = getOpponent(currentPlayer);
+        hashCurrentPlayer();
+
         movesMade.push(move);
         movesForPlayer = 0;
+        nMoves++;
         return true;
     }
 
@@ -164,6 +204,7 @@ public class Board implements IBoard {
                 newBoard.board[i][j] = board[i][j];
             }
         }
+        newBoard.zbHash = zbHash;
         return newBoard;
     }
 
@@ -173,8 +214,16 @@ public class Board implements IBoard {
         if (move == null)
             throw new RuntimeException("Movesmade stack is empty.");
 
+        int before_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
+        zbHash = zbHash ^ zbnums[before_zbId];
+
         board[move.getMove()[1]][move.getMove()[0]] = EMPTY;
+
+        int after_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
+        zbHash = zbHash ^ zbnums[after_zbId];
+
         currentPlayer = getOpponent(currentPlayer);
+        hashCurrentPlayer();
         nMoves--;
         movesForPlayer = 0;
     }
@@ -225,9 +274,28 @@ public class Board implements IBoard {
         return null;
     }
 
+    private void hashCurrentPlayer() {
+        if (currentPlayer == Board.P2) {
+            zbHash ^= blackHash;
+            zbHash ^= whiteHash;
+        } else {
+            zbHash ^= whiteHash;
+            zbHash ^= blackHash;
+        }
+    }
+
+    private int getZbId(int r, int c) {
+        int id = (r * SIZE + c) * 3;
+        if (board[r][c] == P1)
+            id += 1;
+        else if (board[r][c] == P2)
+            id += 2;
+        return id;
+    }
+
     @Override
     public long hash() {
-        return 0;
+        return zbHash;
     }
 
     @Override

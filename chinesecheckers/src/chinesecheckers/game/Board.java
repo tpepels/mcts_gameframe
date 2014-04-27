@@ -39,6 +39,10 @@ public class Board implements IBoard {
     // List to keep track of positions seen for jumping
     private static final long[] seen = new long[SIZE];
     private static long seenIndex = 1;
+    // Zobrist stuff
+    static long[] zbnums = null;
+    static long blackHash, whiteHash;
+    private long zbHash = 0;
     // The board and pieces
     public final Field[] board;
     public final Piece[] pieces = new Piece[N_PIECES + N_PIECES];
@@ -135,9 +139,35 @@ public class Board implements IBoard {
         homePieces[0] = N_PIECES;
         homePieces[1] = N_PIECES;
         pastMoves.clear();
+
+        // initialize the zobrist numbers
+
+        if (zbnums == null) {
+            // init the zobrist numbers
+            Random rng = new Random();
+            //
+            zbnums = new long[occupancy.length * 3];
+            for (int i = 0; i < zbnums.length; i++) {
+                zbnums[i] = rng.nextLong();
+            }
+            whiteHash = rng.nextLong();
+            blackHash = rng.nextLong();
+        }
+        // now build the initial hash
+        zbHash = 0;
+        for (int r = 0; r < occupancy.length; r++) {
+            if (occupancy[r] == 0)
+                continue;
+            zbHash ^= zbnums[getZbId(r)];
+        }
+        zbHash ^= whiteHash;
     }
 
     public void doMove(IMove move) {
+
+        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
+        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
+
         Piece piece = board[move.getMove()[0]].occupant;
         board[move.getMove()[0]].occupant = null;
         board[move.getMove()[1]].occupant = piece;
@@ -158,8 +188,21 @@ public class Board implements IBoard {
             }
         }
         pastMoves.push(move);
+        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
+        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
         currentPlayer = getOpponent(currentPlayer);
+        hashCurrentPlayer();
         nMoves++;
+    }
+
+    private void hashCurrentPlayer() {
+        if (currentPlayer == Board.P1) {
+            zbHash ^= blackHash;
+            zbHash ^= whiteHash;
+        } else {
+            zbHash ^= whiteHash;
+            zbHash ^= blackHash;
+        }
     }
 
     private void generateMovesForPlayer(int player, boolean closer) {
@@ -230,6 +273,17 @@ public class Board implements IBoard {
         }
     }
 
+    private int getZbId(int p) {
+        int id = p * 3;
+        if (board[p].occupant != null) {
+            if (board[p].occupant.colour == WHITE)
+                id += 1;
+            else if (board[p].occupant.colour == BLACK)
+                id += 2;
+        }
+        return id;
+    }
+
     @Override
     public IBoard copy() {
         Board newBoard = new Board();
@@ -245,6 +299,7 @@ public class Board implements IBoard {
         newBoard.homePieces[0] = homePieces[0];
         newBoard.homePieces[1] = homePieces[1];
         newBoard.nMoves = nMoves;
+        newBoard.zbHash = zbHash;
         return newBoard;
     }
 
@@ -305,6 +360,8 @@ public class Board implements IBoard {
     public void undoMove() {
         IMove move = pastMoves.pop();
         if (move != null) {
+            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
+            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
             currentPlayer = getOpponent(currentPlayer);
             // Reset the location of the piece
             Piece p = board[move.getMove()[1]].occupant;
@@ -323,6 +380,9 @@ public class Board implements IBoard {
             if (insideHome(currentPlayer, move.getMove()[1]) && outSideHome(currentPlayer, move.getMove()[0])) {
                 homePieces[currentPlayer - 1]--;
             }
+            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
+            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
+            hashCurrentPlayer();
             winner = NONE_WIN;
             nMoves--;
         }
@@ -441,7 +501,7 @@ public class Board implements IBoard {
 
         double distDiff = (oppdist - mydist);
         //System.out.println("dist diff = " + distDiff);
-        double score_th = FastTanh.tanh(distDiff/10.0);
+        double score_th = FastTanh.tanh(distDiff / 10.0);
         return score_th;
     }
 
@@ -466,7 +526,7 @@ public class Board implements IBoard {
 
     @Override
     public long hash() {
-        return 0;
+        return zbHash;
     }
 
     public String toString() {

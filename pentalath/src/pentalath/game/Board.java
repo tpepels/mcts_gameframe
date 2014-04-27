@@ -8,6 +8,7 @@ import ai.framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class Board implements IBoard {
     // @formatter:off
@@ -39,8 +40,11 @@ public class Board implements IBoard {
     private final int BLACK_BIT = 128;
     private final int P_INF = 2000000;
     public Field[] board;
-    // private final long[][] zobristPositions;
-    // public final long zobristHash, whiteHash, blackHash;
+    // Hashing stuff
+    private static long[][] zobristPositions;
+    private static long whiteHash, blackHash;
+    public long zobristHash = 0;
+    //
     public int freeSquares, winner, nPieces1, nPieces2;
     public boolean firstMoveBeforePass = false;
     public boolean firstMove = true;
@@ -52,15 +56,17 @@ public class Board implements IBoard {
     public ArrayList<int[]> captureList = new ArrayList<int[]>(SIZE);
     public double maxHistVal;
     public int startindex = 0, numCapture = 0;
-    // private void hashCurrentPlayer() {
-    // if (currentPlayer == Board.P1) {
-    // zobristHash ^= blackHash;
-    // zobristHash ^= whiteHash;
-    // } else {
-    // zobristHash ^= whiteHash;
-    // zobristHash ^= blackHash;
-    // }
-    // }
+
+    private void hashCurrentPlayer() {
+        if (currentPlayer == Board.P1) {
+            zobristHash ^= blackHash;
+            zobristHash ^= whiteHash;
+        } else {
+            zobristHash ^= whiteHash;
+            zobristHash ^= blackHash;
+        }
+    }
+
     public int[] playerCaps = new int[2];
     //
     private boolean isEnd = false;
@@ -90,25 +96,8 @@ public class Board implements IBoard {
 
     //
     public Board() {
-        // First, generate a random hashing key for all positions
-        // zobristPositions = new long[SIZE][];
-        // // Use the same seed everytime
-        // Random r = new Random();
-        // for (int i = 0; i < SIZE; i++) {
-        // if (occupancy[i] == 0)
-        // continue;
-        // // Generate a random number for each possible occupation
-        // zobristPositions[i] = new long[2];
-        // zobristPositions[i][P1 - 1] = r.nextLong();
-        // zobristPositions[i][P2 - 1] = r.nextLong();
-        // }
-        // whiteHash = r.nextLong();
-        // blackHash = r.nextLong();
-        // zobristHash ^= whiteHash;
-        //
         nPieces1 = 0;
         nPieces2 = 0;
-
         board = new Field[SIZE];
         // Initialize the empty fields
         for (int i = 0; i < SIZE; i++) {
@@ -166,13 +155,9 @@ public class Board implements IBoard {
                 // since we will not go back further than the current gamestate!
                 newBoard.board[i].occupant = board[i].occupant;
             }
-            // Generate a random number for each possible occupation
-            // newBoard.zobristPositions[i] = new long[2];
-            // newBoard.zobristPositions[i][P1 - 1] = zobristPositions[i][P1 - 1];
-            // newBoard.zobristPositions[i][P2 - 1] = zobristPositions[i][P2 - 1];
         }
         //
-        // newBoard.zobristHash = zobristHash;
+        newBoard.zobristHash = zobristHash;
         newBoard.nPieces1 = nPieces1;
         newBoard.nPieces2 = nPieces2;
         newBoard.freeSquares = freeSquares;
@@ -214,7 +199,7 @@ public class Board implements IBoard {
         if ((board[pos].occupant == FREE || firstMove) && !isEnd) {
             // First move exception rule for the zobrist hash
             if (firstMove && board[pos].occupant != FREE) {
-                // zobristHash ^= zobristPositions[pos][Board.P1 - 1];
+                zobristHash ^= zobristPositions[pos][Board.P1 - 1];
                 freeSquares++;
             }
             // First move switch
@@ -230,10 +215,10 @@ public class Board implements IBoard {
                 nPieces1++;
             }
             freeSquares--;
-            // zobristHash ^= zobristPositions[pos][player - 1];
+            zobristHash ^= zobristPositions[pos][player - 1];
             moveList.add(pos);
             currentPlayer = getOpponent(currentPlayer);
-            // hashCurrentPlayer();
+            hashCurrentPlayer();
             nMoves++;
             return true;
         } else {
@@ -255,7 +240,7 @@ public class Board implements IBoard {
 
     public int getNextMove(int[] history, int[] bfboard, int[] availmoves, int index) {
         int maxIndex = index;
-        double value = 0., maxValue = 0.;
+        double value, maxValue = 0.;
         // Loop through the currently available moves
         for (int i = index; i < availmoves.length; i++) {
             if (bfboard[availmoves[i]] == 0)
@@ -411,7 +396,7 @@ public class Board implements IBoard {
             capturePositions();
             freeSquares += numCapture;
         } else if (suicide) {
-            // zobristHash ^= zobristPositions[pos][board[pos].occupant - 1];
+            zobristHash ^= zobristPositions[pos][board[pos].occupant - 1];
             // Not allowed!
             board[pos].occupant = FREE;
             if (player == P1)
@@ -422,7 +407,7 @@ public class Board implements IBoard {
             // reset the current player remove the move
             moveList.remove(moveList.size() - 1);
             currentPlayer = player;
-            // hashCurrentPlayer();
+            hashCurrentPlayer();
             return false;
         }
         // System.out.println("Captured " + playerCaps[0] + " white pieces");
@@ -458,7 +443,7 @@ public class Board implements IBoard {
             else
                 nPieces2++;
             // return the stone to the hash
-            // zobristHash ^= zobristPositions[position][color - 1];
+            zobristHash ^= zobristPositions[position][color - 1];
             freeSquares--;
         }
         currentPlayer = board[move].occupant;
@@ -466,18 +451,18 @@ public class Board implements IBoard {
             System.err.println("error in undo move");
             return;
         }
-        // hashCurrentPlayer();
+        hashCurrentPlayer();
         // // This means it was the first move
         if (currentPlayer == Board.P2 && freeSquares == 60) {
-            // zobristHash ^= zobristPositions[move][Board.BLACK - 1];
-            // zobristHash ^= zobristPositions[move][Board.WHITE - 1];
+            zobristHash ^= zobristPositions[move][P2 - 1];
+            zobristHash ^= zobristPositions[move][P1 - 1];
             board[move].occupant = Board.P1;
             nPieces1++;
             nPieces2--;
             firstMove = true;
         } else {
             // Remove the stone from the hash
-            // zobristHash ^= zobristPositions[move][currentPlayer - 1];
+            zobristHash ^= zobristPositions[move][currentPlayer - 1];
             // Remove the stone from the position
             board[move].occupant = FREE;
 
@@ -501,7 +486,7 @@ public class Board implements IBoard {
             if (seen[i]) {
                 capturePositions[captureI] = setColor(board[i].position, board[i].occupant == Board.P2);
                 captureI++;
-                // zobristHash ^= zobristPositions[i][board[i].occupant - 1];
+                zobristHash ^= zobristPositions[i][board[i].occupant - 1];
                 playerCaps[board[i].occupant - 1]++;
                 if (board[i].occupant == P1) {
                     nPieces1--;
@@ -602,7 +587,6 @@ public class Board implements IBoard {
             //
             if (currentField == null)
                 continue;
-
             // Check for a row of 5 in each direction.
             while (currentField != null && currentField.occupant == player) {
                 rowLength[j % 3]++;
@@ -665,6 +649,24 @@ public class Board implements IBoard {
     @Override
     public void initialize() {
         nMoves = 0;
+        if (zobristPositions == null) {
+            zobristPositions = new long[SIZE][];
+            // Use the same seed every time
+            Random r = new Random();
+            for (int i = 0; i < SIZE; i++) {
+                if (occupancy[i] == 0)
+                    continue;
+                // Generate a random number for each possible occupation
+                zobristPositions[i] = new long[2];
+                zobristPositions[i][P1 - 1] = r.nextLong();
+                zobristPositions[i][P2 - 1] = r.nextLong();
+            }
+            whiteHash = r.nextLong();
+            blackHash = r.nextLong();
+        }
+        zobristHash = 0;
+        currentPlayer = P1;
+        zobristHash ^= whiteHash;
     }
 
     @Override
@@ -806,7 +808,7 @@ public class Board implements IBoard {
 
     @Override
     public long hash() {
-        return 0;
+        return zobristHash;
     }
 
     public double getRowScore(int player) {

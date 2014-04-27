@@ -6,7 +6,6 @@ import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -17,6 +16,11 @@ public class Board implements IBoard {
     public static final int SIZE = 8, B_SIZE = SIZE * SIZE, N_QUEENS = 4;
     // Board occupants
     public static final int EMPTY = 0, WHITE_Q = P1, BLACK_Q = P2, ARROW = 3;
+    // Zobrist stuff
+    static long[] zbnums = null;
+    static long whiteHash, blackHash;
+    private long zbHash = 0;
+    //
     private static final Random r = new Random();
     private static final MoveList moves = new MoveList(5000);
     private static final ArrayList<IMove> playoutMoves = new ArrayList<IMove>();
@@ -161,27 +165,63 @@ public class Board implements IBoard {
         IMove move = pastMoves.pop();
         if (move != null) {
             currentPlayer = getOpponent(currentPlayer);
+
+            // remove zobrist nums from hash of the squares that are changing
+            int before_from_zbId = getZbId(move.getMove()[0]);
+            int before_to_zbId = getZbId(move.getMove()[1]);
+            int before_arrow_zbId = getZbId(move.getType());
+            zbHash ^= zbnums[before_from_zbId];
+            zbHash ^= zbnums[before_to_zbId];
+            zbHash ^= zbnums[before_arrow_zbId];
+
             // clear the arrow (this has to be done before replacing the queen!)
             board[move.getType()] = EMPTY;
             // Replace the queen
             board[move.getMove()[0]] = board[move.getMove()[1]];
             board[move.getMove()[1]] = EMPTY;
             queens[currentPlayer - 1][board[move.getMove()[0]] % 10] = move.getMove()[0];
+
+            // remove zobrist nums from hash of the squares that are changing
+            int after_from_zbId = getZbId(move.getMove()[0]);
+            int after_to_zbId = getZbId(move.getMove()[1]);
+            int after_arrow_zbId = getZbId(move.getType());
+            zbHash ^= zbnums[after_from_zbId];
+            zbHash ^= zbnums[after_to_zbId];
+            zbHash ^= zbnums[after_arrow_zbId];
             nMoves--;
             winner = NONE_WIN;
+            hashCurrentPlayer();
         }
     }
 
     @Override
     public boolean doAIMove(IMove move, int player) {
+
+        // remove zobrist nums from hash of the squares that are changing
+        int before_from_zbId = getZbId(move.getMove()[0]);
+        int before_to_zbId = getZbId(move.getMove()[1]);
+        int before_arrow_zbId = getZbId(move.getType());
+        zbHash ^= zbnums[before_from_zbId];
+        zbHash ^= zbnums[before_to_zbId];
+        zbHash ^= zbnums[before_arrow_zbId];
+
         board[move.getMove()[1]] = board[move.getMove()[0]];
         board[move.getMove()[0]] = EMPTY;
         queens[currentPlayer - 1][board[move.getMove()[1]] % 10] = move.getMove()[1];
         // Shoot the arrow (after moving the queen!)
         board[move.getType()] = ARROW;
         //
+        // remove zobrist nums from hash of the squares that are changing
+        int after_from_zbId = getZbId(move.getMove()[0]);
+        int after_to_zbId = getZbId(move.getMove()[1]);
+        int after_arrow_zbId = getZbId(move.getType());
+        zbHash ^= zbnums[after_from_zbId];
+        zbHash ^= zbnums[after_to_zbId];
+        zbHash ^= zbnums[after_arrow_zbId];
+        //
         pastMoves.push(move);
         currentPlayer = getOpponent(currentPlayer);
+        hashCurrentPlayer();
         nMoves++;
         return true;
     }
@@ -253,13 +293,59 @@ public class Board implements IBoard {
         for (int i = 0; i < board.length; i++) {
             board[i] = EMPTY;
         }
+
+        if (zbnums == null) {
+            // init the zobrist numbers
+            Random rng = new Random();
+
+            // 64 locations, 4 states for each location = 192
+            zbnums = new long[SIZE * SIZE * 4];
+
+            for (int i = 0; i < zbnums.length; i++)
+                zbnums[i] = rng.nextLong();
+
+            whiteHash = rng.nextLong();
+            blackHash = rng.nextLong();
+        }
+        // now build the initial hash
+        zbHash = 0;
+        for (int r = 0; r < SIZE * SIZE; r++) {
+            int id = getZbId(r);
+            zbHash ^= zbnums[id];
+        }
+        currentPlayer = P1;
+        zbHash ^= whiteHash;
+
         // Setup initial positions
         for (int i = 0; i < initPositions[0].length; i++) {
             board[initPositions[0][i]] = WHITE_Q * 10 + i;
+            zbHash ^= zbnums[initPositions[0][i]];
             queens[0][i] = initPositions[0][i];
             board[initPositions[1][i]] = BLACK_Q * 10 + i;
+            zbHash ^= zbnums[initPositions[1][i]];
             queens[1][i] = initPositions[1][i];
         }
+    }
+
+    private void hashCurrentPlayer() {
+        if (currentPlayer == Board.P1) {
+            zbHash ^= blackHash;
+            zbHash ^= whiteHash;
+        } else {
+            zbHash ^= whiteHash;
+            zbHash ^= blackHash;
+        }
+    }
+
+    private int getZbId(int p) {
+        int id = p * 4;
+        if (board[p] / 10 == WHITE_Q)
+            id += 1;
+        else if (board[p] / 10 == BLACK_Q)
+            id += 2;
+        else if (board[p] == ARROW)
+            id += 3;
+        return id;
     }
 
     public String toString() {
@@ -351,10 +437,10 @@ public class Board implements IBoard {
             int r = coord / SIZE;
             int c = coord % SIZE;
 
-            for (int rp = r-rad; rp <= r+rad; rp++)
-                for (int cp = c-rad; cp <= c+rad; cp++) {
+            for (int rp = r - rad; rp <= r + rad; rp++)
+                for (int cp = c - rad; cp <= c + rad; cp++) {
                     if (rp >= 0 && rp < SIZE && cp >= 0 && cp < SIZE) {
-                        int x = rp*SIZE + cp;
+                        int x = rp * SIZE + cp;
                         if (board[x] != EMPTY)
                             whiteBlocks++;
                     }
@@ -366,10 +452,10 @@ public class Board implements IBoard {
             int r = coord / SIZE;
             int c = coord % SIZE;
 
-            for (int rp = r-rad; rp <= r+rad; rp++)
-                for (int cp = c-rad; cp <= c+rad; cp++) {
+            for (int rp = r - rad; rp <= r + rad; rp++)
+                for (int cp = c - rad; cp <= c + rad; cp++) {
                     if (rp >= 0 && rp < SIZE && cp >= 0 && cp < SIZE) {
-                        int x = rp*SIZE + cp;
+                        int x = rp * SIZE + cp;
                         if (board[x] != EMPTY)
                             blackBlocks++;
                     }
@@ -384,7 +470,7 @@ public class Board implements IBoard {
 
         double diff = blackBlocks - whiteBlocks;
         //System.out.println(diff);
-        double p1eval = FastTanh.tanh(diff/5.0);
+        double p1eval = FastTanh.tanh(diff / 5.0);
         if (player == 1)
             return p1eval;
         else
@@ -394,7 +480,7 @@ public class Board implements IBoard {
     public double evaluate_tree(int player) {
         double freediff = getFreedom(1) - getFreedom(2);
         //System.out.println(freediff);
-        double p1eval = FastTanh.tanh(freediff/100.0);
+        double p1eval = FastTanh.tanh(freediff / 100.0);
         if (player == 1)
             return p1eval;
         else
@@ -402,9 +488,9 @@ public class Board implements IBoard {
     }
 
     public double evaluate_eggcelent(int player) {
-        double count = getFreedom(player) - getFreedom(3-player);
+        double count = getFreedom(player) - getFreedom(3 - player);
         // The more available moves the winning player has, the better
-        return count / (16. * (nMoves/4.0));  // 16. assumes endgame
+        return count / (16. * (nMoves / 4.0));  // 16. assumes endgame
     }
 
     @Override
@@ -421,7 +507,7 @@ public class Board implements IBoard {
         //System.out.println(diff/100.0);
         //int[] bcopy = new int[SIZE * SIZE];
         if (player > 2)
-            return evaluate_tree(player-2);
+            return evaluate_tree(player - 2);
 
         // clear bcopy
         System.arraycopy(board, 0, bcopy, 0, board.length);
@@ -450,37 +536,35 @@ public class Board implements IBoard {
 
             for (int r = 0; r < SIZE; r++)
                 for (int c = 0; c < SIZE; c++) {
-                    int x = r*SIZE + c;
+                    int x = r * SIZE + c;
 
                     if (bcopy[x] == WHITE_Q || (bcopy[x] >= 100 && bcopy[x] < 200))
                         whiteCount++;
                     if (bcopy[x] == BLACK_Q || (bcopy[x] >= 200 && bcopy[x] < 300))
                         blackCount++;
 
-                    if (   bcopy[x] == WHITE_Q
+                    if (bcopy[x] == WHITE_Q
                             || bcopy[x] == BLACK_Q
-                            || bcopy[x] == (100+pass-1)
-                            || bcopy[x] == (200+pass-1))
-                    {
+                            || bcopy[x] == (100 + pass - 1)
+                            || bcopy[x] == (200 + pass - 1)) {
                         //System.out.println("x = " + x + " bcopy[x] = " + bcopy[x]);
 
                         int[] coords = new int[8];
-                        coords[0] = (r-1)*SIZE + c;
-                        coords[1] = (r+1)*SIZE + c;
-                        coords[2] = r*SIZE + (c-1);
-                        coords[3] = r*SIZE + (c+1);
-                        coords[4] = (r-1)*SIZE + (c-1);
-                        coords[5] = (r-1)*SIZE + (c+1);
-                        coords[6] = (r+1)*SIZE + (c-1);
-                        coords[7] = (r+1)*SIZE + (c+1);
+                        coords[0] = (r - 1) * SIZE + c;
+                        coords[1] = (r + 1) * SIZE + c;
+                        coords[2] = r * SIZE + (c - 1);
+                        coords[3] = r * SIZE + (c + 1);
+                        coords[4] = (r - 1) * SIZE + (c - 1);
+                        coords[5] = (r - 1) * SIZE + (c + 1);
+                        coords[6] = (r + 1) * SIZE + (c - 1);
+                        coords[7] = (r + 1) * SIZE + (c + 1);
 
                         int myInfluence = 0;
 
                         if (bcopy[x] == WHITE_Q || (bcopy[x] >= 100 && bcopy[x] < 200)) {
-                            myInfluence = 100+pass;
-                        }
-                        else if (bcopy[x] == BLACK_Q || (bcopy[x] >= 200 && bcopy[x] < 300)) {
-                            myInfluence = 200+pass;
+                            myInfluence = 100 + pass;
+                        } else if (bcopy[x] == BLACK_Q || (bcopy[x] >= 200 && bcopy[x] < 300)) {
+                            myInfluence = 200 + pass;
                         }
 
                         //System.out.println("MY INFLUENCE " + myInfluence);
@@ -489,22 +573,20 @@ public class Board implements IBoard {
                         for (int dir = 0; dir < 8; dir++) {
                             int coord = coords[dir];
 
-                            if (coord >= 0 && coord < SIZE*SIZE) {
+                            if (coord >= 0 && coord < SIZE * SIZE) {
                                 if (bcopy[coord] == EMPTY) {
                                     bcopy[coord] = myInfluence;
                                     change = true;
                                     //System.out.println("Spreading " + myInfluence);
                                     //System.out.println("changing 1: " + myInfluence);
-                                }
-                                else if (bcopy[coord] == 100+pass || bcopy[coord] == 200+pass) {
+                                } else if (bcopy[coord] == 100 + pass || bcopy[coord] == 200 + pass) {
                                     // was put here on this pass. check for collisions
                                     // so either 10x or 20x
 
-                                    if (myInfluence == 100+pass && bcopy[coord] == 200+pass) {
+                                    if (myInfluence == 100 + pass && bcopy[coord] == 200 + pass) {
                                         bcopy[coord] = 300;
                                         change = true;
-                                    }
-                                    else if (myInfluence == 200+pass && bcopy[coord] == 100+pass) {
+                                    } else if (myInfluence == 200 + pass && bcopy[coord] == 100 + pass) {
                                         bcopy[coord] = 300;
                                         change = true;
                                     }
@@ -529,7 +611,7 @@ public class Board implements IBoard {
         //double freediff = getFreedom(1) - getFreedom(2);
         //System.out.println(freediff);
         //double p1eval = FastTanh.tanh(diff/50.0) + 0.1*FastTanh.tanh(freediff/100.0);
-        double p1eval = FastTanh.tanh(diff/10.0);
+        double p1eval = FastTanh.tanh(diff / 10.0);
         if (player == 1)
             return p1eval;
         else
@@ -555,7 +637,7 @@ public class Board implements IBoard {
 
     @Override
     public long hash() {
-        return 0;
+        return zbHash;
     }
 
     private int getFreedom(int player) {

@@ -32,6 +32,8 @@ public class MCTSOptions {
     public double bp_range = .5;
     public boolean remove = true, stat_reset = false, shot = false;
     public boolean rec_halving = false, max_back = false, range_back = false;
+    //
+    public boolean transpositions = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST

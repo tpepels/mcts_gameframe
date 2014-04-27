@@ -11,6 +11,8 @@ import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;
 import mcts2e.BRUE.MCTS2ePlayer;
+import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.uct.UCTPlayer;
 
 /**
  * Runs a single experiment. Options are sent by command-line.
@@ -114,9 +116,14 @@ public class SimGame {
 
         String[] parts = label.split("_");
 
-        if (parts[0].equals("mcts")) {
-            playerRef = new MCTSPlayer();
+        if (parts[0].equals("mcts") || parts[0].equals("mctstt")) {
             MCTSOptions options = new MCTSOptions();
+            if (parts[0].equals("mctstt")) {
+                playerRef = new UCTPlayer();
+                options.transpositions = true;
+            } else {
+                playerRef = new MCTSPlayer();
+            }
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.solver = false;
@@ -225,10 +232,14 @@ public class SimGame {
             }
             // and set the options for this player
             playerRef.setOptions(options);
-        } else if (parts[0].equals("srmcts")) {
-            //
-            playerRef = new MCTS_SR_Player();
+        } else if (parts[0].equals("srmcts") || parts[0].equals("srmctstt")) {
             MCTSOptions options = new MCTSOptions();
+            if (parts[0].equals("srmctstt")) {
+                playerRef = new SRPlayer();
+                options.transpositions = true;
+            } else {
+                playerRef = new MCTS_SR_Player();
+            }
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.solver = false;
@@ -240,7 +251,6 @@ public class SimGame {
             options.simulations = timeLimit;
             options.setGame(game);
             MCTSOptions.r.setSeed(seed);
-
             // now, parse the tags
             for (int i = 1; i < parts.length; i++) {
                 String tag = parts[i];
@@ -248,7 +258,7 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
-                } else if (tag.startsWith("c")) {
+                } else if (tag.startsWith("uct")) {
                     options.uctC = Double.parseDouble(tag.substring(1));
                 } else if (tag.equals("sr")) {
                     options.stat_reset = true;
@@ -288,8 +298,7 @@ public class SimGame {
                 String tag = parts[i];
                 if (tag.equals("tt")) {
                     options.transpositions = true;
-                }
-                else if (tag.startsWith("ev")) {
+                } else if (tag.startsWith("ev")) {
                     options.evVer = Integer.parseInt(tag.substring(2));
                 }
             }

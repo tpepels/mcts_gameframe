@@ -23,14 +23,14 @@ public class Board implements IBoard {
     private static final MoveList dec_moves = new MoveList(384);
 
     // these are the values for black (p2)
-    private static final char[][] lorentzValues = { {  5, 15, 15,  5,  5, 15, 15,  5}, 
-                                                    {  2,  3,  3,  3,  3,  3,  3,  2},
-                                                    {  4,  6,  6,  6,  6,  6,  6,  4}, 
-                                                    {  7, 10, 10, 10, 10, 10, 10,  7},
-                                                    { 11, 15, 15, 15, 15, 15, 15, 11}, 
-                                                    { 16, 21, 21, 21, 21, 21, 21, 16}, 
-                                                    { 20, 28, 28, 28, 28, 28, 28, 20}, 
-                                                    { 36, 36, 36, 36, 36, 36, 36, 36} };
+    private static final char[][] lorentzValues = {{5, 15, 15, 5, 5, 15, 15, 5},
+            {2, 3, 3, 3, 3, 3, 3, 2},
+            {4, 6, 6, 6, 6, 6, 6, 4},
+            {7, 10, 10, 10, 10, 10, 10, 7},
+            {11, 15, 15, 15, 15, 15, 15, 11},
+            {16, 21, 21, 21, 21, 21, 21, 16},
+            {20, 28, 28, 28, 28, 28, 28, 20},
+            {36, 36, 36, 36, 36, 36, 36, 36}};
 
     private String startingBoard = "";
     private int startingPlayer = 0;
@@ -48,9 +48,8 @@ public class Board implements IBoard {
     private int startingPlayer = 2;*/
 
     static long[] zbnums = null;
+    static long blackHash, whiteHash;
 
-                                   
-        
 
     //
     public char[][] board;
@@ -71,7 +70,7 @@ public class Board implements IBoard {
 
         b.board = new char[8][8];
         for (int r = 0; r < 8; r++)
-            for (int c = 0; c < 8; c++) 
+            for (int c = 0; c < 8; c++)
                 b.board[r][c] = this.board[r][c];
 
         b.pieces1 = this.pieces1;
@@ -88,27 +87,24 @@ public class Board implements IBoard {
 
         // no need to copy the move stack, but need to initialize it
         b.pastMoves = new Stack<IMove>();
-
         b.zbHash = zbHash;
 
         return b;
     }
 
-    private int getLorentzPV(int player, int row, int col) { 
-        if (player == 2) 
+    private int getLorentzPV(int player, int row, int col) {
+        if (player == 2)
             return lorentzValues[row][col];
-        else 
-            return lorentzValues[7-row][col];
+        else
+            return lorentzValues[7 - row][col];
     }
 
     private int getZbId(int r, int c) {
-        int id = (r*8 + c)*3;
-
+        int id = (r * 8 + c) * 3;
         if (board[r][c] == 'w')
             id += 1;
         else if (board[r][c] == 'b')
             id += 2;
-
         return id;
     }
 
@@ -142,8 +138,8 @@ public class Board implements IBoard {
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
 
         // remove zobrist nums from hash of the squares that are changing
-        int before_from_zbId = getZbId(r,c);
-        int before_to_zbId = getZbId(rp,cp);
+        int before_from_zbId = getZbId(r, c);
+        int before_to_zbId = getZbId(rp, cp);
         zbHash ^= zbnums[before_from_zbId];
         zbHash ^= zbnums[before_to_zbId];
 
@@ -152,12 +148,11 @@ public class Board implements IBoard {
 
         // lorentz piece value updates:
         // subtract off from where you came, add where you ended up
-        if (player == 1) { 
-            lorentzPV1 -= getLorentzPV(1, r, c); 
+        if (player == 1) {
+            lorentzPV1 -= getLorentzPV(1, r, c);
             lorentzPV1 += getLorentzPV(1, rp, cp);
-        }
-        else if (player == 2) { 
-            lorentzPV2 -= getLorentzPV(2, r, c); 
+        } else if (player == 2) {
+            lorentzPV2 -= getLorentzPV(2, r, c);
             lorentzPV2 += getLorentzPV(2, rp, cp);
         }
 
@@ -169,18 +164,18 @@ public class Board implements IBoard {
                 if (progress2 == rp && pieces2 > 0)
                     recomputeProgress(2);
                 // remove a lorentz piece value for that player
-                lorentzPV2 -= getLorentzPV(2, rp, cp); 
+                lorentzPV2 -= getLorentzPV(2, rp, cp);
                 // cap bonus for capturing on defending side
-                if (rp >= 4 && rp <= 7) 
+                if (rp >= 4 && rp <= 7)
                     capBonus1++;
             } else if (player == 2) {
                 pieces1--;
                 if (progress1 == 7 - rp && pieces1 > 0)
                     recomputeProgress(1);
                 // remove a lorentz piece value for that player
-                lorentzPV1 -= getLorentzPV(1, rp, cp); 
+                lorentzPV1 -= getLorentzPV(1, rp, cp);
                 // cap bonus for capturing on defending side
-                if (rp >= 0 && rp <= 3) 
+                if (rp >= 0 && rp <= 3)
                     capBonus2++;
             }
         }
@@ -198,10 +193,12 @@ public class Board implements IBoard {
         curPlayer = 3 - curPlayer;
 
         // add zobrist nums for the new hash
-        int after_from_zbId = getZbId(r,c);
-        int after_to_zbId = getZbId(rp,cp);
+        int after_from_zbId = getZbId(r, c);
+        int after_to_zbId = getZbId(rp, cp);
         zbHash ^= zbnums[after_from_zbId];
         zbHash ^= zbnums[after_to_zbId];
+
+        hashCurrentPlayer();
 
         return true;
     }
@@ -216,22 +213,21 @@ public class Board implements IBoard {
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
 
         // remove zobrist nums from hash of the squares that are changing
-        int before_from_zbId = getZbId(r,c);
-        int before_to_zbId = getZbId(rp,cp);
+        int before_from_zbId = getZbId(r, c);
+        int before_to_zbId = getZbId(rp, cp);
         zbHash = zbHash ^ zbnums[before_from_zbId];
         zbHash = zbHash ^ zbnums[before_to_zbId];
 
         board[r][c] = board[rp][cp];
         board[rp][cp] = '.';
-        
+
         // lorentz piece value updates:
-        if (curPlayer == 1) { 
+        if (curPlayer == 1) {
             lorentzPV1 -= getLorentzPV(1, rp, cp);
-            lorentzPV1 += getLorentzPV(1, r, c); 
-        }
-        else if (curPlayer == 2) { 
+            lorentzPV1 += getLorentzPV(1, r, c);
+        } else if (curPlayer == 2) {
             lorentzPV2 -= getLorentzPV(2, rp, cp);
-            lorentzPV2 += getLorentzPV(2, r, c); 
+            lorentzPV2 += getLorentzPV(2, r, c);
         }
 
         // remove the win, if there was one
@@ -259,11 +255,12 @@ public class Board implements IBoard {
         capBonus2 = move.getOldCapBonus2();
 
         // add zobrist nums for the new hash
-        int after_from_zbId = getZbId(r,c);
-        int after_to_zbId = getZbId(rp,cp);
+        int after_from_zbId = getZbId(r, c);
+        int after_to_zbId = getZbId(rp, cp);
         zbHash = zbHash ^ zbnums[after_from_zbId];
         zbHash = zbHash ^ zbnums[after_to_zbId];
-
+        //
+        hashCurrentPlayer();
     }
 
     @Override
@@ -392,11 +389,11 @@ public class Board implements IBoard {
                                 poMoves.add(move);
                                 poMoves.add(move);
                                 poMoves.add(move);
-                            } else if (curPlayer == 1 && mrp >= 4 && mrp <= 7) { 
+                            } else if (curPlayer == 1 && mrp >= 4 && mrp <= 7) {
                                 // prefer defensive captures
                                 //poMoves.add(move);
                                 poMoves.add(move);
-                            } else if (curPlayer == 2 && mrp >= 0 && mrp <= 3) { 
+                            } else if (curPlayer == 2 && mrp >= 0 && mrp <= 3) {
                                 // prefer defensive captures
                                 //poMoves.add(move);
                                 poMoves.add(move);
@@ -464,41 +461,36 @@ public class Board implements IBoard {
         for (int r = 0; r < 8; r++)
             for (int c = 0; c < 8; c++) {
 
-              if (startingBoard.equals("")) { 
-                  if (r == 0 || r == 1) {
-                      board[r][c] = 'b'; // player 2 is black
-                      lorentzPV2 += getLorentzPV(2, r, c);
-                  }
-                  else if (r == 6 || r == 7) { 
-                      board[r][c] = 'w'; // player 1 is white
-                      lorentzPV1 += getLorentzPV(1, r, c);
-                  }
-                  else board[r][c] = '.';
-              }
-              else {
-                  if (startingBoard.length() != 64) 
-                      throw new RuntimeException("Starting board length! " + startingBoard.length()); 
+                if (startingBoard.equals("")) {
+                    if (r == 0 || r == 1) {
+                        board[r][c] = 'b'; // player 2 is black
+                        lorentzPV2 += getLorentzPV(2, r, c);
+                    } else if (r == 6 || r == 7) {
+                        board[r][c] = 'w'; // player 1 is white
+                        lorentzPV1 += getLorentzPV(1, r, c);
+                    } else board[r][c] = '.';
+                } else {
+                    if (startingBoard.length() != 64)
+                        throw new RuntimeException("Starting board length! " + startingBoard.length());
 
-                  board[r][c] = startingBoard.charAt(r*8 + c); 
+                    board[r][c] = startingBoard.charAt(r * 8 + c);
 
-                  if (board[r][c] == 'b') {
-                      pieces2++;
-                      lorentzPV2 += getLorentzPV(2, r, c);
-                  }
-                  else if (board[r][c] == 'w') {
-                      pieces1++; 
-                      lorentzPV1 += getLorentzPV(1, r, c);
-                  }
-              }
+                    if (board[r][c] == 'b') {
+                        pieces2++;
+                        lorentzPV2 += getLorentzPV(2, r, c);
+                    } else if (board[r][c] == 'w') {
+                        pieces1++;
+                        lorentzPV1 += getLorentzPV(1, r, c);
+                    }
+                }
             }
-        
-        if (startingBoard.length() != 64) { 
+
+        if (startingBoard.length() != 64) {
             pieces1 = pieces2 = N_PIECES;
             progress1 = progress2 = 1;
             capBonus1 = capBonus2 = 0;
             curPlayer = 1;
-        }
-        else {  
+        } else {
             recomputeProgress(1);
             recomputeProgress(2);
             curPlayer = startingPlayer;
@@ -519,21 +511,22 @@ public class Board implements IBoard {
 
             for (int i = 0; i < 192; i++)
                 zbnums[i] = rng.nextLong();
+            whiteHash = rng.nextLong();
+            blackHash = rng.nextLong();
         }
-
         // now build the initial hash
         zbHash = 0;
-        for (int r = 0; r < 8; r++)
+        for (int r = 0; r < 8; r++) {
             for (int c = 0; c < 8; c++) {
                 int id = getZbId(r, c);
                 zbHash ^= zbnums[id];
             }
-
-
-
+        }
+        curPlayer = P1;
+        zbHash ^= whiteHash;
     }
 
-    public double evaluateSchadd(int player) { 
+    public double evaluateSchadd(int player) {
         // inspired by ion function in Maarten's thesis
         double p1eval = 0;
         if (progress1 == 7 || pieces2 == 0) p1eval = 1;
@@ -548,8 +541,8 @@ public class Board implements IBoard {
         }
         return (player == 1 ? p1eval : -p1eval);
     }
-    
-    public double evaluateLorentz(int player) { 
+
+    public double evaluateLorentz(int player) {
         // inspired by evaluation function in Maarten's thesis
         double p1eval = 0;
         if (progress1 == 7 || pieces2 == 0) p1eval = 1;
@@ -569,11 +562,11 @@ public class Board implements IBoard {
 
     @Override
     public double evaluate(int player, int version) {
-        if (version == 0) 
+        if (version == 0)
             return evaluateSchadd(player);
-        else if (version == 1) 
-            return evaluateLorentz(player); 
-        else { 
+        else if (version == 1)
+            return evaluateLorentz(player);
+        else {
             throw new RuntimeException("Evaluation function version unknown! " + version);
         }
     }
@@ -590,7 +583,7 @@ public class Board implements IBoard {
           stats.push(eval);
         if (true) return;*/
 
-        initNodePriorsLorenz(parentPlayer, stats, move, npvisits); 
+        initNodePriorsLorenz(parentPlayer, stats, move, npvisits);
     }
 
     public void initNodePriorsLorenz(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
@@ -603,60 +596,59 @@ public class Board implements IBoard {
 
         // implements prior values according to Rich Lorenz's paper on Breakthrough        
 
-        Move bmove = (Move)move; 
+        Move bmove = (Move) move;
         int rp = bmove.getMove()[2];
-        int cp = bmove.getMove()[3]; 
+        int cp = bmove.getMove()[3];
 
         //assert(inBounds(rp,cp)); 
-        char parentPiece = board[rp][cp]; 
+        char parentPiece = board[rp][cp];
 
         //assert((parentPlayer == 1 && parentPiece == 'w') || (parentPlayer == 2 && parentPiece == 'b')); 
         char oppPiece = (parentPiece == 'w' ? 'b' : 'w');
-       
+
         // count immediate attackers and defenders
-        int attackers = 0, defenders = 0; 
+        int attackers = 0, defenders = 0;
 
-        int[] rowOffset = {-1, -1, +1, +1}; 
-        int[] colOffset = {-1, +1, -1, +1}; 
+        int[] rowOffset = {-1, -1, +1, +1};
+        int[] colOffset = {-1, +1, -1, +1};
 
-        for (int oi = 0; oi < 4; oi++) { 
+        for (int oi = 0; oi < 4; oi++) {
             int rpp = rp + rowOffset[oi];
-            int cpp = cp + colOffset[oi]; 
+            int cpp = cp + colOffset[oi];
 
-            if (inBounds(rpp,cpp) && (board[rpp][cpp] == 'w' || board[rpp][cpp] == 'b')) {
+            if (inBounds(rpp, cpp) && (board[rpp][cpp] == 'w' || board[rpp][cpp] == 'b')) {
                 if (parentPiece == 'w' && oi < 2 && board[rpp][cpp] == 'b')
-                    attackers++; 
+                    attackers++;
                 if (parentPiece == 'w' && oi >= 2 && board[rpp][cpp] == 'w')
-                    defenders++; 
+                    defenders++;
 
                 if (parentPiece == 'b' && oi < 2 && board[rpp][cpp] == 'b')
-                    defenders++; 
+                    defenders++;
                 if (parentPiece == 'b' && oi >= 2 && board[rpp][cpp] == 'w')
-                    attackers++; 
+                    attackers++;
             }
         }
 
         //System.out.println("ad " + attackers + " " + defenders);
-        boolean safeMove = (attackers <= defenders); 
+        boolean safeMove = (attackers <= defenders);
 
-        int distToGoal = (parentPlayer == 1 ? rp : (7-rp)); 
-        
-        double winrate = 0.30; 
+        int distToGoal = (parentPlayer == 1 ? rp : (7 - rp));
 
-        if (safeMove) { 
+        double winrate = 0.30;
+
+        if (safeMove) {
             if (distToGoal == 1)
                 winrate = 1.0;
-            else if (distToGoal == 2) 
+            else if (distToGoal == 2)
                 winrate = 0.95;
-            else if (distToGoal == 3) 
+            else if (distToGoal == 3)
                 winrate = 0.85;
-            else if (distToGoal == 4) 
+            else if (distToGoal == 4)
                 winrate = 0.75;
-            else if (distToGoal == 5) 
+            else if (distToGoal == 5)
                 winrate = 0.60;
-        }
-        else { 
-            if (bmove.getType() == Move.CAPTURE) 
+        } else {
+            if (bmove.getType() == Move.CAPTURE)
                 winrate = 0.60;
         }
 
@@ -765,8 +757,7 @@ public class Board implements IBoard {
                             // prefer defensive captures
                             //poMoves.add(move);
                             cap2_moves.add(move);
-                        }
-                        else {
+                        } else {
                             cap3_moves.add(move);
                         }
 
@@ -780,8 +771,7 @@ public class Board implements IBoard {
                         dec_moves.add(move);
                     } else if (move.getType() == Move.CAPTURE && (move.getMove()[0] == 7 || move.getMove()[0] == 0)) {
                         dec_moves.add(move);
-                    }
-                    else {
+                    } else {
                         reg_moves.add(move);
                     }
                 }
@@ -807,6 +797,16 @@ public class Board implements IBoard {
         return static_moves.copy();
     }
 
+    private void hashCurrentPlayer() {
+        if (curPlayer == Board.P1) {
+            zbHash ^= blackHash;
+            zbHash ^= whiteHash;
+        } else {
+            zbHash ^= whiteHash;
+            zbHash ^= blackHash;
+        }
+    }
+
     @Override
     public long hash() {
         return zbHash;
@@ -819,14 +819,14 @@ public class Board implements IBoard {
         String str = "";
         for (int r = 0; r < 8; r++) {
             str += (rowLabels.charAt(r));
-            for (int c = 0; c < 8; c++) { 
+            for (int c = 0; c < 8; c++) {
                 str += board[r][c];
             }
             str += "\n";
         }
         str += (" " + colLabels + "\n");
         str += "\nPieces: " + pieces1 + " " + pieces2 + ", "
-                + "Progresses: " + progress1 + " " + progress2 + ", " 
+                + "Progresses: " + progress1 + " " + progress2 + ", "
                 + "nMoves = " + nMoves + "\n";
         return str;
     }

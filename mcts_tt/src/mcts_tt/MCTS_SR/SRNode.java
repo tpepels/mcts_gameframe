@@ -1,11 +1,12 @@
-package ai.MCTS_SR;
+package mcts_tt.MCTS_SR;
 
 import ai.FastLog;
-import ai.StatCounter;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveList;
 import ai.mcts.MCTSOptions;
+import mcts_tt.transpos.State;
+import mcts_tt.transpos.TransposTable;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -13,24 +14,26 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class MCTS_SR_Node {
-    public static double INF = 999999;
+public class SRNode {
     public static int maxDepth = 0;
     //
     private boolean expanded = false, simulated = false;
-    private List<MCTS_SR_Node> C, S;
-    private MCTS_SR_Node bestArm;
+    private List<SRNode> C, S;
+    private SRNode bestArm;
     private MCTSOptions options;
     private int player, localVisits = 0, cycles = 0, sr_visits = 0;
-    private final StatCounter stats, myStats;
     private IMove move;
+    private TransposTable tt;
+    private long hash;
+    private State state;
 
-    public MCTS_SR_Node(int player, IMove move, MCTSOptions options) {
+    public SRNode(int player, IMove move, MCTSOptions options, long hash, TransposTable tt) {
         this.player = player;
         this.move = move;
         this.options = options;
-        this.stats = new StatCounter();
-        this.myStats = new StatCounter();
+        this.tt = tt;
+        this.hash = hash;
+        this.state = tt.getState(hash, true);
     }
 
     /**
@@ -39,15 +42,17 @@ public class MCTS_SR_Node {
     public double MCTS_SR(IBoard board, int depth, int budget, int[] plStats) {
         if (budget <= 0)
             throw new RuntimeException("Budget is " + budget);
+        if (board.hash() != hash)
+            throw new RuntimeException("Incorrect hash");
+        //
         double result;
-        MCTS_SR_Node child = null;
+        SRNode child = null;
         // First add some nodes if required
         if (isLeaf())
             child = expand(board);
-
         if (child != null) {  // Child is a winner
-            stats.setValue(-INF);
-            return INF;
+            setSolved(false);
+            return State.INF;
         }
         // :: Recursive reduction
         int r_s_t = S.size(), s_t = S.size(), s = s_t;
@@ -55,100 +60,96 @@ public class MCTS_SR_Node {
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
 
         // Node is terminal
-        if (Math.abs(stats.mean()) == INF) {                            // Solver
-            plStats[0]++;
-            localVisits++;
-            sr_visits++;
-            return stats.mean();
+        if (Math.abs(getValue()) == State.INF) {                            // Solver
+            return getValue();
         } else if (isTerminal()) {     // No solver
             // A draw
             int winner = board.checkWin();
-            int score = (winner == player) ? -1 : 1;
-            if (winner == IBoard.DRAW)
-                score = 0;
 //            int b = 1;
 //            if (score == 1) // In case of win for parent, update budget times, makes more sense...
 //                b = budget;
 //            for (int i = 0; i < b; i++) {
             for (int i = 0; i < budget; i++) {
                 plStats[0]++;
-                localVisits++;
-                sr_visits++;
-                updateStats(score);
-                myStats.push(score);
+                if (winner != IBoard.DRAW)
+                    plStats[winner]++;
             }
+            updateStats(plStats);
             return 0;
         }
         // SHOT, single budget, do a play-out
         if (options.shot && budget == 1) {
             result = playOut(board);
             plStats[0]++;
-            localVisits++;
-            sr_visits++;
-            updateStats(-result);
-            myStats.push(-result);
+            if (result != IBoard.DRAW)
+                // 0: playouts, 1: player1, 2: player2
+                plStats[(int) result]++;
+            updateStats(plStats);
             return 0;
         }
         // The current node has some unvisited children
         if (options.shot && sr_visits < s_t) {
-            for (MCTS_SR_Node n : S) {
-                if (n.sr_visits > 0 || Math.abs(n.stats.mean()) == INF)
+            for (SRNode n : S) {
+                if (n.getVisits() > 0 || Math.abs(n.getValue()) == State.INF)
                     continue;
                 // Perform play-outs on all unvisited children
                 board.doAIMove(n.getMove(), player);
                 result = n.playOut(board);
                 board.undoMove();
+                //
+                int[] pl = {1, 0, 0};
+                if (result != IBoard.DRAW)
+                    // 0: playouts, 1: player1, 2: player2
+                    pl[(int) result]++;
                 // Stats
                 plStats[0]++;
-                localVisits++;
-                sr_visits++;
-                updateStats(result);
+                plStats[1] += pl[1];
+                plStats[2] += pl[2];
                 // Update the child as well
-                n.updateStats(-result);
-                n.myStats.push(-result);
-                n.sr_visits++;
+                n.updateStats(pl);
                 // Don't go over budget
                 budget--;
                 if (budget == 0)
                     return 0;
             }
+            updateStats(plStats);
         }
         // Don't start any rounds if there is only 1 child
         if (S.size() == 1) {
-            int[] pl = {0};
+            int[] pl = {0, 0, 0};
             // :: Recursion
             board.doAIMove(S.get(0).getMove(), player);
             result = -S.get(0).MCTS_SR(board, depth + 1, budget, pl);
             board.undoMove();
+            //
             plStats[0] += pl[0];
-            sr_visits += pl[0];
-            localVisits += pl[0];
+            plStats[1] += pl[1];
+            plStats[2] += pl[2];
             // The only arm is the best
             bestArm = S.get(0);
             // :: Solver recursion
-            if (Math.abs(result) == INF)
+            if (Math.abs(result) == State.INF)
                 solverCheck(result, board);
-            else {
-                stats.reset();
-                stats.add(myStats, false);
-                stats.add(S.get(0).stats, true);
-            }
+            else
+                updateStats(pl);
+            //
             return result;
         }
 
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
-        int b = getBudget(sr_visits, budget, s_t, s_t);
+        int b = getBudget((int) getVisits(), budget, s_t, s_t);
         // :: UCT
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
-                result = UCT_MCTS(board, depth);
-                plStats[0]++;
-                localVisits++;
-                sr_visits++;
+                int[] pl = {0, 0, 0};
+                result = UCT_MCTS(board, pl);
+                plStats[0] += pl[0];
+                plStats[1] += pl[1];
+                plStats[2] += pl[2];
                 // :: Solver
-                if (Math.abs(stats.mean()) == INF)
+                if (Math.abs(result) == State.INF)
                     return result;
             }
             return 0;
@@ -157,6 +158,7 @@ public class MCTS_SR_Node {
         // :: Simple regret
         if (options.debug && depth > maxDepth)
             maxDepth = depth;
+
         // :: Initial Budget
         int initVis = sr_visits, budgetUsed = 0, n;
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
@@ -164,7 +166,7 @@ public class MCTS_SR_Node {
         // :: Cycle
         while (s > 1 && budgetUsed < budget) {
             // Local visits are used as memory for the solver
-            for (MCTS_SR_Node a : S)
+            for (SRNode a : S)
                 a.localVisits = 0;
             n = 0;
             // :: Round
@@ -172,37 +174,37 @@ public class MCTS_SR_Node {
                 child = S.get(n);
                 n++;
                 // :: Solver win
-                if (Math.abs(child.stats.mean()) != INF) {
+                if (Math.abs(child.getValue()) != State.INF) {
                     // Determine the actual budget to be used
-                    if (b <= child.sr_visits)
+                    if (b <= child.getVisits())
                         continue;
-                    int b_1 = b - child.sr_visits;
+                    int b_1 = b - (int) child.getVisits();
                     if (s == 2 && n == 1)
-                        b_1 = Math.max(b_1, (budget - budgetUsed) - (b - S.get(1).sr_visits));
+                        b_1 = Math.max(b_1, (budget - budgetUsed) - (b - (int) S.get(1).getVisits()));
                     // Actual budget
                     int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
-                    if (b_b <= 0 && child.localVisits == 0)
-                        throw new RuntimeException("b_b is " + b_b + " with no local visits.");
-                    else if (b_b <= 0)
+                    if (b_b <= 0)
                         continue;
                     // :: Recursion
-                    int[] pl = {0};
+                    int[] pl = {0, 0, 0};   // This will store the results of the recursion
                     board.doAIMove(child.getMove(), player);
                     result = -child.MCTS_SR(board, depth + 1, b_b, pl);
                     board.undoMove();
-                    // Many visit stats, wow
+                    // Many stats, wow
                     budgetUsed += pl[0];
                     plStats[0] += pl[0];
-                    sr_visits += pl[0];
-                    localVisits += pl[0];
+                    plStats[1] += pl[1];
+                    plStats[2] += pl[2];
+                    // :: SR Back propagation
+                    updateStats(pl);
                 } else {
                     // The node is already solved
-                    result = child.stats.mean();
+                    result = child.getValue();
                 }
                 // :: Solver
-                if (Math.abs(result) == INF) {
+                if (Math.abs(result) == State.INF) {
                     if (solverCheck(result, board)) {   // Returns true if node is solved
-                        if (result == INF)
+                        if (result == State.INF)
                             bestArm = child;
                         return result;
                     } else {
@@ -219,50 +221,22 @@ public class MCTS_SR_Node {
                 if (budgetUsed >= budget)
                     break;
             }
-
             // :: Removal policy: Sorting
             if (options.remove)
                 Collections.sort(S.subList(0, s), comparator);
             else
                 Collections.sort(S, comparator);
-
             // :: Removal policy: Reduction
             if (options.rc > 1)
                 s -= (int) Math.floor(s / (double) options.rc);
             else
                 s--;
-
             // :: Re-budgeting
             b += getBudget(initVis, budget, s, s_t);
         }
-
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
-
-        // :: SR Back propagation
-        if (Math.abs(stats.mean()) != INF) {
-            stats.reset();
-            stats.add(myStats, false);
-            // :: Backprop algorithm
-            if (options.stat_reset) {
-                // Rejection backprop
-                for (int i = 0; i < r_s_t; i++)
-                    stats.add(S.get(i).stats, true);
-            } else if (options.max_back && bestArm != null) {
-                // Maximum backprop
-                stats.add(bestArm.stats, true);
-            } else if (options.range_back && bestArm != null && bestArm.stats.mean() > 0) {
-                // Average backprop
-                for (MCTS_SR_Node arm : S) {
-                    if (arm.stats.mean() <= 0) break;
-                    stats.add(arm.stats, true);
-                }
-            } else {
-                // Average backprop
-                for (MCTS_SR_Node arm : S) stats.add(arm.stats, true);
-            }
-        }
         return 0;
     }
 
@@ -278,25 +252,25 @@ public class MCTS_SR_Node {
         if (!options.solver)
             return false;
         // (Solver) If one of the children is a win, then I'm a loss for the opponent
-        if (result == INF) {
-            stats.setValue(-INF);
+        if (result == State.INF) {
+            setSolved(false);
             return true;
-        } else if (result == -INF) {
+        } else if (result == -State.INF) {
             boolean allSolved = true;
             // (Solver) Check if all children are a loss
-            for (MCTS_SR_Node tn : C) {
+            for (SRNode tn : C) {
                 // If the child is not expanded, make sure it is
-                if (tn.isLeaf() && tn.stats.mean() != INF) {
+                if (tn.isLeaf() && tn.getValue() != State.INF) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
-                    MCTS_SR_Node winner = tn.expand(board);
+                    SRNode winner = tn.expand(board);
                     board.undoMove();
                     // We found a winning node below the child, this means the child is a loss.
                     if (winner != null)
-                        tn.stats.setValue(-INF);
+                        tn.setSolved(false);
                 }
                 // Are all children a loss?
-                if (tn.stats.mean() != result) {
+                if (tn.getValue() != result) {
                     allSolved = false;
                 } else {
                     S.remove(tn);
@@ -304,77 +278,79 @@ public class MCTS_SR_Node {
             }
             // (Solver) If all children lead to a loss for me, then I'm a win for the opponent
             if (allSolved) {
-                stats.setValue(INF);
+                setSolved(true);
                 return true;
             }
         }
         return false;
     }
 
-    private double UCT_MCTS(IBoard board, int depth) {
+    private double UCT_MCTS(IBoard board, int[] plStats) {
         // First add some nodes if required
-        MCTS_SR_Node child = null;
+        SRNode child = null;
         if (isLeaf())
             child = expand(board);
         double result;
-
         if (child == null) {
             if (isTerminal())
                 child = this;
             else
                 child = uct_select();
         }
-        child.sr_visits++;
         // (Solver) Check for proven win / loss / draw
-        if (Math.abs(child.stats.mean()) != INF) {
+        if (Math.abs(child.getValue()) != State.INF) {
             board.doAIMove(child.getMove(), player);
             if (child.isTerminal() || !child.simulated) {
                 // :: Play-out
                 result = child.playOut(board);
-                child.updateStats(-result);
-                child.myStats.push(-result);
+                plStats[0]++;
+                if (result != IBoard.DRAW)
+                    // 0: playouts, 1: player1, 2: player2
+                    plStats[(int) result]++;
+                child.updateStats(plStats);
                 child.simulated = true;
             } else // :: Recursion
-                result = -child.UCT_MCTS(board, depth + 1);
+                result = -child.UCT_MCTS(board, plStats);
             board.undoMove();
         } else {
-            result = child.stats.mean();
+            result = child.getValue();
         }
         // :: Solver for UCT tree
-        if (Math.abs(result) == INF) {
+        if (Math.abs(result) == State.INF) {
             boolean solved = solverCheck(result, board);
-            if (result == -INF && !solved) { // Not all arms are losses
-                updateStats(1);
-                myStats.push(1);
-                return -1;
+            if (result == -State.INF && !solved) { // Not all arms are losses
+                plStats[0]++;
+                plStats[3 - player]++;
+                updateStats(plStats);
+                return 0;
             } else                                    // Node is solved
                 return result;
         }
         // :: Update
-        updateStats(result);
-        return result;
+        updateStats(plStats);
+        return 0;
     }
 
-    private MCTS_SR_Node uct_select() {
+    private SRNode uct_select() {
         // Otherwise apply the selection policy
-        MCTS_SR_Node selected = null;
+        SRNode selected = null;
         double max = Double.NEGATIVE_INFINITY;
         // Use UCT down the tree
-        double uctValue, np = Math.max(sr_visits, stats.totalVisits());
+        double uctValue, np = getVisits();
         // Select a child according to the UCT Selection policy
-        for (MCTS_SR_Node c : C) {
-            double nc = Math.max(c.sr_visits, c.stats.totalVisits());
+        for (SRNode c : C) {
+            double nc = c.getVisits();
             // Always select a proven win
-            if (c.stats.mean() == INF)
-                uctValue = INF + MCTSOptions.r.nextDouble();
-            else if (c.stats.totalVisits() == 0 && c.stats.mean() != -INF) {
+            if (c.getValue() == State.INF)
+                uctValue = State.INF + MCTSOptions.r.nextDouble();
+            else if (c.getVisits() == 0 && c.getValue() != -State.INF) {
                 // First, visit all children at least once
                 uctValue = 100 + MCTSOptions.r.nextDouble();
-            } else if (c.stats.mean() == -INF) {
-                uctValue = -INF + MCTSOptions.r.nextDouble();
+            } else if (c.getValue() == -State.INF) {
+                uctValue = -State.INF + MCTSOptions.r.nextDouble();
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(np) / nc);
+                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np) / nc);
             }
             // Remember the highest UCT value
             if (uctValue > max) {
@@ -385,18 +361,18 @@ public class MCTS_SR_Node {
         return selected;
     }
 
-    private MCTS_SR_Node expand(IBoard board) {
+    private SRNode expand(IBoard board) {
         expanded = true;
         int winner = board.checkWin();
         int nextPlayer = board.getOpponent(board.getPlayerToMove());
         // If one of the nodes is a win, we don't have to select
-        MCTS_SR_Node winNode = null;
+        SRNode winNode = null;
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         if (S == null)
-            S = new ArrayList<MCTS_SR_Node>(moves.size());
+            S = new ArrayList<>(moves.size());
         if (C == null)
-            C = new ArrayList<MCTS_SR_Node>(moves.size());
+            C = new ArrayList<>(moves.size());
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
             return null;
@@ -405,23 +381,21 @@ public class MCTS_SR_Node {
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
             if (board.doAIMove(moves.get(i), player)) {
-                MCTS_SR_Node child = new MCTS_SR_Node(nextPlayer, moves.get(i), options);
+                SRNode child = new SRNode(nextPlayer, moves.get(i), options, board.hash(), tt);
                 value = 0.;
                 if (options.solver) {
                     // Check for a winner, (Solver)
                     winner = board.checkWin();
                     if (winner == player) {
-                        value = INF;
-                        // This is a win for the expanding node
                         winNode = child;
-                    } else if (winner == nextPlayer)
-                        value = -INF;
-                    // Set the value of the child (0 = nothing, +/-INF win/loss)
-                    child.stats.setValue(value);
+                        child.setSolved(true);
+                    } else if (winner == nextPlayer) {
+                        child.setSolved(false);
+                    }
                 }
                 //
                 C.add(child);
-                if (value != -INF)
+                if (value != -State.INF)
                     S.add(child);
                 // reset the board
                 board.undoMove();
@@ -434,23 +408,19 @@ public class MCTS_SR_Node {
         return winNode;
     }
 
-    private void updateStats(double value) {
-        stats.push(value);
-    }
-
     private double log2(double x) {
         return (Math.log(x) / Math.log(2));
     }
 
-    private final Comparator<MCTS_SR_Node> comparator = new Comparator<MCTS_SR_Node>() {
+    private final Comparator<SRNode> comparator = new Comparator<SRNode>() {
         @Override
-        public int compare(MCTS_SR_Node o1, MCTS_SR_Node o2) {
-            double v1 = o1.stats.mean(), v2 = o2.stats.mean();
+        public int compare(SRNode o1, SRNode o2) {
+            double v1 = o1.getValue(), v2 = o2.getValue();
             // Place unvisited nodes in the front
-            if (o1.stats.totalVisits() == 0 && Math.abs(o1.stats.mean()) != INF)
-                v1 = INF;
-            if (o2.stats.totalVisits() == 0 && Math.abs(o2.stats.mean()) != INF)
-                v2 = INF;
+            if (o1.sr_visits == 0 && Math.abs(o1.getValue()) != State.INF)
+                v1 = State.INF;
+            if (o2.sr_visits == 0 && Math.abs(o2.getValue()) != State.INF)
+                v2 = State.INF;
 
             return Double.compare(v2, v1);
         }
@@ -458,7 +428,7 @@ public class MCTS_SR_Node {
 
     public static int totalPlayouts = 0;
 
-    private double playOut(IBoard board) {
+    private int playOut(IBoard board) {
         totalPlayouts++;
         simulated = true;
         boolean gameEnded, moveMade;
@@ -481,7 +451,6 @@ public class MCTS_SR_Node {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-
                 currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
@@ -497,22 +466,17 @@ public class MCTS_SR_Node {
                 }
             }
         }
-        double score;
-        if (winner == player) score = 1.0;
-        else if (winner == IBoard.DRAW) score = 0.0;
-        else score = -1;
-
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
 
-        return score;
+        return winner;
     }
 
-    public MCTS_SR_Node selectBestMove() {
-//        double max = Double.NEGATIVE_INFINITY;
-//        MCTS_SR_Node maxNode = bestArm;
-//        for (MCTS_SR_Node node : S) {
+    public SRNode selectBestMove() {
+//        double max = Double.NEGATIVE_State.INFINITY;
+//        SRNode maxNode = bestArm;
+//        for (SRNode node : S) {
 //            if (node.stats.mean() > max) {
 //                max = node.stats.mean();
 //                maxNode = node;
@@ -525,25 +489,25 @@ public class MCTS_SR_Node {
 //        }
         // For debugging, print the nodes
         if (options.debug) {
-            List<MCTS_SR_Node> l = (S.isEmpty()) ? C : S;
-            for (MCTS_SR_Node t : l) {
+            List<SRNode> l = (S.isEmpty()) ? C : S;
+            for (SRNode t : l) {
                 System.out.println(t);
             }
         }
         if (bestArm != null)
             return bestArm;
         // Select from the non-solved arms
-        MCTS_SR_Node bestChild = null;
+        SRNode bestChild = null;
         double value;
         double max = Double.NEGATIVE_INFINITY;
-        for (MCTS_SR_Node t : C) {
-            if (t.stats.mean() == INF)
-                value = INF + MCTSOptions.r.nextDouble();
-            else if (t.stats.mean() == -INF)
-                value = -INF + t.stats.totalVisits() + MCTSOptions.r.nextDouble();
+        for (SRNode t : C) {
+            if (t.getValue() == State.INF)
+                value = State.INF + MCTSOptions.r.nextDouble();
+            else if (t.getValue() == -State.INF)
+                value = -State.INF + t.getVisits() + MCTSOptions.r.nextDouble();
             else {
                 // Select the child with the highest value
-                value = t.stats.mean();
+                value = t.getValue();
             }
             if (value > max) {
                 max = value;
@@ -558,7 +522,46 @@ public class MCTS_SR_Node {
     }
 
     public boolean isTerminal() {
-        return C != null && C.size() == 0;
+        return expanded && C != null && C.size() == 0;
+    }
+
+    private void updateStats(int[] plStats) {
+        if (state == null)
+            state = tt.getState(hash, false);
+        state.updateStats(plStats[0], plStats[1], plStats[2]);
+        sr_visits += plStats[0];
+        localVisits += plStats[0];
+    }
+
+    private void setSolved(boolean win) {
+        if (state == null)
+            state = tt.getState(hash, false);
+        if (win)
+            state.setSolved(3 - player);
+        else
+            state.setSolved(player);
+    }
+
+    /**
+     * @return The value of this node with respect its parent
+     */
+    private double getValue() {
+        if (state == null)
+            state = tt.getState(hash, true);
+        if (state == null)
+            return 0.;
+        return state.getMean(3 - player);
+    }
+
+    /**
+     * @return The number of visits of the transposition
+     */
+    private double getVisits() {
+        if (state == null)
+            state = tt.getState(hash, true);
+        if (state == null)
+            return 0.;
+        return state.getVisits();
     }
 
     public IMove getMove() {
@@ -567,8 +570,7 @@ public class MCTS_SR_Node {
 
     @Override
     public String toString() {
-        DecimalFormat df2 = new DecimalFormat("###,##0.00000");
-        return move + "\tVal: " + df2.format(stats.mean()) + "\tStatVis: " + stats.totalVisits() +
-                "\tSRVisits: " + sr_visits + "\tCylces: " + cycles;
+        DecimalFormat df2 = new DecimalFormat("##0.####");
+        return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + sr_visits + "\tc: " + cycles;
     }
 }
