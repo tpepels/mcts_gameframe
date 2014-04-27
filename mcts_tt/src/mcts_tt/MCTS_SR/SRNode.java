@@ -90,7 +90,7 @@ public class SRNode {
         // The current node has some unvisited children
         if (options.shot && sr_visits < s_t) {
             for (SRNode n : S) {
-                if (n.getVisits() > 0 || Math.abs(n.getValue()) == State.INF)
+                if (n.sr_visits > 0 || Math.abs(n.getValue()) == State.INF)
                     continue;
                 // Perform play-outs on all unvisited children
                 board.doAIMove(n.getMove(), player);
@@ -138,7 +138,7 @@ public class SRNode {
 
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
-        int b = getBudget((int) getVisits(), budget, s_t, s_t);
+        int b = getBudget(sr_visits, budget, s_t, s_t);
         // :: UCT
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
@@ -176,11 +176,11 @@ public class SRNode {
                 // :: Solver win
                 if (Math.abs(child.getValue()) != State.INF) {
                     // Determine the actual budget to be used
-                    if (b <= child.getVisits())
+                    if (b <= child.sr_visits)
                         continue;
-                    int b_1 = b - (int) child.getVisits();
-                    if (s == 2 && n == 1)
-                        b_1 = Math.max(b_1, (budget - budgetUsed) - (b - (int) S.get(1).getVisits()));
+                    int b_1 = b - child.sr_visits;
+                    if (depth == 0 && s == 2 && n == 1)
+                        b_1 = Math.max(b_1, budget - budgetUsed - (b - S.get(1).sr_visits));
                     // Actual budget
                     int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
                     if (b_b <= 0)
