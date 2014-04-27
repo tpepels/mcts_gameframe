@@ -29,6 +29,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
+        UCTNode.nodesSimulated = 0;
 
         // Reset the MAST arrays
         if (options.history)
@@ -113,10 +114,13 @@ public class UCTPlayer implements AIPlayer, Runnable {
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Collisions: " + tt.collisions + ", tps: " + tt.positions);
+            System.out.println("Nodes simulated: " + UCTNode.nodesSimulated);
         }
         int removed = tt.pack();
-        if (options.debug)
+        if (options.debug) {
             System.out.println("Pack cleaned: " + removed + " transpositions");
+            System.out.println("Nodes saved: " + (UCTNode.nodesSimulated - tt.positions));
+        }
         // Turn the qb/rb/sw-uct back on
         options.qualityBonus = qb;
         options.relativeBonus = rb;

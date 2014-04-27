@@ -112,7 +112,7 @@ public class MCTSOptions {
             kq = 2.0;
         } else if (game.equals("domineering")) {
             uctC = 1.;
-        } else if (game.equals("nogo")) {
+        } else if (game.startsWith("nogo")) {
             uctC = .6;
         }
         resetSimulations(game);

@@ -4,6 +4,7 @@ import ai.MCTS_SR.MCTS_SR_Player;
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
+import mcts_tt.uct.UCTPlayer;
 import nogo.game.Board;
 import nogo.game.Move;
 
@@ -16,7 +17,7 @@ public class Game {
 
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("nogo");
-        AIPlayer aiPlayer1 = new MCTSPlayer();
+        AIPlayer aiPlayer1 = new UCTPlayer();
         aiPlayer1.setOptions(options1);
         options1.fixedSimulations = true;
         options1.simulations = 25000;
@@ -24,12 +25,12 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("nogo");
-        AIPlayer aiPlayer2 = new MCTS_SR_Player();
+        AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
         options2.fixedSimulations = true;
         options2.simulations = 25000;
-
-        options2.enableShot();
+//
+//        options2.enableShot();
         options2.solver = false;
 
         AIPlayer aiPlayer;

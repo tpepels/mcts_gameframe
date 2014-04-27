@@ -1,7 +1,7 @@
 package mcts_tt.transpos;
 
 public class TransposTable {
-    private final int TT_SIZE = (int) Math.pow(2, 17);
+    private final int TT_SIZE = (int) Math.pow(2, 18);
     private final long MASK = TT_SIZE - 1;
     //
     private State[] states;
@@ -25,7 +25,6 @@ public class TransposTable {
             //
             if (existingOnly)
                 return null;
-
             collisions++;
             positions++;
             // Transposition was not found, i.e. collision

@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UCTNode {
+    public static int nodesSimulated = 0;
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
     private static final MoveList mastMoves = new MoveList(100);
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
@@ -25,7 +26,7 @@ public class UCTNode {
     //
     private final MCTSOptions options;
     //
-    private boolean expanded = false, simulated = false, preexisting = false;
+    private boolean expanded = false, simulated = false;
     private List<UCTNode> children;
     private final TransposTable tt;
     private IMove move;
@@ -42,7 +43,6 @@ public class UCTNode {
         this.tt = tt;
         this.hash = hash;
         this.state = tt.getState(hash, true);
-        preexisting = state != null;
     }
 
     /**
@@ -103,6 +103,7 @@ public class UCTNode {
                 result = child.playOut(board, depth + 1);
                 child.updateStats(-result);
                 child.simulated = true;
+                nodesSimulated++;
             } else {
                 result = -child.MCTS(board, depth + 1);
             }
@@ -112,7 +113,8 @@ public class UCTNode {
         } else {
             result = child.getValue();
         }
-
+        if (board.hash() != hash)
+            throw new RuntimeException("Incorrect hash");
         // result is now in view of me in all cases
         if (options.solver) {
             // (Solver) If one of the children is a win, then I'm a win
