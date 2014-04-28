@@ -94,7 +94,7 @@ public class SRNode {
         // The current node has some unvisited children
         if (options.shot && sr_visits <= s_t) {
             for (SRNode a : S) {
-                if (a.sr_visits > 0 || Math.abs(a.getValue()) == State.INF)
+                if (a.getVisits() > 0 || Math.abs(a.getValue()) == State.INF)
                     continue;
                 // Perform play-outs on all unvisited children
                 board.doAIMove(a.getMove(), player);
@@ -180,11 +180,11 @@ public class SRNode {
                 // :: Solver win
                 if (Math.abs(child.getValue()) != State.INF) {
                     // Determine the actual budget to be used
-                    if (b <= child.sr_visits)
+                    if (b <= child.getVisits())
                         continue;
                     int b_1 = b - child.sr_visits;
                     if (depth == 0 && s == 2 && n == 1)
-                        b_1 = Math.max(b_1, budget - plStats[3] - (b - S.get(1).sr_visits));
+                        b_1 = (int) Math.max(b_1, budget - plStats[3] - (b - S.get(1).getVisits()));
                     // Actual budget
                     int b_b = Math.min(b_1, budget - plStats[3]) - child.localVisits;
                     if (b_b <= 0)
