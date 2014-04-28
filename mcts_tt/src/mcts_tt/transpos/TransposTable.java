@@ -25,7 +25,6 @@ public class TransposTable {
             //
             if (existingOnly)
                 return null;
-
             collisions++;
             positions++;
             // Transposition was not found, i.e. collision
