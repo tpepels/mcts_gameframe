@@ -9,7 +9,7 @@ import ai.framework.MoveList;
 import java.util.*;
 
 public class Board implements IBoard {
-    public static final int WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13, MAX_MOVES = 1000;
+    public static final int EMPTY = 0, WHITE = P1, BLACK = P2, WIDTH = 10, HEIGHT = 13, MAX_MOVES = 1000;
     public static final int[] occupancy = new int[]
             {
                     0, 0, 0, 0, 0, 1, 0, 0, 0, 0,
@@ -40,7 +40,7 @@ public class Board implements IBoard {
     private static final long[] seen = new long[SIZE];
     private static long seenIndex = 1;
     // Zobrist stuff
-    static long[] zbnums = null;
+    static long[][] zbnums = null;
     static long blackHash, whiteHash;
     private long zbHash = 0;
     // The board and pieces
@@ -146,9 +146,11 @@ public class Board implements IBoard {
             // init the zobrist numbers
             Random rng = new Random();
             //
-            zbnums = new long[occupancy.length * 3];
+            zbnums = new long[occupancy.length][3];
             for (int i = 0; i < zbnums.length; i++) {
-                zbnums[i] = rng.nextLong();
+                zbnums[i][0] = rng.nextLong();
+                zbnums[i][1] = rng.nextLong();
+                zbnums[i][2] = rng.nextLong();
             }
             whiteHash = rng.nextLong();
             blackHash = rng.nextLong();
@@ -158,15 +160,15 @@ public class Board implements IBoard {
         for (int r = 0; r < occupancy.length; r++) {
             if (occupancy[r] == 0)
                 continue;
-            zbHash ^= zbnums[getZbId(r)];
+            zbHash ^= zbnums[r][EMPTY];
         }
         zbHash ^= whiteHash;
     }
 
     public void doMove(IMove move) {
 
-        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
-        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
+        zbHash ^= zbnums[move.getMove()[0]][currentPlayer];
+        zbHash ^= zbnums[move.getMove()[1]][EMPTY];
 
         Piece piece = board[move.getMove()[0]].occupant;
         board[move.getMove()[0]].occupant = null;
@@ -188,8 +190,8 @@ public class Board implements IBoard {
             }
         }
         pastMoves.push(move);
-        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
-        zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
+        zbHash ^= zbnums[move.getMove()[0]][EMPTY];
+        zbHash ^= zbnums[move.getMove()[1]][currentPlayer];
         currentPlayer = getOpponent(currentPlayer);
         hashCurrentPlayer();
         nMoves++;
@@ -360,9 +362,9 @@ public class Board implements IBoard {
     public void undoMove() {
         IMove move = pastMoves.pop();
         if (move != null) {
-            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
-            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
             currentPlayer = getOpponent(currentPlayer);
+            zbHash ^= zbnums[move.getMove()[0]][EMPTY];
+            zbHash ^= zbnums[move.getMove()[1]][currentPlayer];
             // Reset the location of the piece
             Piece p = board[move.getMove()[1]].occupant;
             p.location = move.getMove()[0];
@@ -380,8 +382,8 @@ public class Board implements IBoard {
             if (insideHome(currentPlayer, move.getMove()[1]) && outSideHome(currentPlayer, move.getMove()[0])) {
                 homePieces[currentPlayer - 1]--;
             }
-            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[0])];
-            zbHash = zbHash ^ zbnums[getZbId(move.getMove()[1])];
+            zbHash ^= zbnums[move.getMove()[0]][currentPlayer];
+            zbHash ^= zbnums[move.getMove()[1]][EMPTY];
             hashCurrentPlayer();
             winner = NONE_WIN;
             nMoves--;

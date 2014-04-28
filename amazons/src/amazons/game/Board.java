@@ -17,7 +17,7 @@ public class Board implements IBoard {
     // Board occupants
     public static final int EMPTY = 0, WHITE_Q = P1, BLACK_Q = P2, ARROW = 3;
     // Zobrist stuff
-    static long[] zbnums = null;
+    static long[][] zbnums = null;
     static long whiteHash, blackHash;
     private long zbHash = 0;
     //
@@ -167,12 +167,9 @@ public class Board implements IBoard {
             currentPlayer = getOpponent(currentPlayer);
 
             // remove zobrist nums from hash of the squares that are changing
-            int before_from_zbId = getZbId(move.getMove()[0]);
-            int before_to_zbId = getZbId(move.getMove()[1]);
-            int before_arrow_zbId = getZbId(move.getType());
-            zbHash ^= zbnums[before_from_zbId];
-            zbHash ^= zbnums[before_to_zbId];
-            zbHash ^= zbnums[before_arrow_zbId];
+            zbHash ^= zbnums[move.getMove()[0]][EMPTY];
+            zbHash ^= zbnums[move.getMove()[1]][currentPlayer];
+            zbHash ^= zbnums[move.getType()][ARROW];
 
             // clear the arrow (this has to be done before replacing the queen!)
             board[move.getType()] = EMPTY;
@@ -182,12 +179,9 @@ public class Board implements IBoard {
             queens[currentPlayer - 1][board[move.getMove()[0]] % 10] = move.getMove()[0];
 
             // remove zobrist nums from hash of the squares that are changing
-            int after_from_zbId = getZbId(move.getMove()[0]);
-            int after_to_zbId = getZbId(move.getMove()[1]);
-            int after_arrow_zbId = getZbId(move.getType());
-            zbHash ^= zbnums[after_from_zbId];
-            zbHash ^= zbnums[after_to_zbId];
-            zbHash ^= zbnums[after_arrow_zbId];
+            zbHash ^= zbnums[move.getMove()[0]][currentPlayer];
+            zbHash ^= zbnums[move.getMove()[1]][EMPTY];
+            zbHash ^= zbnums[move.getType()][EMPTY];
             nMoves--;
             winner = NONE_WIN;
             hashCurrentPlayer();
@@ -198,12 +192,9 @@ public class Board implements IBoard {
     public boolean doAIMove(IMove move, int player) {
 
         // remove zobrist nums from hash of the squares that are changing
-        int before_from_zbId = getZbId(move.getMove()[0]);
-        int before_to_zbId = getZbId(move.getMove()[1]);
-        int before_arrow_zbId = getZbId(move.getType());
-        zbHash ^= zbnums[before_from_zbId];
-        zbHash ^= zbnums[before_to_zbId];
-        zbHash ^= zbnums[before_arrow_zbId];
+        zbHash ^= zbnums[move.getMove()[0]][player];
+        zbHash ^= zbnums[move.getMove()[1]][EMPTY];
+        zbHash ^= zbnums[move.getType()][EMPTY];
 
         board[move.getMove()[1]] = board[move.getMove()[0]];
         board[move.getMove()[0]] = EMPTY;
@@ -212,12 +203,9 @@ public class Board implements IBoard {
         board[move.getType()] = ARROW;
         //
         // remove zobrist nums from hash of the squares that are changing
-        int after_from_zbId = getZbId(move.getMove()[0]);
-        int after_to_zbId = getZbId(move.getMove()[1]);
-        int after_arrow_zbId = getZbId(move.getType());
-        zbHash ^= zbnums[after_from_zbId];
-        zbHash ^= zbnums[after_to_zbId];
-        zbHash ^= zbnums[after_arrow_zbId];
+        zbHash ^= zbnums[move.getMove()[0]][EMPTY];
+        zbHash ^= zbnums[move.getMove()[1]][player];
+        zbHash ^= zbnums[move.getType()][ARROW];
         //
         pastMoves.push(move);
         currentPlayer = getOpponent(currentPlayer);
@@ -299,10 +287,14 @@ public class Board implements IBoard {
             Random rng = new Random();
 
             // 64 locations, 4 states for each location = 192
-            zbnums = new long[SIZE * SIZE * 4];
+            zbnums = new long[SIZE * SIZE][4];
 
-            for (int i = 0; i < zbnums.length; i++)
-                zbnums[i] = rng.nextLong();
+            for (int i = 0; i < zbnums.length; i++) {
+                zbnums[i][0] = rng.nextLong();
+                zbnums[i][1] = rng.nextLong();
+                zbnums[i][2] = rng.nextLong();
+                zbnums[i][3] = rng.nextLong();
+            }
 
             whiteHash = rng.nextLong();
             blackHash = rng.nextLong();
@@ -310,8 +302,7 @@ public class Board implements IBoard {
         // now build the initial hash
         zbHash = 0;
         for (int r = 0; r < SIZE * SIZE; r++) {
-            int id = getZbId(r);
-            zbHash ^= zbnums[id];
+            zbHash ^= zbnums[r][EMPTY];
         }
         currentPlayer = P1;
         zbHash ^= whiteHash;
@@ -319,10 +310,10 @@ public class Board implements IBoard {
         // Setup initial positions
         for (int i = 0; i < initPositions[0].length; i++) {
             board[initPositions[0][i]] = WHITE_Q * 10 + i;
-            zbHash ^= zbnums[initPositions[0][i]];
+            zbHash ^= zbnums[initPositions[0][i]][P1];
             queens[0][i] = initPositions[0][i];
             board[initPositions[1][i]] = BLACK_Q * 10 + i;
-            zbHash ^= zbnums[initPositions[1][i]];
+            zbHash ^= zbnums[initPositions[1][i]][P2];
             queens[1][i] = initPositions[1][i];
         }
     }

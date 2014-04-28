@@ -21,7 +21,7 @@ public class Board implements IBoard {
     //
     private Stack<IMove> movesMade = new Stack<>();
 
-    static long[] zbnums = null;
+    static long[][] zbnums = null;
     static long blackHash, whiteHash;
     private long zbHash = 0;
 
@@ -45,21 +45,21 @@ public class Board implements IBoard {
             Random rng = new Random();
 
             // SIZE locations, 3 states for each location
-            zbnums = new long[SIZE * SIZE * 3];
+            zbnums = new long[SIZE * SIZE][3];
 
-            for (int i = 0; i < zbnums.length; i++)
-                zbnums[i] = rng.nextLong();
+            for (int i = 0; i < zbnums.length; i++) {
+                zbnums[i][0] = rng.nextLong();
+                zbnums[i][1] = rng.nextLong();
+                zbnums[i][2] = rng.nextLong();
+            }
 
             whiteHash = rng.nextLong();
             blackHash = rng.nextLong();
         }
         // now build the initial hash
         zbHash = 0;
-        for (int r = 0; r < SIZE; r++) {
-            for (int c = 0; c < SIZE; c++) {
-                int id = getZbId(r, c);
-                zbHash ^= zbnums[id];
-            }
+        for (int r = 0; r < SIZE * SIZE; r++) {
+            zbHash ^= zbnums[r][EMPTY];
         }
         currentPlayer = P1;
         zbHash ^= blackHash;
@@ -67,17 +67,12 @@ public class Board implements IBoard {
 
     @Override
     public boolean doAIMove(IMove move, int player) {
-        int before_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
-        zbHash = zbHash ^ zbnums[before_zbId];
-
+        int pos = (move.getMove()[1] * SIZE) + move.getMove()[0];
+        zbHash ^= zbnums[pos][EMPTY];
         board[move.getMove()[1]][move.getMove()[0]] = currentPlayer;
-
-        int after_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
-        zbHash = zbHash ^ zbnums[after_zbId];
-
+        zbHash ^= zbnums[pos][currentPlayer];
         currentPlayer = getOpponent(currentPlayer);
         hashCurrentPlayer();
-
         movesMade.push(move);
         movesForPlayer = 0;
         nMoves++;
@@ -156,7 +151,7 @@ public class Board implements IBoard {
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         // The moves were already generated for a win-check
-        if(movesForPlayer == currentPlayer)
+        if (movesForPlayer == currentPlayer)
             return po_Moves;
 
         boolean free;
@@ -213,15 +208,12 @@ public class Board implements IBoard {
         if (move == null)
             throw new RuntimeException("Movesmade stack is empty.");
 
-        int before_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
-        zbHash = zbHash ^ zbnums[before_zbId];
-
-        board[move.getMove()[1]][move.getMove()[0]] = EMPTY;
-
-        int after_zbId = getZbId(move.getMove()[1], move.getMove()[0]);
-        zbHash = zbHash ^ zbnums[after_zbId];
-
         currentPlayer = getOpponent(currentPlayer);
+        int pos = (move.getMove()[1] * SIZE) + move.getMove()[0];
+        zbHash ^= zbnums[pos][currentPlayer];
+        board[move.getMove()[1]][move.getMove()[0]] = EMPTY;
+        zbHash ^= zbnums[pos][EMPTY];
+
         hashCurrentPlayer();
         nMoves--;
         movesForPlayer = 0;
@@ -232,7 +224,7 @@ public class Board implements IBoard {
         movesForPlayer = 0;
         getPlayoutMoves(false);
         movesForPlayer = currentPlayer;
-        if(po_Moves.isEmpty())
+        if (po_Moves.isEmpty())
             return getOpponent(currentPlayer);
         else
             return NONE_WIN;

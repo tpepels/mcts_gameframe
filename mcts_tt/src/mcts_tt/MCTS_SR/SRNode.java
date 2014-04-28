@@ -82,6 +82,7 @@ public class SRNode {
         if (options.shot && budget == 1) {
             result = playOut(board);
             plStats[0]++;
+            plStats[3]++;
             if (result != IBoard.DRAW)
                 // 0: playouts, 1: player1, 2: player2
                 plStats[(int) result]++;
@@ -89,7 +90,7 @@ public class SRNode {
             return 0;
         }
         // :: Initial Budget / Budget Used
-        int initVis = sr_visits, budgetUsed = 0;
+        int initVis = sr_visits;
         // The current node has some unvisited children
         if (options.shot && sr_visits <= s_t) {
             for (SRNode a : S) {
@@ -100,7 +101,7 @@ public class SRNode {
                 result = a.playOut(board);
                 board.undoMove();
                 //
-                int[] pl = {1, 0, 0};
+                int[] pl = {1, 0, 0, 0};
                 if (result != IBoard.DRAW)
                     // 0: playouts, 1: player1, 2: player2
                     pl[(int) result]++;
@@ -108,18 +109,18 @@ public class SRNode {
                 plStats[0]++;
                 plStats[1] += pl[1];
                 plStats[2] += pl[2];
+                plStats[3]++;
                 // Update the child as well
                 a.updateStats(pl);
                 updateStats(pl);
                 // Don't go over budget
-                budgetUsed++;
-                if (budget <= budgetUsed)
+                if (budget <= plStats[3])
                     return 0;
             }
         }
         // Don't start any rounds if there is only 1 child
         if (S.size() == 1) {
-            int[] pl = {0, 0, 0};
+            int[] pl = {0, 0, 0, 0};
             // :: Recursion
             board.doAIMove(S.get(0).getMove(), player);
             result = -S.get(0).MCTS_SR(board, depth + 1, budget, pl);
@@ -128,6 +129,7 @@ public class SRNode {
             plStats[0] += pl[0];
             plStats[1] += pl[1];
             plStats[2] += pl[2];
+            plStats[3] += pl[3];
             // The only arm is the best
             bestArm = S.get(0);
             // :: Solver recursion
@@ -146,11 +148,12 @@ public class SRNode {
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
-                int[] pl = {0, 0, 0};
+                int[] pl = {0, 0, 0, 0};
                 result = UCT_MCTS(board, pl);
                 plStats[0] += pl[0];
                 plStats[1] += pl[1];
                 plStats[2] += pl[2];
+                plStats[3] += pl[3];
                 // :: Solver
                 if (Math.abs(result) == State.INF)
                     return result;
@@ -165,7 +168,7 @@ public class SRNode {
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
         Collections.sort(S, comparator);
         // :: Cycle
-        while (s > 1 && budgetUsed < budget) {
+        while (s > 1 && plStats[3] < budget) {
             // Local visits are used as memory for the solver
             for (SRNode a : S)
                 a.localVisits = 0;
@@ -181,22 +184,21 @@ public class SRNode {
                         continue;
                     int b_1 = b - child.sr_visits;
                     if (depth == 0 && s == 2 && n == 1)
-                        b_1 = Math.max(b_1, budget - budgetUsed - (b - S.get(1).sr_visits));
+                        b_1 = Math.max(b_1, budget - plStats[3] - (b - S.get(1).sr_visits));
                     // Actual budget
-                    int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
+                    int b_b = Math.min(b_1, budget - plStats[3]) - child.localVisits;
                     if (b_b <= 0)
                         continue;
                     // :: Recursion
-                    int[] pl = {0, 0, 0};   // This will store the results of the recursion
+                    int[] pl = {0, 0, 0, 0};   // This will store the results of the recursion
                     board.doAIMove(child.getMove(), player);
                     result = -child.MCTS_SR(board, depth + 1, b_b, pl);
                     board.undoMove();
                     // Many stats, wow
-                    if (!child.isTerminal())
-                        budgetUsed += pl[0];
                     plStats[0] += pl[0];
                     plStats[1] += pl[1];
                     plStats[2] += pl[2];
+                    plStats[3] += pl[3];
                     // :: SR Back propagation
                     updateStats(pl);
                 } else {
@@ -220,7 +222,7 @@ public class SRNode {
                     }
                 }
                 // Make sure we don't go over budget
-                if (budgetUsed >= budget)
+                if (plStats[3] >= budget)
                     break;
             }
             // :: Removal policy: Sorting
@@ -306,6 +308,7 @@ public class SRNode {
                 // :: Play-out
                 result = child.playOut(board);
                 plStats[0]++;
+                plStats[3]++;
                 if (result != IBoard.DRAW)
                     // 0: playouts, 1: player1, 2: player2
                     plStats[(int) result]++;

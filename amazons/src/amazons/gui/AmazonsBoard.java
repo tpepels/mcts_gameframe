@@ -7,7 +7,7 @@ import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import amazons.game.Board;
 import amazons.game.Move;
-import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.uct.UCTPlayer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -61,7 +61,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
         aiPlayer1.setOptions(options1);
 
         // Definition for player 2
-        aiPlayer2 = new SRPlayer();
+        aiPlayer2 = new UCTPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("amazons");
         options2.fixedSimulations = true;

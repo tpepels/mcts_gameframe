@@ -47,7 +47,7 @@ public class Board implements IBoard {
 
     private int startingPlayer = 2;*/
 
-    static long[] zbnums = null;
+    static long[][] zbnums = null;
     static long blackHash, whiteHash;
 
 
@@ -138,10 +138,11 @@ public class Board implements IBoard {
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
 
         // remove zobrist nums from hash of the squares that are changing
-        int before_from_zbId = getZbId(r, c);
-        int before_to_zbId = getZbId(rp, cp);
-        zbHash ^= zbnums[before_from_zbId];
-        zbHash ^= zbnums[before_to_zbId];
+        zbHash ^= zbnums[r * 8 + c][curPlayer];
+        if (board[rp][cp] == '.')
+            zbHash ^= zbnums[rp * 8 + cp][0];
+        else
+            zbHash ^= zbnums[rp * 8 + cp][3 - curPlayer];
 
         board[rp][cp] = board[r][c];
         board[r][c] = '.';
@@ -188,16 +189,12 @@ public class Board implements IBoard {
         if (player == 1 && (7 - rp) > progress1) progress1 = 7 - rp;
         else if (player == 2 && rp > progress2) progress2 = rp;
 
+        zbHash ^= zbnums[rp * 8 + cp][curPlayer];
+        zbHash ^= zbnums[r * 8 + c][0];
+
         nMoves++;
         pastMoves.push(move);
         curPlayer = 3 - curPlayer;
-
-        // add zobrist nums for the new hash
-        int after_from_zbId = getZbId(r, c);
-        int after_to_zbId = getZbId(rp, cp);
-        zbHash ^= zbnums[after_from_zbId];
-        zbHash ^= zbnums[after_to_zbId];
-
         hashCurrentPlayer();
 
         return true;
@@ -213,10 +210,8 @@ public class Board implements IBoard {
         int r = movearr[0], c = movearr[1], rp = movearr[2], cp = movearr[3];
 
         // remove zobrist nums from hash of the squares that are changing
-        int before_from_zbId = getZbId(r, c);
-        int before_to_zbId = getZbId(rp, cp);
-        zbHash = zbHash ^ zbnums[before_from_zbId];
-        zbHash = zbHash ^ zbnums[before_to_zbId];
+        zbHash ^= zbnums[rp * 8 + cp][curPlayer];
+        zbHash ^= zbnums[r * 8 + c][0];
 
         board[r][c] = board[rp][cp];
         board[rp][cp] = '.';
@@ -254,11 +249,12 @@ public class Board implements IBoard {
         capBonus1 = move.getOldCapBonus1();
         capBonus2 = move.getOldCapBonus2();
 
-        // add zobrist nums for the new hash
-        int after_from_zbId = getZbId(r, c);
-        int after_to_zbId = getZbId(rp, cp);
-        zbHash = zbHash ^ zbnums[after_from_zbId];
-        zbHash = zbHash ^ zbnums[after_to_zbId];
+        zbHash ^= zbnums[r * 8 + c][curPlayer];
+        if (board[rp][cp] == '.')
+            zbHash ^= zbnums[rp * 8 + cp][0];
+        else
+            zbHash ^= zbnums[rp * 8 + cp][3 - curPlayer];
+
         //
         hashCurrentPlayer();
     }
@@ -507,20 +503,20 @@ public class Board implements IBoard {
             Random rng = new Random();
 
             // 64 locations, 3 states for each location = 192
-            zbnums = new long[192];
+            zbnums = new long[8 * 8][3];
 
-            for (int i = 0; i < 192; i++)
-                zbnums[i] = rng.nextLong();
+            for (int i = 0; i < 8 * 8; i++) {
+                zbnums[i][0] = rng.nextLong();
+                zbnums[i][1] = rng.nextLong();
+                zbnums[i][2] = rng.nextLong();
+            }
             whiteHash = rng.nextLong();
             blackHash = rng.nextLong();
         }
         // now build the initial hash
         zbHash = 0;
-        for (int r = 0; r < 8; r++) {
-            for (int c = 0; c < 8; c++) {
-                int id = getZbId(r, c);
-                zbHash ^= zbnums[id];
-            }
+        for (int r = 0; r < 8 * 8; r++) {
+            zbHash ^= zbnums[r][0];
         }
         curPlayer = P1;
         zbHash ^= whiteHash;

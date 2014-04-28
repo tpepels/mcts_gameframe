@@ -113,8 +113,6 @@ public class UCTNode {
         } else {
             result = child.getValue();
         }
-        if (board.hash() != hash)
-            throw new RuntimeException("Incorrect hash");
         // result is now in view of me in all cases
         if (options.solver) {
             // (Solver) If one of the children is a win, then I'm a win
@@ -126,7 +124,7 @@ public class UCTNode {
                 // (Solver) Check if all children are a loss
                 for (UCTNode tn : children) {
                     // If the child is not expanded or solved, make sure it is expanded
-                    if (options.solverFix && tn.isLeaf() && Math.abs(tn.getValue()) != State.INF) {
+                    if (tn.isLeaf() && Math.abs(tn.getValue()) != State.INF) {
                         // Execute the move represented by the child
                         board.doAIMove(tn.getMove(), player);
                         UCTNode winner = tn.expand(board, depth + 2);
@@ -147,6 +145,8 @@ public class UCTNode {
                 return result; // always return in view of me
             }
         }
+        if (board.hash() != hash)
+            throw new RuntimeException("Incorrect hash");
         // Update the results for the current node
         updateStats(result);
         // Back-propagate the result always return in view of me
@@ -483,7 +483,7 @@ public class UCTNode {
     /**
      * @return The value of this node with respect to the parent
      */
-    private double getValue() {
+    public double getValue() {
         if (state == null)
             state = tt.getState(hash, true);
         if (state == null)

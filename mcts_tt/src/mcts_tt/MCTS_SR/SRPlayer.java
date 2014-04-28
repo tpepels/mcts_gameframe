@@ -50,7 +50,7 @@ public class SRPlayer implements AIPlayer, Runnable {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
         root = new SRNode(myPlayer, null, options, board.hash(), tt);
-        int[] pl = {0, 0, 0};
+        int[] pl = {0, 0, 0, 0};
         root.MCTS_SR(board, 0, options.simulations, pl);
         // Return the best move found
         SRNode bestChild = root.selectBestMove();

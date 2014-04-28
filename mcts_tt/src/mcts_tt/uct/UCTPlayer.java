@@ -82,9 +82,8 @@ public class UCTPlayer implements AIPlayer, Runnable {
                 board.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
-                if (root.MCTS(board, 0) == State.INF)
+                if (Math.abs(root.MCTS(board, 0)) == State.INF)
                     break; // Break if you find a winning move
-
             }
             // (SW-UCT) Remember the number of simulations for the next round
             options.numSimulations = simulations + (int) (0.1 * simulations);

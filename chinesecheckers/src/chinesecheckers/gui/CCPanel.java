@@ -7,6 +7,7 @@ import ai.mcts.MCTSPlayer;
 import chinesecheckers.game.Board;
 import chinesecheckers.game.Move;
 import chinesecheckers.game.Piece;
+import mcts_tt.uct.UCTPlayer;
 import rush.HexGridCell;
 
 import javax.swing.*;
@@ -42,8 +43,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
         p2Options.setGame("chinesecheckers");
         p2Options.simulations = 25000;
         p2Options.fixedSimulations = true;
-        p2Options.bl = 25;
-        p2Options.range_back = true;
+        p2Options.enableShot();
 
         //
         if (!p1Human) {
@@ -51,7 +51,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {
-            aiPlayer2 = new MCTS_SR_Player();
+            aiPlayer2 = new UCTPlayer();
             aiPlayer2.setOptions(p2Options);
         }
         addMouseListener(this);
