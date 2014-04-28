@@ -83,14 +83,13 @@ public class SRNode {
             result = playOut(board);
             plStats[0]++;
             plStats[3]++;
-            if (result != IBoard.DRAW)
-                // 0: playouts, 1: player1, 2: player2
+            if (result != IBoard.DRAW) {
+                // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                 plStats[(int) result]++;
+            }
             updateStats(plStats);
             return 0;
         }
-        // :: Initial Budget / Budget Used
-        int initVis = sr_visits;
         // The current node has some unvisited children
         if (options.shot && sr_visits <= s_t) {
             for (SRNode a : S) {
@@ -102,9 +101,10 @@ public class SRNode {
                 board.undoMove();
                 //
                 int[] pl = {1, 0, 0, 0};
-                if (result != IBoard.DRAW)
-                    // 0: playouts, 1: player1, 2: player2
+                if (result != IBoard.DRAW) {
+                    // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     pl[(int) result]++;
+                }
                 // Stats
                 plStats[0]++;
                 plStats[1] += pl[1];
@@ -114,7 +114,7 @@ public class SRNode {
                 a.updateStats(pl);
                 updateStats(pl);
                 // Don't go over budget
-                if (budget <= plStats[3])
+                if (plStats[3] >= budget)
                     return 0;
             }
         }
@@ -140,7 +140,6 @@ public class SRNode {
             //
             return result;
         }
-
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(sr_visits, budget, s_t, s_t);
@@ -155,20 +154,19 @@ public class SRNode {
                 plStats[2] += pl[2];
                 plStats[3] += pl[3];
                 // :: Solver
-                if (Math.abs(result) == State.INF)
+                if (Math.abs(result) == State.INF) {
                     return result;
+                }
             }
             return 0;
         }
-
         // :: Simple regret
         if (options.debug && depth > maxDepth)
             maxDepth = depth;
-
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
         Collections.sort(S, comparator);
         // :: Cycle
-        while (s > 1 && plStats[3] < budget) {
+        while (s > 1 && plStats[3] <= budget) {
             // Local visits are used as memory for the solver
             for (SRNode a : S)
                 a.localVisits = 0;
@@ -210,13 +208,15 @@ public class SRNode {
                     if (solverCheck(result, board)) {   // Returns true if node is solved
                         if (result == State.INF)
                             bestArm = child;
+                        // Update the budgetNode
+                        sr_visits += plStats[3];
                         return result;
                     } else {
                         // :: Solver: Resume the round with reduced S
                         r_s_t = Math.min(S.size(), r_s_t);
                         s_t = Math.min(S.size(), s_t);
                         s = Math.min(S.size(), s);
-                        b = getBudget(initVis, budget, s, s_t);
+                        b = getBudget(sr_visits, budget, s, s_t);
                         // Restart at the first arm to redistribute the budget
                         n = 0;
                     }
@@ -236,8 +236,10 @@ public class SRNode {
             else
                 s--;
             // :: Re-budgeting
-            b += getBudget(initVis, budget, s, s_t);
+            b += getBudget(sr_visits, budget, s, s_t);
         }
+        // Update the budgetNode
+        sr_visits += plStats[3];
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
@@ -333,6 +335,7 @@ public class SRNode {
         }
         // :: Update
         updateStats(plStats);
+        sr_visits++;
         return 0;
     }
 
@@ -420,14 +423,7 @@ public class SRNode {
     private final Comparator<SRNode> comparator = new Comparator<SRNode>() {
         @Override
         public int compare(SRNode o1, SRNode o2) {
-            double v1 = o1.getValue(), v2 = o2.getValue();
-            // Place unvisited nodes in the front
-            if (o1.sr_visits == 0 && Math.abs(o1.getValue()) != State.INF)
-                v1 = State.INF;
-            if (o2.sr_visits == 0 && Math.abs(o2.getValue()) != State.INF)
-                v2 = State.INF;
-
-            return Double.compare(v2, v1);
+            return Double.compare(o2.getValue(), o1.getValue());
         }
     };
 
@@ -534,7 +530,6 @@ public class SRNode {
         if (state == null)
             state = tt.getState(hash, false);
         state.updateStats(plStats[0], plStats[1], plStats[2]);
-        sr_visits += plStats[0];
         localVisits += plStats[0];
     }
 
