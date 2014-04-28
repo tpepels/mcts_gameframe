@@ -44,7 +44,6 @@ public class SRNode {
             throw new RuntimeException("Budget is " + budget);
         if (board.hash() != hash)
             throw new RuntimeException("Incorrect hash");
-        //
         double result;
         SRNode child = null;
         // First add some nodes if required
@@ -123,15 +122,20 @@ public class SRNode {
         // Don't start any rounds if there is only 1 child
         if (S.size() == 1) {
             int[] pl = {0, 0, 0, 0};
-            // :: Recursion
-            board.doAIMove(S.get(0).getMove(), player);
-            result = -S.get(0).MCTS_SR(board, depth + 1, budget, pl);
-            board.undoMove();
-            // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
-            plStats[0] += pl[0];
-            plStats[1] += pl[1];
-            plStats[2] += pl[2];
-            plStats[3] += pl[3];
+            child = S.get(0);
+            if (Math.abs(child.getValue()) != State.INF) {
+                // :: Recursion
+                board.doAIMove(child.getMove(), player);
+                result = -child.MCTS_SR(board, depth + 1, budget, pl);
+                board.undoMove();
+                // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
+                plStats[0] += pl[0];
+                plStats[1] += pl[1];
+                plStats[2] += pl[2];
+                plStats[3] += pl[3];
+            } else {
+                result = child.getValue();
+            }
             // The only arm is the best
             bestArm = S.get(0);
             // :: Solver
@@ -142,11 +146,9 @@ public class SRNode {
             //
             return result;
         }
-
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(sr_visits, budget, s_t, s_t);
-
         // :: UCT Hybrid
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
@@ -165,7 +167,6 @@ public class SRNode {
             }
             return 0;
         }
-
         // :: Simple regret
         if (options.debug && depth > maxDepth)
             maxDepth = depth;

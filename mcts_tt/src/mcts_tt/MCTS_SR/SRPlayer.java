@@ -64,7 +64,7 @@ public class SRPlayer implements AIPlayer, Runnable {
             System.out.println("Max sr depth: " + SRNode.maxDepth);
             System.out.println("Collisions: " + tt.collisions + ", tps: " + tt.positions);
         }
-        int removed = tt.pack(2);
+        int removed = tt.pack(0);
         if (options.debug)
             System.out.println("Pack cleaned: " + removed + " transpositions");
         root = null;
