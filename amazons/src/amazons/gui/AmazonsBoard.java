@@ -4,7 +4,6 @@ import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
 import amazons.game.Board;
 import amazons.game.Move;
 import mcts_tt.uct.UCTPlayer;
@@ -52,7 +51,7 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
             e.printStackTrace();
         }
         // Definition for player 1
-        aiPlayer1 = new MCTSPlayer();
+        aiPlayer1 = new UCTPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("amazons");
         options1.fixedSimulations = true;

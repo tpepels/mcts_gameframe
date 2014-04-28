@@ -88,6 +88,7 @@ public class Board implements IBoard {
         newBoard.nMoves = nMoves;
         newBoard.winner = winner;
         newBoard.bcopy = new int[SIZE * SIZE];
+        newBoard.zbHash = zbHash;
         return newBoard;
     }
 

@@ -8,6 +8,7 @@ public class State {
     public int visits;
     private int[] wins = {0, 0};
     private short solvedPlayer = 0;
+    public int lastVisit = 0;
     public boolean visited = false;
     //
     public State next = null;

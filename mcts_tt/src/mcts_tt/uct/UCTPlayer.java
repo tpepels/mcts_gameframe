@@ -36,7 +36,8 @@ public class UCTPlayer implements AIPlayer, Runnable {
             options.resetHistory(board.getMaxUniqueMoveId());
 
         root = new UCTNode(myPlayer, options, board.hash(), tt);
-
+        if (nMoves > 0 && board.hash() == 0)
+            throw new RuntimeException("Unlikely hash");
         // Reset the nodes' stats
         UCTNode.moveStats[0].reset();
         UCTNode.moveStats[1].reset();
@@ -113,12 +114,11 @@ public class UCTPlayer implements AIPlayer, Runnable {
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Collisions: " + tt.collisions + ", tps: " + tt.positions);
-            System.out.println("Nodes simulated: " + UCTNode.nodesSimulated);
+            System.out.println("Recoveries: " + tt.recoveries);
         }
-        int removed = tt.pack();
+        int removed = tt.pack(2);
         if (options.debug) {
             System.out.println("Pack cleaned: " + removed + " transpositions");
-            System.out.println("Nodes saved: " + (UCTNode.nodesSimulated - tt.positions));
         }
         // Turn the qb/rb/sw-uct back on
         options.qualityBonus = qb;

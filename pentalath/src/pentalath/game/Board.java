@@ -43,7 +43,7 @@ public class Board implements IBoard {
     // Hashing stuff
     private static long[][] zobristPositions;
     private static long whiteHash, blackHash;
-    public long zobristHash = 0;
+    private long zobristHash = 0;
     //
     public int freeSquares, winner, nPieces1, nPieces2;
     public boolean firstMoveBeforePass = false;

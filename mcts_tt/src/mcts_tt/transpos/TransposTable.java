@@ -5,7 +5,8 @@ public class TransposTable {
     private final long MASK = TT_SIZE - 1;
     //
     private State[] states;
-    public int collisions = 0, positions = 0;
+    private int moveCounter = 0;
+    public int collisions = 0, positions = 0, recoveries = 0;
 
     public TransposTable() {
         this.states = new State[TT_SIZE];
@@ -16,8 +17,10 @@ public class TransposTable {
         State s = states[hashPos];
         if (s != null) {
             while (true) {
-                if (s.hash == hash)
+                if (s.hash == hash) {
+                    recoveries++;
                     return s;
+                }
                 if (s.next == null)
                     break;
                 s = s.next;
@@ -42,7 +45,8 @@ public class TransposTable {
         }
     }
 
-    public int pack() {
+    public int pack(int offset) {
+        recoveries = 0;
         collisions = 0;
         int prePositions = positions;
         State s, ps;
@@ -55,21 +59,25 @@ public class TransposTable {
             while (true) {
                 if (s.visited) {
                     s.visited = false;
+                    s.lastVisit = moveCounter;
                     ps = s;
-                } else if (ps != null) {
-                    ps.next = s.next;
-                    positions--;
-                    ps = s;
-                } else if (ps == null) {
-                    positions--;
-                    states[i] = s.next;
-                    ps = null;
+                } else if (moveCounter - s.lastVisit >= offset) {
+                    if (ps != null) {
+                        ps.next = s.next;
+                        positions--;
+                        ps = s;
+                    } else if (ps == null) {
+                        positions--;
+                        states[i] = s.next;
+                        ps = null;
+                    }
                 }
                 if (s.next == null)
                     break;
                 s = s.next;
             }
         }
+        moveCounter++;
         return (prePositions - positions);
     }
 
