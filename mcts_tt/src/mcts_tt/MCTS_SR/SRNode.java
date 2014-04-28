@@ -182,7 +182,7 @@ public class SRNode {
                     // Determine the actual budget to be used
                     if (b <= child.getVisits())
                         continue;
-                    int b_1 = b - child.sr_visits;
+                    int b_1 = (int) (b - child.getVisits());
                     if (depth == 0 && s == 2 && n == 1)
                         b_1 = (int) Math.max(b_1, budget - plStats[3] - (b - S.get(1).getVisits()));
                     // Actual budget
