@@ -66,10 +66,13 @@ public class SRNode {
         } else if (isTerminal()) {                  // No solver
             // A draw
             int winner = board.checkWin();
+
 //            int b = 1;
 //            if (score == 1) // In case of win for parent, update budget times, makes more sense...
 //                b = budget;
 //            for (int i = 0; i < b; i++) {
+
+            // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
             for (int i = 0; i < budget; i++) {
                 plStats[0]++;
                 if (winner != IBoard.DRAW)
@@ -81,10 +84,10 @@ public class SRNode {
         // SHOT, single budget, do a play-out
         if (options.shot && budget == 1) {
             result = playOut(board);
+            // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
             plStats[0]++;
             plStats[3]++;
             if (result != IBoard.DRAW) {
-                // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                 plStats[(int) result]++;
             }
             updateStats(plStats);
@@ -100,12 +103,11 @@ public class SRNode {
                 result = n.playOut(board);
                 board.undoMove();
                 //
-                int[] pl = {0, 0, 0, 0};
+                int[] pl = {1, 0, 0, 0};
                 if (result != IBoard.DRAW) {
-                    // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     pl[(int) result]++;
                 }
-                // Stats
+                // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                 plStats[0]++;
                 plStats[1] += pl[1];
                 plStats[2] += pl[2];
@@ -132,7 +134,7 @@ public class SRNode {
             plStats[3] += pl[3];
             // The only arm is the best
             bestArm = S.get(0);
-            // :: Solver recursion
+            // :: Solver
             if (Math.abs(result) == State.INF)
                 solverCheck(result, board);
             else
@@ -140,6 +142,7 @@ public class SRNode {
             //
             return result;
         }
+
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(sr_visits, budget, s_t, s_t);
@@ -150,6 +153,7 @@ public class SRNode {
             for (int i = 0; i < budget; i++) {
                 int[] pl = {0, 0, 0, 0};
                 result = UCT_MCTS(board, pl);
+                // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                 plStats[0] += pl[0];
                 plStats[1] += pl[1];
                 plStats[2] += pl[2];
@@ -179,7 +183,7 @@ public class SRNode {
                 n++;
                 // :: Solver win
                 if (Math.abs(child.getValue()) != State.INF) {
-                    // Determine the actual budget to be used
+                    // Determine the topped off budget
                     if (b <= child.getVisits())
                         continue;
                     int b_1 = (int) (b - child.getVisits());
@@ -187,7 +191,7 @@ public class SRNode {
                         int b_r = (int) (budget - plStats[3] - (b - S.get(1).getVisits()));
                         b_1 = Math.max(b_1, budget - plStats[3] - (b - b_r));
                     }
-                    // Actual budget
+                    // :: Actual budget
                     int b_b = Math.min(b_1, budget - plStats[3]) - child.localVisits;
                     if (b_b <= 0)
                         continue;
@@ -196,7 +200,7 @@ public class SRNode {
                     board.doAIMove(child.getMove(), player);
                     result = -child.MCTS_SR(board, depth + 1, b_b, pl);
                     board.undoMove();
-                    // Many stats, wow
+                    // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     plStats[0] += pl[0];
                     plStats[1] += pl[1];
                     plStats[2] += pl[2];
@@ -256,7 +260,6 @@ public class SRNode {
         else
             return (int) Math.max(1, Math.floor((initVis + budget) / (subS * Math.ceil((totS / 2.) * log2(totS)))));
     }
-
 
     private boolean solverCheck(double result, IBoard board) {
         if (!options.solver)
