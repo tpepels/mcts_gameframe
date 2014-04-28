@@ -92,15 +92,15 @@ public class SRNode {
         }
         // The current node has some unvisited children
         if (options.shot && sr_visits <= s_t) {
-            for (SRNode a : S) {
-                if (a.getVisits() > 0 || Math.abs(a.getValue()) == State.INF)
+            for (SRNode n : S) {
+                if (n.getVisits() > 0 || Math.abs(n.getValue()) == State.INF)
                     continue;
                 // Perform play-outs on all unvisited children
-                board.doAIMove(a.getMove(), player);
-                result = a.playOut(board);
+                board.doAIMove(n.getMove(), player);
+                result = n.playOut(board);
                 board.undoMove();
                 //
-                int[] pl = {1, 0, 0, 0};
+                int[] pl = {0, 0, 0, 0};
                 if (result != IBoard.DRAW) {
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     pl[(int) result]++;
@@ -111,7 +111,7 @@ public class SRNode {
                 plStats[2] += pl[2];
                 plStats[3]++;
                 // Update the child as well
-                a.updateStats(pl);
+                n.updateStats(pl);
                 updateStats(pl);
                 // Don't go over budget
                 if (plStats[3] >= budget)
@@ -125,7 +125,7 @@ public class SRNode {
             board.doAIMove(S.get(0).getMove(), player);
             result = -S.get(0).MCTS_SR(board, depth + 1, budget, pl);
             board.undoMove();
-            //
+            // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
             plStats[0] += pl[0];
             plStats[1] += pl[1];
             plStats[2] += pl[2];
@@ -143,7 +143,8 @@ public class SRNode {
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(sr_visits, budget, s_t, s_t);
-        // :: UCT
+
+        // :: UCT Hybrid
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
@@ -160,6 +161,7 @@ public class SRNode {
             }
             return 0;
         }
+
         // :: Simple regret
         if (options.debug && depth > maxDepth)
             maxDepth = depth;
@@ -181,8 +183,10 @@ public class SRNode {
                     if (b <= child.getVisits())
                         continue;
                     int b_1 = (int) (b - child.getVisits());
-                    if (depth == 0 && s == 2 && n == 1)
-                        b_1 = (int) Math.max(b_1, budget - plStats[3] - (b - S.get(1).getVisits()));
+                    if (depth == 0 && s == 2 && n == 1) {
+                        int b_r = (int) (budget - plStats[3] - (b - S.get(1).getVisits()));
+                        b_1 = Math.max(b_1, budget - plStats[3] - (b - b_r));
+                    }
                     // Actual budget
                     int b_b = Math.min(b_1, budget - plStats[3]) - child.localVisits;
                     if (b_b <= 0)

@@ -22,7 +22,6 @@ public class Game {
         options1.simulations = 25000;
         options1.solver = false;
 
-
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("nogo");
         AIPlayer aiPlayer2 = new SRPlayer();
