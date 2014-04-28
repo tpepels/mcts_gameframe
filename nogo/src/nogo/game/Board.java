@@ -40,7 +40,6 @@ public class Board implements IBoard {
             }
         }
         // initialize the zobrist numbers
-
         if (zbnums == null) {
             // init the zobrist numbers
             Random rng = new Random();

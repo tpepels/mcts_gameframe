@@ -5,7 +5,7 @@ import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
-import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.uct.UCTPlayer;
 
 public class Game {
 
@@ -15,7 +15,7 @@ public class Game {
 
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("breakthrough");
-        AIPlayer aiPlayer1 = new SRPlayer();
+        AIPlayer aiPlayer1 = new UCTPlayer();
         aiPlayer1.setOptions(options1);
         options1.fixedSimulations = true;
         options1.simulations = 25000;

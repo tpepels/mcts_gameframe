@@ -50,9 +50,10 @@ public class SRNode {
         // First add some nodes if required
         if (isLeaf())
             child = expand(board);
+
         if (child != null) {  // Child is a winner
-            setSolved(false);
-            return State.INF;
+            if (solverCheck(child.getValue(), board))
+                return State.INF;
         }
         // :: Recursive reduction
         int r_s_t = S.size(), s_t = S.size(), s = s_t;
@@ -61,7 +62,7 @@ public class SRNode {
 
         // Node is terminal
         if (Math.abs(getValue()) == State.INF) {                            // Solver
-            return getValue();
+            return -getValue();
         } else if (isTerminal()) {     // No solver
             // A draw
             int winner = board.checkWin();
@@ -87,14 +88,16 @@ public class SRNode {
             updateStats(plStats);
             return 0;
         }
+        // :: Initial Budget / Budget Used
+        int initVis = sr_visits, budgetUsed = 0;
         // The current node has some unvisited children
-        if (options.shot && sr_visits < s_t) {
-            for (SRNode n : S) {
-                if (n.sr_visits > 0 || Math.abs(n.getValue()) == State.INF)
+        if (options.shot && sr_visits <= s_t) {
+            for (SRNode a : S) {
+                if (a.sr_visits > 0 || Math.abs(a.getValue()) == State.INF)
                     continue;
                 // Perform play-outs on all unvisited children
-                board.doAIMove(n.getMove(), player);
-                result = n.playOut(board);
+                board.doAIMove(a.getMove(), player);
+                result = a.playOut(board);
                 board.undoMove();
                 //
                 int[] pl = {1, 0, 0};
@@ -106,13 +109,13 @@ public class SRNode {
                 plStats[1] += pl[1];
                 plStats[2] += pl[2];
                 // Update the child as well
-                n.updateStats(pl);
+                a.updateStats(pl);
+                updateStats(pl);
                 // Don't go over budget
-                budget--;
-                if (budget == 0)
+                budgetUsed++;
+                if (budget <= budgetUsed)
                     return 0;
             }
-            updateStats(plStats);
         }
         // Don't start any rounds if there is only 1 child
         if (S.size() == 1) {
@@ -137,7 +140,7 @@ public class SRNode {
         }
 
         // Keep track of the number of cycles at each node
-        cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(S.size())));
+        cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(sr_visits, budget, s_t, s_t);
         // :: UCT
         if (!options.shot && depth > 0 && b < options.bl) {
@@ -159,8 +162,7 @@ public class SRNode {
         if (options.debug && depth > maxDepth)
             maxDepth = depth;
 
-        // :: Initial Budget
-        int initVis = sr_visits, budgetUsed = 0, n;
+
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
         Collections.sort(S, comparator);
         // :: Cycle
@@ -168,7 +170,7 @@ public class SRNode {
             // Local visits are used as memory for the solver
             for (SRNode a : S)
                 a.localVisits = 0;
-            n = 0;
+            int n = 0;
             // :: Round
             while (n < s) {
                 child = S.get(n);
@@ -180,7 +182,9 @@ public class SRNode {
                         continue;
                     int b_1 = b - child.sr_visits;
                     if (depth == 0 && s == 2 && n == 1)
-                        b_1 = Math.max(b_1, budget - budgetUsed - (b - S.get(1).sr_visits));
+                        b_1 = budget - budgetUsed - (b - S.get(1).sr_visits);
+                    if (b_1 <= 0)
+                        throw new RuntimeException("b_1 is " + b_1);
                     // Actual budget
                     int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
                     if (b_b <= 0)
@@ -260,7 +264,7 @@ public class SRNode {
             // (Solver) Check if all children are a loss
             for (SRNode tn : C) {
                 // If the child is not expanded, make sure it is
-                if (tn.isLeaf() && tn.getValue() != State.INF) {
+                if (tn.isLeaf() && Math.abs(tn.getValue()) != State.INF) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
                     SRNode winner = tn.expand(board);

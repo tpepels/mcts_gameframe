@@ -54,7 +54,7 @@ public class State {
 
     public String toString() {
         if (solvedPlayer == 0)
-            return "w:" + Arrays.toString(wins) + " n: " + visits;
+            return Arrays.toString(wins) + "\tn:" + visits;
         else
             return "solved win P" + solvedPlayer;
     }
