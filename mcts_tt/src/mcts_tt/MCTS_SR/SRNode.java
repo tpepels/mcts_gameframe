@@ -61,9 +61,9 @@ public class SRNode {
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
 
         // Node is terminal
-        if (Math.abs(getValue()) == State.INF) {                            // Solver
+        if (Math.abs(getValue()) == State.INF) {    // Solver
             return -getValue();
-        } else if (isTerminal()) {     // No solver
+        } else if (isTerminal()) {                  // No solver
             // A draw
             int winner = board.checkWin();
 //            int b = 1;
@@ -162,7 +162,6 @@ public class SRNode {
         if (options.debug && depth > maxDepth)
             maxDepth = depth;
 
-
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
         Collections.sort(S, comparator);
         // :: Cycle
@@ -182,9 +181,7 @@ public class SRNode {
                         continue;
                     int b_1 = b - child.sr_visits;
                     if (depth == 0 && s == 2 && n == 1)
-                        b_1 = budget - budgetUsed - (b - S.get(1).sr_visits);
-                    if (b_1 <= 0)
-                        throw new RuntimeException("b_1 is " + b_1);
+                        b_1 = Math.max(b_1, budget - budgetUsed - (b - S.get(1).sr_visits));
                     // Actual budget
                     int b_b = Math.min(b_1, budget - budgetUsed) - child.localVisits;
                     if (b_b <= 0)
@@ -195,7 +192,8 @@ public class SRNode {
                     result = -child.MCTS_SR(board, depth + 1, b_b, pl);
                     board.undoMove();
                     // Many stats, wow
-                    budgetUsed += pl[0];
+                    if (!child.isTerminal())
+                        budgetUsed += pl[0];
                     plStats[0] += pl[0];
                     plStats[1] += pl[1];
                     plStats[2] += pl[2];
