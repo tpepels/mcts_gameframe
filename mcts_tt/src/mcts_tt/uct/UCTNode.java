@@ -470,8 +470,6 @@ public class UCTNode {
     }
 
     private void setSolved(boolean win) {
-        if (move == null)
-            System.out.println("hier");
         if (state == null)
             state = tt.getState(hash, false);
         if (win)
