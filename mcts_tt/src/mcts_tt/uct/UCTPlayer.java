@@ -69,7 +69,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
             options.relativeBonus = false;
         if (sw && nMoves == 0)
             options.swUCT = false;
-
+        long startT = System.currentTimeMillis();
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
             long endTime = System.currentTimeMillis() + options.timeInterval;
@@ -103,6 +103,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
                     break; // Break if you find a winning move
             }
         }
+        long endT = System.currentTimeMillis();
         // Return the best move found
         UCTNode bestChild = root.getBestChild();
         bestMove = bestChild.getMove();
@@ -115,8 +116,9 @@ public class UCTPlayer implements AIPlayer, Runnable {
             System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Collisions: " + tt.collisions + ", tps: " + tt.positions);
             System.out.println("Recoveries: " + tt.recoveries);
+            System.out.println((int) ((1000. * simulations) / (endT - startT)) + " playouts per s");
         }
-        int removed = tt.pack(2);
+        int removed = tt.pack(0);
         if (options.debug) {
             System.out.println("Pack cleaned: " + removed + " transpositions");
         }

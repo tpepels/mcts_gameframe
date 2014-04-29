@@ -51,7 +51,9 @@ public class SRPlayer implements AIPlayer, Runnable {
             throw new RuntimeException("MCTS Options not set.");
         root = new SRNode(myPlayer, null, options, board.hash(), tt);
         int[] pl = {0, 0, 0, 0};
+        long startT = System.currentTimeMillis();
         root.MCTS_SR(board, 0, options.simulations, pl);
+        long endT = System.currentTimeMillis();
         // Return the best move found
         SRNode bestChild = root.selectBestMove();
         bestMove = bestChild.getMove();
@@ -62,7 +64,7 @@ public class SRPlayer implements AIPlayer, Runnable {
             System.out.println("Play-outs: " + pl[0]);
             System.out.println("Play-outs check: " + SRNode.totalPlayouts);
             System.out.println("Max sr depth: " + SRNode.maxDepth);
-            System.out.println("Collisions: " + tt.collisions + ", tps: " + tt.positions);
+            System.out.println((int) ((1000. * SRNode.totalPlayouts) / (endT - startT)) + " playouts per s");
         }
         int removed = tt.pack(0);
         if (options.debug)
