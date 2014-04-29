@@ -446,10 +446,8 @@ public class UCTNode {
             else if (t.getValue() == -State.INF)
                 value = -State.INF + t.getnVisits() + MCTSOptions.r.nextDouble();
             else {
-                value = t.visits;
-//                value = t.getValue();
+                value = t.getValue();
             }
-            //
             if (value > max) {
                 max = value;
                 bestChild = t;
@@ -472,6 +470,8 @@ public class UCTNode {
     }
 
     private void setSolved(boolean win) {
+        if (move == null)
+            System.out.println("hier");
         if (state == null)
             state = tt.getState(hash, false);
         if (win)
