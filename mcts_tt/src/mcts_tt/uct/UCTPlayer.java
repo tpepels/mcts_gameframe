@@ -35,7 +35,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
         if (options.history)
             options.resetHistory(board.getMaxUniqueMoveId());
 
-        root = new UCTNode(myPlayer, options, board.hash(), tt);
+        root = new UCTNode(myPlayer, options, board, tt);
         if (nMoves > 0 && board.hash() == 0)
             throw new RuntimeException("Unlikely hash");
         // Reset the nodes' stats

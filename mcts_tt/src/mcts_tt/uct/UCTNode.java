@@ -35,26 +35,26 @@ public class UCTNode {
     /**
      * Constructor for the root
      */
-    public UCTNode(int player, MCTSOptions options, long hash, TransposTable tt) {
+    public UCTNode(int player, MCTSOptions options, IBoard board, TransposTable tt) {
         this.player = player;
         this.options = options;
         this.ply = 0;
         UCTNode.myPlayer = player;
         this.tt = tt;
-        this.hash = hash;
+        this.hash = board.hash();
         this.state = tt.getState(hash, true);
     }
 
     /**
      * Constructor for internal node
      */
-    public UCTNode(int player, int ply, IMove move, MCTSOptions options, long hash, TransposTable tt) {
+    public UCTNode(int player, int ply, IMove move, MCTSOptions options, IBoard board, TransposTable tt) {
         this.player = player;
         this.move = move;
         this.options = options;
         this.ply = ply;
         this.tt = tt;
-        this.hash = hash;
+        this.hash = board.hash();
         this.state = tt.getState(hash, true);
     }
 
@@ -173,7 +173,7 @@ public class UCTNode {
             if (board.doAIMove(moves.get(i), player)) {
                 UCTNode child;
                 // Initialize the child
-                child = new UCTNode(nextPlayer, depth, moves.get(i), options, board.hash(), tt);
+                child = new UCTNode(nextPlayer, depth, moves.get(i), options, board, tt);
                 if (options.solver) {
                     // Check for a winner, (Solver)
                     winner = board.checkWin();
