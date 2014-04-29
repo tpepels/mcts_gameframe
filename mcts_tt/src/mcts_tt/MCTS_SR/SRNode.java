@@ -21,7 +21,7 @@ public class SRNode {
     private List<SRNode> C, S;
     private SRNode bestArm;
     private MCTSOptions options;
-    private int player, localVisits = 0, cycles = 0, sr_visits = 0;
+    private int player, localVisits = 0, cycles = 0;
     private IMove move;
     private TransposTable tt;
     private long hash;
@@ -60,17 +60,11 @@ public class SRNode {
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
 
         // Node is terminal
-        if (Math.abs(getValue()) == State.INF) {    // Solver
+        if (isSolved()) {    // Solver
             return -getValue();
         } else if (isTerminal()) {                  // No solver
             // A draw
             int winner = board.checkWin();
-
-//            int b = 1;
-//            if (score == 1) // In case of win for parent, update budget times, makes more sense...
-//                b = budget;
-//            for (int i = 0; i < b; i++) {
-
             // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
             for (int i = 0; i < budget; i++) {
                 plStats[0]++;
@@ -93,9 +87,9 @@ public class SRNode {
             return 0;
         }
         // The current node has some unvisited children
-        if (options.shot && sr_visits <= s_t) {
+        if (options.shot && getBudgetNode() <= s_t) {
             for (SRNode n : S) {
-                if (n.getVisits() > 0 || Math.abs(n.getValue()) == State.INF)
+                if (n.simulated || n.isSolved())
                     continue;
                 // Perform play-outs on all unvisited children
                 board.doAIMove(n.getMove(), player);
@@ -111,7 +105,7 @@ public class SRNode {
                 plStats[1] += pl[1];
                 plStats[2] += pl[2];
                 plStats[3]++;
-                // Update the child as well
+                // Update the child and current node
                 n.updateStats(pl);
                 updateStats(pl);
                 // Don't go over budget
@@ -123,7 +117,7 @@ public class SRNode {
         if (S.size() == 1) {
             int[] pl = {0, 0, 0, 0};
             child = S.get(0);
-            if (Math.abs(child.getValue()) != State.INF) {
+            if (!child.isSolved()) {
                 // :: Recursion
                 board.doAIMove(child.getMove(), player);
                 result = -child.MCTS_SR(board, depth + 1, budget, pl);
@@ -148,7 +142,7 @@ public class SRNode {
         }
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
-        int b = getBudget(sr_visits, budget, s_t, s_t);
+        int b = getBudget(getBudgetNode(), budget, s_t, s_t);
         // :: UCT Hybrid
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
@@ -183,7 +177,7 @@ public class SRNode {
                 child = S.get(n);
                 n++;
                 // :: Solver win
-                if (Math.abs(child.getValue()) != State.INF) {
+                if (!child.isSolved()) {
                     // Determine the topped off budget
                     if (b <= child.getVisits())
                         continue;
@@ -218,14 +212,14 @@ public class SRNode {
                         if (result == State.INF)
                             bestArm = child;
                         // Update the budgetNode
-                        sr_visits += plStats[3];
+                        state.incrBudgetNode(plStats[3]);
                         return result;
                     } else {
                         // :: Solver: Resume the round with reduced S
                         r_s_t = Math.min(S.size(), r_s_t);
                         s_t = Math.min(S.size(), s_t);
                         s = Math.min(S.size(), s);
-                        b = getBudget(sr_visits, budget, s, s_t);
+                        b = getBudget(getBudgetNode(), budget, s, s_t);
                         // Restart at the first arm to redistribute the budget
                         n = 0;
                     }
@@ -245,10 +239,10 @@ public class SRNode {
             else
                 s--;
             // :: Re-budgeting
-            b += getBudget(sr_visits, budget, s, s_t);
+            b += getBudget(getBudgetNode(), budget, s, s_t);
         }
-        // Update the budgetNode
-        sr_visits += plStats[3];
+        // Update the budgetNode value
+        state.incrBudgetNode(plStats[3]);
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
@@ -274,7 +268,7 @@ public class SRNode {
             // (Solver) Check if all children are a loss
             for (SRNode tn : C) {
                 // If the child is not expanded, make sure it is
-                if (tn.isLeaf() && Math.abs(tn.getValue()) != State.INF) {
+                if (tn.isLeaf() && !tn.isSolved()) {
                     // Execute the move represented by the child
                     board.doAIMove(tn.getMove(), player);
                     SRNode winner = tn.expand(board);
@@ -312,7 +306,7 @@ public class SRNode {
                 child = uct_select();
         }
         // (Solver) Check for proven win / loss / draw
-        if (Math.abs(child.getValue()) != State.INF) {
+        if (!child.isSolved()) {
             board.doAIMove(child.getMove(), player);
             if (child.isTerminal() || !child.simulated) {
                 // :: Play-out
@@ -343,7 +337,7 @@ public class SRNode {
         }
         // :: Update
         updateStats(plStats);
-        sr_visits++;
+        state.incrBudgetNode(1);
         return 0;
     }
 
@@ -541,6 +535,14 @@ public class SRNode {
         localVisits += plStats[0];
     }
 
+    private int getBudgetNode() {
+        if (state == null)
+            state = tt.getState(hash, true);
+        if (state == null)
+            return 0;
+        return state.getBudgetNode();
+    }
+
     private void setSolved(boolean win) {
         if (state == null)
             state = tt.getState(hash, false);
@@ -572,6 +574,10 @@ public class SRNode {
         return state.getVisits();
     }
 
+    private boolean isSolved() {
+        return Math.abs(getValue()) == State.INF;
+    }
+
     public IMove getMove() {
         return move;
     }
@@ -579,6 +585,6 @@ public class SRNode {
     @Override
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("##0.####");
-        return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + sr_visits + "\tc: " + cycles;
+        return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + state.getBudgetNode() + "\tc: " + cycles;
     }
 }

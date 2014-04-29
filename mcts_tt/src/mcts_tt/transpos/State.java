@@ -5,10 +5,9 @@ import java.util.Arrays;
 public class State {
     public static double INF = 999999;
     public long hash;
-    public int visits;
+    public int visits = 0, lastVisit = 0, budgetNode = 0;
     private int[] wins = {0, 0};
     private short solvedPlayer = 0;
-    public int lastVisit = 0;
     public boolean visited = false;
     //
     public String test = null;
@@ -49,6 +48,14 @@ public class State {
         if (solvedPlayer > 0 && player != solvedPlayer)
             throw new RuntimeException("setSolved with different player!");
         this.solvedPlayer = (short) player;
+    }
+
+    public void incrBudgetNode(int incr) {
+        this.budgetNode += incr;
+    }
+
+    public int getBudgetNode() {
+        return budgetNode;
     }
 
     public int getVisits() {
