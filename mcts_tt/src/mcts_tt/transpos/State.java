@@ -11,6 +11,8 @@ public class State {
     public int lastVisit = 0;
     public boolean visited = false;
     //
+    public String test = null;
+    //
     public State next = null;
 
     public State(long hash) {

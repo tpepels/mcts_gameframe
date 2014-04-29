@@ -12,6 +12,15 @@ public class TransposTable {
         this.states = new State[TT_SIZE];
     }
 
+    public State getState(long hash, boolean existingOnly, String test) {
+        State s = getState(hash, existingOnly);
+        if (s.test == null)
+            s.test = test;
+        else if (!s.test.equals(test))
+            throw new RuntimeException("Boards don't match!!! State:\n" + s.test + "\nTest:\n" + test);
+        return s;
+    }
+
     public State getState(long hash, boolean existingOnly) {
         int hashPos = getHashPos(hash);
         State s = states[hashPos];
@@ -57,7 +66,7 @@ public class TransposTable {
             ps = null;
             // Check if the states were visited this round
             while (true) {
-                if (s.visited) {
+                if (s.visited && offset > 0) {
                     s.visited = false;
                     s.lastVisit = moveCounter;
                     ps = s;
