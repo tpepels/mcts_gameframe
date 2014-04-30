@@ -182,9 +182,9 @@ public class SRNode {
                     if (b <= child.getVisits())
                         continue;
                     int b_1 = (int) (b - child.getVisits());
-                    if (depth == 0 && s == 2 && n == 1) {
+                    if (s == 2 && n == 1) {
                         int b_r = (int) (budget - plStats[3] - (b - S.get(1).getVisits()));
-                        b_1 = Math.max(b_1, budget - plStats[3] - (b - b_r));
+                        b_1 = Math.max(b_1, b_r);
                     }
                     // :: Actual budget
                     int b_b = Math.min(b_1, budget - plStats[3]) - child.localVisits;
@@ -360,7 +360,7 @@ public class SRNode {
                 uctValue = -State.INF + MCTSOptions.r.nextDouble();
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np) / nc);
+                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 0.1) / nc);
             }
             // Remember the highest UCT value
             if (uctValue > max) {
@@ -585,6 +585,10 @@ public class SRNode {
     @Override
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("##0.####");
-        return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + state.getBudgetNode() + "\tc: " + cycles;
+        if (state != null) {
+            return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + state.getBudgetNode() + "\tc: " + cycles;
+        } else {
+            return move.toString();
+        }
     }
 }
