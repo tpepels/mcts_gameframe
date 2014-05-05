@@ -360,7 +360,7 @@ public class SRNode {
                 uctValue = -State.INF + MCTSOptions.r.nextDouble();
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 0.1) / nc);
+                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 1) / nc);
             }
             // Remember the highest UCT value
             if (uctValue > max) {
