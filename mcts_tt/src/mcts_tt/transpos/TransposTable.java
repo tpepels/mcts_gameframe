@@ -12,15 +12,6 @@ public class TransposTable {
         this.states = new State[TT_SIZE];
     }
 
-    public State getState(long hash, boolean existingOnly, String test) {
-        State s = getState(hash, existingOnly);
-        if (s != null && s.test == null)
-            s.test = test;
-        else if (s != null && !s.test.equals(test))
-            throw new RuntimeException("Boards don't match!!! State:\n" + s.test + "\nTest:\n" + test);
-        return s;
-    }
-
     public State getState(long hash, boolean existingOnly) {
         int hashPos = getHashPos(hash);
         State s = states[hashPos];
