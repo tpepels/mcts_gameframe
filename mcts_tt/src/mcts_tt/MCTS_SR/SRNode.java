@@ -242,7 +242,7 @@ public class SRNode {
             b += getBudget(getBudgetNode(), budget, s, s_t);
         }
         // Update the budgetSpent value
-        state.incrBudgetNode(plStats[3]);
+        updateBudgetSpent(plStats[3]);
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
@@ -340,7 +340,7 @@ public class SRNode {
         }
         // :: Update
         updateStats(plStats);
-        state.incrBudgetNode(1);
+        updateBudgetSpent(1);
         return 0;
     }
 
@@ -535,6 +535,12 @@ public class SRNode {
         if (state == null)
             state = tt.getState(hash, false);
         state.setValue(s);
+    }
+
+    private void updateBudgetSpent(int n) {
+        if (state == null)
+            state = tt.getState(hash, false);
+        state.updateStats(n);
     }
 
     private void updateStats(int[] plStats) {
