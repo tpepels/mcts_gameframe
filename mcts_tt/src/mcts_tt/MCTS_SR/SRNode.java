@@ -58,9 +58,8 @@ public class SRNode {
         int r_s_t = S.size(), s_t = S.size(), s = s_t;
         for (int i = 0; i < cycles; i++)
             r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
-
         // Node is terminal
-        if (isSolved()) {    // Solver
+        if (isSolved()) {                           // Solver
             return -getValue();
         } else if (isTerminal()) {                  // No solver
             // A draw
@@ -74,7 +73,7 @@ public class SRNode {
             updateStats(plStats);
             return 0;
         }
-        // SHOT, single budget, do a play-out
+        //<editor-fold desc="SHOT">
         if (options.shot && budget == 1) {
             result = playOut(board);
             // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
@@ -114,7 +113,7 @@ public class SRNode {
             }
         }
         // Don't start any rounds if there is only 1 child
-        if (S.size() == 1) {
+        if (options.shot && S.size() == 1) {
             int[] pl = {0, 0, 0, 0};
             child = S.get(0);
             if (!child.isSolved()) {
@@ -140,11 +139,12 @@ public class SRNode {
             //
             return result;
         }
+        //</editor-fold>
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(getBudgetNode(), budget, s_t, s_t);
         // :: UCT Hybrid
-        if (!options.shot && depth > 0 && b < options.bl) {
+        if (!options.shot && depth > 0 && (S.size() == 1 || b < options.bl)) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 int[] pl = {0, 0, 0, 0};
@@ -167,7 +167,7 @@ public class SRNode {
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
         Collections.sort(S, comparator);
         // :: Cycle
-        while (s > 1 && plStats[3] <= budget) {
+        while (s > 1 && plStats[3] < budget) {
             // Local visits are used as memory for the solver
             for (SRNode a : S)
                 a.localVisits = 0;
@@ -211,7 +211,7 @@ public class SRNode {
                     if (solverCheck(result, board)) {   // Returns true if node is solved
                         if (result == State.INF)
                             bestArm = child;
-                        // Update the budgetNode
+                        // Update the budgetSpent
                         state.incrBudgetNode(plStats[3]);
                         return result;
                     } else {
@@ -241,11 +241,15 @@ public class SRNode {
             // :: Re-budgeting
             b += getBudget(getBudgetNode(), budget, s, s_t);
         }
-        // Update the budgetNode value
+        // Update the budgetSpent value
         state.incrBudgetNode(plStats[3]);
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
+        // :: SR Max back-propagation
+        if (!isSolved() && options.max_back && bestArm != null) {
+            setValue(bestArm.state);
+        }
         return 0;
     }
 
@@ -294,7 +298,6 @@ public class SRNode {
     }
 
     private double UCT_MCTS(IBoard board, int[] plStats) {
-        // First add some nodes if required
         SRNode child = null;
         if (isLeaf())
             child = expand(board);
@@ -528,6 +531,12 @@ public class SRNode {
         return expanded && C != null && C.size() == 0;
     }
 
+    private void setValue(State s) {
+        if (state == null)
+            state = tt.getState(hash, false);
+        state.setValue(s);
+    }
+
     private void updateStats(int[] plStats) {
         if (state == null)
             state = tt.getState(hash, false);
@@ -540,7 +549,7 @@ public class SRNode {
             state = tt.getState(hash, true);
         if (state == null)
             return 0;
-        return state.getBudgetNode();
+        return state.getBudgetSpent();
     }
 
     private void setSolved(boolean win) {
@@ -586,7 +595,7 @@ public class SRNode {
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("##0.####");
         if (state != null) {
-            return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + state.getBudgetNode() + "\tc: " + cycles;
+            return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + state.getBudgetSpent() + "\tc: " + cycles;
         } else {
             return move.toString();
         }

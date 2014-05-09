@@ -5,7 +5,7 @@ import java.util.Arrays;
 public class State {
     public static double INF = 999999;
     public long hash;
-    public int visits = 0, lastVisit = 0, budgetNode = 0;
+    public int visits = 0, lastVisit = 0, budgetSpent = 0;
     private int[] wins = {0, 0};
     private short solvedPlayer = 0;
     public boolean visited = false;
@@ -26,7 +26,15 @@ public class State {
         this.visits++;
     }
 
+    public void setValue(State s) {
+        visited = true;
+        this.visits = s.visits;
+        this.wins[0] = s.wins[0];
+        this.wins[1] = s.wins[1];
+    }
+
     public void updateStats(int n, int p1, int p2) {
+        visited = true;
         this.visits += n;
         wins[0] += p1;
         wins[1] += p2;
@@ -51,11 +59,11 @@ public class State {
     }
 
     public void incrBudgetNode(int incr) {
-        this.budgetNode += incr;
+        this.budgetSpent += incr;
     }
 
-    public int getBudgetNode() {
-        return budgetNode;
+    public int getBudgetSpent() {
+        return budgetSpent;
     }
 
     public int getVisits() {
