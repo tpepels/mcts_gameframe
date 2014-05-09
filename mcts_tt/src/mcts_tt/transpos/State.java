@@ -58,7 +58,7 @@ public class State {
         this.solvedPlayer = (short) player;
     }
 
-    public void incrBudgetNode(int incr) {
+    public void incrBudgetSpent(int incr) {
         this.budgetSpent += incr;
     }
 

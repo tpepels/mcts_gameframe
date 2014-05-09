@@ -212,7 +212,7 @@ public class SRNode {
                         if (result == State.INF)
                             bestArm = child;
                         // Update the budgetSpent
-                        state.incrBudgetNode(plStats[3]);
+                        state.incrBudgetSpent(plStats[3]);
                         return result;
                     } else {
                         // :: Solver: Resume the round with reduced S
@@ -540,7 +540,7 @@ public class SRNode {
     private void updateBudgetSpent(int n) {
         if (state == null)
             state = tt.getState(hash, false);
-        state.updateStats(n);
+        state.incrBudgetSpent(n);
     }
 
     private void updateStats(int[] plStats) {
