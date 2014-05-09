@@ -248,7 +248,7 @@ public class SRNode {
             bestArm = S.get(0);
         // :: SR Max back-propagation
         if (!isSolved() && options.max_back && bestArm != null) {
-            setValue(bestArm.state);
+            setValue(bestArm.getState());
         }
         return 0;
     }
@@ -587,6 +587,12 @@ public class SRNode {
         if (state == null)
             return 0.;
         return state.getVisits();
+    }
+
+    private State getState() {
+        if (state == null)
+            state = tt.getState(hash, false);
+        return state;
     }
 
     private boolean isSolved() {

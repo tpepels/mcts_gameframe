@@ -27,6 +27,8 @@ public class State {
     }
 
     public void setValue(State s) {
+        if (s == null)
+            throw new NullPointerException("State is null");
         visited = true;
         this.visits = s.visits;
         this.wins[0] = s.wins[0];
