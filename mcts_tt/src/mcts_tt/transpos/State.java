@@ -43,7 +43,7 @@ public class State {
     }
 
     public double getMean(int player) {
-        if (player != 1 || player != 2)
+        if (player != 1 && player != 2)
             throw new RuntimeException("Invalid player " + player + " in getMean");
         visited = true;
         if (solvedPlayer == 0) { // Position is not solved, return mean
@@ -56,7 +56,7 @@ public class State {
     }
 
     public void setSolved(int player) {
-        if (player != 1 || player != 2)
+        if (player != 1 && player != 2)
             throw new RuntimeException("Invalid player " + player + " in setSolved");
         visited = true;
         if (solvedPlayer > 0 && player != solvedPlayer)
