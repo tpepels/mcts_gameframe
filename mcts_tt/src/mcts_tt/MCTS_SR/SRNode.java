@@ -144,7 +144,7 @@ public class SRNode {
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(getBudgetNode(), budget, s_t, s_t);
         // :: UCT Hybrid
-        if (!options.shot && depth > 0 && (S.size() == 1 || b < options.bl)) {
+        if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 int[] pl = {0, 0, 0, 0};
@@ -167,7 +167,7 @@ public class SRNode {
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
         Collections.sort(S, comparator);
         // :: Cycle
-        while (s > 1 && plStats[3] < budget) {
+        do {
             // Local visits are used as memory for the solver
             for (SRNode a : S)
                 a.localVisits = 0;
@@ -240,14 +240,14 @@ public class SRNode {
                 s--;
             // :: Re-budgeting
             b += getBudget(getBudgetNode(), budget, s, s_t);
-        }
+        } while (s > 1 && plStats[3] < budget);
         // Update the budgetSpent value
         updateBudgetSpent(plStats[3]);
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
         // :: SR Max back-propagation
-        if (!isSolved() && options.max_back && bestArm != null) {
+        if (!isSolved() && options.max_back && bestArm != null && bestArm.state != null) {
             setValue(bestArm.getState());
         }
         return 0;

@@ -259,7 +259,7 @@ public class SimGame {
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
                 } else if (tag.startsWith("uct")) {
-                    options.uctC = Double.parseDouble(tag.substring(1));
+                    options.uctC = Double.parseDouble(tag.substring(3));
                 } else if (tag.equals("sr")) {
                     options.stat_reset = true;
                 } else if (tag.equals("rr")) {
