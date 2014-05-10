@@ -182,7 +182,7 @@ public class SRNode {
                     if (b <= child.getVisits())
                         continue;
                     int b_1 = (int) (b - child.getVisits());
-                    if (s == 2 && n == 1) {
+                    if (depth == 0 && s == 2 && n == 1) {
                         int b_r = (int) (budget - plStats[3] - (b - S.get(1).getVisits()));
                         b_1 = Math.max(b_1, b_r);
                     }
