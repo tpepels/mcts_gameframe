@@ -55,9 +55,7 @@ public class SRNode {
                 return State.INF;
         }
         // :: Recursive reduction
-        int r_s_t = S.size(), s_t = S.size(), s = s_t;
-        for (int i = 0; i < cycles; i++)
-            r_s_t -= (int) Math.floor(r_s_t / (double) options.rc);
+        int s_t = S.size(), s = s_t;
         // Node is terminal
         if (isSolved()) {                           // Solver
             return -getValue();
@@ -144,7 +142,8 @@ public class SRNode {
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(getBudgetNode(), budget, s_t, s_t);
         // :: UCT Hybrid
-        if (!options.shot && depth > 0 && b < options.bl) {
+//        if (!options.shot && depth > 0 && b < options.bl) {
+        if (!options.shot && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 int[] pl = {0, 0, 0, 0};
@@ -216,7 +215,6 @@ public class SRNode {
                         return result;
                     } else {
                         // :: Solver: Resume the round with reduced S
-                        r_s_t = Math.min(S.size(), r_s_t);
                         s_t = Math.min(S.size(), s_t);
                         s = Math.min(S.size(), s);
                         b = getBudget(getBudgetNode(), budget, s, s_t);
@@ -229,10 +227,7 @@ public class SRNode {
                     break;
             }
             // :: Removal policy: Sorting
-            if (options.remove)
-                Collections.sort(S.subList(0, s), comparator);
-            else
-                Collections.sort(S, comparator);
+            Collections.sort(S.subList(0, s), comparator);
             // :: Removal policy: Reduction
             if (options.rc > 1)
                 s -= (int) Math.floor(s / (double) options.rc);
@@ -358,12 +353,12 @@ public class SRNode {
                 uctValue = State.INF + MCTSOptions.r.nextDouble();
             else if (c.getVisits() == 0 && c.getValue() != -State.INF) {
                 // First, visit all children at least once
-                uctValue = 100 + MCTSOptions.r.nextDouble();
+                uctValue = 100. + MCTSOptions.r.nextDouble();
             } else if (c.getValue() == -State.INF) {
                 uctValue = -State.INF + MCTSOptions.r.nextDouble();
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 1) / nc);
+                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 1.) / nc);
             }
             // Remember the highest UCT value
             if (uctValue > max) {
