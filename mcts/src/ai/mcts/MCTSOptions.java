@@ -89,7 +89,7 @@ public class MCTSOptions {
             kr = 2.2;
             kq = 1.6;
         } else if (game.equalsIgnoreCase("breakthrough")) {
-            uctC = 1.;
+            uctC = .5;
             // Bonus constants
             kr = 8.0;
             kq = 2.0;
