@@ -266,10 +266,6 @@ public class SimGame {
                     options.useHeuristics = true;
                 } else if (tag.startsWith("uct")) {
                     options.uctC = Double.parseDouble(tag.substring(3));
-                } else if (tag.equals("sr")) {
-                    options.stat_reset = true;
-                } else if (tag.equals("rr")) {
-                    options.rec_halving = true;
                 } else if (tag.equals("s")) {
                     options.solver = true;
                 } else if (tag.startsWith("rc")) {
@@ -281,8 +277,6 @@ public class SimGame {
                     options.bp_range = Double.parseDouble(tag.substring(2));
                 } else if (tag.equals("max")) {
                     options.max_back = true;
-                } else if (tag.equals("r")) {
-                    options.remove = true;
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.history = true;
