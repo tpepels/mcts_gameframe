@@ -142,8 +142,7 @@ public class SRNode {
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(getBudgetNode(), budget, s_t, s_t);
         // :: UCT Hybrid
-//        if (!options.shot && depth > 0 && b < options.bl) {
-        if (!options.shot && b < options.bl) {
+        if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 int[] pl = {0, 0, 0, 0};
