@@ -113,7 +113,6 @@ public class UCTPlayer implements AIPlayer, Runnable {
             System.out.println("Player " + myPlayer);
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
-            System.out.println("Root visits: " + root.getnVisits());
             System.out.println("Collisions: " + tt.collisions + ", tps: " + tt.positions);
             System.out.println("Recoveries: " + tt.recoveries);
             System.out.println((int) ((1000. * simulations) / (endT - startT)) + " playouts per s");

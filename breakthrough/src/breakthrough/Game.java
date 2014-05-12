@@ -19,6 +19,8 @@ public class Game {
         options1.fixedSimulations = true;
         options1.simulations = 25000;
         options1.solver = false;
+        options1.history = true;
+        options1.progHistory = true;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
@@ -27,6 +29,8 @@ public class Game {
         options2.fixedSimulations = true;
         options2.simulations = 25000;
         options2.solver = false;
+        options2.progHistory = true;
+        options2.history = true;
 
         AIPlayer aiPlayer;
         Move m = null;

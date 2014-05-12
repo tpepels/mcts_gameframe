@@ -16,6 +16,8 @@ import java.util.List;
 
 public class SRNode {
     public static int maxDepth = 0;
+    private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
+    private static final MoveList mastMoves = new MoveList(100);
     //
     private boolean expanded = false, simulated = false;
     private List<SRNode> C, S;
@@ -190,9 +192,17 @@ public class SRNode {
                         continue;
                     // :: Recursion
                     int[] pl = {0, 0, 0, 0};   // This will store the results of the recursion
+                    // Add the move from the history list
+                    if (options.history)
+                        movesMade[player - 1].add(child.getMove());
                     board.doAIMove(child.getMove(), player);
                     result = -child.MCTS_SR(board, depth + 1, b_b, pl);
                     board.undoMove();
+                    // Remove the move from the history list
+                    if (options.history) {
+                        if (!movesMade[player - 1].clearLast(1).equals(child.move))
+                            throw new RuntimeException("Invalid move in history list");
+                    }
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     plStats[0] += pl[0];
                     plStats[1] += pl[1];
@@ -312,6 +322,10 @@ public class SRNode {
         }
         // (Solver) Check for proven win / loss / draw
         if (!child.isSolved()) {
+
+            if (options.history)
+                movesMade[player - 1].add(child.getMove());
+
             board.doAIMove(child.getMove(), player);
             if (!child.simulated) {
                 // :: Play-out
@@ -327,6 +341,9 @@ public class SRNode {
                 result = -child.UCT_MCTS(board, plStats);
 
             board.undoMove();
+
+            if (options.history)
+                movesMade[player - 1].clearLast(1);
         } else {
             result = child.getValue();
         }
@@ -367,6 +384,8 @@ public class SRNode {
             } else {
                 // Compute the uct value with the (new) average value
                 uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 1.) / nc);
+                if (options.progHistory)
+                    uctValue += options.getHistoryValue(3 - player, move.getUniqueId()) * (options.phW / (getVisits() - getWins() + 1));
             }
             // Remember the highest UCT value
             if (uctValue > max) {
@@ -435,13 +454,30 @@ public class SRNode {
         }
     };
 
+    private final Comparator<SRNode> phComparator = new Comparator<SRNode>() {
+        private double v1
+                ,
+                v2;
+
+        @Override
+        public int compare(SRNode o1, SRNode o2) {
+            v1 = o1.getValue();
+            v2 = o2.getValue();
+            v1 += options.getHistoryValue(3 - player, move.getUniqueId()) * (options.sr_phW / (getVisits() - getWins() + 1));
+            v2 += options.getHistoryValue(3 - player, move.getUniqueId()) * (options.sr_phW / (getVisits() - getWins() + 1));
+            return Double.compare(v2, v1);
+        }
+    };
+
     public static int totalPlayouts = 0;
 
     private int playOut(IBoard board) {
         totalPlayouts++;
         simulated = true;
         boolean gameEnded, moveMade;
-        int currentPlayer = board.getPlayerToMove(), nMoves = 0;
+        int[] pMoves = new int[2];
+        double mastMax, mastVal;
+        int cp = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
@@ -460,14 +496,38 @@ public class SRNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-                currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
+                // Select a move to play
+                if (options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
+                    mastMoves.clear();
+                    mastMax = Double.NEGATIVE_INFINITY;
+                    // Select the move with the highest MAST value
+                    for (int i = 0; i < moves.size(); i++) {
+                        mastVal = moves.get(i).getHistoryVal(cp, options);
+                        if (mastVal > mastMax) {
+                            mastMoves.clear();
+                            mastMax = mastVal;
+                            mastMoves.add(moves.get(i));
+                        } else if (mastVal == mastMax) {
+                            mastMoves.add(moves.get(i));
+                        }
+                    }
+                    currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
+                } else {
+                    currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
+                }
                 // Check if the move can be made, otherwise remove it from the list
-                if (board.doAIMove(currentMove, currentPlayer)) {
+                if (board.doAIMove(currentMove, cp)) {
                     nMoves++;
+                    pMoves[cp - 1]++;
+
+                    // Keep track of moves made
+                    if (options.history && !options.to_history)
+                        movesMade[cp - 1].add(currentMove);
+
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
-                    currentPlayer = board.getOpponent(currentPlayer);
+                    cp = board.getOpponent(cp);
                 } else {
                     // The move was illegal, remove it from the list.
                     moveMade = false;
@@ -478,7 +538,19 @@ public class SRNode {
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
-
+        // Update the history values for the moves made during the match
+        if (options.history) {
+            double p1Score = (winner == IBoard.P1_WIN) ? 1 : -1;
+            for (int i = 0; i < movesMade[0].size(); i++) {
+                options.updateHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
+            }
+            for (int i = 0; i < movesMade[1].size(); i++) {
+                options.updateHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
+            }
+            // Clear the moves made during the play-out
+            movesMade[0].clearLast(pMoves[0]);
+            movesMade[1].clearLast(pMoves[1]);
+        }
         return winner;
     }
 
@@ -579,6 +651,14 @@ public class SRNode {
         if (state == null)
             return 0.;
         return state.getMean(3 - player);
+    }
+
+    private double getWins() {
+        if (state == null)
+            state = tt.getState(hash, true);
+        if (state == null)
+            return 0.;
+        return state.getWins(3 - player);
     }
 
     /**

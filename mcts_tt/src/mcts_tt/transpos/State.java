@@ -55,6 +55,17 @@ public class State {
             return (player == solvedPlayer) ? INF : -INF;
     }
 
+    public double getWins(int player) {
+        visited = true;
+        if (solvedPlayer == 0) { // Position is not solved, return mean
+            if (visits > 0)
+                return wins[player - 1];
+            else
+                return 0;
+        } else    // Position is solved, return inf
+            return (player == solvedPlayer) ? INF : -INF;
+    }
+
     public void setSolved(int player) {
         if (player != 1 && player != 2)
             throw new RuntimeException("Invalid player " + player + " in setSolved");

@@ -198,14 +198,14 @@ public class UCTNode {
         UCTNode selected = null;
         double max = Double.NEGATIVE_INFINITY;
         // Use UCT down the tree
-        double uctValue, np = getnVisits();
+        double uctValue, np = getVisits();
         // Select a child according to the UCT Selection policy
         for (UCTNode c : children) {
-            double nc = c.getnVisits();
+            double nc = c.getVisits();
             // Always select a proven win
             if (c.getValue() == State.INF)
                 uctValue = State.INF + MCTSOptions.r.nextDouble();
-            else if (c.getnVisits() == 0 && c.getValue() != -State.INF) {
+            else if (c.getVisits() == 0 && c.getValue() != -State.INF) {
                 // First, visit all children at least once
                 uctValue = 100 + MCTSOptions.r.nextDouble();
             } else if (c.getValue() == -State.INF) {
@@ -213,6 +213,8 @@ public class UCTNode {
             } else {
                 // Compute the uct value with the (new) average value
                 uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np) / nc);
+                if (options.progHistory)
+                    uctValue += options.getHistoryValue(3 - player, move.getUniqueId()) * (options.phW / (getVisits() - getWins() + 1));
             }
             // Remember the highest UCT value
             if (uctValue > max) {
@@ -223,53 +225,11 @@ public class UCTNode {
         return selected;
     }
 
-    private int chooseEGreedyEval(IBoard board, List<IMove> moves, int currentPlayer) {
-        double roll = MCTSOptions.r.nextDouble();
-        double tolerance = 0.0001;
-
-        if (roll < options.egeEpsilon) {
-            return MCTSOptions.r.nextInt(moves.size());
-        }
-
-        List<IMove> myMoves = new ArrayList();
-        myMoves.addAll(moves);
-
-        ArrayList<Integer> bestMoveIndices = new ArrayList();
-        double bestValue = -State.INF - 1;
-
-        for (int i = 0; i < myMoves.size(); i++) {
-            IMove move = myMoves.get(i);
-            boolean success = board.doAIMove(move, currentPlayer);
-
-            if (!success)
-                continue;
-
-            double eval = board.evaluate(currentPlayer, options.efVer);
-            board.undoMove();
-
-            if (eval > bestValue + tolerance) {
-                // a clearly better move
-                bestMoveIndices.clear();
-                bestMoveIndices.add(i);
-                bestValue = eval;
-            } else if (eval >= (bestValue - tolerance) && eval <= (bestValue + tolerance)) {
-                // a tie
-                bestMoveIndices.add(i);
-                if (eval > bestValue)
-                    bestValue = eval;
-            }
-        }
-
-        assert (bestMoveIndices.size() > 0);
-        int idx = MCTSOptions.r.nextInt(bestMoveIndices.size());
-        return bestMoveIndices.get(idx);
-    }
-
     @SuppressWarnings("ConstantConditions")
     private double playOut(IBoard board, int depth) {
         boolean gameEnded, moveMade;
         double detScore = 0;
-        int currentPlayer = board.getPlayerToMove(), moveIndex = -1;
+        int currentPlayer = board.getPlayerToMove();
         double mastMax, mastVal, nMoves = 0;
         int nMovesInt = 0;
         List<IMove> moves;
@@ -295,12 +255,7 @@ public class UCTNode {
                     break;
                 }
 
-                // Select a move from the available ones
-                if (options.epsGreedyEval) {
-                    // If epsilon greedy play-outs, choose the highest eval
-                    moveIndex = chooseEGreedyEval(board, moves, currentPlayer);
-                    currentMove = moves.get(moveIndex);
-                } else if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
+                if (options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
                     mastMoves.clear();
                     mastMax = Double.NEGATIVE_INFINITY;
                     // Select the move with the highest MAST value
@@ -424,10 +379,10 @@ public class UCTNode {
         if (options.history) {
             double p1Score = (winner == IBoard.P1_WIN) ? Math.signum(score) : -Math.signum(score);
             for (int i = 0; i < movesMade[0].size(); i++) {
-                options.resetHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
+                options.updateHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
             }
             for (int i = 0; i < movesMade[1].size(); i++) {
-                options.resetHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
+                options.updateHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
             }
             // Clear the lists
             movesMade[0].clear();
@@ -444,7 +399,7 @@ public class UCTNode {
             if (t.getValue() == State.INF)
                 value = State.INF + MCTSOptions.r.nextDouble();
             else if (t.getValue() == -State.INF)
-                value = -State.INF + t.getnVisits() + MCTSOptions.r.nextDouble();
+                value = -State.INF + t.getVisits() + MCTSOptions.r.nextDouble();
             else {
                 value = t.getValue();
             }
@@ -489,7 +444,18 @@ public class UCTNode {
         return state.getMean(3 - player);
     }
 
-    public double getnVisits() {
+    private double getWins() {
+        if (state == null)
+            state = tt.getState(hash, true);
+        if (state == null)
+            return 0.;
+        return state.getWins(3 - player);
+    }
+
+    /**
+     * @return The number of visits of the transposition
+     */
+    private double getVisits() {
         if (state == null)
             state = tt.getState(hash, true);
         if (state == null)
@@ -516,6 +482,6 @@ public class UCTNode {
     @Override
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("###,##0.00000");
-        return move + "\tValue: " + df2.format(getValue()) + "\tVisits: " + getnVisits();
+        return move + "\tValue: " + df2.format(getValue()) + "\tVisits: " + getVisits();
     }
 }

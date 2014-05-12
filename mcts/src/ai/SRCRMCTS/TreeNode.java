@@ -86,7 +86,7 @@ public class TreeNode {
             }
             // Update the MAST value for the move, use original value not the altered reward (signum)
             if (options.useHeuristics && options.MAST)
-                options.resetHistory(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
+                options.updateHistory(player, child.getMove().getUniqueId(), -1 * Math.signum(result)); // It's the child's reward that counts, hence -result
             // set the board back to its previous configuration
             board.undoMove();
         } else {

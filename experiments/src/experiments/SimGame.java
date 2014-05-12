@@ -174,7 +174,8 @@ public class SimGame {
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.history = true;
-                    options.mastEps = Double.parseDouble(tag.substring(4));
+                    if (tryParseDouble(tag.substring(4)))
+                        options.mastEps = Double.parseDouble(tag.substring(4));
                 } else if (tag.startsWith("sw")) {
                     options.swUCT = true;
                     if (tryParseDouble(tag.substring(2)))
@@ -203,6 +204,11 @@ public class SimGame {
                     options.nodePriorsVisits = Integer.parseInt(tag.substring(2));
                 } else if (tag.startsWith("efv")) {
                     options.efVer = Integer.parseInt(tag.substring(3));
+                } else if (tag.startsWith("ph")) {
+                    options.history = true;
+                    options.progHistory = true;
+                    if (tryParseDouble(tag.substring(2)))
+                        options.phW = Double.parseDouble(tag.substring(2));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
@@ -283,6 +289,21 @@ public class SimGame {
                     options.mastEps = Double.parseDouble(tag.substring(4));
                 } else if (tag.startsWith("shot")) {
                     options.enableShot();
+                } else if (tag.startsWith("ph")) {
+                    options.history = true;
+                    options.progHistory = true;
+                    if (tryParseDouble(tag.substring(2)))
+                        options.phW = Double.parseDouble(tag.substring(2));
+                } else if (tag.startsWith("srph")) {
+                    options.history = true;
+                    options.progHistory = true;
+                    if (tryParseDouble(tag.substring(4)))
+                        options.sr_phW = Double.parseDouble(tag.substring(4));
+                } else if (tag.startsWith("mast")) {
+                    options.MAST = true;
+                    options.history = true;
+                    if (tryParseDouble(tag.substring(4)))
+                        options.mastEps = Double.parseDouble(tag.substring(4));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

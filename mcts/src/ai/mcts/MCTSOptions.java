@@ -60,6 +60,9 @@ public class MCTSOptions {
     public double progBiasWeight = 0.0;
     public boolean pbDecay = false;
     //
+    public boolean progHistory = false;
+    public double phW = 1, sr_phW = 1;
+    //
     private int instance = 0;
     private double[][] mastValues, mastVisits;
 
@@ -175,7 +178,7 @@ public class MCTSOptions {
         mastVisits = new double[2][maxId];
     }
 
-    public void resetHistory(int player, int moveId, double value) {
+    public void updateHistory(int player, int moveId, double value) {
         mastValues[player - 1][moveId] +=
                 (value - mastValues[player - 1][moveId]) /
                         (++mastVisits[player - 1][moveId]);

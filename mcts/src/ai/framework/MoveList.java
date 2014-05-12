@@ -25,6 +25,14 @@ public class MoveList {
         size = 0;
     }
 
+    public IMove clearLast(int n) {
+        size -= n;
+
+        if (size < 0)
+            throw new RuntimeException("Size is smaller than 0 " + size);
+        return moves[size];
+    }
+
     public IMove get(int index) {
         return moves[index];
     }
