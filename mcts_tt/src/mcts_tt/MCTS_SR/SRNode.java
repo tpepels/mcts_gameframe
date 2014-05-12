@@ -297,15 +297,23 @@ public class SRNode {
             child = expand(board);
         double result;
         if (child == null) {
-            if (isTerminal())
-                child = this;
-            else
+            if (isTerminal()) {
+                // A draw
+                int winner = board.checkWin();
+                // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
+                plStats[0]++;
+                if (winner != IBoard.DRAW)
+                    plStats[winner]++;
+                updateStats(plStats);
+                updateBudgetSpent(1);
+                return 0;
+            } else
                 child = uct_select();
         }
         // (Solver) Check for proven win / loss / draw
         if (!child.isSolved()) {
             board.doAIMove(child.getMove(), player);
-            if (child.isTerminal() || !child.simulated) {
+            if (!child.simulated) {
                 // :: Play-out
                 result = child.playOut(board);
                 plStats[0]++;
@@ -317,6 +325,7 @@ public class SRNode {
                 child.simulated = true;
             } else // :: Recursion
                 result = -child.UCT_MCTS(board, plStats);
+
             board.undoMove();
         } else {
             result = child.getValue();
