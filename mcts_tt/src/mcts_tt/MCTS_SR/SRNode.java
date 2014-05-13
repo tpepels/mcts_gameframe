@@ -385,7 +385,7 @@ public class SRNode {
                 // Compute the uct value with the (new) average value
                 uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 1.) / nc);
                 if (options.progHistory)
-                    uctValue += options.getHistoryValue(3 - player, move.getUniqueId()) * (options.phW / (getVisits() - getWins() + 1));
+                    uctValue += c.move.getHistoryVal(player, options) * (options.phW / (getVisits() - getWins() + 1));
             }
             // Remember the highest UCT value
             if (uctValue > max) {

@@ -37,7 +37,7 @@ public class MCTSOptions {
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST
-    public double mastEps = 0.8;
+    public double mastEps = 0.1;
     // Marc's stuff (mostly for implicit minimax)
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
