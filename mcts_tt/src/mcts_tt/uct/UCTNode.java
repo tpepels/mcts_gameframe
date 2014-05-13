@@ -17,7 +17,7 @@ import java.util.List;
 public class UCTNode {
     public static int nodesSimulated = 0;
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
-    private static final MoveList mastMoves = new MoveList(100);
+    private static final MoveList mastMoves = new MoveList(1000);
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     public static int myPlayer = 0;
@@ -254,12 +254,16 @@ public class UCTNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-
+                currentMove = null;
                 if (options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
                     mastMoves.clear();
                     mastMax = Double.NEGATIVE_INFINITY;
+                    IMove m = null;
                     // Select the move with the highest MAST value
                     for (int i = 0; i < moves.size(); i++) {
+                        m = moves.get(i);
+                        if (m.getHistoryVis(currentPlayer, options) == 0)
+                            continue;
                         mastVal = moves.get(i).getHistoryVal(currentPlayer, options);
                         // If bigger, we have a winner, if equal, flip a coin
                         if (mastVal > mastMax) {
@@ -271,7 +275,8 @@ public class UCTNode {
                         }
                     }
                     currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
-                } else {
+                }
+                if (currentMove == null) {
                     // Choose randomly
                     currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
                 }

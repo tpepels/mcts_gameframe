@@ -17,7 +17,7 @@ import java.util.List;
 public class SRNode {
     public static int maxDepth = 0;
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
-    private static final MoveList mastMoves = new MoveList(100);
+    private static final MoveList mastMoves = new MoveList(1000);
     //
     private boolean expanded = false, simulated = false;
     private List<SRNode> C, S;
@@ -497,12 +497,18 @@ public class SRNode {
                     break;
                 }
                 // Select a move to play
+                currentMove = null;
                 if (options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
                     mastMoves.clear();
                     mastMax = Double.NEGATIVE_INFINITY;
+                    IMove m = null;
                     // Select the move with the highest MAST value
                     for (int i = 0; i < moves.size(); i++) {
+                        m = moves.get(i);
+                        if (m.getHistoryVis(cp, options) == 0)
+                            continue;
                         mastVal = moves.get(i).getHistoryVal(cp, options);
+                        // If bigger, we have a winner, if equal, flip a coin
                         if (mastVal > mastMax) {
                             mastMoves.clear();
                             mastMax = mastVal;
@@ -512,7 +518,9 @@ public class SRNode {
                         }
                     }
                     currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
-                } else {
+                }
+                if (currentMove == null) {
+                    // Choose randomly
                     currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
                 }
                 // Check if the move can be made, otherwise remove it from the list
