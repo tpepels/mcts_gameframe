@@ -212,13 +212,10 @@ public class UCTNode {
                 uctValue = -State.INF + MCTSOptions.r.nextDouble();
             } else {
                 value = c.getValue();
-//                if (options.progHistory)
-//                    value = options.phW * value + (1. - options.phW) * value;
                 // Compute the uct value with the (new) average value
                 uctValue = value + options.uctC * Math.sqrt(FastLog.log(np) / nc);
                 if (options.progHistory) {
-//                    uctValue += c.move.getHistoryVal(player, options) * (options.phW / (getVisits() - getWins() + 1));
-                    uctValue = options.phW * uctValue + (1. - options.phW) * uctValue;
+                    uctValue += c.move.getHistoryVal(player, options) * (options.phW / (getVisits() - getWins() + 1));
                 }
             }
             // Remember the highest UCT value
