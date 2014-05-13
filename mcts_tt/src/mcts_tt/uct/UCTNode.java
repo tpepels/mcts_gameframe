@@ -213,7 +213,7 @@ public class UCTNode {
             } else {
                 value = c.getValue();
                 if (options.progHistory)
-                    value += options.phW * value + (1. - options.phW) * value;
+                    value = options.phW * value + (1. - options.phW) * value;
                 // Compute the uct value with the (new) average value
                 uctValue = value + options.uctC * Math.sqrt(FastLog.log(np) / nc);
 //                if (options.progHistory)
