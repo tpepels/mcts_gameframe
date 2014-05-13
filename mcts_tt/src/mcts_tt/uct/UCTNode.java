@@ -274,7 +274,8 @@ public class UCTNode {
                             mastMoves.add(moves.get(i));
                         }
                     }
-                    currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
+                    if (mastMoves.size() > 0)
+                        currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
                 }
                 if (currentMove == null) {
                     // Choose randomly

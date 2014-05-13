@@ -21,6 +21,7 @@ public class Game {
         options1.solver = false;
         options1.history = true;
         options1.progHistory = true;
+        options1.MAST = true;
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("breakthrough");
