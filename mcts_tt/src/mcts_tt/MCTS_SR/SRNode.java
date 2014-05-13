@@ -463,8 +463,8 @@ public class SRNode {
         public int compare(SRNode o1, SRNode o2) {
             v1 = o1.getValue();
             v2 = o2.getValue();
-            v1 += options.getHistoryValue(3 - player, move.getUniqueId()) * (options.sr_phW / (getVisits() - getWins() + 1));
-            v2 += options.getHistoryValue(3 - player, move.getUniqueId()) * (options.sr_phW / (getVisits() - getWins() + 1));
+            v1 += o1.move.getHistoryVal(3 - player, options) * (options.sr_phW / (getVisits() - getWins() + 1));
+            v2 += o2.move.getHistoryVal(3 - player, options) * (options.sr_phW / (getVisits() - getWins() + 1));
             return Double.compare(v2, v1);
         }
     };

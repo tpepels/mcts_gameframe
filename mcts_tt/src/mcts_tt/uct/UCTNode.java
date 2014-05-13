@@ -198,7 +198,7 @@ public class UCTNode {
         UCTNode selected = null;
         double max = Double.NEGATIVE_INFINITY;
         // Use UCT down the tree
-        double uctValue, np = getVisits();
+        double uctValue, np = getVisits(), value = 0.;
         // Select a child according to the UCT Selection policy
         for (UCTNode c : children) {
             double nc = c.getVisits();
@@ -211,10 +211,13 @@ public class UCTNode {
             } else if (c.getValue() == -State.INF) {
                 uctValue = -State.INF + MCTSOptions.r.nextDouble();
             } else {
-                // Compute the uct value with the (new) average value
-                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np) / nc);
+                value = c.getValue();
                 if (options.progHistory)
-                    uctValue += c.move.getHistoryVal(player, options) * (options.phW / (getVisits() - getWins() + 1));
+                    value += options.phW * value + (1. - options.phW) * value;
+                // Compute the uct value with the (new) average value
+                uctValue = value + options.uctC * Math.sqrt(FastLog.log(np) / nc);
+//                if (options.progHistory)
+//                    uctValue += c.move.getHistoryVal(player, options) * (options.phW / (getVisits() - getWins() + 1));
             }
             // Remember the highest UCT value
             if (uctValue > max) {
