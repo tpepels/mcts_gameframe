@@ -84,12 +84,12 @@ public class MCTSOptions {
     public void setGame(String game) {
         rc = 2;
         if (game.equalsIgnoreCase("amazons")) {
-            uctC = .5;
+            uctC = .4;
             // Bonus constants
             kr = 2.2;
             kq = 1.6;
         } else if (game.equalsIgnoreCase("breakthrough")) {
-            uctC = .5;
+            uctC = .8;
             // Bonus constants
             kr = 8.0;
             kq = 2.0;
