@@ -84,6 +84,7 @@ public class SRPlayer implements AIPlayer, Runnable {
 
     @Override
     public void newGame(int myPlayer, String game) {
+        System.out.println("UCT-C " + options.uctC);
     }
 
     @Override

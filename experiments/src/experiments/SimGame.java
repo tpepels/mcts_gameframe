@@ -120,7 +120,6 @@ public class SimGame {
             MCTSOptions options = new MCTSOptions();
             if (parts[0].equals("mctstt")) {
                 playerRef = new UCTPlayer();
-                options.transpositions = true;
             } else {
                 playerRef = new MCTSPlayer();
             }
@@ -242,7 +241,6 @@ public class SimGame {
             MCTSOptions options = new MCTSOptions();
             if (parts[0].equals("srmctstt")) {
                 playerRef = new SRPlayer();
-                options.transpositions = true;
             } else {
                 playerRef = new MCTS_SR_Player();
             }
@@ -256,6 +254,7 @@ public class SimGame {
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
+
             MCTSOptions.r.setSeed(seed);
             // now, parse the tags
             for (int i = 1; i < parts.length; i++) {
