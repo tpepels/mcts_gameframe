@@ -170,7 +170,7 @@ public class SRNode {
             SRNode node = S.get(0);
             // The lower bound of the best node
             double lb = node.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits());
-            for (int i = S.size() - 1; i > 1; i--) {
+            for (int i = S.size() - 1; i > 0; i--) {
                 node = S.get(i);
                 if (node.isSolved())
                     continue;
