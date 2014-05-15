@@ -23,7 +23,7 @@ public class MCTSOptions {
     public boolean mapping = false;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
     // MCTS Specific values
-    public double uctC = 1., maxVar = 1.;
+    public double uctC = 1., uctCC = .5, maxVar = 1.;
     // Discounting values
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
@@ -31,7 +31,7 @@ public class MCTSOptions {
     public int rc = 2, bl = 5;
     public double bp_range = .5;
     public boolean remove = true, stat_reset = false, shot = false;
-    public boolean rec_halving = false, max_back = false, range_back = false;
+    public boolean rec_halving = false, max_back = false, range_back = false, UBLB = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST

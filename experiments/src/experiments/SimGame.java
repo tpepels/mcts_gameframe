@@ -297,6 +297,10 @@ public class SimGame {
                     options.history = true;
                     if (tryParseDouble(tag.substring(4)))
                         options.mastEps = Double.parseDouble(tag.substring(4));
+                } else if (tag.startsWith("ublb")) {
+                    options.UBLB = true;
+                    if (tryParseDouble(tag.substring(4)))
+                        options.uctCC = Double.parseDouble(tag.substring(4));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

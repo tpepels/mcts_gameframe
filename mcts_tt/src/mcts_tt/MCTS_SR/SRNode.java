@@ -166,6 +166,22 @@ public class SRNode {
             maxDepth = depth;
         // Sort S such that proven losses are at the end, and unvisited nodes in the front
         Collections.sort(S, comparator);
+        if (options.UBLB && getVisits() > S.size() && depth > 0) {
+            SRNode node = S.get(0);
+            // The lower bound of the best node
+            double lb = node.getValue() - options.uctCC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits());
+            for (int i = S.size() - 1; i > 1; i--) {
+                node = S.get(i);
+                if (node.getValue() + options.uctCC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits()) < lb) {
+                    s--;
+                    s_t--;
+                    //System.out.println("Node removed, best val: " + S.get(0).getValue() + " node val: " + node.getValue());
+                } else {
+                    break;
+                }
+            }
+            b = getBudget(getBudgetNode(), budget, s_t, s_t);
+        }
         // :: Cycle
         do {
             // Local visits are used as memory for the solver
