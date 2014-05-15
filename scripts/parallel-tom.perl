@@ -140,16 +140,41 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-#	"mcts_h_s,mcts_h_s_qb"
-	"mcts_sl,srmcts_shot_sl",
-	"mcts_sl_s_h,srmcts_shot_sl_s_h",
-	"mcts_sl_h,srmcts_shot_sl_h",
-	"mcts_sl_s,srmcts_shot_sl_s"
-# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl5",
-#	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl10",
-# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl15",
-# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl20",
-# 	"mcts_h_sl_s,srmcts_h_sl_s_r_max_bl25"
+#	"mcts_sl,mctstt_sl_uct0.2",
+#	"mcts_sl,mctstt_sl_uct0.4",
+#	"mcts_sl,mctstt_sl_uct0.6",
+#	"mcts_sl,mctstt_sl_uct0.8",
+#	"mcts_sl,mctstt_sl_uct1.0",
+#	"mcts_sl,mctstt_sl_uct1.2",
+#	"mctstt_sl_h,srmctstt_shot_sl_h",
+#	"mctstt_sl_s_h,srmctstt_shot_sl_s_h"
+#	"mctstt_h_s_sl,mctstt_sl_h_s_ph1",
+#	"mctstt_h_s_sl,mctstt_sl_h_s_ph5",
+#	"mctstt_h_s_sl,mctstt_sl_h_s_ph10",
+#	"mctstt_h_s_sl,mctstt_sl_h_s_ph15",
+#	"mctstt_h_s_sl,mctstt_sl_h_s_ph20",
+#	"mctstt_h_s_sl,mctstt_sl_h_s_ph30",
+#	"mctstt_h_s_sl,mctstt_sl_h_s_ph50"
+#	"mcts_sl,srmcts_shot_sl",
+#	"mcts_sl_s_h,srmcts_shot_sl_s_h",
+#	"mcts_sl_h,srmcts_shot_sl_h",
+#	"mcts_sl_s,srmcts_shot_sl_s"
+#
+ 	"mctstt_sl,srmctstt_sl_bl30_uct0.2",
+ 	"mctstt_sl,srmctstt_sl_bl30_uct0.4",
+ 	"mctstt_sl,srmctstt_sl_bl30_uct0.6",
+	"mctstt_sl,srmctstt_sl_bl30_uct0.8",
+ 	"mctstt_sl,srmctstt_sl_bl30_uct1.0",
+	"mctstt_sl,srmctstt_sl_bl40_uct0.2",
+ 	"mctstt_sl,srmctstt_sl_bl40_uct0.4",
+ 	"mctstt_sl,srmctstt_sl_bl40_uct0.6",
+ 	"mctstt_sl,srmctstt_sl_bl40_uct0.8",
+ 	"mctstt_sl,srmctstt_sl_bl40_uct1.0",
+ 	"mctstt_sl,srmctstt_sl_bl50_uct0.2",
+ 	"mctstt_sl,srmctstt_sl_bl50_uct0.4",
+ 	"mctstt_sl,srmctstt_sl_bl50_uct0.6",
+ 	"mctstt_sl,srmctstt_sl_bl50_uct0.8",
+ 	"mctstt_sl,srmctstt_sl_bl50_uct1.0"
 );
 
 my @games = (
@@ -157,9 +182,11 @@ my @games = (
 #	"cannon",
 #	"checkers",	
 	"breakthrough",
-	"pentalath",
+	"pentalath",	
 	"chinesecheckers",
-	"amazons"
+ 	"amazons"
+#	"nogo9"
+#	"nogo19"
 );
 
 print "queuing jobs... \n";
