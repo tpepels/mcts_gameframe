@@ -160,21 +160,31 @@ my @matchups = (
 #	"mcts_sl_h,srmcts_shot_sl_h",
 #	"mcts_sl_s,srmcts_shot_sl_s"
 #
- 	"mctstt_sl,srmctstt_sl_bl30_uct0.2",
- 	"mctstt_sl,srmctstt_sl_bl30_uct0.4",
- 	"mctstt_sl,srmctstt_sl_bl30_uct0.6",
-	"mctstt_sl,srmctstt_sl_bl30_uct0.8",
- 	"mctstt_sl,srmctstt_sl_bl30_uct1.0",
-	"mctstt_sl,srmctstt_sl_bl40_uct0.2",
- 	"mctstt_sl,srmctstt_sl_bl40_uct0.4",
- 	"mctstt_sl,srmctstt_sl_bl40_uct0.6",
- 	"mctstt_sl,srmctstt_sl_bl40_uct0.8",
- 	"mctstt_sl,srmctstt_sl_bl40_uct1.0",
- 	"mctstt_sl,srmctstt_sl_bl50_uct0.2",
- 	"mctstt_sl,srmctstt_sl_bl50_uct0.4",
- 	"mctstt_sl,srmctstt_sl_bl50_uct0.6",
- 	"mctstt_sl,srmctstt_sl_bl50_uct0.8",
- 	"mctstt_sl,srmctstt_sl_bl50_uct1.0"
+  "mctstt_sl,srmctstt_sl_bl30_ublb0.3",
+  "mctstt_sl,srmctstt_sl_bl30_ublb0.5",
+  "mctstt_sl,srmctstt_sl_bl30_ublb0.8",
+  "mctstt_sl,srmctstt_sl_bl40_ublb0.3",
+  "mctstt_sl,srmctstt_sl_bl40_ublb0.5",
+  "mctstt_sl,srmctstt_sl_bl40_ublb0.8",
+  "mctstt_sl,srmctstt_sl_bl50_ublb0.3",
+  "mctstt_sl,srmctstt_sl_bl50_ublb0.5",
+  "mctstt_sl,srmctstt_sl_bl50_ublb0.8"
+
+# 	"mctstt_sl,srmctstt_sl_bl30_uct0.2",
+# 	"mctstt_sl,srmctstt_sl_bl30_uct0.4",
+# 	"mctstt_sl,srmctstt_sl_bl30_uct0.6",
+#	"mctstt_sl,srmctstt_sl_bl30_uct0.8",
+# 	"mctstt_sl,srmctstt_sl_bl30_uct1.0",
+#	"mctstt_sl,srmctstt_sl_bl40_uct0.2",
+# 	"mctstt_sl,srmctstt_sl_bl40_uct0.4",
+# 	"mctstt_sl,srmctstt_sl_bl40_uct0.6",
+# 	"mctstt_sl,srmctstt_sl_bl40_uct0.8",
+# 	"mctstt_sl,srmctstt_sl_bl40_uct1.0",
+# 	"mctstt_sl,srmctstt_sl_bl50_uct0.2",
+# 	"mctstt_sl,srmctstt_sl_bl50_uct0.4",
+# 	"mctstt_sl,srmctstt_sl_bl50_uct0.6",
+# 	"mctstt_sl,srmctstt_sl_bl50_uct0.8",
+# 	"mctstt_sl,srmctstt_sl_bl50_uct1.0"
 );
 
 my @games = (
