@@ -142,23 +142,6 @@ public class SRNode {
         //</editor-fold>
         // Keep track of the number of cycles at each node
         cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
-        // Sort S such that the best node is always the first
-        Collections.sort(S, comparator);
-        if (options.UBLB && getVisits() > S.size() && depth > 0) {
-            SRNode node = S.get(0);
-            // The lower bound of the best node
-            double lb = node.getValue() - options.uctCC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits());
-            for (int i = S.size() - 1; i > 1; i--) {
-                node = S.get(i);
-                if (node.getValue() + options.uctCC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits()) < lb) {
-                    s--;
-                    s_t--;
-                    //System.out.println("Node removed, best val: " + S.get(0).getValue() + " node val: " + node.getValue());
-                } else {
-                    break;
-                }
-            }
-        }
         int b = getBudget(getBudgetNode(), budget, s_t, s_t);
         // :: UCT Hybrid
         if (!options.shot && depth > 0 && b < options.bl) {
@@ -181,7 +164,25 @@ public class SRNode {
         // :: Simple regret
         if (options.debug && depth > maxDepth)
             maxDepth = depth;
-
+        // Sort S such that the best node is always the first
+        Collections.sort(S, comparator);
+        if (options.UBLB && getVisits() > S.size() && depth > 0) {
+            SRNode node = S.get(0);
+            // The lower bound of the best node
+            double lb = node.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits());
+            for (int i = S.size() - 1; i > 1; i--) {
+                node = S.get(i);
+                if (node.isSolved())
+                    continue;
+                if (node.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits()) < lb) {
+                    s--;
+                    s_t--;
+                    //System.out.println("Node removed, best val: " + S.get(0).getValue() + " node val: " + node.getValue());
+                } else {
+                    break;
+                }
+            }
+        }
         // :: Cycle
         do {
             // Local visits are used as memory for the solver
