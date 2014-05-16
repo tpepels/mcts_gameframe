@@ -19,11 +19,11 @@ public class SRNode {
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
     private static final MoveList mastMoves = new MoveList(1000);
     //
-    private boolean expanded = false, simulated = false;
+    private boolean expanded = false, simulated = false, skip = false;
     private List<SRNode> C, S;
     private SRNode bestArm;
     private MCTSOptions options;
-    private int player, localVisits = 0, cycles = 0;
+    private int player;
     private IMove move;
     private TransposTable tt;
     private long hash;
@@ -140,8 +140,6 @@ public class SRNode {
             return result;
         }
         //</editor-fold>
-        // Keep track of the number of cycles at each node
-        cycles = (int) Math.min(cycles + 1, Math.ceil((options.rc / 2.) * log2(s_t)));
         int b = getBudget(getBudgetNode(), budget, s_t, s_t);
         // :: UCT Hybrid
         if (!options.shot && depth > 0 && b < options.bl) {
@@ -166,33 +164,19 @@ public class SRNode {
             maxDepth = depth;
         // Sort S such that the best node is always the first
         Collections.sort(S, comparator);
-        if (options.UBLB && getVisits() > S.size() && depth > 0) {
-            SRNode node = S.get(0);
-            // The lower bound of the best node
-            double lb = node.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits());
-            for (int i = S.size() - 1; i > 0; i--) {
-                node = S.get(i);
-                if (node.isSolved())
-                    continue;
-                if (node.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits()) < lb) {
-                    s--;
-                    s_t--;
-                    //System.out.println("Node removed, best val: " + S.get(0).getValue() + " node val: " + node.getValue());
-                } else {
-                    break;
-                }
-            }
-        }
         // :: Cycle
         do {
-            // Local visits are used as memory for the solver
-            for (SRNode a : S)
-                a.localVisits = 0;
-            int n = 0;
+            int n = 0, skipped = 0;
+            for (SRNode node : S)
+                node.skip = false;
             // :: Round
             while (n < s) {
-                child = S.get(n);
-                n++;
+                child = S.get(n++);
+                //
+                if (child.skip)
+                    continue;
+                int[] pl = {0, 0, 0, 0};   // This will store the results of the recursion
+                int b_b = 0; // This is the actual budget available per node
                 // :: Solver win
                 if (!child.isSolved()) {
                     // Determine the topped off budget
@@ -200,26 +184,31 @@ public class SRNode {
                         continue;
                     int b_1 = (int) (b - child.getVisits());
                     if (depth == 0 && s == 2 && n == 1) {
-                        int b_r = (int) (budget - plStats[3] - (b - S.get(1).getVisits()));
-                        b_1 = Math.max(b_1, b_r);
+                        b_1 = (int) Math.max(b_1, (budget - plStats[3] - (b - S.get(1).getVisits())));
                     }
                     // :: Actual budget
-                    int b_b = Math.min(b_1, budget - plStats[3]) - child.localVisits;
+                    b_b = Math.min(b_1, budget - plStats[3]);
                     if (b_b <= 0)
                         continue;
+
+                    if (options.UBLB && getVisits() > S.size() && n > 1) {
+                        SRNode node = S.get(0);
+                        // The lower bound of the best node
+                        double lb = node.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits());
+                        if (!child.isSolved() && child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits()) < lb) {
+                            // Redistribute the unspent budget among the remaining nodes
+                            b += Math.ceil((b_b) / (double) (s - ++skipped));
+                            // Restart at the first arm to redistribute the budget
+                            n = 0;
+                            child.skip = true;
+                            continue; // Don't go into the recursion, but skip the node
+                        }
+                    }
+
                     // :: Recursion
-                    int[] pl = {0, 0, 0, 0};   // This will store the results of the recursion
-                    // Add the move from the history list
-                    if (options.history)
-                        movesMade[player - 1].add(child.getMove());
                     board.doAIMove(child.getMove(), player);
                     result = -child.MCTS_SR(board, depth + 1, b_b, pl);
                     board.undoMove();
-                    // Remove the move from the history list
-                    if (options.history) {
-                        if (!movesMade[player - 1].clearLast(1).equals(child.move))
-                            throw new RuntimeException("Invalid move in history list");
-                    }
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     plStats[0] += pl[0];
                     plStats[1] += pl[1];
@@ -243,7 +232,8 @@ public class SRNode {
                         // :: Solver: Resume the round with reduced S
                         s_t = Math.min(S.size(), s_t);
                         s = Math.min(S.size(), s);
-                        b = getBudget(getBudgetNode(), budget, s, s_t);
+                        // Redistribute the unspent budget among the remaining nodes
+                        b += Math.ceil((b_b - pl[3]) / (double) s);
                         // Restart at the first arm to redistribute the budget
                         n = 0;
                     }
@@ -648,7 +638,6 @@ public class SRNode {
         if (state == null)
             state = tt.getState(hash, false);
         state.updateStats(plStats[0], plStats[1], plStats[2]);
-        localVisits += plStats[0];
     }
 
     private int getBudgetNode() {
@@ -716,7 +705,7 @@ public class SRNode {
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("##0.####");
         if (state != null) {
-            return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + state.getBudgetSpent() + "\tc: " + cycles;
+            return move + "\t" + state + "\tv:" + df2.format(getValue()) + "\tn: " + state.getBudgetSpent();
         } else {
             return move.toString();
         }
