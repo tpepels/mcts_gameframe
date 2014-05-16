@@ -192,12 +192,11 @@ public class SRNode {
                         continue;
 
                     if (options.UBLB && getVisits() > S.size() && n > 1) {
-                        SRNode node = S.get(0);
                         // The lower bound of the best node
-                        double lb = node.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits());
-                        if (!child.isSolved() && child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / node.getVisits()) < lb) {
+                        double lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
+                        if (!child.isSolved() && child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
                             // Redistribute the unspent budget among the remaining nodes
-                            b += Math.ceil((b_b) / (double) (s - ++skipped));
+                            b += Math.ceil((b_b) / (double) (s - (++skipped)));
                             // Restart at the first arm to redistribute the budget
                             n = 0;
                             child.skip = true;
