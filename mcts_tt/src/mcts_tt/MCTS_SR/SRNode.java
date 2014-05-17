@@ -166,7 +166,7 @@ public class SRNode {
         Collections.sort(S, comparator);
         // :: Cycle
         do {
-            int n = 0, skipped = 0;
+            int n = 0, b_s = 0;
             // :: Round
             while (n < s) {
                 child = S.get(n++);
@@ -189,7 +189,7 @@ public class SRNode {
                         // The lower bound of the best node
                         double lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
                         if (!child.isSolved() && child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
-                            b += Math.ceil((b_b) / (double) (s - (++skipped)));
+                            b_s += b_b;
                             continue; // Don't go into the recursion, but skip the node
                         }
                     }
@@ -239,6 +239,8 @@ public class SRNode {
                 s--;
             // :: Re-budgeting
             b += getBudget(getBudgetNode(), budget, s, s_t);
+            // Add skipped budget from this round
+            b += Math.ceil(b_s / (double) s);
         } while (s > 1 && plStats[3] < budget);
         // Update the budgetSpent value
         updateBudgetSpent(plStats[3]);
