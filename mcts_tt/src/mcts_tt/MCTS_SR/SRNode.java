@@ -167,14 +167,9 @@ public class SRNode {
         // :: Cycle
         do {
             int n = 0, skipped = 0;
-            for (SRNode node : S)
-                node.skip = false;
             // :: Round
             while (n < s) {
                 child = S.get(n++);
-                //
-                if (child.skip)
-                    continue;
                 int[] pl = {0, 0, 0, 0};   // This will store the results of the recursion
                 int b_b = 0; // This is the actual budget available per node
                 // :: Solver win
@@ -190,21 +185,11 @@ public class SRNode {
                     b_b = Math.min(b_1, budget - plStats[3]);
                     if (b_b <= 0)
                         continue;
-                    if (options.UBLB && getVisits() > s_t && n > 1) {
+                    if (options.UBLB && getVisits() > S.size() && n > 1) {
                         // The lower bound of the best node
                         double lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
                         if (!child.isSolved() && child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
-                            int b_t = 0, i = n - 1;
-                            while (i < s) {
-                                child = S.get(i++);
-                                b_1 = (int) (b - child.getVisits());
-                                b_t += b_1;
-                                child.skip = true;
-                            }
-                            // Redistribute the unspent budget among the remaining nodes
-                            b += Math.ceil((b_t) / (double) n);
-                            // Restart at the first arm to redistribute the budget
-                            n = 0;
+                            b += Math.ceil((b_b) / (double) (s - (++skipped)));
                             continue; // Don't go into the recursion, but skip the node
                         }
                     }
@@ -615,6 +600,8 @@ public class SRNode {
                 bestChild = t;
             }
         }
+        if (bestChild == null)
+            throw new NullPointerException("bestChild is null, root has " + C.size() + " children");
         return bestChild;
     }
 
