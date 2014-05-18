@@ -19,7 +19,7 @@ public class Game {
         options1.fixedSimulations = true;
         options1.useHeuristics = true;
         options1.simulations = 25000;
-        options1.solver = true;
+        options1.solver = false;
 
 
         MCTSOptions options2 = new MCTSOptions();
@@ -29,7 +29,7 @@ public class Game {
         options2.fixedSimulations = true;
         options2.simulations = 25000;
         options2.useHeuristics = true;
-        options2.solver = true;
+        options2.solver = false;
         options2.UBLB = true;
 
         AIPlayer aiPlayer;

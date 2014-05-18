@@ -70,6 +70,7 @@ public class SRNode {
                 if (winner != IBoard.DRAW)
                     plStats[winner]++;
             }
+            plStats[3] += budget;
             updateStats(plStats);
             return 0;
         }
