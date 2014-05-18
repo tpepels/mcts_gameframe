@@ -19,7 +19,7 @@ public class SRNode {
     private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
     private static final MoveList mastMoves = new MoveList(1000);
     //
-    private boolean expanded = false, simulated = false, skip = false;
+    private boolean expanded = false, simulated = false;
     private List<SRNode> C, S;
     private SRNode bestArm;
     private MCTSOptions options;
@@ -52,7 +52,7 @@ public class SRNode {
         if (isLeaf())
             child = expand(board);
 
-        if (child != null) {  // Child is a winner
+        if (child != null) {
             if (solverCheck(child.getValue(), board))
                 return State.INF;
         }
@@ -163,40 +163,44 @@ public class SRNode {
         if (options.debug && depth > maxDepth)
             maxDepth = depth;
         // Sort S such that the best node is always the first
-        Collections.sort(S, comparator);
+        if (getVisits() > S.size())
+            Collections.sort(S, (!options.history) ? comparator : phComparator);
         // :: Cycle
         do {
             int n = 0, b_s = 0;
+            double lb = 0;
             // :: Round
             while (n < s) {
                 child = S.get(n++);
-                int[] pl = {0, 0, 0, 0};   // This will store the results of the recursion
-                int b_b = 0; // This is the actual budget available per node
+                int[] pl = {0, 0, 0, 0};    // This will store the results of the recursion
+                int b_b = 0;                // This is the actual budget assigned to the child
                 // :: Solver win
                 if (!child.isSolved()) {
-                    // Determine the topped off budget
-                    if (b <= child.getVisits())
-                        continue;
-                    int b_1 = (int) (b - child.getVisits());
-                    if (depth == 0 && s == 2 && n == 1) {
-                        b_1 = (int) Math.max(b_1, (budget - plStats[3] - (b - S.get(1).getVisits())));
-                    }
+
+                    // The lower bound for the best child
+                    if (options.UBLB && n == 1)
+                        lb = child.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits());
+
                     // :: Actual budget
-                    b_b = Math.min(b_1, budget - plStats[3]);
+                    b_b = (int) Math.min(b - child.getVisits(), budget - plStats[3]);
                     if (b_b <= 0)
                         continue;
+                    // Compare the upper bound of this child to the lower bound of the best child
                     if (options.UBLB && getVisits() > S.size() && n > 1) {
-                        // The lower bound of the best node
-                        double lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
-                        if (!child.isSolved() && child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
+                        if (child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
                             b_s += b_b;
                             continue; // Don't go into the recursion, but skip the node
                         }
                     }
                     // :: Recursion
                     board.doAIMove(child.getMove(), player);
+                    if (options.history)
+                        movesMade[player - 1].add(child.getMove());
                     result = -child.MCTS_SR(board, depth + 1, b_b, pl);
                     board.undoMove();
+                    if (options.history)
+                        movesMade[player - 1].clearLast(1);
+
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     plStats[0] += pl[0];
                     plStats[1] += pl[1];
@@ -219,11 +223,9 @@ public class SRNode {
                     } else {
                         // :: Solver: Resume the round with reduced S
                         s_t = Math.min(S.size(), s_t);
-                        s = Math.min(S.size(), s);
-                        // Redistribute the unspent budget among the remaining nodes
-                        b += Math.ceil((b_b - pl[3]) / (double) s);
-                        // Restart at the first arm to redistribute the budget
-                        n = 0;
+                        s = Math.min(s_t, s);
+                        // Redistribute the unspent budget in the next round
+                        b_s += b_b - pl[3];
                     }
                 }
                 // Make sure we don't go over budget
@@ -231,34 +233,33 @@ public class SRNode {
                     break;
             }
             // :: Removal policy: Sorting
-            Collections.sort(S.subList(0, s), comparator);
+            if (s > 1)
+                Collections.sort(S.subList(0, s), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
-            if (options.rc > 1)
-                s -= (int) Math.floor(s / (double) options.rc);
-            else
-                s--;
+            s -= (int) Math.floor(s / (double) options.rc);
             // :: Re-budgeting
             b += getBudget(getBudgetNode(), budget, s, s_t);
-            // Add skipped budget from this round
+            // Add any skipped budget from this round
             b += Math.ceil(b_s / (double) s);
-        } while (s > 1 && plStats[3] < budget);
+        } while (plStats[3] < budget);
+
         // Update the budgetSpent value
         updateBudgetSpent(plStats[3]);
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
+
         // :: SR Max back-propagation
-        if (!isSolved() && options.max_back && bestArm != null && bestArm.state != null) {
+        if (!isSolved() && options.max_back && bestArm != null
+                && bestArm.state != null && !bestArm.isSolved()) {
+            //
             setValue(bestArm.getState());
         }
         return 0;
     }
 
     private int getBudget(int initVis, int budget, int subS, int totS) {
-        if (options.rc > 1)
-            return (int) Math.max(1, Math.floor((initVis + budget) / (subS * Math.ceil((options.rc / 2.) * log2(totS)))));
-        else
-            return (int) Math.max(1, Math.floor((initVis + budget) / (subS * Math.ceil((totS / 2.) * log2(totS)))));
+        return (int) Math.max(1, Math.floor((initVis + budget) / (subS * Math.ceil((options.rc / 2.) * log2(totS)))));
     }
 
     private boolean solverCheck(double result, IBoard board) {
@@ -382,6 +383,7 @@ public class SRNode {
             } else {
                 // Compute the uct value with the (new) average value
                 uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np + 1.) / nc);
+                // Add the progressive history value
                 if (options.progHistory)
                     uctValue += c.move.getHistoryVal(player, options) * (options.phW / (getVisits() - getWins() + 1));
             }
@@ -453,14 +455,10 @@ public class SRNode {
     };
 
     private final Comparator<SRNode> phComparator = new Comparator<SRNode>() {
-        private double v1
-                ,
-                v2;
-
         @Override
         public int compare(SRNode o1, SRNode o2) {
-            v1 = o1.getValue();
-            v2 = o2.getValue();
+            double v1 = o1.getValue();
+            double v2 = o2.getValue();
             v1 += o1.move.getHistoryVal(3 - player, options) * (options.sr_phW / (getVisits() - getWins() + 1));
             v2 += o2.move.getHistoryVal(3 - player, options) * (options.sr_phW / (getVisits() - getWins() + 1));
             return Double.compare(v2, v1);

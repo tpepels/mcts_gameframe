@@ -61,7 +61,7 @@ public class SRPlayer implements AIPlayer, Runnable {
         if (options.debug) {
             System.out.println("Player " + myPlayer);
             System.out.println("Best child: " + bestChild);
-            System.out.println("Play-outs: " + pl[0]);
+            System.out.println("Play-outs: " + pl[3]);
             System.out.println("Play-outs check: " + SRNode.totalPlayouts);
             System.out.println("Max sr depth: " + SRNode.maxDepth);
             System.out.println((int) ((1000. * SRNode.totalPlayouts) / (endT - startT)) + " playouts per s");
