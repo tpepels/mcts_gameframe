@@ -83,11 +83,15 @@ public class MCTSOptions {
         rc = 2;
         if (game.equalsIgnoreCase("amazons")) {
             uctC = .4;
+            // Budget limit
+            bl = 50;
             // Bonus constants
             kr = 2.2;
             kq = 1.6;
         } else if (game.equalsIgnoreCase("breakthrough")) {
             uctC = .8;
+            // Budget limit
+            bl = 70;
             // Bonus constants
             kr = 8.0;
             kq = 2.0;
@@ -101,8 +105,14 @@ public class MCTSOptions {
             // Bonus constants
             kr = 1.2;
             kq = 2.8;
+        } else if (game.startsWith("nogo")) {
+            uctC = .6;
+            // Budget limit
+            bl = 30;
         } else if (game.equalsIgnoreCase("pentalath")) {
             uctC = .8;
+            // Budget limit
+            bl = 30;
             // Bonus constants
             kr = 1.;
             kq = 1.6;
@@ -114,8 +124,6 @@ public class MCTSOptions {
             kq = 2.0;
         } else if (game.equalsIgnoreCase("domineering")) {
             uctC = 1.;
-        } else if (game.startsWith("nogo")) {
-            uctC = .6;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }
