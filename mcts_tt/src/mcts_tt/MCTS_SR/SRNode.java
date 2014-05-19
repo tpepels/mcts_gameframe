@@ -177,11 +177,6 @@ public class SRNode {
                 int b_b = 0;                // This is the actual budget assigned to the child
                 // :: Solver win
                 if (!child.isSolved()) {
-
-                    // The lower bound for the best child
-                    if (options.UBLB && n == 1)
-                        lb = child.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits());
-
                     // :: Actual budget
                     b_b = (int) Math.min(b - child.getVisits(), budget - plStats[3]);
                     if (b_b <= 0)
@@ -201,7 +196,6 @@ public class SRNode {
                     board.undoMove();
                     if (options.history)
                         movesMade[player - 1].clearLast(1);
-
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
                     plStats[0] += pl[0];
                     plStats[1] += pl[1];
@@ -224,10 +218,12 @@ public class SRNode {
                     } else {
                         // :: Solver: Resume the round with reduced S
                         s_t = Math.min(S.size(), s_t);
-                        s = Math.min(s_t, s);
                         // Redistribute the unspent budget in the next round
                         b_s += b_b - pl[3];
                     }
+                } else if (options.UBLB && n == 1) {
+                    // The lower bound for the best child
+                    lb = child.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits());
                 }
                 // Make sure we don't go over budget
                 if (plStats[3] >= budget)
@@ -238,6 +234,8 @@ public class SRNode {
                 Collections.sort(S.subList(0, s), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
+            // For the solver
+            s = Math.min(s_t, s);
             // :: Re-budgeting
             b += getBudget(getBudgetNode(), budget, s, s_t);
             // Add any skipped budget from this round
