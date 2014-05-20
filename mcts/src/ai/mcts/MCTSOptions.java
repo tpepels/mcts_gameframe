@@ -91,7 +91,7 @@ public class MCTSOptions {
         } else if (game.equalsIgnoreCase("breakthrough")) {
             uctC = .8;
             // Budget limit
-            bl = 70;
+            bl = 80;
             // Bonus constants
             kr = 8.0;
             kq = 2.0;
@@ -112,7 +112,7 @@ public class MCTSOptions {
         } else if (game.equalsIgnoreCase("pentalath")) {
             uctC = .8;
             // Budget limit
-            bl = 30;
+            bl = 80;
             // Bonus constants
             kr = 1.;
             kq = 1.6;
