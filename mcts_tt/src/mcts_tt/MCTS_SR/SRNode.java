@@ -171,7 +171,7 @@ public class SRNode {
             int n = 0, b_s = 0;
             double lb = 0;
             // :: Round
-            while (n < s) {
+            while (n < Math.min(s, S.size())) {
                 child = S.get(n++);
                 int[] pl = {0, 0, 0, 0};    // This will store the results of the recursion
                 int b_b = 0;                // This is the actual budget assigned to the child
@@ -218,6 +218,7 @@ public class SRNode {
                     } else {
                         // Redistribute the unspent budget in the next round
                         b_s += b_b - pl[3];
+                        n--;
                     }
                 } else if (options.UBLB && n == 1) {
                     // The lower bound for the best child
