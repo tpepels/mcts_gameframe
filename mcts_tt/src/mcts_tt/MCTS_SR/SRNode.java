@@ -56,8 +56,8 @@ public class SRNode {
             if (solverCheck(child.getValue(), board))
                 return State.INF;
         }
-        // :: Recursive reduction
-        int s_t = S.size(), s = s_t;
+
+        int s = S.size();
         // Node is terminal
         if (isSolved()) {                           // Solver
             return -getValue();
@@ -87,7 +87,7 @@ public class SRNode {
             return 0;
         }
         // The current node has some unvisited children
-        if (options.shot && getBudgetNode() <= s_t) {
+        if (options.shot && getBudgetNode() <= S.size()) {
             for (SRNode n : S) {
                 if (n.simulated || n.isSolved())
                     continue;
@@ -141,7 +141,7 @@ public class SRNode {
             return result;
         }
         //</editor-fold>
-        int b = getBudget(getBudgetNode(), budget, s_t, s_t);
+        int b = getBudget(getBudgetNode(), budget, S.size(), S.size());
         // :: UCT Hybrid
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
@@ -216,8 +216,6 @@ public class SRNode {
                         state.incrBudgetSpent(plStats[3]);
                         return result;
                     } else {
-                        // :: Solver: Resume the round with reduced S
-                        s_t = Math.min(S.size(), s_t);
                         // Redistribute the unspent budget in the next round
                         b_s += b_b - pl[3];
                     }
@@ -231,13 +229,13 @@ public class SRNode {
             }
             // :: Removal policy: Sorting
             if (s > 1)
-                Collections.sort(S.subList(0, s), (!options.history) ? comparator : phComparator);
+                Collections.sort(S.subList(0, Math.min(s, S.size())), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
-            s = Math.min(s_t, s);
+            s = Math.min(S.size(), s);
             // :: Re-budgeting
-            b += getBudget(getBudgetNode(), budget, s, s_t);
+            b += getBudget(getBudgetNode(), budget, s, S.size());
             // Add any skipped budget from this round
             b += Math.ceil(b_s / (double) s);
         } while (plStats[3] < budget);
