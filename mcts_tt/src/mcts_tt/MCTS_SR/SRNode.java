@@ -218,7 +218,6 @@ public class SRNode {
                     } else {
                         // Redistribute the unspent budget in the next round
                         b_s += b_b - pl[3];
-                        n--;
                     }
                 } else if (options.UBLB && n == 1) {
                     // The lower bound for the best child
@@ -235,10 +234,14 @@ public class SRNode {
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-            // :: Re-budgeting
-            b += getBudget(getBudgetNode(), budget, s, S.size());
-            // Add any skipped budget from this round
-            b += Math.ceil(b_s / (double) s);
+            if (s == 1) {
+                b += budget - plStats[3];
+            } else {
+                // :: Re-budgeting
+                b += getBudget(getBudgetNode(), budget, s, S.size());
+                // Add any skipped budget from this round
+                b += Math.ceil(b_s / (double) s);
+            }
         } while (plStats[3] < budget);
 
         // Update the budgetSpent value
