@@ -231,16 +231,20 @@ public class SRNode {
             }
             // :: Removal policy: Sorting
             if (S.size() > 0)
-                Collections.sort(S.subList(0, Math.min(s, S.size())), (!options.history) ? comparator : phComparator);
+                Collections.sort(S.subList(0, Math.min(Math.max(s, 2), S.size())), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-            // :: Re-budgeting
-            b += getBudget(getBudgetNode(), budget, s, S.size());
-            // Add any skipped budget from this round
-            b += Math.ceil(b_s / (double) s);
-        } while (plStats[3] < budget && s > 1);
+            if (s == 1) {
+                b += budget - plStats[3];
+            } else {
+                // :: Re-budgeting
+                b += getBudget(getBudgetNode(), budget, s, S.size());
+                // Add any skipped budget from this round
+                b += Math.ceil(b_s / (double) s);
+            }
+        } while (plStats[3] < budget);
 
         // Update the budgetSpent value
         updateBudgetSpent(plStats[3]);
