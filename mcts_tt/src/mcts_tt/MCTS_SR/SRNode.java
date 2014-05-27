@@ -228,8 +228,8 @@ public class SRNode {
                     break;
             }
             // :: Removal policy: Sorting
-            if (s > 1 && S.size() > 0)
-                Collections.sort(S.subList(0, Math.min(s, S.size())), (!options.history) ? comparator : phComparator);
+            if (S.size() > 0)
+                Collections.sort(S.subList(0, Math.min(Math.max(s, 2), S.size())), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
