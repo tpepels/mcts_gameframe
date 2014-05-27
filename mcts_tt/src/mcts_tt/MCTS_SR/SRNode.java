@@ -178,7 +178,9 @@ public class SRNode {
                 // :: Solver win
                 if (!child.isSolved()) {
                     // :: Actual budget
-                    b_b = (int) Math.min(b - child.getVisits(), budget - plStats[3]);
+                    int b1 = (int) (b - child.getVisits());
+                    if (s == 2 && n == 1) b1 = (int) Math.max(b1, budget - plStats[3] - (b - S.get(1).getVisits()));
+                    b_b = Math.min(b1, budget - plStats[3]);
                     if (b_b <= 0)
                         continue;
                     // Compare the upper bound of this child to the lower bound of the best child
@@ -229,20 +231,16 @@ public class SRNode {
             }
             // :: Removal policy: Sorting
             if (S.size() > 0)
-                Collections.sort(S.subList(0, Math.min(Math.max(s, 2), S.size())), (!options.history) ? comparator : phComparator);
+                Collections.sort(S.subList(0, Math.min(s, S.size())), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-            if (s == 1) {
-                b += budget - plStats[3];
-            } else {
-                // :: Re-budgeting
-                b += getBudget(getBudgetNode(), budget, s, S.size());
-                // Add any skipped budget from this round
-                b += Math.ceil(b_s / (double) s);
-            }
-        } while (plStats[3] < budget);
+            // :: Re-budgeting
+            b += getBudget(getBudgetNode(), budget, s, S.size());
+            // Add any skipped budget from this round
+            b += Math.ceil(b_s / (double) s);
+        } while (plStats[3] < budget && s > 1);
 
         // Update the budgetSpent value
         updateBudgetSpent(plStats[3]);
