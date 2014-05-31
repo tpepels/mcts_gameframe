@@ -158,7 +158,7 @@ my @matchups = ();
 
 #push(@matchups, "mcts_s_im0.2,mcts_s");
 #push(@matchups, "mcts_s_pd10,mcts_s");
-push(@matchups, "mcts_s_pd5_im0.2,mcts_s_pd5");
+push(@matchups, "mcts_s_pd0_im0.2,mcts_s_pd0");
 
 
 print "queuing jobs... \n";
