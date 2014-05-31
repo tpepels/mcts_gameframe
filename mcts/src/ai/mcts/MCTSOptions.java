@@ -124,6 +124,8 @@ public class MCTSOptions {
             kq = 2.0;
         } else if (game.equalsIgnoreCase("domineering")) {
             uctC = 1.;
+        } else if (game.equalsIgnoreCase("penguin")) {
+            uctC = 1.;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }
@@ -173,6 +175,8 @@ public class MCTSOptions {
                 numSimulations = 22 * timeInterval;
         } else if (game.startsWith("nogo")) {
             uctC = .6;
+        } else if (game.startsWith("penguin")) {
+            uctC = 1.;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }

@@ -377,6 +377,8 @@ public class SimGame {
             int size = Integer.parseInt(game.substring(4));
             nogo.game.Board.SIZE = size;
             board = new nogo.game.Board();
+        } else if (game.equals("penguin")) {
+            board = new penguin.game.Board();
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
         }
