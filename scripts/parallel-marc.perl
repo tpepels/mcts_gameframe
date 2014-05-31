@@ -156,7 +156,9 @@ my @matchups = ();
 #push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp50,mcts_h_ege0.1_efv0_det0.5_im0.4");
 #push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp10,mcts_h_ege0.1_efv0_det0.5_im0.4");
 
-push(@matchups, "mcts_h_s_ege0.1_det0.5,mcts_h_s");
+#push(@matchups, "mcts_s_im0.2,mcts_s");
+#push(@matchups, "mcts_s_pd10,mcts_s");
+push(@matchups, "mcts_s_pd3_im0.2,mcts_s_pd3");
 
 
 print "queuing jobs... \n";
@@ -202,7 +204,7 @@ sub fisher_yates_shuffle
     }
 }
 
-fisher_yates_shuffle( \@jobs );
+#fisher_yates_shuffle( \@jobs );
 
 print "queued " . scalar(@jobs) . " jobs\n";
 sleep 1;

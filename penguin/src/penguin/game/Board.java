@@ -7,6 +7,7 @@ import ai.framework.IMove;
 import ai.framework.MoveList;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.Stack;
@@ -442,9 +443,90 @@ public class Board implements IBoard {
         pastMoves = new Stack<IMove>();
     }
 
+    class Coord { 
+        int r, c; 
+        Coord(int r, int c) { 
+            this.r = r;
+            this.c = c;
+        }
+    }
+
+    private int floodDiff(int player) {
+        int[][] bcopy = new int[8][8];
+
+        LinkedList<Coord> p1cur = new LinkedList<Coord>();
+        LinkedList<Coord> p1next = new LinkedList<Coord>();
+        LinkedList<Coord> p2cur = new LinkedList<Coord>();
+        LinkedList<Coord> p2next = new LinkedList<Coord>();
+        
+        int p1area = 0;
+        int p2area = 0;
+
+        for (int r = 0; r < 8; r++) 
+            for (int c = 0; c < rowSizes[r]; c++) {
+                bcopy[r][c] = board[r][c];
+
+                if (board[r][c] >= 100 && board[r][c] <= 103) { 
+                    p1cur.add(new Coord(r,c)); 
+                    p1area += board[r][c] % 100;
+                }
+                else if (board[r][c] >= 200 && board[r][c] <= 203) {
+                    p2cur.add(new Coord(r,c)); 
+                    p2area += board[r][c] % 100;
+                }
+            }
+
+        int curplayer = player; 
+        boolean keepGoing = true;
+
+        while (p1cur.size() > 0 && p2cur.size() > 0) { 
+
+            LinkedList<Coord> cur = (curplayer == 1 ? p1cur : p2cur);
+            LinkedList<Coord> next = (curplayer == 1 ? p1next : p2next);
+
+            while (cur.size() > 0) { 
+                Coord coord = cur.removeFirst(); 
+                int r = coord.r; 
+                int c = coord.c; 
+
+                for (int dir = 1; dir <= 6; dir++) { 
+                    int rp = nextRow(r, c, dir);
+                    int cp = nextCol(r, c, dir);
+
+                    if (inBounds(rp,cp) && bcopy[rp][cp] >= 1 && bcopy[rp][cp] <= 3) {
+                        if (curplayer == 1) 
+                            p1area += bcopy[rp][cp];
+                        else 
+                            p2area += bcopy[rp][cp];
+
+                        bcopy[rp][cp] = curplayer*100;
+                        next.add(new Coord(rp,cp)); 
+                    }
+                }
+            }
+
+            if (curplayer == 1) { 
+              LinkedList<Coord> tmp = p1cur;
+              p1cur = p1next;
+              p1next = tmp;
+              p1next.clear();
+            }
+            else {
+              LinkedList<Coord> tmp = p2cur;
+              p2cur = p2next;
+              p2next = tmp;
+              p2next.clear();
+            }
+
+            curplayer = 3-curplayer;
+        }
+  
+        return (p1area - p2area);
+    }
+
     @Override
     public double evaluate(int player, int version) {
-        // points-based; this is actually not a great ev. func for this game
+        // points-based; this is actually a bad ev. func for this game
 
         double p1eval = 0;
         if (winner == 1) p1eval = 1;
@@ -452,9 +534,10 @@ public class Board implements IBoard {
         else if (winner == DRAW) p1eval = 0;
         else {
             //double delta = (pieces1 * 10 + progress1 * 2.5 + capBonus1) - (pieces2 * 10 + progress2 * 2.5 + capBonus2);
-            double delta = (score1*10) - (score2*10);
-            if (delta < -100) delta = -100;
-            if (delta > 100) delta = 100;
+            //double delta = (score1*10) - (score2*10);
+            double delta = floodDiff(curPlayer)*10;
+            //if (delta < -100) delta = -100;
+            //if (delta > 100) delta = 100;
             // now pass it through tanh;
             p1eval = FastTanh.tanh(delta / 60.0);
         }
