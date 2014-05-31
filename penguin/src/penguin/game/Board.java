@@ -476,7 +476,7 @@ public class Board implements IBoard {
                 }
             }
 
-        int curplayer = player; 
+        int curplayer = 3-player; 
         boolean keepGoing = true;
 
         while (p1cur.size() > 0 && p2cur.size() > 0) { 
@@ -534,8 +534,9 @@ public class Board implements IBoard {
         else if (winner == DRAW) p1eval = 0;
         else {
             //double delta = (pieces1 * 10 + progress1 * 2.5 + capBonus1) - (pieces2 * 10 + progress2 * 2.5 + capBonus2);
-            //double delta = (score1*10) - (score2*10);
-            double delta = floodDiff(curPlayer)*10;
+            double sdelta = (score1*5) - (score2*5);
+            double fdelta = floodDiff(curPlayer)*10;
+            double delta = sdelta + fdelta;
             //if (delta < -100) delta = -100;
             //if (delta > 100) delta = 100;
             // now pass it through tanh;
