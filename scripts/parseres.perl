@@ -204,7 +204,9 @@ foreach my $match (keys %matchmap) {
   my @statslist = ();
   my $left = $p1;
   my $right = $p2;
+
   my $total = $wins{$left} + $wins{$right} + $ties;
+  #my $total = $wins{$left} + $wins{$right};
   
   winstats($wins{$left}, $wins{$right}, $total, \@statslist);
   
