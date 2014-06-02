@@ -80,7 +80,7 @@ sub run_parallel {
       my $esttimeremaining = ($ttljobs - $curjob) / $jobspersec;
       print "Launching '$job->[0]'\n" if $debug;
       my $ptr = prettytime($esttimeremaining);
-      print "  job: #$curjob / $ttljobs (~$ptr seconds remaining)\n" if $debug;
+      print "  job: #$curjob / $ttljobs (~$ptr remaining)\n" if $debug;
       local *NULL;
       my $null_file = ($^O =~ /Win/) ? 'nul': '/dev/null';   
       open (NULL, $null_file) or confess("Cannot read from $null_file:$!");
@@ -156,9 +156,39 @@ my @matchups = ();
 #push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp50,mcts_h_ege0.1_efv0_det0.5_im0.4");
 #push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp10,mcts_h_ege0.1_efv0_det0.5_im0.4");
 
-#push(@matchups, "mcts_s_im0.2,mcts_s");
-#push(@matchups, "mcts_s_pd10,mcts_s");
-push(@matchups, "mcts_s_pd0_im0.2,mcts_s_pd0");
+#push(@matchups, "mcts_h_s_ege0.1_det0.5_im0.4,ab_tt");
+
+#push(@matchups, "ab_tt_ev1,ab_ev1");
+#push(@matchups, "mcts_s_h_efv1_pd8,mcts_s_h_efv1_pd20");
+#push(@matchups, "mcts_s_h_efv1_pd8,mcts_s_h_efv1_ege0.3");
+#push(@matchups, "mcts_s_h_efv1_pd8,mcts_s_h_efv1_ege0.7");
+#push(@matchups, "mcts_s_h_efv1_ege0.3,mcts_s_h_efv1_ege0.7");
+#push(@matchups, "mcts_s_h_efv1_ege0.3,mcts_s_h_efv1_pd20");
+#push(@matchups, "mcts_s_h_efv1_ege0.7,mcts_s_h_efv1_pd20");
+
+#MCTS(ege0:1,det0:5) MCTS(ege01,fet20)
+#push(@matchups, "mcts_s_h_ege0.1_det0.5,mcts_s_h_ege0.1_pd20");
+
+#MCTS(efMS,ege01,det05, np, im04) vs. MCTS(efLH,np,fet20,im06)
+#push(@matchups, "mcts_s_h_efv0_ege0.1_det0.5_np10_im0.4,mcts_s_h_efv1_np10_pd20_im0.6"); 
+#push(@matchups, "mcts_s_h_efv0_ege0.1_det0.5_im0.4,mcts_s_h_efv1_np10_pd20_im0.6"); 
+#push(@matchups, "mcts_s_h_efv0_ege0.1_det0.5_im0.4,mcts_s_h_efv1_pd20_im0.6"); 
+#push(@matchups, "mcts_s_h_efv0_ege0.1_det0.5_np10_im0.4,mcts_s_h_efv1_pd20_im0.6"); 
+
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.05"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.10"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.15"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.20"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.25"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.30"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.35"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.40"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.45"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.50"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.55"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.60"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im0.75"); 
+push(@matchups, "mcts_s_h_pd4,mcts_s_h_pd4_im1.00"); 
 
 
 print "queuing jobs... \n";
@@ -204,7 +234,7 @@ sub fisher_yates_shuffle
     }
 }
 
-#fisher_yates_shuffle( \@jobs );
+fisher_yates_shuffle( \@jobs );
 
 print "queued " . scalar(@jobs) . " jobs\n";
 sleep 1;
