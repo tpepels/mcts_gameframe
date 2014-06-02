@@ -1,5 +1,5 @@
 #!/bin/sh
-dirs="alphabeta BRUE domineering cannon checkers chinesecheckers kalah lostcities mcts pentalath amazons experiments breakthrough"
+dirs="alphabeta BRUE domineering cannon checkers chinesecheckers kalah lostcities mcts mcts_tt nogo pentalath amazons experiments breakthrough penguin"
 class=`shift`
 
 CP="."
@@ -8,7 +8,7 @@ do
   CP="$CP:build/$d"
 done
 
-java -XX:+UseSerialGC -cp $CP $class $@
+java -Xmx2048m -Xms512m -XX:+UseSerialGC -cp $CP $class $@
 
 # Classes with main 
 #

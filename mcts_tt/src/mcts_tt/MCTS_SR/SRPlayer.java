@@ -1,14 +1,17 @@
-package ai.MCTS_SR;
+package mcts_tt.MCTS_SR;
 
 import ai.framework.AIPlayer;
 import ai.framework.IBoard;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
+import mcts_tt.transpos.TransposTable;
 
-public class MCTS_SR_Player implements AIPlayer, Runnable {
+public class SRPlayer implements AIPlayer, Runnable {
+
+    private TransposTable tt = new TransposTable();
     private boolean interrupted = false, parallel = true;
-    private MCTS_SR_Node root;
+    private SRNode root;
     private IBoard board;
     private MoveCallback callback;
     private IMove bestMove;
@@ -25,8 +28,13 @@ public class MCTS_SR_Player implements AIPlayer, Runnable {
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
-        MCTS_SR_Node.maxDepth = 0;
-        MCTS_SR_Node.totalPlayouts = 0;
+        // Reset the MAST arrays
+        if (options.history)
+            options.resetHistory(board.getMaxUniqueMoveId());
+        //
+        SRNode.maxDepth = 0;
+        SRNode.totalPlayouts = 0;
+        //
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -41,20 +49,26 @@ public class MCTS_SR_Player implements AIPlayer, Runnable {
     public void run() {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
-        root = new MCTS_SR_Node(myPlayer, null, options);
-        int[] pl = {0};
+        root = new SRNode(myPlayer, null, options, board.hash(), tt);
+        int[] pl = {0, 0, 0, 0};
+        long startT = System.currentTimeMillis();
         root.MCTS_SR(board, 0, options.simulations, pl);
+        long endT = System.currentTimeMillis();
         // Return the best move found
-        MCTS_SR_Node bestChild = root.selectBestMove();
+        SRNode bestChild = root.selectBestMove();
         bestMove = bestChild.getMove();
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
             System.out.println("Best child: " + bestChild);
-            System.out.println("Play-outs: " + pl[0]);
-            System.out.println("Play-outs check: " + MCTS_SR_Node.totalPlayouts);
-            System.out.println("Max sr depth: " + MCTS_SR_Node.maxDepth);
+            System.out.println("Play-outs: " + pl[3]);
+            System.out.println("Play-outs check: " + SRNode.totalPlayouts);
+            System.out.println("Max sr depth: " + SRNode.maxDepth);
+            System.out.println((int) ((1000. * SRNode.totalPlayouts) / (endT - startT)) + " playouts per s");
         }
+        int removed = tt.pack(0);
+        if (options.debug)
+            System.out.println("Pack cleaned: " + removed + " transpositions");
         root = null;
         // Release the board's memory
         board = null;
@@ -70,9 +84,7 @@ public class MCTS_SR_Player implements AIPlayer, Runnable {
 
     @Override
     public void newGame(int myPlayer, String game) {
-        if (options == null)
-            throw new RuntimeException("MCTS Options not set.");
-        root = new MCTS_SR_Node(myPlayer, null, options);
+        System.out.println("UCT-C " + options.uctC);
     }
 
     @Override

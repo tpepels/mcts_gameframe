@@ -100,11 +100,9 @@ public class TreeNode {
         }
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
-            if (isTerminal()) {// Game is terminal, no more moves can be played
-                int score = (board.checkWin() == player) ? -1 : 1;
-                updateStats(score, depth - 1, player);      // TODO Only works with alternating games
-                return score;
-            } else
+            if (isTerminal())
+                child = this;
+            else
                 child = select(board, depth + 1);
         }
         //
@@ -223,7 +221,6 @@ public class TreeNode {
             updateStats(-result, previousPlayer, depth);
         else
             updateStats(result, previousPlayer, depth);
-
         // Back-propagate the result
         // always return in view of me
         return result;
@@ -643,10 +640,10 @@ public class TreeNode {
         if (options.history) {
             double p1Score = (winner == IBoard.P1_WIN) ? Math.signum(score) : -Math.signum(score);
             for (int i = 0; i < movesMade[0].size(); i++) {
-                options.resetHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
+                options.updateHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
             }
             for (int i = 0; i < movesMade[1].size(); i++) {
-                options.resetHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
+                options.updateHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
             }
             // Clear the lists
             movesMade[0].clear();

@@ -23,18 +23,19 @@ public class MCTSOptions {
     public boolean mapping = false;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
     // MCTS Specific values
-    public double uctC = 1., maxVar = 1.;
+    public double uctC = 1., uctCC = .5, maxVar = 1.;
     // Discounting values
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
     // Successive Rejects
     public int rc = 2, bl = 5;
     public double bp_range = .5;
-    public boolean remove = true, stat_reset = false, shot = false, rec_halving = false, max_back = false, range_back = false;
+    public boolean remove = true, stat_reset = false, shot = false;
+    public boolean rec_halving = false, max_back = false, range_back = false, UBLB = false;
     // MAST stuff
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST
-    public double mastEps = 0.8;
+    public double mastEps = 0.1;
     // Marc's stuff (mostly for implicit minimax)
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -57,8 +58,11 @@ public class MCTSOptions {
     public double progBiasWeight = 0.0;
     public boolean pbDecay = false;
     //
+    public boolean progHistory = false;
+    public double phW = 1, sr_phW = 1;
+    //
     private int instance = 0;
-    private double[][] mastValues, mastVisits;
+    private double[][] histVal, histVis;
 
     public MCTSOptions() {
         this.instance = ++instances;
@@ -77,84 +81,104 @@ public class MCTSOptions {
      */
     public void setGame(String game) {
         rc = 2;
-        if (game.equals("cannon")) {
-            uctC = .8;
-            kr = 3.0;
-            kq = 4.;
-        } else if (game.equals("chinesecheckers")) {
-            uctC = .8;
-            kr = 1.2;
-            kq = 2.8;
-            rc = 3;
-        } else if (game.equals("lostcities")) {
-        } else if (game.equals("checkers")) {
-            kr = 2.8;
-            kq = 2.0;
-        } else if (game.equals("pentalath")) {
-            uctC = .8;
-            // MAST = true;
-            // mastEps = 1. - .95;
-            kr = 1.;
-            kq = 1.6;
-        } else if (game.equals("amazons")) {
-            uctC = .5;
-            // MAST = true;
-            // mastEps = 1. - .3;
+        if (game.equalsIgnoreCase("amazons")) {
+            uctC = .4;
+            // Budget limit
+            bl = 50;
+            // Bonus constants
             kr = 2.2;
             kq = 1.6;
-        } else if (game.equals("breakthrough")) {
-            uctC = 1.;
-            // MAST = true;
-            // mastEps = 1. - .7;
+        } else if (game.equalsIgnoreCase("breakthrough")) {
+            uctC = .8;
+            // Budget limit
+            bl = 70;
+            // Bonus constants
             kr = 8.0;
             kq = 2.0;
-        } else if (game.equals("domineering")) {
-
+        } else if (game.equalsIgnoreCase("cannon")) {
+            uctC = .8;
+            // Bonus constants
+            kr = 3.0;
+            kq = 4.;
+        } else if (game.equalsIgnoreCase("chinesecheckers")) {
+            uctC = .8;
+            // Bonus constants
+            kr = 1.2;
+            kq = 2.8;
+        } else if (game.startsWith("nogo")) {
+            uctC = .6;
+            // Budget limit
+            bl = 30;
+        } else if (game.equalsIgnoreCase("pentalath")) {
+            uctC = .8;
+            // Budget limit
+            bl = 30;
+            // Bonus constants
+            kr = 1.;
+            kq = 1.6;
+        } else if (game.equalsIgnoreCase("lostcities")) {
+            //
+        } else if (game.equalsIgnoreCase("checkers")) {
+            // Bonus constants
+            kr = 2.8;
+            kq = 2.0;
+        } else if (game.equalsIgnoreCase("domineering")) {
+            uctC = 1.;
+        } else if (game.equalsIgnoreCase("penguin")) {
+            uctC = 1.;
+        } else {
+            throw new RuntimeException("Game not found! " + game);
         }
         resetSimulations(game);
     }
 
     public void resetSimulations(String game) {
-        if (game.equals("cannon")) {
+        if (game.equalsIgnoreCase("cannon")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 2 * timeInterval;
-        } else if (game.equals("chinesecheckers")) {
+        } else if (game.equalsIgnoreCase("chinesecheckers")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 14 * timeInterval;
-        } else if (game.equals("checkers")) {
+        } else if (game.equalsIgnoreCase("checkers")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 24 * timeInterval;
-        } else if (game.equals("lostcities")) {
+        } else if (game.equalsIgnoreCase("lostcities")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 6 * timeInterval;
-        } else if (game.equals("pentalath")) {
+        } else if (game.equalsIgnoreCase("pentalath")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 21 * timeInterval;
-        } else if (game.equals("amazons")) {
+        } else if (game.equalsIgnoreCase("amazons")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 3 * timeInterval;
-        } else if (game.equals("breakthrough")) {
+        } else if (game.equalsIgnoreCase("breakthrough")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 17 * timeInterval;
-        } else if (game.equals("domineering")) {
+        } else if (game.equalsIgnoreCase("domineering")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 22 * timeInterval;
+        } else if (game.startsWith("nogo")) {
+            uctC = .6;
+        } else if (game.startsWith("penguin")) {
+            uctC = 1.;
+        } else {
+            throw new RuntimeException("Game not found! " + game);
         }
         simsLeft = numSimulations;
     }
@@ -167,14 +191,12 @@ public class MCTSOptions {
     }
 
     public void resetHistory(int maxId) {
-        mastValues = new double[2][maxId];
-        mastVisits = new double[2][maxId];
+        histVal = new double[2][maxId];
+        histVis = new double[2][maxId];
     }
 
-    public void resetHistory(int player, int moveId, double value) {
-        mastValues[player - 1][moveId] +=
-                (value - mastValues[player - 1][moveId]) /
-                        (++mastVisits[player - 1][moveId]);
+    public void updateHistory(int player, int moveId, double value) {
+        histVal[player - 1][moveId] += (value - histVal[player - 1][moveId]) / (++histVis[player - 1][moveId]);
     }
 
     public void enableShot() {
@@ -188,10 +210,10 @@ public class MCTSOptions {
     }
 
     public double getHistoryValue(int player, int id) {
-        return mastValues[player - 1][id];
+        return histVal[player - 1][id];
     }
 
     public double getHistoryVisits(int player, int id) {
-        return mastVisits[player - 1][id];
+        return histVis[player - 1][id];
     }
 }

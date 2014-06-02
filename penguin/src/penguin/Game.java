@@ -1,9 +1,9 @@
-package breakthrough;
+package penguin;
 
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
-import breakthrough.game.Board;
-import breakthrough.game.Move;
+import penguin.game.Board;
+import penguin.game.Move;
 import mcts_tt.MCTS_SR.SRPlayer;
 
 public class Game {
@@ -13,7 +13,7 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        options1.setGame("breakthrough");
+        options1.setGame("penguin");
         AIPlayer aiPlayer1 = new SRPlayer();
         aiPlayer1.setOptions(options1);
         options1.fixedSimulations = true;
@@ -23,7 +23,7 @@ public class Game {
 
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.setGame("breakthrough");
+        options2.setGame("penguin");
         AIPlayer aiPlayer2 = new SRPlayer();
         aiPlayer2.setOptions(options2);
         options2.fixedSimulations = true;

@@ -1,13 +1,12 @@
 package amazons.gui;
 
-import ai.MCTS_SR.MCTS_SR_Player;
 import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
 import amazons.game.Board;
 import amazons.game.Move;
+import mcts_tt.MCTS_SR.SRPlayer;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -52,19 +51,24 @@ public class AmazonsBoard extends JPanel implements MouseListener, MouseMotionLi
             e.printStackTrace();
         }
         // Definition for player 1
-        aiPlayer1 = new MCTSPlayer();
+        aiPlayer1 = new SRPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("amazons");
         options1.fixedSimulations = true;
-        options1.simulations = 25000;
+        options1.simulations = 10000;
+        options1.bl = 20;
+        options1.solver = true;
+        options1.max_back = true;
         aiPlayer1.setOptions(options1);
 
         // Definition for player 2
-        aiPlayer2 = new MCTS_SR_Player();
+        aiPlayer2 = new SRPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("amazons");
         options2.fixedSimulations = true;
         options2.simulations = 25000;
+//        options2.enableShot();
+        options2.solver = true;
         aiPlayer2.setOptions(options2);
         //
         aiPlayer1.getMove(board.copy(), this, Board.P1, true, null);

@@ -11,17 +11,8 @@ import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;
 import mcts2e.BRUE.MCTS2ePlayer;
-
-/*
-FYI: can't do this due to naming conflicts. Below, you can specify which ones you want
-     by using their fully-qualified names. 
-import amazons.game.Board;
-import cannon.game.Board;
-import chinesecheckers.game.Board;
-import breakthrough.game.Board;
-import lostcities.game.Table;
-import pentalath.game.Board;
-*/
+import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.uct.UCTPlayer;
 
 /**
  * Runs a single experiment. Options are sent by command-line.
@@ -125,9 +116,13 @@ public class SimGame {
 
         String[] parts = label.split("_");
 
-        if (parts[0].equals("mcts")) {
-            playerRef = new MCTSPlayer();
+        if (parts[0].equals("mcts") || parts[0].equals("mctstt")) {
             MCTSOptions options = new MCTSOptions();
+            if (parts[0].equals("mctstt")) {
+                playerRef = new UCTPlayer();
+            } else {
+                playerRef = new MCTSPlayer();
+            }
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.solver = false;
@@ -178,7 +173,8 @@ public class SimGame {
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.history = true;
-                    options.mastEps = Double.parseDouble(tag.substring(4));
+                    if (tryParseDouble(tag.substring(4)))
+                        options.mastEps = Double.parseDouble(tag.substring(4));
                 } else if (tag.startsWith("sw")) {
                     options.swUCT = true;
                     if (tryParseDouble(tag.substring(2)))
@@ -207,6 +203,11 @@ public class SimGame {
                     options.nodePriorsVisits = Integer.parseInt(tag.substring(2));
                 } else if (tag.startsWith("efv")) {
                     options.efVer = Integer.parseInt(tag.substring(3));
+                } else if (tag.startsWith("ph")) {
+                    options.history = true;
+                    options.progHistory = true;
+                    if (tryParseDouble(tag.substring(2)))
+                        options.phW = Double.parseDouble(tag.substring(2));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
@@ -236,10 +237,13 @@ public class SimGame {
             }
             // and set the options for this player
             playerRef.setOptions(options);
-        } else if (parts[0].equals("srmcts")) {
-            //
-            playerRef = new MCTS_SR_Player();
+        } else if (parts[0].equals("srmcts") || parts[0].equals("srmctstt")) {
             MCTSOptions options = new MCTSOptions();
+            if (parts[0].equals("srmctstt")) {
+                playerRef = new SRPlayer();
+            } else {
+                playerRef = new MCTS_SR_Player();
+            }
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.solver = false;
@@ -250,8 +254,8 @@ public class SimGame {
             options.timeInterval = timeLimit;
             options.simulations = timeLimit;
             options.setGame(game);
-            MCTSOptions.r.setSeed(seed);
 
+            MCTSOptions.r.setSeed(seed);
             // now, parse the tags
             for (int i = 1; i < parts.length; i++) {
                 String tag = parts[i];
@@ -259,12 +263,8 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
-                } else if (tag.startsWith("c")) {
-                    options.uctC = Double.parseDouble(tag.substring(1));
-                } else if (tag.equals("sr")) {
-                    options.stat_reset = true;
-                } else if (tag.equals("rr")) {
-                    options.rec_halving = true;
+                } else if (tag.startsWith("uct")) {
+                    options.uctC = Double.parseDouble(tag.substring(3));
                 } else if (tag.equals("s")) {
                     options.solver = true;
                 } else if (tag.startsWith("rc")) {
@@ -276,14 +276,31 @@ public class SimGame {
                     options.bp_range = Double.parseDouble(tag.substring(2));
                 } else if (tag.equals("max")) {
                     options.max_back = true;
-                } else if (tag.equals("r")) {
-                    options.remove = true;
                 } else if (tag.startsWith("mast")) {
                     options.MAST = true;
                     options.history = true;
                     options.mastEps = Double.parseDouble(tag.substring(4));
                 } else if (tag.startsWith("shot")) {
                     options.enableShot();
+                } else if (tag.startsWith("ph")) {
+                    options.history = true;
+                    options.progHistory = true;
+                    if (tryParseDouble(tag.substring(2)))
+                        options.phW = Double.parseDouble(tag.substring(2));
+                } else if (tag.startsWith("srph")) {
+                    options.history = true;
+                    options.progHistory = true;
+                    if (tryParseDouble(tag.substring(4)))
+                        options.sr_phW = Double.parseDouble(tag.substring(4));
+                } else if (tag.startsWith("mast")) {
+                    options.MAST = true;
+                    options.history = true;
+                    if (tryParseDouble(tag.substring(4)))
+                        options.mastEps = Double.parseDouble(tag.substring(4));
+                } else if (tag.startsWith("ublb")) {
+                    options.UBLB = true;
+                    if (tryParseDouble(tag.substring(4)))
+                        options.uctCC = Double.parseDouble(tag.substring(4));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
@@ -299,8 +316,7 @@ public class SimGame {
                 String tag = parts[i];
                 if (tag.equals("tt")) {
                     options.transpositions = true;
-                }
-                else if (tag.startsWith("ev")) {
+                } else if (tag.startsWith("ev")) {
                     options.evVer = Integer.parseInt(tag.substring(2));
                 }
             }
@@ -353,10 +369,16 @@ public class SimGame {
             int size = Integer.parseInt(game.substring(11));
             board = new domineering.game.Board(size);
             domineering.game.Board.CRAM = false;
-        } else if (game.equals("cram")) {
+        } else if (game.startsWith("cram")) {
             int size = Integer.parseInt(game.substring(4));
             board = new domineering.game.Board(size);
             domineering.game.Board.CRAM = true;
+        } else if (game.startsWith("nogo")) {
+            int size = Integer.parseInt(game.substring(4));
+            nogo.game.Board.SIZE = size;
+            board = new nogo.game.Board();
+        } else if (game.equals("penguin")) {
+            board = new penguin.game.Board();
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
         }

@@ -1,12 +1,11 @@
 package pentalath.gui;
 
-import ai.MCTS_SR.MCTS_SR_Player;
 import ai.framework.AIPlayer;
 import ai.framework.IMove;
 import ai.framework.MoveCallback;
 import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
 import com.rush.HexGridCell;
+import mcts_tt.MCTS_SR.SRPlayer;
 import pentalath.game.Board;
 import pentalath.game.Move;
 
@@ -41,6 +40,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
 
     public PentalathPanel(Board board, boolean p1Human, boolean p2Human) {
         this.board = board;
+        board.initialize();
         this.p1Human = p1Human;
         this.p2Human = p2Human;
         //
@@ -48,27 +48,28 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         addMouseListener(this);
         t = new Timer(1000, this);
         t.start();
-        //makeAIMove();
+        makeAIMove();
     }
 
     private void resetPlayers() {
         if (!p1Human) {
-            aiPlayer1 = new MCTSPlayer();
+            aiPlayer1 = new SRPlayer();
             MCTSOptions options1 = new MCTSOptions();
             options1.simulations = 25000;
             options1.fixedSimulations = true;
+            options1.solver = true;
             options1.setGame("pentalath");
             aiPlayer1.setOptions(options1);
             aiPlayer1.newGame(1, "pentalath");
         }
         if (!p2Human) {
-            aiPlayer2 = new MCTS_SR_Player();
+            aiPlayer2 = new SRPlayer();
+//            aiPlayer2 = new MCTSPlayer();
             MCTSOptions options2 = new MCTSOptions();
             options2.simulations = 25000;
             options2.fixedSimulations = true;
-//            options2.max_back = true;
-            options2.stat_reset = true;
-            options2.bl = 25;
+            options2.solver = true;
+            options2.UBLB = true;
             options2.setGame("pentalath");
             aiPlayer2.setOptions(options2);
             aiPlayer2.newGame(2, "pentalath");
@@ -106,6 +107,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
 
     public void setBoard(Board board) {
         this.board = board;
+        board.initialize();
         movenum = 0;
         resetPlayers();
         repaint();
@@ -165,8 +167,10 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
                 "%d : %d",
                 TimeUnit.MILLISECONDS.toMinutes(endtime),
                 TimeUnit.MILLISECONDS.toSeconds(endtime)
-                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))),
-                10, 15);
+                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))
+        ),
+                10, 15
+        );
         g2d.drawString(aiMessage, 10, this.getHeight() - 15);
     }
 

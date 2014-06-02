@@ -71,14 +71,12 @@ public class Board implements IBoard {
             whiteTownPlaced = placeTown(W_TOWN, move.getMove()[1]);
             if (whiteTownPlaced) {
                 whiteTown = move.getMove()[1];
-                pastMoves.push(move);
             }
             moveMade = whiteTownPlaced;
         } else if (currentPlayer == P1 && !blackTownPlaced) {
             blackTownPlaced = placeTown(B_TOWN, move.getMove()[1]);
             if (blackTownPlaced) {
                 blackTown = move.getMove()[1];
-                pastMoves.push(move);
             }
             moveMade = blackTownPlaced;
         } else {
@@ -643,7 +641,7 @@ public class Board implements IBoard {
 
     @Override
     public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
-        throw new RuntimeException("unimplemented"); 
+        throw new RuntimeException("unimplemented");
     }
 
     @Override
