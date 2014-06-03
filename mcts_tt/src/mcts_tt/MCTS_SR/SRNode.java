@@ -231,14 +231,14 @@ public class SRNode {
             }
             // :: Removal policy: Sorting
             if (S.size() > 0)
-                Collections.sort(S.subList(0, Math.min(Math.max(s, 2), S.size())), (!options.history) ? comparator : phComparator);
+                Collections.sort(S.subList(0, Math.min(Math.max(s, Math.min(S.size(), 2)), S.size())), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-            if (s == 1) {
+            if (s == 1)
                 b += budget - plStats[3];
-            } else {
+            else {
                 // :: Re-budgeting
                 b += getBudget(getBudgetNode(), budget, s, S.size());
                 // Add any skipped budget from this round
@@ -251,7 +251,6 @@ public class SRNode {
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
-
         // :: SR Max back-propagation
         if (!isSolved() && options.max_back && bestArm != null
                 && bestArm.state != null && !bestArm.isSolved()) {
