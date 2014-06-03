@@ -46,7 +46,7 @@ public class MCTSOptions {
     public int nodePriorsVisits = 100;          // number of visites to initialize in node priors 
     public boolean maxBackprop = false;         // max backprop 
     public int maxBackpropT = 0;                // threshold for when to switch
-    public int efVer = 1;                       // int evaluation function version
+    public int efVer = 0;                       // int evaluation function version
     public boolean detEnabled = false;          // dynamic early terminations (uses ev. func.)
     public double detThreshold = 0.3;           // >T -> win whereas <T -> loss
     public int detFreq = 5;                     // how often the eval is checked in det
