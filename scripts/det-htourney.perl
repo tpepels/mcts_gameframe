@@ -21,7 +21,7 @@ if (defined ($ARGV[4])) {
   $gamespermatch = $ARGV[4];  
 }
 
-my $algprefix = "mcts_h";
+my $algprefix = "mcts_s_h";
 if (defined ($ARGV[5])) { 
   $algprefix = $ARGV[5];  
 }
@@ -255,7 +255,7 @@ sub determine_winners {
   @players = @winners; 
 }
 
-if ("$algprefix" eq "mcts" or "$algprefix" eq "mcts_h") { 
+if ("$algprefix" eq "mcts" or "$algprefix" eq "mcts_h" or "$algprefix" eq "mcts_s_h") { 
   @parms1 = ( "0.1", "0.15", "0.2", "0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75", "0.8", "0.85", "0.9", "0.95", "1.0" ); 
 }
 else { 

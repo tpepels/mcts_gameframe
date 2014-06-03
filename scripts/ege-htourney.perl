@@ -21,7 +21,7 @@ if (defined ($ARGV[4])) {
   $gamespermatch = $ARGV[4];  
 }
 
-my $algprefix = "mcts_h";
+my $algprefix = "mcts_s_h";
 if (defined ($ARGV[5])) { 
   $algprefix = $ARGV[5];  
 }
@@ -138,7 +138,7 @@ sub get_cmd
   my $alg2 = shift;
   my $seed = shift;
 
-  my $cmd = "scripts/run.sh experiments.SimGame --game $game --p1 $alg1 --p2 $alg2 --seed $seed --timelimit $tl";
+  my $cmd = "scripts/run.sh experiments.SimGame --printboard --game $game --p1 $alg1 --p2 $alg2 --seed $seed --timelimit $tl";
   
   return $cmd;
 }
@@ -255,7 +255,7 @@ sub determine_winners {
   @players = @winners; 
 }
 
-if ("$algprefix" eq "mcts" or "$algprefix" eq "mcts_h") { 
+if ("$algprefix" =~ m/^mcts/) { 
   @parms1 = ( "0.0", "0.05", "0.1", "0.15", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0" ); 
 }
 else { 

@@ -118,6 +118,8 @@ public class MCTSOptions {
             kq = 1.6;
         } else if (game.equalsIgnoreCase("lostcities")) {
             //
+        } else if (game.equalsIgnoreCase("kalah")) { 
+            uctC = 1.; 
         } else if (game.equalsIgnoreCase("checkers")) {
             // Bonus constants
             kr = 2.8;
@@ -168,6 +170,8 @@ public class MCTSOptions {
                 numSimulations = simulations;
             else
                 numSimulations = 17 * timeInterval;
+        } else if (game.startsWith("kalah")) {
+            uctC = 1.;
         } else if (game.equalsIgnoreCase("domineering")) {
             if (fixedSimulations)
                 numSimulations = simulations;
