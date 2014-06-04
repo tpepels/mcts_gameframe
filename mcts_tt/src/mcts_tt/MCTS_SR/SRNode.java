@@ -179,7 +179,8 @@ public class SRNode {
                 if (!child.isSolved()) {
                     // :: Actual budget
                     int b1 = (int) (b - child.getVisits());
-                    if (s == 2 && n == 1) b1 = (int) Math.max(b1, budget - plStats[3] - (b - S.get(1).getVisits()));
+                    if (s == 2 && n == 1 && S.size() > 1)
+                        b1 = (int) Math.max(b1, budget - plStats[3] - (b - S.get(1).getVisits()));
                     b_b = Math.min(b1, budget - plStats[3]);
                     if (b_b <= 0)
                         continue;
@@ -218,8 +219,10 @@ public class SRNode {
                         state.incrBudgetSpent(plStats[3]);
                         return result;
                     } else {
+                        S.remove(child);
                         // Redistribute the unspent budget in the next round
                         b_s += b_b - pl[3];
+                        s--;
                     }
                 } else if (options.UBLB && n == 1) {
                     // The lower bound for the best child
@@ -228,6 +231,12 @@ public class SRNode {
                 // Make sure we don't go over budget
                 if (plStats[3] >= budget)
                     break;
+            }
+            if (b_s > 0) {
+                // Add any skipped budget from this round
+                b += Math.ceil(b_s / (double) s);
+                // Re-do the round with the unspent budget
+                continue;
             }
             // :: Removal policy: Sorting
             if (S.size() > 0)
@@ -238,12 +247,8 @@ public class SRNode {
             s = Math.min(S.size(), s);
             if (s == 1)
                 b += budget - plStats[3];
-            else {
-                // :: Re-budgeting
+            else
                 b += getBudget(getBudgetNode(), budget, s, S.size());
-                // Add any skipped budget from this round
-                b += Math.ceil(b_s / (double) s);
-            }
         } while (plStats[3] < budget);
 
         // Update the budgetSpent value
@@ -275,21 +280,9 @@ public class SRNode {
             boolean allSolved = true;
             // (Solver) Check if all children are a loss
             for (SRNode tn : C) {
-                // If the child is not expanded, make sure it is
-                if (tn.isLeaf() && !tn.isSolved()) {
-                    // Execute the move represented by the child
-                    board.doAIMove(tn.getMove(), player);
-                    SRNode winner = tn.expand(board);
-                    board.undoMove();
-                    // We found a winning node below the child, this means the child is a loss.
-                    if (winner != null)
-                        tn.setSolved(false);
-                }
                 // Are all children a loss?
                 if (tn.getValue() != result) {
                     allSolved = false;
-                } else {
-                    S.remove(tn);
                 }
             }
             // (Solver) If all children lead to a loss for me, then I'm a win for the opponent

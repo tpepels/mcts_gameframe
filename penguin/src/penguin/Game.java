@@ -2,9 +2,9 @@ package penguin;
 
 import ai.framework.AIPlayer;
 import ai.mcts.MCTSOptions;
+import ai.mcts.MCTSPlayer;
 import penguin.game.Board;
 import penguin.game.Move;
-import mcts_tt.MCTS_SR.SRPlayer;
 
 public class Game {
 
@@ -14,7 +14,7 @@ public class Game {
 
         MCTSOptions options1 = new MCTSOptions();
         options1.setGame("penguin");
-        AIPlayer aiPlayer1 = new SRPlayer();
+        AIPlayer aiPlayer1 = new MCTSPlayer();
         aiPlayer1.setOptions(options1);
         options1.fixedSimulations = true;
         options1.useHeuristics = true;
@@ -24,7 +24,7 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("penguin");
-        AIPlayer aiPlayer2 = new SRPlayer();
+        AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
         options2.fixedSimulations = true;
         options2.simulations = 25000;
