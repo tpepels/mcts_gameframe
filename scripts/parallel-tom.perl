@@ -26,6 +26,8 @@ if (not -d "$scratchdir") {
 my $ttljobs = 0;
 my $curjob = 0;
 my $starttime = 0;
+my $donejobs = 0;
+my $ptr = "?"; # pretty time remaining
 
 # returns a nicely displayed time
 sub prettytime
@@ -75,12 +77,8 @@ sub run_parallel {
         $job = [$job];
       }
       $curjob++;
-      my $nowtime = time;
-      my $jobspersec = $curjob / ($nowtime - $starttime);
-      my $esttimeremaining = ($ttljobs - $curjob) / $jobspersec;
       print "Launching '$job->[0]'\n" if $debug;
-      my $ptr = prettytime($esttimeremaining);
-      print "  job: #$curjob / $ttljobs (~$ptr seconds remaining)\n" if $debug;
+      print "  job: #$curjob / $ttljobs (~$ptr remaining)\n" if $debug;
       local *NULL;
       my $null_file = ($^O =~ /Win/) ? 'nul': '/dev/null';   
       open (NULL, $null_file) or confess("Cannot read from $null_file:$!");
@@ -105,7 +103,16 @@ sub run_parallel {
         print STDERR $err, "\n";
         $errors{$proc_id} = $err;
       }
-      print "Reaped '$running{$proc_id}->[0]'\n" if $debug;
+
+      #reaped!
+      $donejobs++; 
+      my $nowtime = time;
+      my $jobspersec = $donejobs / ($nowtime - $starttime);
+      my $esttimeremaining = ($ttljobs - $donejobs) / $jobspersec;
+      $ptr = prettytime($esttimeremaining);
+      
+      print "Reaped '$running{$proc_id}->[0] (~$ptr remaining)'\n" if $debug;
+
       delete $running{$proc_id};
       --$is_running;
     }
