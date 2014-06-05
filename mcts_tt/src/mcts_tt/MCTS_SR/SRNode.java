@@ -9,10 +9,7 @@ import mcts_tt.transpos.State;
 import mcts_tt.transpos.TransposTable;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class SRNode {
     public static int maxDepth = 0;
@@ -219,10 +216,8 @@ public class SRNode {
                         state.incrBudgetSpent(plStats[3]);
                         return result;
                     } else {
-                        S.remove(child);
                         // Redistribute the unspent budget in the next round
                         b_s += b_b - pl[3];
-                        s--;
                     }
                 } else if (options.UBLB && n == 1) {
                     // The lower bound for the best child
@@ -232,11 +227,11 @@ public class SRNode {
                 if (plStats[3] >= budget)
                     break;
             }
-            if (b_s > 0) {
-                // Add any skipped budget from this round
-                b += Math.ceil(b_s / (double) s);
-                // Re-do the round with the unspent budget
-                continue;
+            for (Iterator<SRNode> iterator = S.iterator(); iterator.hasNext(); ) {
+                SRNode node = iterator.next();
+                if (node.isSolved()) {
+                    iterator.remove();
+                }
             }
             // :: Removal policy: Sorting
             if (S.size() > 0)
@@ -247,8 +242,11 @@ public class SRNode {
             s = Math.min(S.size(), s);
             if (s == 1)
                 b += budget - plStats[3];
-            else
+            else {
                 b += getBudget(getBudgetNode(), budget, s, S.size());
+                // Add any skipped budget from this round
+                b += Math.ceil(b_s / (double) s);
+            }
         } while (plStats[3] < budget);
 
         // Update the budgetSpent value
