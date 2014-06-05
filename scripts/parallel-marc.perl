@@ -26,6 +26,8 @@ if (not -d "$scratchdir") {
 my $ttljobs = 0;
 my $curjob = 0;
 my $starttime = 0;
+my $donejobs = 0;
+my $ptr = "?"; # pretty time remaining
 
 # returns a nicely displayed time
 sub prettytime
@@ -75,12 +77,8 @@ sub run_parallel {
         $job = [$job];
       }
       $curjob++;
-      my $nowtime = time;
-      my $jobspersec = $curjob / ($nowtime - $starttime);
-      my $esttimeremaining = ($ttljobs - $curjob) / $jobspersec;
       print "Launching '$job->[0]'\n" if $debug;
-      my $ptr = prettytime($esttimeremaining);
-      print "  job: #$curjob / $ttljobs (~$ptr seconds remaining)\n" if $debug;
+      print "  job: #$curjob / $ttljobs (~$ptr remaining)\n" if $debug;
       local *NULL;
       my $null_file = ($^O =~ /Win/) ? 'nul': '/dev/null';   
       open (NULL, $null_file) or confess("Cannot read from $null_file:$!");
@@ -105,7 +103,16 @@ sub run_parallel {
         print STDERR $err, "\n";
         $errors{$proc_id} = $err;
       }
-      print "Reaped '$running{$proc_id}->[0]'\n" if $debug;
+
+      #reaped!
+      $donejobs++; 
+      my $nowtime = time;
+      my $jobspersec = $donejobs / ($nowtime - $starttime);
+      my $esttimeremaining = ($ttljobs - $donejobs) / $jobspersec;
+      $ptr = prettytime($esttimeremaining);
+      
+      print "Reaped '$running{$proc_id}->[0] (~$ptr remaining)'\n" if $debug;
+
       delete $running{$proc_id};
       --$is_running;
     }
@@ -156,10 +163,52 @@ my @matchups = ();
 #push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp50,mcts_h_ege0.1_efv0_det0.5_im0.4");
 #push(@matchups, "mcts_h_ege0.1_efv0_det0.5_mbp10,mcts_h_ege0.1_efv0_det0.5_im0.4");
 
-push(@matchups, "mcts_h_s_ege0.1_det0.5,mcts_h_s");
+#push(@matchups, "mcts_h_s_ege0.1_det0.5_im0.4,ab_tt");
+
+#push(@matchups, "ab_tt_ev1,ab_ev1");
+#push(@matchups, "mcts_s_h_efv1_pd8,mcts_s_h_efv1_pd20");
+#push(@matchups, "mcts_s_h_efv1_pd8,mcts_s_h_efv1_ege0.3");
+#push(@matchups, "mcts_s_h_efv1_pd8,mcts_s_h_efv1_ege0.7");
+#push(@matchups, "mcts_s_h_efv1_ege0.3,mcts_s_h_efv1_ege0.7");
+#push(@matchups, "mcts_s_h_efv1_ege0.3,mcts_s_h_efv1_pd20");
+#push(@matchups, "mcts_s_h_efv1_ege0.7,mcts_s_h_efv1_pd20");
+
+#MCTS(ege0:1,det0:5) MCTS(ege01,fet20)
+
+# MCTS(efMS,bl,np,im$0.4$) against MCTS(efLH,bl',im$0.6$).
+
+#push(@matchups, "mcts_s_h_efv0_ege0.1_det0.3_im0.4,mcts_s_h_efv1_pd20_np10_im0.6");
+#push(@matchups, "mcts_s_h_efv0_ege0.1_det0.3_np10_im0.4,mcts_s_h_efv1_pd20_np10_im0.6");
+
+
+# det for breakthrough
+push(@matchups, "mcts_s_h_det0.3,mcts_s_h_pd20");
+push(@matchups, "mcts_s_h_det0.3,mcts_s_h_pd4");
+push(@matchups, "mcts_s_h_det0.3,mcts_s_h_ege0.1");
+
+push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1");
+push(@matchups, "mcts_s_h_ege0.1_det0.5,mcts_s_h_ege0.1");
+push(@matchups, "mcts_s_h_ege0.1_det0.7,mcts_s_h_ege0.1");
+
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.00"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.05"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.10"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.15"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.20"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.25"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.30"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.35"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.40"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.45"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.50"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.55"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.60"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im0.75"); 
+#push(@matchups, "mcts_s_h_ege0.1_det0.3,mcts_s_h_ege0.1_det0.3_im1.00"); 
 
 
 print "queuing jobs... \n";
+
 
 for (my $i = 0; $i < scalar(@matchups); $i++)
 {

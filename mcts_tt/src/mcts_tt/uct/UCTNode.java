@@ -123,16 +123,6 @@ public class UCTNode {
             } else if (result == -State.INF) {
                 // (Solver) Check if all children are a loss
                 for (UCTNode tn : children) {
-                    // If the child is not expanded or solved, make sure it is expanded
-                    if (tn.isLeaf() && Math.abs(tn.getValue()) != State.INF) {
-                        // Execute the move represented by the child
-                        board.doAIMove(tn.getMove(), player);
-                        UCTNode winner = tn.expand(board, depth + 2);
-                        board.undoMove();
-                        // We found a winning node below the child, this means the child is a loss.
-                        if (winner != null)
-                            tn.setSolved(false);
-                    }
                     // Are all children a loss?
                     if (tn.getValue() != result) {
                         // Return a single loss, if not all children are a loss

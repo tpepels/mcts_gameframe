@@ -9,10 +9,7 @@ import mcts_tt.transpos.State;
 import mcts_tt.transpos.TransposTable;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class SRNode {
     public static int maxDepth = 0;
@@ -179,7 +176,8 @@ public class SRNode {
                 if (!child.isSolved()) {
                     // :: Actual budget
                     int b1 = (int) (b - child.getVisits());
-                    if (s == 2 && n == 1) b1 = (int) Math.max(b1, budget - plStats[3] - (b - S.get(1).getVisits()));
+                    if (s == 2 && n == 1 && S.size() > 1)
+                        b1 = (int) Math.max(b1, budget - plStats[3] - (b - S.get(1).getVisits()));
                     b_b = Math.min(b1, budget - plStats[3]);
                     if (b_b <= 0)
                         continue;
@@ -229,17 +227,22 @@ public class SRNode {
                 if (plStats[3] >= budget)
                     break;
             }
+            for (Iterator<SRNode> iterator = S.iterator(); iterator.hasNext(); ) {
+                SRNode node = iterator.next();
+                if (node.isSolved()) {
+                    iterator.remove();
+                }
+            }
             // :: Removal policy: Sorting
             if (S.size() > 0)
-                Collections.sort(S.subList(0, Math.min(Math.max(s, 2), S.size())), (!options.history) ? comparator : phComparator);
+                Collections.sort(S.subList(0, Math.min(Math.max(s, Math.min(S.size(), 2)), S.size())), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-            if (s == 1) {
+            if (s == 1)
                 b += budget - plStats[3];
-            } else {
-                // :: Re-budgeting
+            else {
                 b += getBudget(getBudgetNode(), budget, s, S.size());
                 // Add any skipped budget from this round
                 b += Math.ceil(b_s / (double) s);
@@ -251,7 +254,6 @@ public class SRNode {
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
-
         // :: SR Max back-propagation
         if (!isSolved() && options.max_back && bestArm != null
                 && bestArm.state != null && !bestArm.isSolved()) {
@@ -276,21 +278,9 @@ public class SRNode {
             boolean allSolved = true;
             // (Solver) Check if all children are a loss
             for (SRNode tn : C) {
-                // If the child is not expanded, make sure it is
-                if (tn.isLeaf() && !tn.isSolved()) {
-                    // Execute the move represented by the child
-                    board.doAIMove(tn.getMove(), player);
-                    SRNode winner = tn.expand(board);
-                    board.undoMove();
-                    // We found a winning node below the child, this means the child is a loss.
-                    if (winner != null)
-                        tn.setSolved(false);
-                }
                 // Are all children a loss?
                 if (tn.getValue() != result) {
                     allSolved = false;
-                } else {
-                    S.remove(tn);
                 }
             }
             // (Solver) If all children lead to a loss for me, then I'm a win for the opponent

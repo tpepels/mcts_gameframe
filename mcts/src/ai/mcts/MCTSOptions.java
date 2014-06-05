@@ -46,7 +46,7 @@ public class MCTSOptions {
     public int nodePriorsVisits = 100;          // number of visites to initialize in node priors 
     public boolean maxBackprop = false;         // max backprop 
     public int maxBackpropT = 0;                // threshold for when to switch
-    public int efVer = 1;                       // int evaluation function version
+    public int efVer = 0;                       // int evaluation function version
     public boolean detEnabled = false;          // dynamic early terminations (uses ev. func.)
     public double detThreshold = 0.3;           // >T -> win whereas <T -> loss
     public int detFreq = 5;                     // how often the eval is checked in det
@@ -118,11 +118,15 @@ public class MCTSOptions {
             kq = 1.6;
         } else if (game.equalsIgnoreCase("lostcities")) {
             //
+        } else if (game.equalsIgnoreCase("kalah")) { 
+            uctC = 1.; 
         } else if (game.equalsIgnoreCase("checkers")) {
             // Bonus constants
             kr = 2.8;
             kq = 2.0;
         } else if (game.equalsIgnoreCase("domineering")) {
+            uctC = 1.;
+        } else if (game.equalsIgnoreCase("penguin")) {
             uctC = 1.;
         } else {
             throw new RuntimeException("Game not found! " + game);
@@ -166,6 +170,8 @@ public class MCTSOptions {
                 numSimulations = simulations;
             else
                 numSimulations = 17 * timeInterval;
+        } else if (game.startsWith("kalah")) {
+            uctC = 1.;
         } else if (game.equalsIgnoreCase("domineering")) {
             if (fixedSimulations)
                 numSimulations = simulations;
@@ -173,6 +179,8 @@ public class MCTSOptions {
                 numSimulations = 22 * timeInterval;
         } else if (game.startsWith("nogo")) {
             uctC = .6;
+        } else if (game.startsWith("penguin")) {
+            uctC = 1.;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }

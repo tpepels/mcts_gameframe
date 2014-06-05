@@ -138,7 +138,7 @@ sub get_cmd
   my $alg2 = shift;
   my $seed = shift;
 
-  my $cmd = "scripts/run.sh experiments.SimGame --printboard --game $game --p1 $alg1 --p2 $alg2 --seed $seed --timelimit $tl";
+  my $cmd = "scripts/run.sh experiments.SimGame --game $game --p1 $alg1 --p2 $alg2 --seed $seed --timelimit $tl";
   
   return $cmd;
 }
@@ -255,8 +255,8 @@ sub determine_winners {
   @players = @winners; 
 }
 
-if ("$algprefix" =~ m/^mcts/) { 
-  @parms1 = ( "0.0", "0.05", "0.1", "0.15", "0.2", "0.3", "0.4", "0.5", "0.6", "0.7", "0.8", "0.9", "1.0" ); 
+if ("$algprefix" eq "mcts" or "$algprefix" eq "mcts_h" or "$algprefix" eq "mcts_s_h") { 
+  @parms1 = ( "0.1", "0.15", "0.2", "0.25", "0.3", "0.35", "0.4", "0.45", "0.5", "0.55", "0.6", "0.65", "0.7", "0.75", "0.8", "0.85", "0.9", "0.95", "1.0" ); 
 }
 else { 
   print "Problem. game not eq2.. \n";
@@ -271,7 +271,7 @@ if (scalar(@parms1) == 0) {
 
 for (my $i = 0; $i < scalar(@parms1); $i++) {
   my $p1 = $parms1[$i];
-  push(@players, "$algprefix" . "_ege$p1"); 
+  push(@players, "$algprefix" . "_det$p1"); 
 }
 
 my $round = 0;
