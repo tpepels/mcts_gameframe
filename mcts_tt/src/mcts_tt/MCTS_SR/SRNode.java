@@ -248,7 +248,7 @@ public class SRNode {
 
             if (options.UBLB) {
                 lb = S.get(0).getValue() - Math.sqrt((2 * FastLog.log(getVisits())) / S.get(0).getVisits());
-                for (int i = s - 1; i > 1; i--) {
+                for (int i = s - 1; i > 0; i--) {
                     if (S.get(i).getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / S.get(i).getVisits()) < lb) {
                         s--;
                     } else {
