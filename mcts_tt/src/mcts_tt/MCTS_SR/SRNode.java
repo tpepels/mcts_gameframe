@@ -183,7 +183,7 @@ public class SRNode {
                         continue;
                     // Compare the upper bound of this child to the lower bound of the best child
                     if (options.UBLB && getVisits() > S.size() && n > 1) {
-                        if (child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
+                        if (child.getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / child.getVisits()) < lb) {
                             b_s += b_b;
                             continue; // Don't go into the recursion, but skip the node
                         }
@@ -221,7 +221,7 @@ public class SRNode {
                     }
                 } else if (options.UBLB && n == 1) {
                     // The lower bound for the best child
-                    lb = child.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits());
+                    lb = child.getValue() - Math.sqrt((2 * FastLog.log(getVisits())) / child.getVisits());
                 }
                 // Make sure we don't go over budget
                 if (plStats[3] >= budget)
