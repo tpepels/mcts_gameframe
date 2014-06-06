@@ -167,13 +167,12 @@ public class SRNode {
         do {
             int n = 0, b_s = 0;
             double lb = 0;
-            if (S.size() == 0)
-                System.out.print("hier");
             // :: Round
-            while (n < Math.min(s, S.size())) {
+            while (n < s) {
                 child = S.get(n++);
                 int[] pl = {0, 0, 0, 0};    // This will store the results of the recursion
                 int b_b = 0;                // This is the actual budget assigned to the child
+                result = 0;
                 // :: Solver win
                 if (!child.isSolved()) {
                     // :: Actual budget
@@ -205,7 +204,8 @@ public class SRNode {
                     plStats[3] += pl[3];
                     // :: SR Back propagation
                     updateStats(pl);
-                } else {
+                }
+                if (child.isSolved()) {
                     // The node is already solved
                     result = child.getValue();
                 }
@@ -237,7 +237,6 @@ public class SRNode {
                     }
                 }
             }
-
             // :: Removal policy: Sorting
             if (S.size() > 0)
                 Collections.sort(S.subList(0, Math.min(Math.max(s, Math.min(S.size(), 2)), S.size())), (!options.history) ? comparator : phComparator);
@@ -245,8 +244,8 @@ public class SRNode {
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-
-            if (options.UBLB) {
+            //
+            if (options.UBLB && getVisits() > S.size()) {
                 lb = S.get(0).getValue() - Math.sqrt((2 * FastLog.log(getVisits())) / S.get(0).getVisits());
                 for (int i = s - 1; i > 0; i--) {
                     if (S.get(i).getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / S.get(i).getVisits()) < lb) {
@@ -255,10 +254,7 @@ public class SRNode {
                         break;
                     }
                 }
-                if (s <= 0)
-                    System.out.println("hoi");
             }
-
             if (s == 1)
                 b += budget - plStats[3];
             else {
