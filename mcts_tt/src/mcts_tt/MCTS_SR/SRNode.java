@@ -237,11 +237,13 @@ public class SRNode {
             }
             if (options.UBLB) {
                 Iterator<SRNode> iterator = S.iterator();
-                iterator.next();
-                while (iterator.hasNext()) {
-                    SRNode node = iterator.next();
-                    if (node.getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / node.getVisits()) < lb) {
-                        iterator.remove();
+                if (iterator.hasNext()) {
+                    iterator.next();
+                    while (iterator.hasNext()) {
+                        SRNode node = iterator.next();
+                        if (node.getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / node.getVisits()) < lb) {
+                            iterator.remove();
+                        }
                     }
                 }
             }
