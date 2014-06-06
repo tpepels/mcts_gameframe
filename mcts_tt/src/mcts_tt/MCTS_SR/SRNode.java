@@ -251,6 +251,8 @@ public class SRNode {
                 for (int i = s - 1; i > 1; i--) {
                     if (S.get(i).getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / S.get(i).getVisits()) < lb) {
                         s--;
+                    } else {
+                        break;
                     }
                 }
                 if (s <= 0)
