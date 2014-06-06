@@ -167,16 +167,20 @@ my @matchups = (
 #	"mcts_sl_h,srmcts_shot_sl_h",
 #	"mcts_sl_s,srmcts_shot_sl_s"
 #
-  "mctstt_sl,srmctstt_sl_bl30_ublb0.3",
-  "mctstt_sl,srmctstt_sl_bl30_ublb0.5",
-  "mctstt_sl,srmctstt_sl_bl30_ublb0.8",
-  "mctstt_sl,srmctstt_sl_bl40_ublb0.3",
-  "mctstt_sl,srmctstt_sl_bl40_ublb0.5",
-  "mctstt_sl,srmctstt_sl_bl40_ublb0.8",
-  "mctstt_sl,srmctstt_sl_bl50_ublb0.3",
-  "mctstt_sl,srmctstt_sl_bl50_ublb0.5",
-  "mctstt_sl,srmctstt_sl_bl50_ublb0.8"
+#   "mctstt_sl,srmctstt_sl_shot"
 
+ "mctstt_sl_s,srmctstt_sl_bl10_s",
+ "mctstt_sl_s,srmctstt_sl_bl30_s",
+ "mctstt_sl_s,srmctstt_sl_bl50_s",
+ "mctstt_sl_s,srmctstt_sl_bl70_s",
+ "mctstt_sl_s,srmctstt_sl_bl90_s",
+ "mctstt_sl_s,srmctstt_sl_bl110_s"
+
+#  "mctstt_sl,srmctstt_sl_bl20",
+#  "mctstt_sl,srmctstt_sl_bl10",
+#  "mctstt_sl,srmctstt_sl_bl40",
+#  "mctstt_sl,srmctstt_sl_bl80",
+#  "mctstt_sl,srmctstt_sl_bl60",
 # 	"mctstt_sl,srmctstt_sl_bl30_uct0.2",
 # 	"mctstt_sl,srmctstt_sl_bl30_uct0.4",
 # 	"mctstt_sl,srmctstt_sl_bl30_uct0.6",
@@ -200,9 +204,9 @@ my @games = (
 #	"checkers",	
 	"breakthrough",
 	"pentalath",	
-	"chinesecheckers",
- 	"amazons"
-#	"nogo9"
+#	"chinesecheckers",
+ 	"amazons",
+	"nogo9"
 #	"nogo19"
 );
 
