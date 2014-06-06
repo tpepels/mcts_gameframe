@@ -22,7 +22,7 @@ public class Game {
         options1.simulations = 25000;
         options1.solver = true;
         options1.bl = 70;
-        options1.UBLB = false;
+        options1.UBLB = true;
 
 
         MCTSOptions options2 = new MCTSOptions();
