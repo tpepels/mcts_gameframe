@@ -167,6 +167,8 @@ public class SRNode {
         do {
             int n = 0, b_s = 0;
             double lb = 0;
+            if (S.size() == 0)
+                System.out.print("hier");
             // :: Round
             while (n < Math.min(s, S.size())) {
                 child = S.get(n++);
@@ -235,18 +237,7 @@ public class SRNode {
                     }
                 }
             }
-            if (options.UBLB) {
-                Iterator<SRNode> iterator = S.iterator();
-                if (iterator.hasNext()) {
-                    iterator.next();
-                    while (iterator.hasNext()) {
-                        SRNode node = iterator.next();
-                        if (node.getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / node.getVisits()) < lb) {
-                            iterator.remove();
-                        }
-                    }
-                }
-            }
+
             // :: Removal policy: Sorting
             if (S.size() > 0)
                 Collections.sort(S.subList(0, Math.min(Math.max(s, Math.min(S.size(), 2)), S.size())), (!options.history) ? comparator : phComparator);
@@ -254,6 +245,20 @@ public class SRNode {
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
+
+            if (options.UBLB) {
+                lb = S.get(0).getValue() - Math.sqrt((2 * FastLog.log(getVisits())) / S.get(0).getVisits());
+                for (int i = s - 1; i > 1; i--) {
+                    if (S.get(i).getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / S.get(i).getVisits()) < lb) {
+                        s--;
+                    } else {
+                        break;
+                    }
+                }
+                if (s <= 0)
+                    System.out.println("hoi");
+            }
+
             if (s == 1)
                 b += budget - plStats[3];
             else {
