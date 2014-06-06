@@ -165,7 +165,7 @@ public class SRNode {
             Collections.sort(S, (!options.history) ? comparator : phComparator);
         // :: Cycle
         do {
-            int n = 0, b_s = 0;
+            int n = 0, b_s = 0, skipped = 0;
             double lb = 0;
             // :: Round
             while (n < s) {
@@ -184,8 +184,9 @@ public class SRNode {
                         continue;
                     // Compare the upper bound of this child to the lower bound of the best child
                     if (options.UBLB && getVisits() > S.size() && n > 1) {
-                        if (child.getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / child.getVisits()) < lb) {
+                        if (child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
                             b_s += b_b;
+                            skipped++;
                             continue; // Don't go into the recursion, but skip the node
                         }
                     }
@@ -223,7 +224,7 @@ public class SRNode {
                     }
                 } else if (options.UBLB && n == 1) {
                     // The lower bound for the best child
-                    lb = child.getValue() - Math.sqrt((2 * FastLog.log(getVisits())) / child.getVisits());
+                    lb = child.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits());
                 }
                 // Make sure we don't go over budget
                 if (plStats[3] >= budget)
@@ -245,16 +246,9 @@ public class SRNode {
             // For the solver
             s = Math.min(S.size(), s);
             //
-            if (options.UBLB && getVisits() > S.size()) {
-                lb = S.get(0).getValue() - Math.sqrt((2 * FastLog.log(getVisits())) / S.get(0).getVisits());
-                for (int i = s - 1; i > 0; i--) {
-                    if (S.get(i).getValue() + Math.sqrt((2 * FastLog.log(getVisits())) / S.get(i).getVisits()) < lb) {
-                        s--;
-                    } else {
-                        break;
-                    }
-                }
-            }
+            if (options.UBLB)
+                s -= skipped;
+            //
             if (s == 1)
                 b += budget - plStats[3];
             else {
