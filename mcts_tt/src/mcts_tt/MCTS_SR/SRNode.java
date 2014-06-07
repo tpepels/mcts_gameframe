@@ -138,7 +138,18 @@ public class SRNode {
             return result;
         }
         //</editor-fold>
-        int b = getBudget(getBudgetNode(), budget, S.size(), S.size());
+        int init_s = S.size();
+        if (options.UBLB && init_s > 1) {
+            double lb = S.get(0).getValue() - Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
+            for (int i = s - 1; i > 0; i--) {
+                if (S.get(i).getValue() + Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb) {
+                    init_s--;
+                } else
+                    break;
+            }
+            s = init_s;
+        }
+        int b = getBudget(getBudgetNode(), budget, init_s, init_s);
         // :: UCT Hybrid
         if (!options.shot && depth > 0 && b < options.bl) {
             // Run UCT budget times
@@ -163,10 +174,10 @@ public class SRNode {
         // Sort S such that the best node is always the first
         if (getVisits() > S.size())
             Collections.sort(S, (!options.history) ? comparator : phComparator);
+
         // :: Cycle
         do {
             int n = 0, b_s = 0;
-            double lb = 0;
             // :: Round
             while (n < s) {
                 child = S.get(n++);
@@ -245,25 +256,21 @@ public class SRNode {
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-
+            //
             if (options.UBLB && s > 1) {
-                lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
+                double lb = S.get(0).getValue() - Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
                 for (int i = s - 1; i > 0; i--) {
-                    if (S.get(i).getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb) {
+                    if (S.get(i).getValue() + Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb)
                         s--;
-                    } else {
+                    else
                         break;
-                    }
                 }
-                if (s <= 0)
-                    System.out.println("hoi");
             }
-
             //
             if (s == 1)
                 b += budget - plStats[3];
             else {
-                b += getBudget(getBudgetNode(), budget, s, S.size());
+                b += getBudget(getBudgetNode(), budget, s, init_s);
                 // Add any skipped budget from this round
                 b += Math.ceil(b_s / (double) s);
             }
