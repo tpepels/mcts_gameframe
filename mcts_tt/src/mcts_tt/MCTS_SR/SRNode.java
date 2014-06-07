@@ -165,7 +165,7 @@ public class SRNode {
             Collections.sort(S, (!options.history) ? comparator : phComparator);
         // :: Cycle
         do {
-            int n = 0, b_s = 0, skipped = 0;
+            int n = 0, b_s = 0;
             double lb = 0;
             // :: Round
             while (n < s) {
@@ -186,7 +186,6 @@ public class SRNode {
                     if (options.UBLB && getVisits() > S.size() && n > 1) {
                         if (child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
                             b_s += b_b;
-                            skipped++;
                             continue; // Don't go into the recursion, but skip the node
                         }
                     }
@@ -245,9 +244,6 @@ public class SRNode {
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
             s = Math.min(S.size(), s);
-            //
-            if (options.UBLB)
-                s -= skipped;
             //
             if (s == 1)
                 b += budget - plStats[3];
