@@ -140,9 +140,9 @@ public class SRNode {
         //</editor-fold>
         int init_s = S.size();
         if (options.UBLB && init_s > 1) {
-            double lb = S.get(0).getValue() - Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
+            double lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
             for (int i = s - 1; i > 0; i--) {
-                if (S.get(i).getValue() + Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb) {
+                if (S.get(i).getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb) {
                     init_s--;
                 } else
                     break;
@@ -258,9 +258,9 @@ public class SRNode {
             s = Math.min(S.size(), s);
             //
             if (options.UBLB && s > 1) {
-                double lb = S.get(0).getValue() - Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
+                double lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
                 for (int i = s - 1; i > 0; i--) {
-                    if (S.get(i).getValue() + Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb)
+                    if (S.get(i).getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb)
                         s--;
                     else
                         break;
