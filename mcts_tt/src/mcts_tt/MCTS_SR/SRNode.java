@@ -178,6 +178,7 @@ public class SRNode {
         // :: Cycle
         do {
             int n = 0, b_s = 0;
+            double lb = 0;
             // :: Round
             while (n < s) {
                 child = S.get(n++);
@@ -194,12 +195,12 @@ public class SRNode {
                     if (b_b <= 0)
                         continue;
                     // Compare the upper bound of this child to the lower bound of the best child
-//                    if (options.UBLB && getVisits() > S.size() && n > 1) {
-//                        if (child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
-//                            b_s += b_b;
-//                            continue; // Don't go into the recursion, but skip the node
-//                        }
-//                    }
+                    if (options.UBLB && !child.isSolved() && n > 1 && child.getVisits() > 0) {
+                        if (child.getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits()) < lb) {
+                            b_s += b_b;
+                            continue; // Don't go into the recursion, but skip the node
+                        }
+                    }
                     // :: Recursion
                     board.doAIMove(child.getMove(), player);
                     if (options.history)
@@ -232,11 +233,10 @@ public class SRNode {
                         // Redistribute the unspent budget in the next round
                         b_s += b_b - pl[3];
                     }
+                } else if (options.UBLB && n == 1 && child.getVisits() > 0) {
+                    // The lower bound for the best child
+                    lb = child.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits());
                 }
-//                else if (options.UBLB && n == 1) {
-//                    // The lower bound for the best child
-//                    lb = child.getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / child.getVisits());
-//                }
                 // Make sure we don't go over budget
                 if (plStats[3] >= budget)
                     break;
@@ -257,20 +257,10 @@ public class SRNode {
             // For the solver
             s = Math.min(S.size(), s);
             //
-            if (options.UBLB && s > 1) {
-                double lb = S.get(0).getValue() - options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(0).getVisits());
-                for (int i = s - 1; i > 0; i--) {
-                    if (S.get(i).getValue() + options.uctC * Math.sqrt(FastLog.log(getVisits()) / S.get(i).getVisits()) < lb)
-                        s--;
-                    else
-                        break;
-                }
-            }
-            //
             if (s == 1)
                 b += budget - plStats[3];
             else {
-                b += getBudget(getBudgetNode(), budget, s, init_s);
+                b += getBudget(getBudgetNode(), budget, s, S.size());
                 // Add any skipped budget from this round
                 b += Math.ceil(b_s / (double) s);
             }
