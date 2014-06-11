@@ -208,6 +208,8 @@ public class SimGame {
                     options.progHistory = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.phW = Double.parseDouble(tag.substring(2));
+                } else if (tag.startsWith("dc")) {
+                    options.uctC += Double.parseDouble(tag.substring(2));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
@@ -301,6 +303,8 @@ public class SimGame {
                     options.UBLB = true;
                     if (tryParseDouble(tag.substring(4)))
                         options.uctCC = Double.parseDouble(tag.substring(4));
+                } else if (tag.startsWith("dc")) {
+                    options.uctC += Double.parseDouble(tag.substring(2));
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

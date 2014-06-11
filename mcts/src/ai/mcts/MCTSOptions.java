@@ -84,7 +84,7 @@ public class MCTSOptions {
         if (game.equalsIgnoreCase("amazons")) {
             uctC = .4;
             // Budget limit
-            bl = 50;
+            bl = 90;
             // Bonus constants
             kr = 2.2;
             kq = 1.6;
