@@ -114,6 +114,7 @@ public class SRNode {
         if (options.shot && S.size() == 1) {
             int[] pl = {0, 0, 0, 0};
             child = S.get(0);
+            result = 0;
             if (!child.isSolved()) {
                 // :: Recursion
                 board.doAIMove(child.getMove(), player);
@@ -124,7 +125,8 @@ public class SRNode {
                 plStats[1] += pl[1];
                 plStats[2] += pl[2];
                 plStats[3] += pl[3];
-            } else {
+            }
+            if (child.isSolved()) {
                 result = child.getValue();
             }
             // The only arm is the best
