@@ -268,10 +268,12 @@ public class SimGame {
                     options.fixedSimulations = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
+                    options.setGame(game);
                 } else if (tag.startsWith("uct")) {
                     options.uctC = Double.parseDouble(tag.substring(3));
                 } else if (tag.equals("s")) {
                     options.solver = true;
+                    options.setGame(game);
                 } else if (tag.startsWith("rc")) {
                     options.rc = Integer.parseInt(tag.substring(2));
                 } else if (tag.startsWith("bl")) {
@@ -311,7 +313,6 @@ public class SimGame {
                         options.uctC -= Double.parseDouble(tag.substring(3));
                     else
                         options.uctC += Double.parseDouble(tag.substring(2));
-
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }

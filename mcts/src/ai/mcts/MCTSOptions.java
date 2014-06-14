@@ -91,7 +91,11 @@ public class MCTSOptions {
         } else if (game.equalsIgnoreCase("breakthrough")) {
             uctC = .8;
             // Budget limit
-            bl = 70;
+            if (!solver || useHeuristics) {
+                bl = 70;
+            } else {
+                bl = 50;
+            }
             // Bonus constants
             kr = 8.0;
             kq = 2.0;
@@ -108,11 +112,17 @@ public class MCTSOptions {
         } else if (game.startsWith("nogo")) {
             uctC = .6;
             // Budget limit
-            bl = 30;
+            if (!solver)
+                bl = 90;
+            else
+                bl = 110;
         } else if (game.equalsIgnoreCase("pentalath")) {
             uctC = .8;
             // Budget limit
-            bl = 30;
+            if (!solver)
+                bl = 30;
+            else
+                bl = 90;
             // Bonus constants
             kr = 1.;
             kq = 1.6;
