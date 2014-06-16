@@ -169,12 +169,9 @@ my @matchups = (
 #
 #   "mctstt_sl,srmctstt_sl_shot"
 
- 	"mctstt_sl_s,srmctstt_sl_s_dcn0.05",
- 	"mctstt_sl_s,srmctstt_sl_s_dc0.05",
- 	"mctstt_sl_s,srmctstt_sl_s_dcn0.1",
- 	"mctstt_sl_s,srmctstt_sl_s_dc0.1",
- 	"mctstt_sl_s,srmctstt_sl_s_dcn0.15",
- 	"mctstt_sl_s,srmctstt_sl_s_dc0.15",
+# "srmctstt_sl_s_shot,srmctstt_sl_shot",
+# "mctstt_sl_s,mctstt_sl",	
+# "srmctstt_sl_s,srmctstt_sl"
 
 #  "mctstt_sl,srmctstt_sl_bl20",
 #  "mctstt_sl,srmctstt_sl_bl10",
