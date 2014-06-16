@@ -50,7 +50,7 @@ public class SRNode {
             child = expand(board);
 
         if (child != null) {
-            if (solverCheck(child.getValue(), board))
+            if (solverCheck(child.getValue()))
                 return State.INF;
         }
 
@@ -133,7 +133,7 @@ public class SRNode {
             bestArm = S.get(0);
             // :: Solver
             if (Math.abs(result) == State.INF)
-                solverCheck(result, board);
+                solverCheck(result);
             else
                 updateStats(pl);
             //
@@ -176,7 +176,7 @@ public class SRNode {
         // Sort S such that the best node is always the first
         if (getVisits() > S.size())
             Collections.sort(S, (!options.history) ? comparator : phComparator);
-
+        int sSize = S.size();
         // :: Cycle
         do {
             int n = 0, b_s = 0;
@@ -225,7 +225,7 @@ public class SRNode {
                 }
                 // :: Solver
                 if (Math.abs(result) == State.INF) {
-                    if (solverCheck(result, board)) {   // Returns true if node is solved
+                    if (solverCheck(result)) {   // Returns true if node is solved
                         if (result == State.INF)
                             bestArm = child;
                         // Update the budgetSpent
@@ -253,7 +253,7 @@ public class SRNode {
             }
             // :: Removal policy: Sorting
             if (S.size() > 0)
-                Collections.sort(S.subList(0, Math.min(Math.max(s, Math.min(S.size(), 2)), S.size())), (!options.history) ? comparator : phComparator);
+                Collections.sort(S.subList(0, Math.min(s, S.size())), (!options.history) ? comparator : phComparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
@@ -262,11 +262,11 @@ public class SRNode {
             if (s == 1)
                 b += budget - plStats[3];
             else {
-                b += getBudget(getBudgetNode(), budget, s, S.size());
+                b += getBudget(getBudgetNode(), budget, s, sSize); // Use the original size of S here
                 // Add any skipped budget from this round
                 b += Math.ceil(b_s / (double) s);
             }
-        } while (plStats[3] < budget);
+        } while (s > 1 && plStats[3] < budget);
 
         // Update the budgetSpent value
         updateBudgetSpent(plStats[3]);
@@ -286,7 +286,7 @@ public class SRNode {
         return (int) Math.max(1, Math.floor((initVis + budget) / (subS * Math.ceil((options.rc / 2.) * log2(totS)))));
     }
 
-    private boolean solverCheck(double result, IBoard board) {
+    private boolean solverCheck(double result) {
         if (!options.solver)
             return false;
         // (Solver) If one of the children is a win, then I'm a loss for the opponent
@@ -360,7 +360,7 @@ public class SRNode {
         }
         // :: Solver for UCT tree
         if (Math.abs(result) == State.INF) {
-            boolean solved = solverCheck(result, board);
+            boolean solved = solverCheck(result);
             if (result == -State.INF && !solved) { // Not all arms are losses
                 plStats[0]++;
                 plStats[3 - player]++;
