@@ -2,6 +2,10 @@
 use Carp;
 use strict;
 use IPC::Open3;
+
+# change this as needed
+use lib '/home/mlanctot/lib64/perl5/';
+
 use Time::HiRes qw/ time sleep /;
 use vars qw( $debug );
 $debug = 1;
@@ -112,6 +116,19 @@ sub run_parallel {
       $ptr = prettytime($esttimeremaining);
       
       print "Reaped '$running{$proc_id}->[0] (~$ptr remaining)'\n" if $debug;
+
+      #Jobs submitted: 1234
+      #Jobs done: 1175
+      #Time remaining: 32:55:06
+      #Last updated: Fri Jun  6 17:58:38 CEST 2014
+      #Last updated: Fri Jun  6 18:01:29 CEST 2014
+
+      open (INFOFILE, '>', "infofile.txt");
+      print INFOFILE "Jobs submitted $curjob\n";
+      print INFOFILE "Jobs done: $donejobs\n";
+      print INFOFILE "Time remaining: $ptr\n";
+      close(INFOFILE);
+
 
       delete $running{$proc_id};
       --$is_running;
