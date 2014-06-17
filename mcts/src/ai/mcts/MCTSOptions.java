@@ -36,6 +36,8 @@ public class MCTSOptions {
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST
     public double mastEps = 0.1;
+    //
+    public boolean hybrid = false;
     // Marc's stuff (mostly for implicit minimax)
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
     public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
@@ -83,6 +85,8 @@ public class MCTSOptions {
         rc = 2;
         if (game.equalsIgnoreCase("amazons")) {
             uctC = .4;
+            if (hybrid)
+                uctC = 0.25;
             // Budget limit
             bl = 90;
             // Bonus constants
@@ -90,6 +94,8 @@ public class MCTSOptions {
             kq = 1.6;
         } else if (game.equalsIgnoreCase("breakthrough")) {
             uctC = .8;
+            if (hybrid)
+                uctC = .65;
             // Budget limit
             if (!solver || useHeuristics) {
                 bl = 70;
@@ -111,6 +117,8 @@ public class MCTSOptions {
             kq = 2.8;
         } else if (game.startsWith("nogo")) {
             uctC = .6;
+            if (hybrid)
+                uctC = .55;
             // Budget limit
             if (!solver)
                 bl = 90;
@@ -118,6 +126,8 @@ public class MCTSOptions {
                 bl = 110;
         } else if (game.equalsIgnoreCase("pentalath")) {
             uctC = .8;
+            if (hybrid)
+                uctC = .6;
             // Budget limit
             if (!solver)
                 bl = 30;

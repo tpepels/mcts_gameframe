@@ -249,6 +249,7 @@ public class SimGame {
             } else {
                 playerRef = new MCTS_SR_Player();
             }
+            options.hybrid = true;
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.solver = false;

@@ -88,7 +88,7 @@ public class TreeNode {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         if (children == null)
-            children = new ArrayList<TreeNode>(moves.size());
+            children = new ArrayList<>(moves.size());
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             children.add(new TreeNode(nextPlayer, moves.get(i), options));
