@@ -429,7 +429,6 @@ public class SRNode {
             // If the game is partial observable, we don't want to do the solver part
             if (board.doAIMove(moves.get(i), player)) {
                 SRNode child = new SRNode(nextPlayer, moves.get(i), options, board.hash(), tt);
-                value = child.getValue();
                 if (options.solver && !child.isSolved()) {
                     // Check for a winner, (Solver)
                     winner = board.checkWin();
@@ -442,8 +441,7 @@ public class SRNode {
                 }
                 //
                 C.add(child);
-                if (child.getValue() != -State.INF)
-                    S.add(child);
+                S.add(child);
                 // reset the board
                 board.undoMove();
             }
