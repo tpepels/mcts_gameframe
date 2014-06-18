@@ -88,7 +88,7 @@ public class UCTNode {
         if (child.player < 0)
             throw new RuntimeException("Child player weird!");
 
-        double result;
+        double result = 0;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.getValue()) != State.INF) {
             // Execute the move represented by the child
@@ -110,9 +110,11 @@ public class UCTNode {
             // set the board back to its previous configuration
             if (!isTerminal())
                 board.undoMove();
-        } else {
-            result = child.getValue();
         }
+        // Could be solved deeper in the tree as a transposition
+        if (Math.abs(child.getValue()) == State.INF)
+            result = child.getValue();
+
         // result is now in view of me in all cases
         if (options.solver) {
             // (Solver) If one of the children is a win, then I'm a win
