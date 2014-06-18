@@ -166,7 +166,7 @@ public class UCTNode {
                 UCTNode child;
                 // Initialize the child
                 child = new UCTNode(nextPlayer, depth, moves.get(i), options, board, tt);
-                if (options.solver) {
+                if (options.solver && !child.isSolved()) {
                     // Check for a winner, (Solver)
                     winner = board.checkWin();
                     //
@@ -461,6 +461,10 @@ public class UCTNode {
         if (state == null)
             return 0.;
         return state.getVisits();
+    }
+
+    private boolean isSolved() {
+        return Math.abs(getValue()) == State.INF;
     }
 
     public boolean isLeaf() {
