@@ -442,7 +442,7 @@ public class SRNode {
                 }
                 //
                 C.add(child);
-                if (value != -State.INF)
+                if (child.getValue() != -State.INF)
                     S.add(child);
                 // reset the board
                 board.undoMove();
