@@ -85,8 +85,8 @@ public class MCTSOptions {
         rc = 2;
         if (game.equalsIgnoreCase("amazons")) {
             uctC = .4;
-            if (hybrid)
-                uctC = 0.25;
+//            if (hybrid)
+//                uctC = 0.25;
             // Budget limit
             bl = 90;
             // Bonus constants
@@ -94,8 +94,8 @@ public class MCTSOptions {
             kq = 1.6;
         } else if (game.equalsIgnoreCase("breakthrough")) {
             uctC = .8;
-            if (hybrid)
-                uctC = .65;
+//            if (hybrid)
+//                uctC = .65;
             // Budget limit
             if (!solver || useHeuristics) {
                 bl = 70;
@@ -117,8 +117,8 @@ public class MCTSOptions {
             kq = 2.8;
         } else if (game.startsWith("nogo")) {
             uctC = .6;
-            if (hybrid)
-                uctC = .55;
+//            if (hybrid)
+//                uctC = .55;
             // Budget limit
             if (!solver)
                 bl = 90;
@@ -126,8 +126,8 @@ public class MCTSOptions {
                 bl = 110;
         } else if (game.equalsIgnoreCase("pentalath")) {
             uctC = .8;
-            if (hybrid)
-                uctC = .6;
+//            if (hybrid)
+//                uctC = .7;
             // Budget limit
             if (!solver)
                 bl = 30;
