@@ -18,6 +18,7 @@ public class Game {
         options1.fixedSimulations = true;
         options1.useHeuristics = true;
         options1.simulations = 25000;
+        options1.max_back = true;
         options1.setGame("breakthrough");
 
 

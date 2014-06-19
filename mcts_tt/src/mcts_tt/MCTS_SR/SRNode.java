@@ -212,9 +212,12 @@ public class SRNode {
                     if (options.history)
                         movesMade[player - 1].clearLast(1);
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
-                    plStats[0] += pl[0];
-                    plStats[1] += pl[1];
-                    plStats[2] += pl[2];
+                    if (!options.max_back || n == 1) {
+                        // With max backprop, only update results if this is the current best arm
+                        plStats[0] += pl[0];
+                        plStats[1] += pl[1];
+                        plStats[2] += pl[2];
+                    }
                     plStats[3] += pl[3];
                     // :: SR Back propagation
                     updateStats(pl);
