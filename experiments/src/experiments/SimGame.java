@@ -27,10 +27,14 @@ public class SimGame {
     private IMove move;
     private AIPlayer player1;
     private AIPlayer player2;
+    private MCTSOptions options1, options2;
     private int timeLimit;
     private long seed;
     private boolean printBoard;
     private boolean mctsDebug;
+    // Fopr the time-based experiments in SHOT and H-MCTS
+    private boolean timed = false;
+    private int timedPlayer = 0;
 
     SimGame() {
         game = "none specified";
@@ -115,9 +119,8 @@ public class SimGame {
         AIPlayer playerRef = null;
 
         String[] parts = label.split("_");
-
+        MCTSOptions options = new MCTSOptions();
         if (parts[0].equals("mcts") || parts[0].equals("mctstt")) {
-            MCTSOptions options = new MCTSOptions();
             if (parts[0].equals("mctstt")) {
                 playerRef = new UCTPlayer();
             } else {
@@ -223,7 +226,6 @@ public class SimGame {
         } else if (parts[0].equals("brue")) {
             //
             playerRef = new MCTS2ePlayer();
-            MCTSOptions options = new MCTSOptions();
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
             options.timeInterval = timeLimit;
@@ -243,7 +245,6 @@ public class SimGame {
             // and set the options for this player
             playerRef.setOptions(options);
         } else if (parts[0].equals("srmcts") || parts[0].equals("srmctstt")) {
-            MCTSOptions options = new MCTSOptions();
             if (parts[0].equals("srmctstt")) {
                 playerRef = new SRPlayer();
             } else {
@@ -310,10 +311,13 @@ public class SimGame {
                     if (tryParseDouble(tag.substring(4)))
                         options.uctCC = Double.parseDouble(tag.substring(4));
                 } else if (tag.startsWith("dc")) {
-                    if(tag.charAt(2) == 'n')
+                    if (tag.charAt(2) == 'n')
                         options.uctC -= Double.parseDouble(tag.substring(3));
                     else
                         options.uctC += Double.parseDouble(tag.substring(2));
+                } else if (tag.equals("t")) {
+                    timed = true;
+                    timedPlayer = player;
                 } else {
                     throw new RuntimeException("Unrecognized MCTS tag: " + tag);
                 }
@@ -321,20 +325,20 @@ public class SimGame {
             // and set the options for this player
             playerRef.setOptions(options);
         } else if (parts[0].equals("ab")) {
-            AlphaBetaOptions options = new AlphaBetaOptions();
+            AlphaBetaOptions alphaBetaOptions = new AlphaBetaOptions();
             playerRef = new AlphaBeta();
-            options.timeLimit = timeLimit;
+            alphaBetaOptions.timeLimit = timeLimit;
 
             for (int i = 1; i < parts.length; i++) {
                 String tag = parts[i];
                 if (tag.equals("tt")) {
-                    options.transpositions = true;
+                    alphaBetaOptions.transpositions = true;
                 } else if (tag.startsWith("ev")) {
-                    options.evVer = Integer.parseInt(tag.substring(2));
+                    alphaBetaOptions.evVer = Integer.parseInt(tag.substring(2));
                 }
             }
 
-            playerRef.setOptions(options);
+            playerRef.setOptions(alphaBetaOptions);
         } else if (parts[0].equals("random")) {
             playerRef = new RandomPlayer();
         } else if (parts[0].equals("keyboard")) {
@@ -346,9 +350,11 @@ public class SimGame {
         if (player == 1) {
             player1 = playerRef;
             player1.newGame(1, game);
+            options1 = options;
         } else if (player == 2) {
             player2 = playerRef;
             player2.newGame(2, game);
+            options2 = options;
         }
     }
 
@@ -422,22 +428,42 @@ public class SimGame {
         FastSigm.sigm(1.);
         FastLog.log(1.);
 
+        int budget = timeLimit;
+        if (timed) {
+            // Initially, both players are assigned the same budget
+            options1.fixedSimulations = true;
+            options1.simulations = budget;
+            options2.fixedSimulations = true;
+            options2.simulations = budget;
+        }
+
+        IMove m = null;
         while (board.checkWin() == IBoard.NONE_WIN) {
             int player = board.getPlayerToMove();
 
             if (printBoard)
                 System.out.println(board.toString());
-
-            AIPlayer aiPlayer = (board.getPlayerToMove() == 1 ? player1 : player2);
+            int p = board.getPlayerToMove();
+            AIPlayer aiPlayer = (p == 1 ? player1 : player2);
             System.gc();
 
-            IMove m = null;
+            long startTime = System.currentTimeMillis();
             aiPlayer.getMove(board.copy(), null, board.getPlayerToMove(), false, m);
+            int time = (int) (System.currentTimeMillis() - startTime);
             m = aiPlayer.getBestMove();
             board.doAIMove(m, player);
 
             if (m != null)
-                System.out.println("Player " + player + " played " + m);
+                System.out.println("Player " + player + " played " + m + ", time " + time + "ms");
+            //
+            if (timed && p == timedPlayer) {
+                // Allocate the time spent to the non-fixed player
+                MCTSOptions opt = (timedPlayer == 1) ? options2 : options1;
+                opt.fixedSimulations = false;
+                opt.timeInterval = time;
+                //
+                // System.out.println("new time set: " + time);
+            }
         }
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl

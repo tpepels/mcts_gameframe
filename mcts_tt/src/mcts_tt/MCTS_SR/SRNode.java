@@ -423,7 +423,6 @@ public class SRNode {
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
             return null;
-        double value;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             // If the game is partial observable, we don't want to do the solver part
@@ -446,9 +445,6 @@ public class SRNode {
                 board.undoMove();
             }
         }
-        // Make sure S always contains some children
-        if (S.size() == 0)
-            S.addAll(C);
         // If one of the nodes is a win, return it.
         return winNode;
     }
