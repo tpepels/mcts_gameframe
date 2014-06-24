@@ -153,7 +153,7 @@ public class SRNode {
         }
         int b = getBudget(getBudgetNode(), budget, init_s, init_s);
         // :: UCT Hybrid
-        if (!options.shot && depth > 0 && b < options.bl) {
+        if (!options.shot && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 int[] pl = {0, 0, 0, 0};

@@ -17,6 +17,8 @@ public class UCTPlayer implements AIPlayer, Runnable {
     private MoveCallback callback;
     private IMove bestMove;
     private int myPlayer, nMoves = 0;
+    public int total = 0;
+    public long totalT = 0;
     //
     private MCTSOptions options;
 
@@ -117,6 +119,8 @@ public class UCTPlayer implements AIPlayer, Runnable {
             System.out.println("Recoveries: " + tt.recoveries);
             System.out.println((int) ((1000. * simulations) / (endT - startT)) + " playouts per s");
         }
+        total += simulations;
+        totalT += endT - startT;
         int removed = tt.pack(0);
         if (options.debug) {
             System.out.println("Pack cleaned: " + removed + " transpositions");

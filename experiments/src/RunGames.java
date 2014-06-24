@@ -25,6 +25,7 @@ public class RunGames {
             String ai1String = (i % 2 == 0) ? ai1Param : ai2Param;
             String ai2String = (i % 2 == 0) ? ai2Param : ai1Param;
             SimGame.main(String.format("--game %s --p1 %s --p2 %s --seed %s --timelimit %s", game, ai1String, ai2String, System.currentTimeMillis(), timelimit).split(" "));
+
         }
     }
 }

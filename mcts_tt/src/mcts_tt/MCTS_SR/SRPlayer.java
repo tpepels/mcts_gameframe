@@ -16,6 +16,8 @@ public class SRPlayer implements AIPlayer, Runnable {
     private MoveCallback callback;
     private IMove bestMove;
     private int myPlayer;
+    public int total = 0;
+    public long totalTime = 0;
     // Fields that must be set
     private MCTSOptions options = null;
 
@@ -66,6 +68,8 @@ public class SRPlayer implements AIPlayer, Runnable {
             System.out.println("Max sr depth: " + SRNode.maxDepth);
             System.out.println((int) ((1000. * SRNode.totalPlayouts) / (endT - startT)) + " playouts per s");
         }
+        total += SRNode.totalPlayouts;
+        totalTime += endT - startT;
         int removed = tt.pack(0);
         if (options.debug)
             System.out.println("Pack cleaned: " + removed + " transpositions");

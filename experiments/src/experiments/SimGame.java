@@ -212,7 +212,7 @@ public class SimGame {
                     if (tryParseDouble(tag.substring(2)))
                         options.phW = Double.parseDouble(tag.substring(2));
                 } else if (tag.startsWith("dc")) {
-                    if(tag.charAt(2) == 'n')
+                    if (tag.charAt(2) == 'n')
                         options.uctC -= Double.parseDouble(tag.substring(3));
                     else
                         options.uctC += Double.parseDouble(tag.substring(2));
@@ -454,17 +454,25 @@ public class SimGame {
             board.doAIMove(m, player);
 
             if (m != null)
-                System.out.println("Player " + player + " played " + m + ", time " + time + "ms");
-            //
-            if (timed && p == timedPlayer) {
-                // Allocate the time spent to the non-fixed player
-                MCTSOptions opt = (timedPlayer == 1) ? options2 : options1;
-                opt.fixedSimulations = false;
-                opt.timeInterval = time;
+                // System.out.println("Player " + player + " played " + m + ", time " + time + "ms");
                 //
-                // System.out.println("new time set: " + time);
-            }
+                if (timed && p == timedPlayer) {
+                    // Allocate the time spent to the non-fixed player
+                    MCTSOptions opt = (timedPlayer == 1) ? options2 : options1;
+                    opt.fixedSimulations = false;
+                    opt.timeInterval = Math.max(100, time);
+                    //
+                    // System.out.println("new time set: " + time);
+                }
         }
+
+        AIPlayer fixedPlayer = timedPlayer == 1 ? player1 : player2;
+        AIPlayer timedPl = timedPlayer == 1 ? player2 : player1;
+        long fixedTime = ((SRPlayer) fixedPlayer).total / (((SRPlayer) fixedPlayer).totalTime / 1000);
+        long timedTime = ((UCTPlayer) timedPl).total / ((((UCTPlayer) timedPl).totalT) / 1000);
+
+        System.out.println("Fixed: " + fixedTime);
+        System.out.println("Timed: " + timedTime);
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
         System.out.println("Game over. Winner is " + board.checkWin());
