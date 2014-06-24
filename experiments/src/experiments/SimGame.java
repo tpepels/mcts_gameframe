@@ -466,13 +466,13 @@ public class SimGame {
                 }
         }
 
-        AIPlayer fixedPlayer = timedPlayer == 1 ? player1 : player2;
-        AIPlayer timedPl = timedPlayer == 1 ? player2 : player1;
-        long fixedTime = ((SRPlayer) fixedPlayer).total / (((SRPlayer) fixedPlayer).totalTime / 1000);
-        long timedTime = ((UCTPlayer) timedPl).total / ((((UCTPlayer) timedPl).totalT) / 1000);
-
-        System.out.println("Fixed: " + fixedTime);
-        System.out.println("Timed: " + timedTime);
+//        AIPlayer fixedPlayer = timedPlayer == 1 ? player1 : player2;
+//        AIPlayer timedPl = timedPlayer == 1 ? player2 : player1;
+//        long fixedTime = ((SRPlayer) fixedPlayer).total / (((SRPlayer) fixedPlayer).totalTime / 1000);
+//        long timedTime = ((UCTPlayer) timedPl).total / ((((UCTPlayer) timedPl).totalT) / 1000);
+//
+//        System.out.println("Fixed: " + fixedTime);
+//        System.out.println("Timed: " + timedTime);
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
         System.out.println("Game over. Winner is " + board.checkWin());
