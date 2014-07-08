@@ -62,7 +62,7 @@ public class TreeNode {
         // set the board back to its previous configuration
         board.undoMove();
         // Only update at sigma level
-        if (depth == sigma) updateStats(result);
+        if (depth <= sigma) updateStats(result);
         // Back-propagate the result
         return result;
     }
@@ -103,7 +103,7 @@ public class TreeNode {
             return children.get(MCTSOptions.r.nextInt(children.size()));
         }
         // Estimation policy
-        if (d > sigma) {
+        if (d >= sigma) {
             double max = Double.NEGATIVE_INFINITY, min = Double.POSITIVE_INFINITY;
             for (TreeNode c : children) {
                 if (board.getPlayerToMove() == myPlayer) {
@@ -120,7 +120,7 @@ public class TreeNode {
             }
         }
         // Exploration policy
-        if (d <= sigma || selected == null) {
+        if (d < sigma || selected == null) {
             selected = children.get(MCTSOptions.r.nextInt(children.size()));
         }
         return selected;
