@@ -1,6 +1,6 @@
 package chinesecheckers.game;
 
-import ai.framework.IMove;
+import framework.IMove;
 
 public class Move extends IMove {
     private final int[] move;

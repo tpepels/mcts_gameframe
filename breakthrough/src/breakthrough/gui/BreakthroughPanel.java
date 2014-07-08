@@ -1,10 +1,10 @@
 package breakthrough.gui;
 
 import ai.MCTS_SR.MCTS_SR_Player;
-import ai.framework.AIPlayer;
-import ai.framework.IMove;
-import ai.framework.MoveCallback;
-import ai.framework.MoveList;
+import framework.AIPlayer;
+import framework.IMove;
+import framework.MoveCallback;
+import framework.MoveList;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;

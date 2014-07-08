@@ -1,9 +1,9 @@
 package lostcities.game;
 
-import ai.StatCounter;
-import ai.framework.IBoard;
-import ai.framework.IMove;
-import ai.framework.MoveList;
+import framework.util.StatCounter;
+import framework.IBoard;
+import framework.IMove;
+import framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.Arrays;

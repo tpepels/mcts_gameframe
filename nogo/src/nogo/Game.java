@@ -1,8 +1,8 @@
 package nogo;
 
-import ai.framework.AIPlayer;
+import framework.AIPlayer;
 import ai.mcts.MCTSOptions;
-import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.H_MCTS.SRPlayer;
 import mcts_tt.uct.UCTPlayer;
 import nogo.game.Board;
 import nogo.game.Move;

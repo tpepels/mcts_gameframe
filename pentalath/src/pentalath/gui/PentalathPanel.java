@@ -1,11 +1,11 @@
 package pentalath.gui;
 
-import ai.framework.AIPlayer;
-import ai.framework.IMove;
-import ai.framework.MoveCallback;
+import framework.AIPlayer;
+import framework.IMove;
+import framework.MoveCallback;
 import ai.mcts.MCTSOptions;
 import com.rush.HexGridCell;
-import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.H_MCTS.SRPlayer;
 import pentalath.game.Board;
 import pentalath.game.Move;
 

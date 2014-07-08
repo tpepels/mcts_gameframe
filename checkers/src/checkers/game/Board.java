@@ -1,10 +1,10 @@
 package checkers.game;
 
-import ai.StatCounter;
-import ai.framework.IBoard;
-import ai.framework.IMove;
-import ai.framework.MoveList;
-import ai.FastTanh;
+import framework.util.StatCounter;
+import framework.IBoard;
+import framework.IMove;
+import framework.MoveList;
+import framework.util.FastTanh;
 
 import java.util.*;
 

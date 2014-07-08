@@ -1,7 +1,7 @@
 package chinesecheckers.gui;
 
 import ai.MCTS_SR.MCTS_SR_Player;
-import ai.framework.*;
+import framework.*;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import chinesecheckers.game.Board;

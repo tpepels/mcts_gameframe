@@ -1,5 +1,5 @@
 import ai.SRMCTS.SRMCTSPlayer;
-import ai.framework.AIPlayer;
+import framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import domineering.game.Board;

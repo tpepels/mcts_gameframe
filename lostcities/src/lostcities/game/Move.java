@@ -1,6 +1,6 @@
 package lostcities.game;
 
-import ai.framework.IMove;
+import framework.IMove;
 
 public class Move extends IMove {
     // 0 Is draw from the deck, 1 - 5 corresponds to the coloured stacks

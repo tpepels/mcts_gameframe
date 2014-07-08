@@ -1,9 +1,9 @@
 package pentalath.ai.alphabeta;
 
-import ai.framework.AIPlayer;
-import ai.framework.IBoard;
-import ai.framework.IMove;
-import ai.framework.MoveCallback;
+import framework.AIPlayer;
+import framework.IBoard;
+import framework.IMove;
+import framework.MoveCallback;
 import ai.mcts.MCTSOptions;
 import pentalath.ai.Transposition;
 import pentalath.game.Board;

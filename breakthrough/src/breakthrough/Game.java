@@ -1,10 +1,10 @@
 package breakthrough;
 
-import ai.framework.AIPlayer;
+import framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
-import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.H_MCTS.SRPlayer;
 
 public class Game {
 

@@ -1,15 +1,14 @@
 package penguin.game;
 
-import ai.FastTanh;
-import ai.StatCounter;
-import ai.framework.IBoard;
-import ai.framework.IMove;
-import ai.framework.MoveList;
+import framework.util.FastTanh;
+import framework.util.StatCounter;
+import framework.IBoard;
+import framework.IMove;
+import framework.MoveList;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 import java.util.Stack;
 import ai.mcts.MCTSOptions;
 

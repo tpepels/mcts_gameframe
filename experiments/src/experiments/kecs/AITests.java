@@ -1,11 +1,11 @@
 package experiments.kecs;
 
-import ai.FastLog;
-import ai.FastSigm;
-import ai.FastTanh;
-import ai.framework.AIPlayer;
-import ai.framework.IBoard;
-import ai.framework.IMove;
+import framework.util.FastLog;
+import framework.util.FastSigm;
+import framework.util.FastTanh;
+import framework.AIPlayer;
+import framework.IBoard;
+import framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 

@@ -1,6 +1,6 @@
 package penguin.game;
 
-import ai.framework.IMove;
+import framework.IMove;
 
 public class Move extends IMove {
 

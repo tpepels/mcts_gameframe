@@ -1,17 +1,17 @@
 package experiments;
 
-import ai.*;
 import ai.MCTS_SR.MCTS_SR_Player;
 import ai.SRMCTS.SRMCTSPlayer;
-import ai.framework.AIPlayer;
-import ai.framework.IBoard;
-import ai.framework.IMove;
+import framework.AIPlayer;
+import framework.IBoard;
+import framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;
+import framework.util.*;
 import mcts2e.BRUE.MCTS2ePlayer;
-import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.H_MCTS.SRPlayer;
 import mcts_tt.uct.UCTPlayer;
 
 /**
