@@ -47,7 +47,7 @@ public class TreeNode {
         stats = new StatCounter();
     }
 
-    public double MCTS(IBoard board, int depth, int previousPlayer) {
+    public double MCTS(IBoard board, int depth) {
         TreeNode child = null;
         if (depth == 0) {
             movesMade[0].clear();
@@ -81,17 +81,17 @@ public class TreeNode {
         // When a leaf is reached return the result of the playout
         if (!child.isSimulated() || child.isTerminal()) {
             result = child.playOut(board, depth + 1);
-            child.updateStats(-result, this.player, depth + 1);
+            child.updateStats(-result);
             // get result in view of me
             result = -result;
             child.simulated = true;
         } else {
-            result = -child.MCTS(board, depth + 1, this.player);
+            result = -child.MCTS(board, depth + 1);
         }
         // set the board back to its previous configuration
         if (!isTerminal())
             board.undoMove();
-        updateStats(-result, previousPlayer, depth);
+        updateStats(-result);
         // Back-propagate the result
         // always return in view of me
         return result;
@@ -181,7 +181,7 @@ public class TreeNode {
                     break;
                 }
 
-                if (options.useHeuristics && options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
+                if (options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
                     mastMoves.clear();
                     mastMax = Double.NEGATIVE_INFINITY;
                     // Select the move with the highest MAST value
@@ -234,7 +234,7 @@ public class TreeNode {
                 if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
                     double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
                     double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
-//                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
+                    // score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
                     score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
                 }
                 // Maintain the average number of moves per play-out
@@ -251,14 +251,13 @@ public class TreeNode {
                 if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                     double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
                     double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
-//                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
+                    // score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
                     score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
                 }
                 qualityStats[w].push(q);
                 options.qualityCov.push((winner == myPlayer) ? q : 0, q);
             }
         }
-
 
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
@@ -288,18 +287,7 @@ public class TreeNode {
             if (board.isPartialObservable() && !board.isLegal(t.getMove()))
                 continue;
             // For partial observable games, use the visit count, not the values.
-            if (board.isPartialObservable()) {
-                value = t.getnVisits();
-            } else {
-                // If there are children with INF value, choose one of them
-                if (t.stats.mean() == INF)
-                    value = INF + MCTSOptions.r.nextDouble();
-                else if (t.stats.mean() == -INF)
-                    value = -INF + t.stats.totalVisits() + MCTSOptions.r.nextDouble();
-                else {
-                    value = t.stats.totalVisits();
-                }
-            }
+            value = t.getnVisits();
             //
             if (value > max) {
                 max = value;
@@ -312,94 +300,13 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(double value, int previousPlayer, int depth) {
-
-        // If we are not using AUCT simply add the total value
-        if (options.maxBackprop && children != null && getnVisits() >= options.maxBackpropT) {
-            double bestVal = -INF - 1;
-
-            for (TreeNode c : children) {
-                //double childVal = getnVisits() * c.maxBackpropQs; 
-                //double childVal = getnVisits() * c.maxBackpropQs; 
-                double childVal = c.stats.mean();
-
-                if (childVal > bestVal)
-                    bestVal = childVal;
-            }
-
-            if (previousPlayer != this.player)
-                stats.push(-bestVal);
-            else
-                stats.push(bestVal);
-        } else if ((!options.auct || isLeaf())) {
-            stats.push(value);
-        } else {
-            // Compute the auct win ratio
-            double sum_v = 0., sum_v_r = 0.;
-            for (TreeNode c : children) {
-                // Due to the solver, there may be loss-nodes,
-                // these should not be considered in the average node value
-                if (c.stats.mean() == -INF)
-                    continue;
-                sum_v += c.velocity;
-                sum_v_r += c.velocity * c.stats.mean();
-            }
-            stats.setValue(-1 * (sum_v_r / sum_v));
-        }
-
-        // implicit minimax backups
-        if (options.implicitMM && children != null) {
-            double bestAlpha = -INF - 1;
-            double bestBeta = -INF - 1;
-            double bestVal = -INF - 1;
-
-            for (TreeNode c : children) {
-                if (c.imVal > bestVal) bestVal = c.imVal;
-                if ((-c.imBeta) > bestAlpha) bestAlpha = (-c.imBeta);
-                if ((-c.imAlpha) > bestBeta) bestBeta = (-c.imAlpha);
-            }
-
-            // check for non-negamax; FIXME: implicit pruning does not work for non-negamax
-
-            if (previousPlayer != this.player)
-                this.imVal = -bestVal;       // view of parent
-            else
-                this.imVal = bestVal;        // view of parent
-
-            this.imAlpha = bestAlpha;    // view of me
-            this.imBeta = bestBeta;      // view of me
-        }
-
-        // prog bias decay
-        if (options.progBias && options.pbDecay && children != null) {
-            double bestVal = -INF - 1;
-
-            for (TreeNode c : children) {
-                if (c.heval > bestVal) bestVal = c.heval;
-            }
-
-            if (previousPlayer != this.player)
-                this.heval = -bestVal;       // view of parent
-            else
-                this.heval = heval;        // view of parent
-        }
-
-    }
-
-    public void resetVelocities() {
-        velocity = 1.;
-        if (children != null) {
-            for (TreeNode c : children) {
-                c.resetVelocities();
-            }
-            // Due to velocities being reset
-            if (!isLeaf())
-                updateStats(0, 0, 0);
-        }
+    private void updateStats(double value) {
+        stats.push(value);
     }
 
     public boolean isLeaf() {
-        return children == null || !expanded;
+        // TODO Change this to return true if fully expanded
+        return children == null;
     }
 
     public boolean isSimulated() {
@@ -407,14 +314,7 @@ public class TreeNode {
     }
 
     public boolean isTerminal() {
-        if (!options.auct)
-            return children != null && children.size() == 0;
-        else
-            return children != null && children.size() == 1;
-    }
-
-    public int getArity() {
-        return children == null ? 0 : children.size();
+        return children != null && children.size() == 0;
     }
 
     public List<TreeNode> getChildren() {
@@ -425,12 +325,12 @@ public class TreeNode {
         return move;
     }
 
-    public boolean isVirtual() {
-        return virtual;
-    }
-
     public double getnVisits() {
         return stats.visits();
+    }
+
+    public int getArity() {
+        return (children != null) ? children.size() : 0;
     }
 
     @Override
