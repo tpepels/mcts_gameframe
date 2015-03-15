@@ -229,11 +229,9 @@ public class TreeNode {
     private TreeNode expand(IBoard board, int depth, int parentPlayer) {
         expanded = true;
 
-        // check for non-negamax. will sent this later below! 
-        // old: int nextPlayer = board.getOpponent(board.getPlayerToMove());
-        this.player = board.getPlayerToMove();
-        int nextPlayer = -1;
+        // check for non-negamax. will sent this later below!
         // If one of the nodes is a win, we don't have to select
+        int nextPlayer = board.getPlayerToMove();
         TreeNode winNode = null;
         // Generate all moves
         MoveList moves = board.getExpandMoves();
@@ -262,9 +260,7 @@ public class TreeNode {
                     child = new TreeNode(nextPlayer, depth, moves.get(i), options, true);
                 else
                     child = new TreeNode(nextPlayer, depth, moves.get(i), options);
-                // non-negamax
-                nextPlayer = board.getPlayerToMove();
-                child.player = nextPlayer;
+
                 winner = IBoard.NONE_WIN;
                 if (options.solver) {
                     // Check for a winner, (Solver)

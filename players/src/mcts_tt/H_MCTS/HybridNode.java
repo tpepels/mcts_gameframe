@@ -12,10 +12,6 @@ import java.text.DecimalFormat;
 import java.util.*;
 
 public class HybridNode {
-    public static int maxDepth = 0;
-    private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
-    private static final MoveList mastMoves = new MoveList(1000);
-    //
     private boolean expanded = false, simulated = false;
     private List<HybridNode> C, S;
     private HybridNode bestArm;
@@ -43,6 +39,7 @@ public class HybridNode {
             throw new RuntimeException("Budget is " + budget);
         if (board.hash() != hash)
             throw new RuntimeException("Incorrect hash");
+        //
         double result;
         HybridNode child = null;
         // First add some nodes if required
@@ -71,7 +68,7 @@ public class HybridNode {
             updateStats(plStats);
             return 0;
         }
-
+        //
         int init_s = S.size();
         int b = getBudget(getBudgetNode(), budget, init_s, init_s);
         // :: UCT Hybrid
@@ -86,23 +83,17 @@ public class HybridNode {
                 plStats[2] += pl[2];
                 plStats[3] += pl[3];
                 // :: Solver
-                if (Math.abs(result) == State.INF) {
+                if (Math.abs(result) == State.INF)
                     return result;
-                }
             }
             return 0;
         }
-        // :: Simple regret
-        if (options.debug && depth > maxDepth)
-            maxDepth = depth;
         // Sort S such that the best node is always the first
         if (getVisits() > S.size())
-            Collections.sort(S, (!options.history) ? comparator : phComparator);
-        int sSize = S.size();
+            Collections.sort(S, comparator);
         // :: Cycle
         do {
             int n = 0, b_s = 0;
-            double lb = 0;
             // :: Round
             while (n < s) {
                 child = S.get(n++);
@@ -120,14 +111,10 @@ public class HybridNode {
                         continue;
                     // :: Recursion
                     board.doAIMove(child.getMove(), player);
-                    if (options.history)
-                        movesMade[player - 1].add(child.getMove());
                     result = -child.HybridMCTS(board, depth + 1, b_b, pl);
                     board.undoMove();
-                    if (options.history)
-                        movesMade[player - 1].clearLast(1);
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
-                    if (!options.max_back || n == 1) {
+                    if (!(options.max_back && getBudgetNode() > 0) || n == 1) {
                         // With max backprop, only update results if this is the current best arm
                         plStats[0] += pl[0];
                         plStats[1] += pl[1];
@@ -168,7 +155,7 @@ public class HybridNode {
             }
             // :: Removal policy: Sorting
             if (S.size() > 0)
-                Collections.sort(S.subList(0, Math.min(s, S.size())), (!options.history) ? comparator : phComparator);
+                Collections.sort(S.subList(0, Math.min(s, S.size())), comparator);
             // :: Removal policy: Reduction
             s -= (int) Math.floor(s / (double) options.rc);
             // For the solver
@@ -177,7 +164,7 @@ public class HybridNode {
             if (s == 1)
                 b += budget - plStats[3];
             else {
-                b += getBudget(getBudgetNode(), budget, s, sSize); // Use the original size of S here
+                b += getBudget(getBudgetNode(), budget, s, init_s); // Use the original size of S here
                 // Add any skipped budget from this round
                 b += Math.ceil(b_s / (double) s);
             }
@@ -188,11 +175,6 @@ public class HybridNode {
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
-        // :: SR Max back-propagation
-        if (!isSolved() && options.max_back && bestArm != null
-                && bestArm.state != null && !bestArm.isSolved()) {
-            setValue(bestArm.getState());
-        }
         return 0;
     }
 
@@ -246,8 +228,6 @@ public class HybridNode {
         }
         // (Solver) Check for proven win / loss / draw
         if (!child.isSolved()) {
-            if (options.history)
-                movesMade[player - 1].add(child.getMove());
             board.doAIMove(child.getMove(), player);
             if (!child.simulated) {
                 // :: Play-out
@@ -263,8 +243,6 @@ public class HybridNode {
             } else // :: Recursion
                 result = -child.UCT(board, plStats);
             board.undoMove();
-            if (options.history)
-                movesMade[player - 1].clearLast(1);
         } else {
             result = child.getValue();
         }
@@ -370,25 +348,12 @@ public class HybridNode {
         }
     };
 
-    private final Comparator<HybridNode> phComparator = new Comparator<HybridNode>() {
-        @Override
-        public int compare(HybridNode o1, HybridNode o2) {
-            double v1 = o1.getValue();
-            double v2 = o2.getValue();
-            v1 += o1.move.getHistoryVal(3 - player, options) * (options.sr_phW / (getVisits() - getWins() + 1));
-            v2 += o2.move.getHistoryVal(3 - player, options) * (options.sr_phW / (getVisits() - getWins() + 1));
-            return Double.compare(v2, v1);
-        }
-    };
-
     public static int totalPlayouts = 0;
 
     private int playOut(IBoard board) {
         totalPlayouts++;
         simulated = true;
         boolean gameEnded, moveMade;
-        int[] pMoves = new int[2];
-        double mastMax, mastVal;
         int cp = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
@@ -408,43 +373,10 @@ public class HybridNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-                // Select a move to play
-                currentMove = null;
-                if (options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
-                    mastMoves.clear();
-                    mastMax = Double.NEGATIVE_INFINITY;
-                    IMove m;
-                    // Select the move with the highest MAST value
-                    for (IMove move1 : moves) {
-                        m = move1;
-                        if (m.getHistoryVis(cp, options) == 0)
-                            continue;
-                        mastVal = move1.getHistoryVal(cp, options);
-                        // If bigger, we have a winner, if equal, flip a coin
-                        if (mastVal > mastMax) {
-                            mastMoves.clear();
-                            mastMax = mastVal;
-                            mastMoves.add(move1);
-                        } else if (mastVal == mastMax) {
-                            mastMoves.add(move1);
-                        }
-                    }
-                    if (mastMoves.size() > 0)
-                        currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
-                }
-                if (currentMove == null) {
-                    // Choose randomly
-                    currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
-                }
+                currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, cp)) {
                     nMoves++;
-                    pMoves[cp - 1]++;
-
-                    // Keep track of moves made
-                    if (options.history && !options.to_history)
-                        movesMade[cp - 1].add(currentMove);
-
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
@@ -459,21 +391,9 @@ public class HybridNode {
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
-        // Update the history values for the moves made during the match
-        if (options.history) {
-            double p1Score = (winner == IBoard.P1_WIN) ? 1 : -1;
-            for (int i = 0; i < movesMade[0].size(); i++) {
-                options.updateHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
-            }
-            for (int i = 0; i < movesMade[1].size(); i++) {
-                options.updateHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
-            }
-            // Clear the moves made during the play-out
-            movesMade[0].clearLast(pMoves[0]);
-            movesMade[1].clearLast(pMoves[1]);
-        }
         return winner;
     }
+
 
     public HybridNode selectBestMove() {
         // For debugging, print the nodes
@@ -514,12 +434,6 @@ public class HybridNode {
 
     public boolean isTerminal() {
         return expanded && C != null && C.size() == 0;
-    }
-
-    private void setValue(State s) {
-        if (state == null)
-            state = tt.getState(hash, false);
-        state.setValue(s);
     }
 
     private void updateBudgetSpent(int n) {
@@ -579,12 +493,6 @@ public class HybridNode {
         if (state == null)
             return 0.;
         return state.getVisits();
-    }
-
-    private State getState() {
-        if (state == null)
-            state = tt.getState(hash, false);
-        return state;
     }
 
     private boolean isSolved() {

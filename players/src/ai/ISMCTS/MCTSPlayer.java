@@ -1,5 +1,7 @@
-package ai.mcts;
+package ai.ISMCTS;
 
+import ai.mcts.MCTSOptions;
+import ai.mcts.TreeNode;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;

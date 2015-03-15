@@ -33,8 +33,6 @@ public class HybridPlayer implements AIPlayer, Runnable {
         // Reset the MAST arrays
         if (options.history)
             options.resetHistory(board.getMaxUniqueMoveId());
-        //
-        HybridNode.maxDepth = 0;
         HybridNode.totalPlayouts = 0;
         //
         interrupted = false;
@@ -65,7 +63,6 @@ public class HybridPlayer implements AIPlayer, Runnable {
             System.out.println("Best child: " + bestChild);
             System.out.println("Play-outs: " + pl[3]);
             System.out.println("Play-outs check: " + HybridNode.totalPlayouts);
-            System.out.println("Max sr depth: " + HybridNode.maxDepth);
             System.out.println((int) ((1000. * HybridNode.totalPlayouts) / (endT - startT)) + " playouts per s");
         }
         total += HybridNode.totalPlayouts;

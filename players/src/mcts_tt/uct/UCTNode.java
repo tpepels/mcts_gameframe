@@ -1,12 +1,10 @@
 package mcts_tt.uct;
 
-import framework.util.FastLog;
-import framework.util.FastSigm;
-import framework.util.StatCounter;
+import ai.mcts.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
-import ai.mcts.MCTSOptions;
+import framework.util.FastLog;
 import mcts_tt.transpos.State;
 import mcts_tt.transpos.TransposTable;
 
@@ -15,12 +13,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UCTNode {
-    public static int nodesSimulated = 0;
-    private static final MoveList[] movesMade = {new MoveList(500), new MoveList(500)};
-    private static final MoveList mastMoves = new MoveList(1000);
-    public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
-    public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
-    public static int myPlayer = 0;
     public int player, ply, visits = 0;
     private long hash;
     //
@@ -39,7 +31,6 @@ public class UCTNode {
         this.player = player;
         this.options = options;
         this.ply = 0;
-        UCTNode.myPlayer = player;
         this.tt = tt;
         this.hash = board.hash();
         this.state = tt.getState(hash, true);
@@ -68,10 +59,6 @@ public class UCTNode {
         if (board.hash() != hash)
             throw new RuntimeException("Incorrect hash");
         UCTNode child = null;
-        if (depth == 0) {
-            movesMade[0].clear();
-            movesMade[1].clear();
-        }
         // First add some leafs if required
         if (isLeaf()) {
             // Expand returns any node that leads to a win
@@ -95,15 +82,11 @@ public class UCTNode {
             if (!isTerminal())
                 board.doAIMove(child.getMove(), player);
 
-            if (options.history)
-                movesMade[player - 1].add(child.getMove());
-
             // When a leaf is reached return the result of the playout
             if (!child.isSimulated() || child.isTerminal()) {
-                result = child.playOut(board, depth + 1);
+                result = child.playOut(board);
                 child.updateStats(-result);
                 child.simulated = true;
-                nodesSimulated++;
             } else {
                 result = -child.MCTS(board, depth + 1);
             }
@@ -190,7 +173,7 @@ public class UCTNode {
         UCTNode selected = null;
         double max = Double.NEGATIVE_INFINITY;
         // Use UCT down the tree
-        double uctValue, np = getVisits(), value = 0.;
+        double uctValue, np = getVisits();
         // Select a child according to the UCT Selection policy
         for (UCTNode c : children) {
             double nc = c.getVisits();
@@ -203,12 +186,8 @@ public class UCTNode {
             } else if (c.getValue() == -State.INF) {
                 uctValue = -State.INF + MCTSOptions.r.nextDouble();
             } else {
-                value = c.getValue();
                 // Compute the uct value with the (new) average value
-                uctValue = value + options.uctC * Math.sqrt(FastLog.log(np) / nc);
-                if (options.progHistory) {
-                    uctValue += c.move.getHistoryVal(player, options) * (options.phW / (getVisits() - getWins() + 1));
-                }
+                uctValue = c.getValue() + options.uctC * Math.sqrt(FastLog.log(np) / nc);
             }
             // Remember the highest UCT value
             if (uctValue > max) {
@@ -219,24 +198,17 @@ public class UCTNode {
         return selected;
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private double playOut(IBoard board, int depth) {
+    private double playOut(IBoard board) {
         boolean gameEnded, moveMade;
-        double detScore = 0;
-        int currentPlayer = board.getPlayerToMove();
-        double mastMax, mastVal, nMoves = 0;
-        int nMovesInt = 0;
+        int currentPlayer = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
-        boolean terminateEarly = false;
 
-        while (!gameEnded && !terminateEarly) {
-
+        while (!gameEnded) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
-
             while (!moveMade) {
                 // All moves were thrown away, the game is a draw
                 if (moves.size() == 0) {
@@ -248,64 +220,14 @@ public class UCTNode {
                         winner = board.getOpponent(board.getPlayerToMove());    // Cannon, Amazons, Chinese Checkers, Checkers
                     break;
                 }
-                currentMove = null;
-                if (options.MAST && MCTSOptions.r.nextDouble() < options.mastEps) {
-                    mastMoves.clear();
-                    mastMax = Double.NEGATIVE_INFINITY;
-                    IMove m;
-                    // Select the move with the highest MAST value
-                    for (int i = 0; i < moves.size(); i++) {
-                        m = moves.get(i);
-                        if (m.getHistoryVis(currentPlayer, options) == 0)
-                            continue;
-                        mastVal = moves.get(i).getHistoryVal(currentPlayer, options);
-                        // If bigger, we have a winner, if equal, flip a coin
-                        if (mastVal > mastMax) {
-                            mastMoves.clear();
-                            mastMax = mastVal;
-                            mastMoves.add(moves.get(i));
-                        } else if (mastVal == mastMax) {
-                            mastMoves.add(moves.get(i));
-                        }
-                    }
-                    if (mastMoves.size() > 0)
-                        currentMove = mastMoves.get(MCTSOptions.r.nextInt(mastMoves.size()));
-                }
-                if (currentMove == null) {
-                    // Choose randomly
-                    currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
-                }
+                currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, currentPlayer)) {
-
-                    // Keep track of moves made
-                    if (options.history && !options.to_history)
-                        movesMade[currentPlayer - 1].add(currentMove);
-
                     nMoves++;
-                    nMovesInt++;
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
-
-                    // non-negamax
-                    // currentPlayer = board.getOpponent(currentPlayer);
                     currentPlayer = board.getPlayerToMove();
-
-                    // Check if pdepth is reached
-                    if (options.earlyEval && nMoves >= options.pdepth) {
-                        terminateEarly = true;
-                        break;
-                    }
-                    // Check if dynamic early termination satisfied
-                    if (options.detEnabled && nMovesInt % options.detFreq == 0) {
-                        detScore = board.evaluate(player, options.efVer);
-                        //detScore = board.evaluate(player, 1);
-                        if (detScore > options.detThreshold || detScore < -options.detThreshold) {
-                            terminateEarly = true;
-                            break;
-                        }
-                    }
                 } else {
                     // The move was illegal, remove it from the list.
                     moveMade = false;
@@ -315,78 +237,12 @@ public class UCTNode {
         }
 
         double score;
-        if (gameEnded) {
-
-            if (winner == player) score = 1.0;
-            else if (winner == IBoard.DRAW) score = 0.0;
-            else score = -1;
-
-            // Alter the score using the relative bonus
-            if (winner != IBoard.DRAW) {
-                int w = winner - 1;
-
-                // Relative bonus
-                if (options.relativeBonus && (nMoves + depth) > 0) {
-                    if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
-                        double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
-                        double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
-//                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
-                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
-                    }
-                    // Maintain the average number of moves per play-out
-                    moveStats[w].push(nMoves + depth);
-                    int nm = board.getNMovesMade();
-                    int n = (winner == player) ? nm : 0;
-                    options.moveCov.push(n, nm);
-                }
-
-                // Qualitative bonus
-                if (options.qualityBonus) {
-                    // Only compute the quality if QB is active, since it may be costly to do so
-                    double q = board.getQuality();
-                    if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
-                        double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
-                        double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
-//                        score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
-                        score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
-                    }
-                    qualityStats[w].push(q);
-                    options.qualityCov.push((winner == myPlayer) ? q : 0, q);
-                }
-            }
-        } else if (options.detEnabled && terminateEarly && (detScore > options.detThreshold || detScore < -options.detThreshold)) {
-            if (detScore > options.detThreshold)
-                score = 1.0;
-            else if (detScore < -options.detThreshold)
-                score = -1.0;
-            else {
-                score = 0.0;
-                throw new RuntimeException("Should not get here!");
-            }
-        } else if (options.earlyEval && terminateEarly) {
-            // playout terminated by nMoves surpassing pdepth
-            score = board.evaluate(player, options.efVer);
-        } else {
-            throw new RuntimeException("Game end error in playOut");
-        }
-
+        if (winner == player) score = 1.0;
+        else if (winner == IBoard.DRAW) score = 0.0;
+        else score = -1;
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
-
-        // Update the history values for the moves made during the match
-        if (options.history) {
-            double p1Score = (winner == IBoard.P1_WIN) ? Math.signum(score) : -Math.signum(score);
-            for (int i = 0; i < movesMade[0].size(); i++) {
-                options.updateHistory(1, movesMade[0].get(i).getUniqueId(), p1Score);
-            }
-            for (int i = 0; i < movesMade[1].size(); i++) {
-                options.updateHistory(2, movesMade[1].get(i).getUniqueId(), -p1Score);
-            }
-            // Clear the lists
-            movesMade[0].clear();
-            movesMade[1].clear();
-        }
         return score;
     }
 
@@ -441,14 +297,6 @@ public class UCTNode {
         if (state == null)
             return 0.;
         return state.getMean(3 - player);
-    }
-
-    private double getWins() {
-        if (state == null)
-            state = tt.getState(hash, true);
-        if (state == null)
-            return 0.;
-        return state.getWins(3 - player);
     }
 
     /**

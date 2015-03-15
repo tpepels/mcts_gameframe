@@ -31,7 +31,6 @@ public class UCTPlayer implements AIPlayer, Runnable {
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
-        UCTNode.nodesSimulated = 0;
 
         // Reset the MAST arrays
         if (options.history)
@@ -40,11 +39,6 @@ public class UCTPlayer implements AIPlayer, Runnable {
         root = new UCTNode(myPlayer, options, board, tt);
         if (nMoves > 0 && board.hash() == 0)
             throw new RuntimeException("Unlikely hash");
-        // Reset the nodes' stats
-        UCTNode.moveStats[0].reset();
-        UCTNode.moveStats[1].reset();
-        UCTNode.qualityStats[0].reset();
-        UCTNode.qualityStats[1].reset();
         //
         interrupted = false;
         if (parallel) {
@@ -145,10 +139,6 @@ public class UCTPlayer implements AIPlayer, Runnable {
 
     @Override
     public void newGame(int myPlayer, String game) {
-        UCTNode.moveStats[0].reset();
-        UCTNode.moveStats[1].reset();
-        UCTNode.qualityStats[0].reset();
-        UCTNode.qualityStats[1].reset();
         options.qualityCov.reset();
         options.moveCov.reset();
         nMoves = 0;

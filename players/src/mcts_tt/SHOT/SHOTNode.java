@@ -102,6 +102,8 @@ public class SHOTNode {
                 // Update the child and current node
                 n.updateStats(pl);
                 updateStats(pl);
+                // Increase the budget spent for the node
+                updateBudgetSpent(pl[3]);
                 // Don't go over budget
                 if (plStats[3] >= budget)
                     return 0;
@@ -133,6 +135,8 @@ public class SHOTNode {
                 solverCheck(result);
             else
                 updateStats(pl);
+            // Increase the budget spent for the node
+            updateBudgetSpent(pl[3]);
             //
             return result;
         }
@@ -165,7 +169,7 @@ public class SHOTNode {
                     result = -child.SHOT(board, depth + 1, b_b, pl);
                     board.undoMove();
                     // 0: playouts, 1: player1, 2: player2, 3: budgetUsed
-                    if (!options.max_back || n == 1) {
+                    if (!(options.max_back && getBudgetNode() > 0) || n == 1) {
                         // With max backprop, only update results if this is the current best arm
                         plStats[0] += pl[0];
                         plStats[1] += pl[1];
@@ -226,12 +230,6 @@ public class SHOTNode {
         // :: Final arm selection
         if (!S.isEmpty())
             bestArm = S.get(0);
-        // :: SR Max back-propagation
-        if (!isSolved() && options.max_back && bestArm != null
-                && bestArm.state != null && !bestArm.isSolved()) {
-            //
-            setValue(bestArm.getState());
-        }
         return 0;
     }
 
@@ -322,7 +320,6 @@ public class SHOTNode {
         totalPlayouts++;
         simulated = true;
         boolean gameEnded, moveMade;
-        int[] pMoves = new int[2];
         int cp = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
@@ -346,8 +343,6 @@ public class SHOTNode {
                 // Check if the move can be made, otherwise remove it from the list
                 if (board.doAIMove(currentMove, cp)) {
                     nMoves++;
-                    pMoves[cp - 1]++;
-
                     moveMade = true;
                     winner = board.checkPlayoutWin();
                     gameEnded = winner != IBoard.NONE_WIN;
