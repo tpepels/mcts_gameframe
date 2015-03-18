@@ -136,7 +136,7 @@ public class UCTNode {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         if (children == null)
-            children = new ArrayList<>(moves.size());
+            children = new ArrayList(moves.size());
         //
         int winner = board.checkWin();
         // Board is terminal, don't expand

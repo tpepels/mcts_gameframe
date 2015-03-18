@@ -1,7 +1,7 @@
 package mcts2e.BRUE;
 
-import framework.*;
 import ai.mcts.MCTSOptions;
+import framework.*;
 
 public class MCTS2ePlayer implements AIPlayer, Runnable {
     private final int TT_SIZE = 33554432;
@@ -58,9 +58,9 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
             board.newDeterminization(myPlayer);
             probe(board, 0);
             // Check for stopping conditions
-            if(!options.fixedSimulations && System.currentTimeMillis() >= endTime)
+            if (!options.fixedSimulations && System.currentTimeMillis() >= endTime)
                 break;
-            if(options.fixedSimulations && simulations == options.simulations)
+            if (options.fixedSimulations && simulations == options.simulations)
                 break;
         }
         // Set the best move to play
@@ -78,12 +78,12 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
                 max = stateValues[hashPos].value;
                 maxVisits = stateValues[hashPos].visits;
                 bestMove = moves.get(i);
-            } else if(stateValues[hashPos] == null) {
+            } else if (stateValues[hashPos] == null) {
                 System.out.println("hier");
             }
             board.undoMove();
         }
-        if(bestMove == null) {
+        if (bestMove == null) {
             bestMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
         }
         if (options.debug) {
@@ -141,7 +141,7 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
         if (winner != FiniteBoard.NONE_WIN) {
             r = (winner == myPlayer) ? 1 : -1;  // Only win/loss status gives award
             // The game ended before the switching point
-            if(d + 1 > sigma) updateState(board.getStateHash(), r, d);
+            if (d + 1 > sigma) updateState(board.getStateHash(), r, d);
         } else {
             r = probe(board, d + 1);            //
             // Update the next state, since that encapsulates the action
@@ -151,13 +151,15 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
         board.undoMove();
         return r;
     }
+
     private int collisions = 0;
+
     public void updateState(long hash, double r, int d) {
         int hashPos = getHashPos(hash);
-        if(stateValues[hashPos] == null) {
+        if (stateValues[hashPos] == null) {
             stateValues[hashPos] = new StateHash(hash, r, 1, d);
             return;
-        } else if(stateValues[hashPos].hash != hash && d > stateValues[hashPos].depth) {
+        } else if (stateValues[hashPos].hash != hash && d > stateValues[hashPos].depth) {
             collisions++;
             return;
         }

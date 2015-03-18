@@ -1,14 +1,14 @@
 package checkers.gui;
 
 import ai.SRMCTS.SRMCTSPlayer;
-import framework.AIPlayer;
-import framework.IMove;
-import framework.MoveCallback;
-import framework.MoveList;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import checkers.game.Board;
 import checkers.game.Move;
+import framework.AIPlayer;
+import framework.IMove;
+import framework.MoveCallback;
+import framework.MoveList;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,7 +43,7 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
         this.addMouseMotionListener(this);
         // Moves need to be generated
         moves = board.getExpandMoves();
-        
+
         // Definition for player 1
         aiPlayer1 = new MCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();

@@ -1,10 +1,10 @@
 package mcts_tt.uct;
 
+import ai.mcts.MCTSOptions;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
-import ai.mcts.MCTSOptions;
 import mcts_tt.transpos.State;
 import mcts_tt.transpos.TransposTable;
 

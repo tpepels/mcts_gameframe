@@ -1,9 +1,9 @@
 import ai.SRMCTS.SRMCTSPlayer;
-import framework.AIPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import domineering.game.Board;
 import domineering.game.Move;
+import framework.AIPlayer;
 
 public class Game {
     public static void main(String[] args) {

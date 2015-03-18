@@ -1,16 +1,12 @@
 package alphabeta;
 
-import framework.AIPlayer;
-import framework.IBoard;
-import framework.IMove;
-import framework.MoveCallback;
-import framework.MoveList;
-
-// need this for now to implement AIPlayer. should eventually rename to AIOptions
-import ai.mcts.MCTSOptions; 
+import ai.mcts.MCTSOptions;
+import framework.*;
 
 import java.text.DecimalFormat;
 import java.util.Random;
+
+// need this for now to implement AIPlayer. should eventually rename to AIOptions
 
 public class AlphaBeta implements AIPlayer {
 
@@ -21,7 +17,7 @@ public class AlphaBeta implements AIPlayer {
     private final int TT_SIZE = 33554432, TIME_CHECK_INT = 1000, BASE_TIME = 15000;
     private final DecimalFormat decForm = new DecimalFormat("#,###,###,###,##0");
     //
-    double DELTA = 60, DEFAULT_DELTA = 60; 
+    double DELTA = 60, DEFAULT_DELTA = 60;
     public int R = 2, MAX_DEPTH = 1000;
     public boolean nullmoves = false, historyHeuristic = false,
             killermoves = false, aspiration = false;
@@ -60,7 +56,6 @@ public class AlphaBeta implements AIPlayer {
     }
 
     private long MASK = TT_SIZE - 1;
-
 
 
     private int getHashPos(long hash) {
@@ -124,14 +119,14 @@ public class AlphaBeta implements AIPlayer {
         }
     }
 
-    public void getMove(IBoard board, MoveCallback callback, int myPlayer, boolean parallel, IMove lastMove) { 
+    public void getMove(IBoard board, MoveCallback callback, int myPlayer, boolean parallel, IMove lastMove) {
         this.initBoard = board;
         //this.callback = callback;
         this.myPlayer = myPlayer;
         this.parallel = parallel;
-        
+
         //this.opponent = (myPlayer == Board.P2) ? Board.P1 : Board.P2;
-        this.opponent = 3-this.opponent;
+        this.opponent = 3 - this.opponent;
 
         //
         interupted = false;
@@ -149,7 +144,7 @@ public class AlphaBeta implements AIPlayer {
             createTT();
 
         // endTime = 15000; // for testing
-        endTime =  System.currentTimeMillis() + options.timeLimit;
+        endTime = System.currentTimeMillis() + options.timeLimit;
 
         //
         // long lastItStartTime = 0, lastItTime = 0;
@@ -228,22 +223,22 @@ public class AlphaBeta implements AIPlayer {
         //tt = null;
         if (options.transpositions)
             destroyTT();
-            //resetTT();
+        //resetTT();
 
         if (!interupted && parallel)
             callback.makeMove(finalBestMove);
     }
-  
+
     private int getOpponent(int player) {
         /*if (player == Board.P1)
             return Board.P2;
         else
             return Board.P1;*/
-        return 3-player;
+        return 3 - player;
     }
 
     private double alphaBeta(IBoard board, int depth, double alpha, double beta, int player, IMove move,
-                          boolean nullMove) {
+                             boolean nullMove) {
         if (forceHalt || interupted)
             return 0;
         if (timeCheck == 0) {
@@ -257,10 +252,10 @@ public class AlphaBeta implements AIPlayer {
         timeCheck--;
         nodes++;
         // For win/loss depth
-        int inv_depth = maxDepth - depth; 
+        int inv_depth = maxDepth - depth;
         double value = N_INF, bestValue = N_INF;
         double capsw, capsb, olda = alpha, oldb = beta;
-        int  hashPos = 0, color = (player == myPlayer) ? 1 : -1;
+        int hashPos = 0, color = (player == myPlayer) ? 1 : -1;
         IMove plyBestMove = null;
         boolean valuefound = false, collision = false;
         int curBestMoveIndex = -1;
@@ -286,8 +281,7 @@ public class AlphaBeta implements AIPlayer {
                 if (tp.hash != bhash) {
                     collisions++;
                     collision = true;
-                }
-                else if (depth <= tp.depth) {
+                } else if (depth <= tp.depth) {
                     if (tp.flag == Transposition.REAL)
                         return tp.value;
                     if (tp.flag == Transposition.L_BOUND && tp.value > alpha)
@@ -446,7 +440,7 @@ public class AlphaBeta implements AIPlayer {
     @Override
     public void setOptions(MCTSOptions options) {
         // TODO Auto-generated method stub
-        this.options = (AlphaBetaOptions)options;
+        this.options = (AlphaBetaOptions) options;
     }
 
 

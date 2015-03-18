@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class MCTSPlayer implements AIPlayer, Runnable {
 
-    private ArrayList<double[]> allData = new ArrayList<>(1000);
+    private ArrayList<double[]> allData = new ArrayList(1000);
     private boolean interrupted = false, parallel = true, retry = false;
     public TreeNode root;
     private IBoard board;
@@ -94,7 +94,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 
         if (!options.fixedSimulations) {
             double tickInterval = 30000.0;
-            double startTime = System.currentTimeMillis(); 
+            double startTime = System.currentTimeMillis();
             double nextTickTime = startTime + tickInterval;
 
             // Search for timeInterval seconds
@@ -105,9 +105,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 options.simsLeft--;
                 if (System.currentTimeMillis() >= endTime) {
                     break;
-                }
-                else if (System.currentTimeMillis() >= nextTickTime) { 
-                    System.out.println("Tick. I have searched " + ((System.currentTimeMillis() - startTime)/1000.0) + " seconds."); 
+                } else if (System.currentTimeMillis() >= nextTickTime) {
+                    System.out.println("Tick. I have searched " + ((System.currentTimeMillis() - startTime) / 1000.0) + " seconds.");
                     nextTickTime = System.currentTimeMillis() + tickInterval;
                 }
                 board.newDeterminization(myPlayer);
@@ -206,7 +205,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 
         if (options.swUCT) {
             for (int i = 0; i < options.maxSims.length; i++) {
-                if(options.maxSims[i] > options.windowSize)
+                if (options.maxSims[i] > options.windowSize)
                     options.maxSWDepth = i;
                 options.maxSims[i] = 0;
             }

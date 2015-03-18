@@ -1,10 +1,10 @@
 package mcts2e.BRUEi;
 
+import ai.mcts.MCTSOptions;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
-import ai.mcts.MCTSOptions;
 
 public class MCTS2ePlayer implements AIPlayer, Runnable {
     private static int simulations = 0;
@@ -80,7 +80,9 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
     }
 
     @Override
-    public void stop() { interrupted = true; }
+    public void stop() {
+        interrupted = true;
+    }
 
     @Override
     public void setOptions(MCTSOptions options) {

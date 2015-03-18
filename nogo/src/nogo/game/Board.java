@@ -1,9 +1,9 @@
 package nogo.game;
 
-import framework.util.StatCounter;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
+import framework.util.StatCounter;
 
 import java.util.ArrayList;
 import java.util.List;

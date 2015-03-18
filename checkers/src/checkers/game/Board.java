@@ -1,10 +1,10 @@
 package checkers.game;
 
-import framework.util.StatCounter;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
 import framework.util.FastTanh;
+import framework.util.StatCounter;
 
 import java.util.*;
 
@@ -356,12 +356,12 @@ public class Board implements IBoard {
     @Override
     public double evaluate(int player, int version) {
         //return 0;
-        double diff = (nKings1*5 + nPieces1) - (nKings2*5 + nPieces2); 
+        double diff = (nKings1 * 5 + nPieces1) - (nKings2 * 5 + nPieces2);
         //System.out.println(diff);
-        double p1eval = FastTanh.tanh(diff / 10.0); 
-        if (player == 1) 
+        double p1eval = FastTanh.tanh(diff / 10.0);
+        if (player == 1)
             return p1eval;
-        else 
+        else
             return -p1eval;
     }
 

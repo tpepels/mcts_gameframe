@@ -1,10 +1,10 @@
 package pentalath.gui;
 
+import ai.mcts.MCTSOptions;
+import com.rush.HexGridCell;
 import framework.AIPlayer;
 import framework.IMove;
 import framework.MoveCallback;
-import ai.mcts.MCTSOptions;
-import com.rush.HexGridCell;
 import mcts_tt.H_MCTS.SRPlayer;
 import pentalath.game.Board;
 import pentalath.game.Move;
@@ -164,11 +164,11 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         long endtime = board.totalTime;
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
         g2d.drawString(String.format(
-                "%d : %d",
-                TimeUnit.MILLISECONDS.toMinutes(endtime),
-                TimeUnit.MILLISECONDS.toSeconds(endtime)
-                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))
-        ),
+                        "%d : %d",
+                        TimeUnit.MILLISECONDS.toMinutes(endtime),
+                        TimeUnit.MILLISECONDS.toSeconds(endtime)
+                                - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))
+                ),
                 10, 15
         );
         g2d.drawString(aiMessage, 10, this.getHeight() - 15);

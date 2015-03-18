@@ -1,14 +1,14 @@
 package cannon.gui;
 
 import ai.MCTS_SR.MCTS_SR_Player;
-import framework.AIPlayer;
-import framework.IBoard;
-import framework.IMove;
-import framework.MoveCallback;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import cannon.game.Board;
 import cannon.game.Move;
+import framework.AIPlayer;
+import framework.IBoard;
+import framework.IMove;
+import framework.MoveCallback;
 
 import javax.swing.*;
 import java.awt.*;

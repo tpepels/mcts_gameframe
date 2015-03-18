@@ -1,10 +1,10 @@
 package mcts2e.BRUEi;
 
-import framework.util.StatCounter;
+import ai.mcts.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
-import ai.mcts.MCTSOptions;
+import framework.util.StatCounter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +88,7 @@ public class TreeNode {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         if (children == null)
-            children = new ArrayList<>(moves.size());
+            children = new ArrayList(moves.size());
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             children.add(new TreeNode(nextPlayer, moves.get(i), options));

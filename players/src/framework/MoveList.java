@@ -1,5 +1,7 @@
 package framework;
 
+import java.util.Random;
+
 public class MoveList {
 
     private IMove[] moves;
@@ -52,5 +54,17 @@ public class MoveList {
 
     public int size() {
         return size;
+    }
+
+    public void shuffle(){
+        Random rnd = new Random();
+        for (int i = size - 1; i > 0; i--)
+        {
+            int index = rnd.nextInt(i + 1);
+            // Simple swap
+            IMove a = moves[index];
+            moves[index] = moves[i];
+            moves[i] = a;
+        }
     }
 }

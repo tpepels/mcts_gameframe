@@ -29,13 +29,13 @@ public class Move extends IMove {
         return type;
     }
 
-    public int getScoreInc() { 
-        return scoreInc; 
+    public int getScoreInc() {
+        return scoreInc;
     }
 
     public boolean equals(IMove move) {
         Move m = (Move) move;
-        return (m.type == type 
+        return (m.type == type
                 && m.movearr[0] == movearr[0] && m.movearr[1] == movearr[1]
                 && m.movearr[2] == movearr[2] && m.movearr[3] == movearr[3]);
     }
@@ -59,13 +59,13 @@ public class Move extends IMove {
 
     @Override
     public String toString() {
-        if (type == PASS) 
-          return "Pass";
-        else if (type == PLACE) 
-          return "Place " + movearr[0] + "," + movearr[1]; 
-        
+        if (type == PASS)
+            return "Pass";
+        else if (type == PLACE)
+            return "Place " + movearr[0] + "," + movearr[1];
+
         String str = "(" + movearr[0] + "," + movearr[1] + ") -> ("
-                     + movearr[2] + "," + movearr[3] + ")";
+                + movearr[2] + "," + movearr[3] + ")";
         return str;
     }
 }

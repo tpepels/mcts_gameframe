@@ -1,11 +1,11 @@
 package amazons.gui;
 
-import framework.AIPlayer;
-import framework.IMove;
-import framework.MoveCallback;
 import ai.mcts.MCTSOptions;
 import amazons.game.Board;
 import amazons.game.Move;
+import framework.AIPlayer;
+import framework.IMove;
+import framework.MoveCallback;
 import mcts_tt.H_MCTS.SRPlayer;
 
 import javax.imageio.ImageIO;

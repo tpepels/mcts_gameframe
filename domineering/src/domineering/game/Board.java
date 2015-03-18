@@ -1,10 +1,10 @@
 package domineering.game;
 
-import framework.util.StatCounter;
 import framework.FiniteBoard;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
+import framework.util.StatCounter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +27,7 @@ public class Board implements FiniteBoard {
 
     public Board(int size) {
         // First, generate a random hashing key for all positions
-        zobristPositions = new long[size*size][];
+        zobristPositions = new long[size * size][];
         Random r = new Random();
         for (int i = 0; i < size * size; i++) {
             // Generate a random number for each possible occupation
@@ -186,7 +186,7 @@ public class Board implements FiniteBoard {
                 board[i][j] = EMPTY;
             }
         }
-        freeSquares = size*size;
+        freeSquares = size * size;
         nMoves = 0;
         currentPlayer = P1;
     }

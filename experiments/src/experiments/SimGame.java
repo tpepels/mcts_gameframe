@@ -2,13 +2,13 @@ package experiments;
 
 import ai.MCTS_SR.MCTS_SR_Player;
 import ai.SRMCTS.SRMCTSPlayer;
-import framework.AIPlayer;
-import framework.IBoard;
-import framework.IMove;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;
+import framework.AIPlayer;
+import framework.IBoard;
+import framework.IMove;
 import framework.util.*;
 import mcts2e.BRUE.MCTS2ePlayer;
 import mcts_tt.H_MCTS.SRPlayer;

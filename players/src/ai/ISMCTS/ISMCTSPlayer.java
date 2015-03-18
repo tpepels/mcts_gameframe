@@ -8,9 +8,9 @@ import framework.MoveCallback;
 
 import java.util.ArrayList;
 
-public class MCTSPlayer implements AIPlayer, Runnable {
+public class ISMCTSPlayer implements AIPlayer, Runnable {
 
-    private ArrayList<double[]> allData = new ArrayList<>(1000);
+    private ArrayList<double[]> allData = new ArrayList(1000);
     private boolean interrupted = false, retry = false, parallel = false;
     public TreeNode root;
     private IBoard board;

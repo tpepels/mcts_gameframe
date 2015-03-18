@@ -1,11 +1,11 @@
 package ai.SRCRMCTS;
 
-import framework.util.FastSigm;
-import framework.util.StatCounter;
+import ai.mcts.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
-import ai.mcts.MCTSOptions;
+import framework.util.FastSigm;
+import framework.util.StatCounter;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;

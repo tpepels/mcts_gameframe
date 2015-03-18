@@ -1,10 +1,10 @@
 package amazons.game;
 
-import framework.util.FastTanh;
-import framework.util.StatCounter;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
+import framework.util.FastTanh;
+import framework.util.StatCounter;
 
 import java.util.ArrayList;
 import java.util.List;

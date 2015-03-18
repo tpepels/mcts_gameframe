@@ -271,9 +271,9 @@ public class SHOTNode {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         if (S == null)
-            S = new ArrayList<>(moves.size());
+            S = new ArrayList(moves.size());
         if (C == null)
-            C = new ArrayList<>(moves.size());
+            C = new ArrayList(moves.size());
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
             return null;

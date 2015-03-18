@@ -1,10 +1,10 @@
 package ai.SRCRMCTS;
 
+import ai.mcts.MCTSOptions;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
-import ai.mcts.MCTSOptions;
 
 public class SRCRMCTSPlayer implements AIPlayer, Runnable {
     private boolean interrupted = false, parallel = true;

@@ -32,7 +32,7 @@ public class HalfGreedySelect implements SelectionPolicy {
                 return node.getChildren().get(MCTSOptions.r.nextInt(node.getArity()));
             }
         } else {
-           uctSelection.select(node, depth);
+            uctSelection.select(node, depth);
         }
         return selected;
     }

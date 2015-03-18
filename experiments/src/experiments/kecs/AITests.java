@@ -1,13 +1,13 @@
 package experiments.kecs;
 
-import framework.util.FastLog;
-import framework.util.FastSigm;
-import framework.util.FastTanh;
+import ai.mcts.MCTSOptions;
+import ai.mcts.MCTSPlayer;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
-import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
+import framework.util.FastLog;
+import framework.util.FastSigm;
+import framework.util.FastTanh;
 
 import java.io.IOException;
 import java.io.PrintWriter;

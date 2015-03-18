@@ -1,7 +1,7 @@
 package ai.SRCRMCTS;
 
-import framework.util.FastLog;
 import ai.mcts.MCTSOptions;
+import framework.util.FastLog;
 
 /**
  * Created by Tom on 20-2-14.

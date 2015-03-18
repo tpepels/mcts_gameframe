@@ -10,8 +10,8 @@ public class Move extends IMove {
     private int oldProgress1, oldProgress2;
     private int oldCapBonus1, oldCapBonus2;
 
-    public Move(int r, int c, int rp, int cp, int type, int oldProgress1, int oldProgress2, 
-        int oldCapBonus1, int oldCapBonus2) {
+    public Move(int r, int c, int rp, int cp, int type, int oldProgress1, int oldProgress2,
+                int oldCapBonus1, int oldCapBonus2) {
         movearr = new int[4];
         movearr[0] = r;
         movearr[1] = c;
@@ -32,7 +32,7 @@ public class Move extends IMove {
     public int getOldProgress2() {
         return oldProgress2;
     }
-    
+
     public int getOldCapBonus1() {
         return oldCapBonus1;
     }
@@ -77,14 +77,14 @@ public class Move extends IMove {
 
     @Override
     public String toString() {
-        String str = ""; 
+        String str = "";
         //str = "(" + movearr[0] + "," + movearr[1] + ") -> ("
         //        + movearr[2] + "," + movearr[3] + ")";
-        
-        str += ("" + ((char)(97+movearr[1])));
-        str += ("" + (8-movearr[0])); 
-        str += ("" + ((char)(97+movearr[3])));
-        str += ("" + (8-movearr[2])); 
+
+        str += ("" + ((char) (97 + movearr[1])));
+        str += ("" + (8 - movearr[0]));
+        str += ("" + ((char) (97 + movearr[3])));
+        str += ("" + (8 - movearr[2]));
 
         if (type == CAPTURE) return "Cap " + str;
         return "Mov " + str;

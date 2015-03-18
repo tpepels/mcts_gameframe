@@ -1,9 +1,9 @@
 package lostcities.game;
 
-import framework.util.StatCounter;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
+import framework.util.StatCounter;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -29,7 +29,7 @@ public class Table implements IBoard {
     private int value, colour, stack, stackI;
     private int[] minCard = new int[5];
     private int[] discardStackDraws = {0, 0};       // Keep track of the discard - stack draw moves
-    private int invisiblePlayer, nMoves = 0;
+    private int nMoves = 0;
     private boolean[] invCardsSeen;
 
     @Override
@@ -135,7 +135,7 @@ public class Table implements IBoard {
         for (int i = 0; i < stacks.length; i++) {
             newTable.stacks[i] = stacks[i].copy();
         }
-        // Copy the gamestate
+        // Copy the game state
         System.arraycopy(expeditionScores, 0, newTable.expeditionScores, 0, expeditionScores.length);
         System.arraycopy(multipliers, 0, newTable.multipliers, 0, multipliers.length);
         System.arraycopy(expeditionCards, 0, newTable.expeditionCards, 0, expeditionCards.length);
@@ -149,33 +149,6 @@ public class Table implements IBoard {
         newTable.winner = winner;
         newTable.nMoves = nMoves;
         return newTable;
-    }
-
-    public void generateAllMoves() {
-        moves.clear();
-        // Don't generate moves if there is already a winner
-        if (winner != NONE_WIN)
-            return;
-        invCardsSeen = new boolean[5];
-        int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
-        int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
-        stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
-        //
-        if (currentPlayer == invisiblePlayer) {
-            // Generate the moves in the hand of the player
-            for (int i = startI; i < endI; i++) {
-                generateMove(hands[i]);
-            }
-            // For the invisible player, generate all moves, including the deck
-            for (int i = 0; i < deck.size(); i++) {
-                generateMove(deck.get(i));
-            }
-        } else {
-            // Generate the moves in the hand of the player
-            for (int i = startI; i < endI; i++) {
-                generateLegalMove(hands[i]);
-            }
-        }
     }
 
     private void generateLegalMove(int card) {
@@ -212,23 +185,6 @@ public class Table implements IBoard {
         }
     }
 
-    private void generateMove(int card) {
-        value = card % 100;
-        colour = (card / 100) - 1;
-        stack = colour + stackI;
-        // Investment card --> add investments only once
-        if (value == Deck.INVESTMENT) {
-            if (invCardsSeen[colour])
-                return;
-            invCardsSeen[colour] = true;
-        }
-        // Move for drawing from deck & moves for drawing from coloured stacks (0 < j < 5)
-        for (int j = 0; j < stacks.length + 1; j++) {
-            moves.add(new Move(card, j, true));
-            moves.add(new Move(card, j, false));
-        }
-    }
-
     @Override
     public boolean doAIMove(IMove move, int player) {
         doMove((Move) move);
@@ -237,7 +193,18 @@ public class Table implements IBoard {
 
     @Override
     public MoveList getExpandMoves() {
-        generateAllMoves();
+        moves.clear();
+        // Don't generate moves if there is already a winner
+        if (winner != NONE_WIN)
+            return moves;
+        invCardsSeen = new boolean[5];
+        int startI = (currentPlayer == P1) ? 0 : P2_HAND_I;
+        int endI = (currentPlayer == P1) ? P2_HAND_I : hands.length;
+        stackI = (currentPlayer == P1) ? 0 : P2_EXP_I;
+        // Generate the moves in the hand of the player
+        for (int i = startI; i < endI; i++) {
+            generateLegalMove(hands[i]);
+        }
         return moves.copy();
     }
 
@@ -487,7 +454,6 @@ public class Table implements IBoard {
     @Override
     public void newDeterminization(int myPlayer) {
         int si = (myPlayer == P1) ? P2_HAND_I : 0, ei = (myPlayer == P1) ? hands.length : P2_HAND_I;
-        invisiblePlayer = (myPlayer == P1) ? P2 : P1;
         // Put the invisible player's hand back in the deck, and shuffle it
         deck.addHandToDek(hands, si, ei);
         deck.shuffleDeck();
@@ -544,11 +510,11 @@ public class Table implements IBoard {
 
     @Override
     public double evaluate(int player, int version) {
-        return 0.0;
+        return scores[player];
     }
 
     @Override
-    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) { 
+    public void initNodePriors(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
         throw new RuntimeException("unimplemented");
     }
 

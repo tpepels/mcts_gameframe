@@ -58,6 +58,7 @@ public class Covariance {
     public double getMean1() {
         return mean1;
     }
+
     public double getMean2() {
         return mean2;
     }

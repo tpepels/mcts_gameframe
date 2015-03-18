@@ -12,8 +12,8 @@ public class MovingAverage {
     public MovingAverage(int size) {
         this.maxSize = size;
         //
-        curSize = (int)(INIT_SIZE * size);
-        if(curSize <= 10) {
+        curSize = (int) (INIT_SIZE * size);
+        if (curSize <= 10) {
             curSize = size;
         } else {
             smallInstances++;

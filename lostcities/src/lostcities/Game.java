@@ -1,7 +1,9 @@
 package lostcities;
 
+import ai.ISMCTS.ISMCTSPlayer;
 import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
+import framework.AIPlayer;
 import lostcities.game.Deck;
 import lostcities.game.Move;
 import lostcities.game.Table;
@@ -17,14 +19,16 @@ public class Game {
         String player = "";
         Scanner in = new Scanner(System.in);
         MCTSOptions options1 = new MCTSOptions();
-        MCTSPlayer aiPlayer1 = new MCTSPlayer();
+        options1.timeInterval = 5000;
+        AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        MCTSPlayer aiPlayer2 = new MCTSPlayer();
+        options2.timeInterval = 5000;
+        AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
-        MCTSPlayer aiPlayer;
+        AIPlayer aiPlayer;
 
         Move m = null;
         //
@@ -73,7 +77,6 @@ public class Game {
             }
             t.doMove(m);
         }
-
         // Check and announce who won!
         player = (t.checkWin() == Table.P1) ? "Player 1" : "Player 2";
         System.out.println(player + " wins");

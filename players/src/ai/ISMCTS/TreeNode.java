@@ -11,6 +11,7 @@ import framework.util.StatCounter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class TreeNode {
     public static final double INF = 999999;
@@ -22,10 +23,9 @@ public class TreeNode {
     public int player;
     private final MCTSOptions options;
     public StatCounter stats;
-    //
-    private boolean simulated = false;
-    private List<TreeNode> children;
+    private ArrayList<TreeNode> children;
     private IMove move;
+    private boolean simulated = false;
 
     /**
      * Constructor for the root
@@ -48,29 +48,23 @@ public class TreeNode {
     }
 
     public double MCTS(IBoard board, int depth) {
-        TreeNode child = null;
         if (depth == 0) {
             movesMade[0].clear();
             movesMade[1].clear();
         }
-        // First add some leafs if required
-        if (isLeaf()) {
-            // Expand returns any node that leads to a win
-            child = expand(board);
-        }
+        // Expand returns an expanded leaf if any was added to the tree
+        TreeNode child = expand(board);
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
             if (isTerminal())
                 child = this;
-            else
+            else // Do UCT selection over the children
                 child = select(board);
         }
         //
         if (child.player < 0)
             throw new RuntimeException("Child player weird!");
 
-        double result;
-        // (Solver) Check for proven win / loss / draw
         // Execute the move represented by the child
         if (!isTerminal())
             board.doAIMove(child.getMove(), player);
@@ -78,22 +72,21 @@ public class TreeNode {
         if (options.history)
             movesMade[player - 1].add(child.getMove());
 
-        // When a leaf is reached return the result of the playout
-        if (!child.isSimulated() || child.isTerminal()) {
+        double result;
+        // When a leaf is reached return the result of the play-out
+        if (!child.simulated || child.isTerminal()) {
             result = child.playOut(board, depth + 1);
             child.updateStats(-result);
-            // get result in view of me
-            result = -result;
             child.simulated = true;
         } else {
             result = -child.MCTS(board, depth + 1);
         }
-        // set the board back to its previous configuration
+
+        // return board to its previous configuration
         if (!isTerminal())
             board.undoMove();
-        updateStats(-result);
-        // Back-propagate the result
-        // always return in view of me
+
+        updateStats(result);
         return result;
     }
 
@@ -104,13 +97,13 @@ public class TreeNode {
      * @return The expanded node
      */
     private TreeNode expand(IBoard board) {
-        // TODO Change this such that a single node is added, instead of all possible moves
         int nextPlayer = board.getPlayerToMove();
-        TreeNode winNode = null;
+        TreeNode newNode = null;
         // Generate all moves
         MoveList moves = board.getExpandMoves();
+        moves.shuffle();
         if (children == null)
-            children = new ArrayList<>(moves.size());
+            children = new ArrayList(moves.size() * 2);
         int winner = board.checkWin();
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
@@ -119,11 +112,19 @@ public class TreeNode {
         for (int i = 0; i < moves.size(); i++) {
             // No move-checking for partial observable games
             // Also, the legality of the move depends on the determinization
+            boolean exists = false;
             // Check here if the move is already in the set of children
-            children.add(new TreeNode(nextPlayer, moves.get(i), options));
+            for(TreeNode node : children)
+                if(node.move.equals(moves.get(i)))
+                    exists = true;
+            if(!exists) {
+                newNode = new TreeNode(nextPlayer, moves.get(i), options);
+                children.add(newNode);
+                // We have a new node, no need to look further.
+                break;
+            }
         }
-        // TODO Return the expanded node here
-        return winNode;
+        return newNode;
     }
 
     private TreeNode select(IBoard board) {
@@ -304,15 +305,6 @@ public class TreeNode {
         stats.push(value);
     }
 
-    public boolean isLeaf() {
-        // TODO Change this to return true if fully expanded
-        return children == null;
-    }
-
-    public boolean isSimulated() {
-        return simulated;
-    }
-
     public boolean isTerminal() {
         return children != null && children.size() == 0;
     }
@@ -337,5 +329,15 @@ public class TreeNode {
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("###,##0.00000");
         return move + "\tValue: " + df2.format(stats.mean()) + "\tVisits: " + getnVisits();
+    }
+
+    @Override
+    public int hashCode() {
+        return move.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object t2) {
+        return move.equals(((TreeNode)t2).move);
     }
 }

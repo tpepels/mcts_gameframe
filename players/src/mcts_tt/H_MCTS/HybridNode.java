@@ -1,10 +1,10 @@
 package mcts_tt.H_MCTS;
 
-import framework.util.FastLog;
+import ai.mcts.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
-import ai.mcts.MCTSOptions;
+import framework.util.FastLog;
 import mcts_tt.transpos.State;
 import mcts_tt.transpos.TransposTable;
 
@@ -72,7 +72,7 @@ public class HybridNode {
         int init_s = S.size();
         int b = getBudget(getBudgetNode(), budget, init_s, init_s);
         // :: UCT Hybrid
-        if (depth > 0  && b < options.bl) {
+        if (depth > 0 && b < options.bl) {
             // Run UCT budget times
             for (int i = 0; i < budget; i++) {
                 int[] pl = {0, 0, 0, 0};
@@ -305,9 +305,9 @@ public class HybridNode {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         if (S == null)
-            S = new ArrayList<>(moves.size());
+            S = new ArrayList(moves.size());
         if (C == null)
-            C = new ArrayList<>(moves.size());
+            C = new ArrayList(moves.size());
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
             return null;

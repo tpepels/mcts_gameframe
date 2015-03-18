@@ -1,7 +1,8 @@
 package framework;
 
-import java.util.List;
 import framework.util.StatCounter;
+
+import java.util.List;
 
 public interface IBoard {
     /**
@@ -127,7 +128,7 @@ public interface IBoard {
      * position with respect to the specified player.
      */
     public double evaluate(int player, int version);
-    
+
     /**
      * Used to initialize a node's stat counter with wins and losses.
      * Note: player is the parent player.

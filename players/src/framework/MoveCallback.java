@@ -1,5 +1,5 @@
 package framework;
 
 public interface MoveCallback {
-	public void makeMove(IMove move);
+    public void makeMove(IMove move);
 }

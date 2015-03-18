@@ -44,7 +44,7 @@ public class SqrtUCT implements SelectionPolicy {
             }
             return selected;
         } else {
-           return uctSelection.select(node, depth);
+            return uctSelection.select(node, depth);
         }
     }
 

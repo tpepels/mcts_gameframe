@@ -1,6 +1,6 @@
 package alphabeta;
 
-import ai.mcts.MCTSOptions;  // need this for now to implement AIPlayer
+import ai.mcts.MCTSOptions;
 
 public class AlphaBetaOptions extends MCTSOptions {
 
