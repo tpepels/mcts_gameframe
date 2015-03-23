@@ -1,7 +1,6 @@
 package checkers.gui;
 
 import ai.MCTSOptions;
-import ai.SRMCTS.SRMCTSPlayer;
 import ai.mcts.MCTSPlayer;
 import checkers.game.Board;
 import checkers.game.Move;
@@ -9,6 +8,7 @@ import framework.AIPlayer;
 import framework.IMove;
 import framework.MoveCallback;
 import framework.MoveList;
+import mcts_tt.H_MCTS.HybridPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -50,7 +50,7 @@ public class CheckersPanel extends JPanel implements MouseListener, MouseMotionL
         options1.setGame("checkers");
         aiPlayer1.setOptions(options1);
         // Definition for player 2
-        aiPlayer2 = new SRMCTSPlayer();
+        aiPlayer2 = new HybridPlayer();
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("checkers");
         aiPlayer2.setOptions(options2);

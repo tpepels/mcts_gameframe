@@ -1,5 +1,4 @@
 import ai.MCTSOptions;
-import ai.SRMCTS.SRMCTSPlayer;
 import ai.mcts.MCTSPlayer;
 import domineering.game.Board;
 import domineering.game.Move;
@@ -18,7 +17,7 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("domineering");
-        AIPlayer aiPlayer2 = new SRMCTSPlayer();
+        AIPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
 
         AIPlayer aiPlayer;

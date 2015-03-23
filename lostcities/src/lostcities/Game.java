@@ -16,13 +16,13 @@ public class Game {
 
         // Set up the first AI player
         MCTSOptions options1 = new MCTSOptions();
-        options1.timeInterval = 5000;
+        options1.timeInterval = 1000;
         options1.fullQuality = true;
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
         // Second AI player
         MCTSOptions options2 = new MCTSOptions();
-        options2.timeInterval = 5000;
+        options2.timeInterval = 1000;
         options1.qualityBonus = true;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);

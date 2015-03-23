@@ -5,6 +5,7 @@ import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
+import gofish.game.Board;
 
 public class ISMCTSPlayer implements AIPlayer, Runnable {
 
@@ -87,9 +88,9 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             long startTime = System.currentTimeMillis();
             long endTime = startTime + options.timeInterval;
             long detInterval = options.timeInterval / 10;
-            long time = 0;
+            long time ;
             boolean[] dets = new boolean[20];
-            System.out.println(options.timeInterval + " " + detInterval);
+
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
                 playBoard = board.copy();

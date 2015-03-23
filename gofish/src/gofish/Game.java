@@ -24,13 +24,14 @@ public class Game {
         Scanner in = new Scanner(System.in);
         //
         MCTSOptions options1 = new MCTSOptions();
-        options1.timeInterval = 1000;
-        options1.useHeuristics = false;
+        options1.timeInterval = 500;
+        // options1.fullQuality = true;
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
         options2.timeInterval = 1000;
+        //options2.qualityBonus = true;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
@@ -63,15 +64,21 @@ public class Game {
                 while (m == null || !t.isLegal(m)) {
                     if (m != null)
                         System.out.println("illegal move - select another");
-                    card = -1;
+                    card = getCard(in.nextLine());
                     while (card > 13 || card < 1) {
-                        card = in.nextInt();
+                        card = getCard(in.nextLine());
                     }
                     m = new Move(card);
+                    if (t.getPlayerToMove() == Board.P1)
+                        if (!t.checkHand(t.p2Hand, card))
+                            System.out.println("Go Fish!");
+                        else if (!t.checkHand(t.p1Hand, card))
+                            System.out.println("Go Fish!");
                 }
             }
             t.doAIMove(m, t.getPlayerToMove());
         }
+        drawTable(t);
         // Check and announce who won!
         player = (t.checkWin() == Board.P1) ? "Player 1" : "Player 2";
         System.out.println(player + " wins");
@@ -79,17 +86,35 @@ public class Game {
 
     private static void drawTable(Board board) {
         for (Integer card : board.p2Hand) {
-            System.out.print(getCardString(card));
+            if (allAi)
+                System.out.print(getCardString(card));
+            else
+                System.out.print("#");
             System.out.print(" ");
         }
         System.out.println("\n");
-        System.out.print("P1 Score: " + board.p1NPiles);
-        System.out.println(" :: P2 Score: " + board.p2NPiles + "\n");
+        System.out.print("P1 Score: " + board.p1Score);
+        System.out.println(" :: P2 Score: " + board.p2Score + " \t Deck: " + board.deck.size() + "\n");
         for (Integer card : board.p1Hand) {
             System.out.print(getCardString(card));
             System.out.print(" ");
         }
         System.out.println();
+    }
+
+    private static int getCard(String str) {
+        switch (str.toUpperCase()) {
+            case "A":
+                return 1;
+            case "K":
+                return 13;
+            case "Q":
+                return 12;
+            case "J":
+                return 11;
+            default:
+                return Integer.valueOf(str);
+        }
     }
 
     private static String getCardString(int card) {

@@ -1,12 +1,12 @@
 package chinesecheckers.gui;
 
 import ai.MCTSOptions;
-import ai.MCTS_SR.MCTS_SR_Player;
 import ai.mcts.MCTSPlayer;
 import chinesecheckers.game.Board;
 import chinesecheckers.game.Move;
 import chinesecheckers.game.Piece;
 import framework.*;
+import mcts_tt.H_MCTS.HybridPlayer;
 import mcts_tt.uct.UCTPlayer;
 import rush.HexGridCell;
 
@@ -90,7 +90,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             aiPlayer1.setOptions(p1Options);
         }
         if (!p2Human) {
-            aiPlayer2 = new MCTS_SR_Player();
+            aiPlayer2 = new HybridPlayer();
             aiPlayer2.setOptions(p2Options);
         }
         //
@@ -176,7 +176,7 @@ public class CCPanel extends JPanel implements MouseListener, MoveCallback {
             this.p2Human = human;
             //
             if (!human) {
-                aiPlayer2 = new MCTS_SR_Player();
+                aiPlayer2 = new HybridPlayer();
                 p2Options.setGame("chinesecheckers");
                 aiPlayer2.setOptions(p2Options);
             }

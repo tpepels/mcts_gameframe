@@ -1,8 +1,6 @@
 package experiments;
 
 import ai.MCTSOptions;
-import ai.MCTS_SR.MCTS_SR_Player;
-import ai.SRMCTS.SRMCTSPlayer;
 import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;
@@ -11,7 +9,7 @@ import framework.IBoard;
 import framework.IMove;
 import framework.util.*;
 import mcts2e.BRUE.MCTS2ePlayer;
-import mcts_tt.H_MCTS.SRPlayer;
+import mcts_tt.H_MCTS.HybridPlayer;
 import mcts_tt.uct.UCTPlayer;
 
 /**
@@ -163,8 +161,6 @@ public class SimGame {
                     options.relativeBonus = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.kr = Double.parseDouble(tag.substring(2));
-                } else if (tag.equals("sr")) {
-                    playerRef = new SRMCTSPlayer();
                 } else if (tag.startsWith("qb")) {
                     options.qualityBonus = true;
                     if (tryParseDouble(tag.substring(2)))
@@ -246,9 +242,9 @@ public class SimGame {
             playerRef.setOptions(options);
         } else if (parts[0].equals("srmcts") || parts[0].equals("srmctstt")) {
             if (parts[0].equals("srmctstt")) {
-                playerRef = new SRPlayer();
+                playerRef = new HybridPlayer();
             } else {
-                playerRef = new MCTS_SR_Player();
+                playerRef = new HybridPlayer();
             }
             options.hybrid = true;
             options.debug = mctsDebug; // false by default

@@ -1,7 +1,6 @@
 package cannon.gui;
 
 import ai.MCTSOptions;
-import ai.MCTS_SR.MCTS_SR_Player;
 import ai.mcts.MCTSPlayer;
 import cannon.game.Board;
 import cannon.game.Move;
@@ -9,6 +8,7 @@ import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
+import mcts_tt.H_MCTS.HybridPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,7 +43,7 @@ public class CannonPanel extends JPanel implements MouseListener, MoveCallback {
         options1.setGame("cannon");
         aiPlayer1.setOptions(options1);
         //
-        aiPlayer2 = new MCTS_SR_Player();
+        aiPlayer2 = new HybridPlayer();
         MCTSOptions options2 = new MCTSOptions("plain");
         options2.enableShot();
         options2.fixedSimulations = true;
