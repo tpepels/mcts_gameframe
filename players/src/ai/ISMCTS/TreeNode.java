@@ -255,6 +255,9 @@ public class TreeNode {
                 }
                 qualityStats[w].push(q);
                 options.qualityCov.push((winner == myPlayer) ? q : 0, q);
+            } else if (options.fullQuality) {
+                double q = board.getQuality();
+                score += Math.signum(score) * FastSigm.sigm(-options.kq * q);
             }
         }
 

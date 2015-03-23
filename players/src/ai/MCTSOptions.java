@@ -13,7 +13,7 @@ public class MCTSOptions {
     public double windowSize = 500;
     public int[] maxSims = new int[10];
     // Relative bonus!
-    public boolean relativeBonus = false, qualityBonus = false;
+    public boolean relativeBonus = false, qualityBonus = false, fullQuality = false;
     public Covariance moveCov = new Covariance(), qualityCov = new Covariance(), moveCov1 = new Covariance();
     public double kr = 2.0, kq = 2.0;
     // note: useHeuristics has a different default (false) when using SimGame
@@ -27,6 +27,7 @@ public class MCTSOptions {
     // Discounting values
     public double lambda = .999999;
     public int timeInterval = 1000, simulations = 100000, simsLeft;
+    public int nDeterminizations = 10;
     // Successive Rejects
     public int rc = 2, bl = 5;
     public double bp_range = .5;

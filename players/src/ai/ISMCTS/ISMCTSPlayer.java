@@ -87,14 +87,19 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             long startTime = System.currentTimeMillis();
             long endTime = startTime + options.timeInterval;
             long detInterval = options.timeInterval / 10;
+            long time = 0;
+            boolean[] dets = new boolean[20];
+            System.out.println(options.timeInterval + " " + detInterval);
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
                 playBoard = board.copy();
                 simulations++;
                 options.simsLeft--;
-                if ((System.currentTimeMillis() - startTime) % detInterval == 0) {
+                time = System.currentTimeMillis() - startTime;
+                if (simulations == 0 || (time % detInterval == 0 && !dets[(int) (time / detInterval)])) {
                     playBoard.newDeterminization(myPlayer);
                     nDeterminizations++;
+                    dets[(int) (time / detInterval)] = true;
                 }
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
@@ -103,14 +108,14 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     break;
             }
         } else {
-            options.numSimulations = options.simulations;
-            options.simsLeft = options.numSimulations;
+            int detInterval = options.simulations / 10;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
                 playBoard = board.copy();
                 simulations++;
                 options.simsLeft--;
-                playBoard.newDeterminization(myPlayer);
+                if (simulations % detInterval == 0)
+                    playBoard.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
                 root.MCTS(playBoard, 0);

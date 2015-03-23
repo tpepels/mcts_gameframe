@@ -10,19 +10,17 @@ import lostcities.game.Table;
 import java.util.Scanner;
 
 public class Game {
-    private static boolean allAi = false;
+    private static boolean allAi = true;
 
     public static void main(String[] args) {
-        Table t = new Table();
-        t.initialize();
-        String player = "";
-        Scanner in = new Scanner(System.in);
+
+        // Set up the first AI player
         MCTSOptions options1 = new MCTSOptions();
         options1.timeInterval = 5000;
-        options1.qualityBonus = true;
+        options1.fullQuality = true;
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
-
+        // Second AI player
         MCTSOptions options2 = new MCTSOptions();
         options2.timeInterval = 5000;
         options1.qualityBonus = true;
@@ -32,7 +30,10 @@ public class Game {
         AIPlayer aiPlayer;
 
         Move m = null;
-        //
+        String player = "";
+        Table t = new Table();
+        t.initialize();
+        Scanner in = new Scanner(System.in);
         while (t.checkWin() == Table.NONE_WIN) {
             drawTable(t);
             if (m != null)
