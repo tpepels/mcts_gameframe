@@ -1,6 +1,6 @@
 package alphabeta;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 
 public class AlphaBetaOptions extends MCTSOptions {
 

@@ -1,6 +1,6 @@
 package amazons.gui;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import amazons.game.Board;
 import amazons.game.Move;
 import framework.AIPlayer;

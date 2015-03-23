@@ -1,5 +1,6 @@
 package ai.mcts;
 
+import ai.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;

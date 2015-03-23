@@ -1,16 +1,13 @@
 package ai.ISMCTS;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
 
-import java.util.ArrayList;
-
 public class ISMCTSPlayer implements AIPlayer, Runnable {
 
-    private ArrayList<double[]> allData = new ArrayList(1000);
     private boolean interrupted = false, retry = false, parallel = false;
     public TreeNode root;
     private IBoard board;
@@ -74,7 +71,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
     public void run() {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
-
+        //
         int simulations = 0;
         boolean qb = options.qualityBonus;
         boolean rb = options.relativeBonus;
@@ -82,53 +79,45 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             options.qualityBonus = false;
         if (rb && nMoves == 0)
             options.relativeBonus = false;
-
+        //
+        int nDeterminizations = 0;
+        IBoard playBoard;
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
-            long endTime = System.currentTimeMillis() + options.timeInterval;
+            long startTime = System.currentTimeMillis();
+            long endTime = startTime + options.timeInterval;
+            long detInterval = options.timeInterval / 10;
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
+                playBoard = board.copy();
                 simulations++;
                 options.simsLeft--;
-                board.newDeterminization(myPlayer);
+                if ((System.currentTimeMillis() - startTime) % detInterval == 0) {
+                    playBoard.newDeterminization(myPlayer);
+                    nDeterminizations++;
+                }
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
-                root.MCTS(board, 0);
+                root.MCTS(playBoard, 0);
                 if (System.currentTimeMillis() >= endTime)
                     break;
-
             }
         } else {
             options.numSimulations = options.simulations;
             options.simsLeft = options.numSimulations;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
+                playBoard = board.copy();
                 simulations++;
                 options.simsLeft--;
-                board.newDeterminization(myPlayer);
+                playBoard.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
-                root.MCTS(board, 0);
+                root.MCTS(playBoard, 0);
             }
         }
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);
-        // This sometimes happens in experiments
-        if (bestChild == null) {
-            options.debug = true;
-            // Print the root's children
-            root.getBestChild(board);
-            options.debug = false;
-            int nChildren = (root.getChildren() == null) ? 0 : root.getChildren().size();
-            System.err.println("Null bestMove in MCTS player! Root has " + nChildren + " children.");
-            // Try again with a new root
-            root = new TreeNode(myPlayer, options);
-            if (!parallel && !retry) {
-                retry = true;
-                interrupted = false;
-                run();
-            }
-        }
         bestMove = bestChild.getMove();
 
         // show information on the best move
@@ -137,18 +126,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
-            //
-            if (options.relativeBonus) {
-                System.out.println("Average P1 moves  : " + TreeNode.moveStats[0].true_mean() + " variance: " + TreeNode.moveStats[0].variance());
-                System.out.println("Average P1 moves  : " + TreeNode.moveStats[1].true_mean() + " variance: " + TreeNode.moveStats[1].variance());
-                System.out.println("c*                : " + options.moveCov.getCovariance() / options.moveCov.variance2());
-                System.out.println("c*                : " + options.moveCov1.getCovariance() / options.moveCov1.variance2());
-            }
-            if (options.qualityBonus) {
-                System.out.println("Average P1 quality: " + TreeNode.qualityStats[0].true_mean() + " variance: " + TreeNode.qualityStats[0].variance());
-                System.out.println("Average P2 quality: " + TreeNode.qualityStats[1].true_mean() + " variance: " + TreeNode.qualityStats[1].variance());
-                System.out.println("c*                : " + options.qualityCov.getCovariance() / options.qualityCov.variance2());
-            }
+            System.out.println("N Determinizations: " + nDeterminizations);
         }
         // Turn the qb/rb/sw-uct back on
         options.qualityBonus = qb;

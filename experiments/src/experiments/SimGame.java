@@ -1,8 +1,8 @@
 package experiments;
 
+import ai.MCTSOptions;
 import ai.MCTS_SR.MCTS_SR_Player;
 import ai.SRMCTS.SRMCTSPlayer;
-import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;

@@ -1,5 +1,5 @@
+import ai.MCTSOptions;
 import ai.SRMCTS.SRMCTSPlayer;
-import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import domineering.game.Board;
 import domineering.game.Move;

@@ -1,4 +1,4 @@
-package ai.mcts;
+package ai;
 
 import framework.util.Covariance;
 

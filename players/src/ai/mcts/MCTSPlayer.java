@@ -1,5 +1,6 @@
 package ai.mcts;
 
+import ai.MCTSOptions;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;

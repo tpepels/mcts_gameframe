@@ -1,4 +1,4 @@
-package ai.mcts;
+package ai;
 
 public class MASTEntry {
     public int id;

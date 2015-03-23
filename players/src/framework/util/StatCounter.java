@@ -8,7 +8,7 @@ package framework.util;
  *
  */
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import ai.mcts.TreeNode;
 
 public class StatCounter {
@@ -81,6 +81,8 @@ public class StatCounter {
     public void push(double num) {
         if (Math.abs(m_mean) == TreeNode.INF)
             throw new RuntimeException("Mean is INF in push");
+        if (Double.isInfinite(m_sum) || Double.isInfinite(m_mean))
+            throw new RuntimeException("Something is infinite in push");
         m_n++;
         if (Math.signum(num) > 0)
             m_wins++;
@@ -105,6 +107,8 @@ public class StatCounter {
         //
         if (ma != null) ma.add(num);
         //
+        if (Double.isInfinite(m_sum) || Double.isInfinite(m_mean))
+            throw new RuntimeException("Something is infinite in push");
         if (Double.isNaN(m_mean))
             throw new RuntimeException("Mean is NaN in push");
     }

@@ -1,6 +1,6 @@
 package alphabeta;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.*;
 
 import java.text.DecimalFormat;

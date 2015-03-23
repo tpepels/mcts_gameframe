@@ -1,6 +1,6 @@
 package penguin;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import framework.AIPlayer;
 import penguin.game.Board;

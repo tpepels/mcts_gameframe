@@ -1,7 +1,7 @@
 package checkers.gui;
 
+import ai.MCTSOptions;
 import ai.SRMCTS.SRMCTSPlayer;
-import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import checkers.game.Board;
 import checkers.game.Move;

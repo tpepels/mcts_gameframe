@@ -174,7 +174,7 @@ public class Table implements IBoard {
         for (int j = 0; j < stacks.length + 1; j++) {
             if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
                 // Discard move
-                if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW)) {
+                if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW && card / 100 != j)) {
                     moves.add(new Move(card, j, true));
                 }
                 // Play card move
@@ -248,8 +248,8 @@ public class Table implements IBoard {
             // Moves for drawing from coloured stacks (0 < j < 5)
             for (int j = 0; j < stacks.length + 1; j++) {
                 if (j == 0 || (j > 0 && !stacks[j - 1].isEmpty())) {
-                    // Discard move
-                    if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW)) {
+                    // Discard move, don't draw from the stack you discarded to
+                    if (j == 0 || (j > 0 && discardStackDraws[currentPlayer - 1] < MAX_DISC_STACK_DRAW && card / 100 != j)) {
                         move = new Move(card, j, true);
                         ((Move) move).setHandIndex(i);
                         playoutMoves.add(move);
@@ -478,8 +478,10 @@ public class Table implements IBoard {
         if (move.getMove()[1] != Move.DECK_DRAW) {
             canDraw = !stacks[move.getMove()[1] - 1].isEmpty();
             // Don't allow too many subsequent discard-stack draw moves
-            if (canDraw && discardStackDraws[currentPlayer - 1] >= MAX_DISC_STACK_DRAW)
-                canDraw = false;
+            if (canDraw && move.getType() == Move.DISCARD)
+                // Don't draw from the stack you discarded to
+                if (discardStackDraws[currentPlayer - 1] >= MAX_DISC_STACK_DRAW || move.getMove()[0] / 100 == move.getMove()[1])
+                    canDraw = false;
         } else
             canDraw = !deck.isEmpty();
         //
@@ -521,9 +523,9 @@ public class Table implements IBoard {
     @Override
     public double getQuality() {
         if (winner == P1_WIN)
-            return ((double) (scores[0] - scores[1]) / (double) (scores[0] + scores[1]));
+            return ((double) (scores[0] - scores[1]) / 100.);
         else if (winner == P2_WIN)
-            return ((double) (scores[1] - scores[0]) / (double) (scores[0] + scores[1]));
+            return ((double) (scores[1] - scores[0]) / 100.);
         return 1.;
     }
 

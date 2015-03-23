@@ -1,6 +1,6 @@
 package mcts2e.BRUE;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.*;
 
 public class MCTS2ePlayer implements AIPlayer, Runnable {

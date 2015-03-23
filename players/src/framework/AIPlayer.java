@@ -1,6 +1,6 @@
 package framework;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 
 public interface AIPlayer {
     public void newGame(int myPlayer, String game);

@@ -1,6 +1,6 @@
 package ai.SRCRMCTS;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;

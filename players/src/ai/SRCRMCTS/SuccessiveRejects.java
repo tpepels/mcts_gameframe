@@ -1,6 +1,6 @@
 package ai.SRCRMCTS;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 
 import java.util.ArrayList;
 import java.util.List;

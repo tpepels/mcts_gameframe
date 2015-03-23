@@ -1,8 +1,7 @@
 package lostcities;
 
 import ai.ISMCTS.ISMCTSPlayer;
-import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
+import ai.MCTSOptions;
 import framework.AIPlayer;
 import lostcities.game.Deck;
 import lostcities.game.Move;
@@ -11,7 +10,7 @@ import lostcities.game.Table;
 import java.util.Scanner;
 
 public class Game {
-    private static boolean allAi = true;
+    private static boolean allAi = false;
 
     public static void main(String[] args) {
         Table t = new Table();
@@ -20,11 +19,13 @@ public class Game {
         Scanner in = new Scanner(System.in);
         MCTSOptions options1 = new MCTSOptions();
         options1.timeInterval = 5000;
+        options1.qualityBonus = true;
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
         options2.timeInterval = 5000;
+        options1.qualityBonus = true;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 

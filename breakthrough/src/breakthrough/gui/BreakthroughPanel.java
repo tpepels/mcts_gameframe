@@ -1,7 +1,7 @@
 package breakthrough.gui;
 
+import ai.MCTSOptions;
 import ai.MCTS_SR.MCTS_SR_Player;
-import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;

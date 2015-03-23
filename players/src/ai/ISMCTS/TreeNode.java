@@ -1,6 +1,6 @@
 package ai.ISMCTS;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
@@ -11,7 +11,6 @@ import framework.util.StatCounter;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 public class TreeNode {
     public static final double INF = 999999;
@@ -20,7 +19,7 @@ public class TreeNode {
     public static StatCounter[] moveStats = {new StatCounter(), new StatCounter()};
     public static StatCounter[] qualityStats = {new StatCounter(), new StatCounter()};
     public static int myPlayer = 0;
-    public int player;
+    public int player, nPrime = 0;
     private final MCTSOptions options;
     public StatCounter stats;
     private ArrayList<TreeNode> children;
@@ -81,11 +80,6 @@ public class TreeNode {
         } else {
             result = -child.MCTS(board, depth + 1);
         }
-
-        // return board to its previous configuration
-        if (!isTerminal())
-            board.undoMove();
-
         updateStats(result);
         return result;
     }
@@ -97,13 +91,14 @@ public class TreeNode {
      * @return The expanded node
      */
     private TreeNode expand(IBoard board) {
-        int nextPlayer = board.getPlayerToMove();
+        int nextPlayer = board.getOpponent(board.getPlayerToMove());
         TreeNode newNode = null;
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         moves.shuffle();
         if (children == null)
             children = new ArrayList(moves.size() * 2);
+
         int winner = board.checkWin();
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
@@ -120,6 +115,7 @@ public class TreeNode {
             if(!exists) {
                 newNode = new TreeNode(nextPlayer, moves.get(i), options);
                 children.add(newNode);
+                newNode.nPrime++;
                 // We have a new node, no need to look further.
                 break;
             }
@@ -146,8 +142,10 @@ public class TreeNode {
                 uctValue = INF + MCTSOptions.r.nextDouble();
             } else {
                 // Compute the uct value with the (new) average value
-                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(getnVisits()) / c.getnVisits());
+                uctValue = c.stats.mean() + options.uctC * Math.sqrt(FastLog.log(c.nPrime) / c.getnVisits());
             }
+            // Number of times this node was available
+            c.nPrime++;
             // Remember the highest UCT value
             if (uctValue > bestValue) {
                 selected = c;
@@ -235,8 +233,8 @@ public class TreeNode {
                 if (options.moveCov.variance2() > 0. && moveStats[w].variance() > 0. && moveStats[w].totalVisits() >= 50) {
                     double x = (moveStats[w].mean() - (nMoves + depth)) / moveStats[w].stddev();
                     double cStar = options.moveCov.getCovariance() / options.moveCov.variance2();
-                    // score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
-                    score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
+                    score += Math.signum(score) * .25 * FastSigm.sigm(-options.kr * x);
+                    //score += Math.signum(score) * cStar * FastSigm.sigm(-options.kr * x);
                 }
                 // Maintain the average number of moves per play-out
                 moveStats[w].push(nMoves + depth);
@@ -252,17 +250,13 @@ public class TreeNode {
                 if (options.qualityCov.getCovariance() > 0. && qualityStats[w].variance() > 0. && qualityStats[w].totalVisits() >= 50) {
                     double qb = (q - qualityStats[w].mean()) / qualityStats[w].stddev();
                     double cStar = options.qualityCov.getCovariance() / options.qualityCov.variance2();
-                    // score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
-                    score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
+                    score += Math.signum(score) * .25 * FastSigm.sigm(-options.kq * qb);
+                    //score += Math.signum(score) * cStar * FastSigm.sigm(-options.kq * qb);
                 }
                 qualityStats[w].push(q);
                 options.qualityCov.push((winner == myPlayer) ? q : 0, q);
             }
         }
-
-        // Undo the moves done in the playout
-        for (int i = 0; i < nMoves; i++)
-            board.undoMove();
 
         // Update the history values for the moves made during the match
         if (options.history) {
@@ -328,7 +322,7 @@ public class TreeNode {
     @Override
     public String toString() {
         DecimalFormat df2 = new DecimalFormat("###,##0.00000");
-        return move + "\tValue: " + df2.format(stats.mean()) + "\tVisits: " + getnVisits();
+        return move + "\tValue: " + df2.format(stats.mean()) + "\tVisits: " + getnVisits() + "\tn': " + nPrime;
     }
 
     @Override

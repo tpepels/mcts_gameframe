@@ -1,6 +1,6 @@
 package framework.util;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.*;
 
 public class RandomPlayer implements AIPlayer {

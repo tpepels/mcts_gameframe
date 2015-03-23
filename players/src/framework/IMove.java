@@ -1,6 +1,6 @@
 package framework;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 
 public abstract class IMove {
     public abstract int[] getMove();

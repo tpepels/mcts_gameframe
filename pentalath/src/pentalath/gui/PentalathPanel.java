@@ -1,6 +1,6 @@
 package pentalath.gui;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import com.rush.HexGridCell;
 import framework.AIPlayer;
 import framework.IMove;

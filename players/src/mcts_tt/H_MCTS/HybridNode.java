@@ -1,6 +1,6 @@
 package mcts_tt.H_MCTS;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;

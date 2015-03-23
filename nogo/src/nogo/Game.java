@@ -1,6 +1,6 @@
 package nogo;
 
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import framework.AIPlayer;
 import mcts_tt.H_MCTS.SRPlayer;
 import mcts_tt.uct.UCTPlayer;

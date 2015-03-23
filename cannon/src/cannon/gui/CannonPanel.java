@@ -1,7 +1,7 @@
 package cannon.gui;
 
+import ai.MCTSOptions;
 import ai.MCTS_SR.MCTS_SR_Player;
-import ai.mcts.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import cannon.game.Board;
 import cannon.game.Move;
