@@ -1,4 +1,4 @@
-package ai.ISMCTS;
+package ai.H_ISMCTS;
 
 import ai.MCTSOptions;
 import framework.AIPlayer;
@@ -6,7 +6,7 @@ import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
 
-public class ISMCTSPlayer implements AIPlayer, Runnable {
+public class HISMCTSPlayer implements AIPlayer, Runnable {
 
     private boolean interrupted = false, parallel = false;
     public TreeNode root;

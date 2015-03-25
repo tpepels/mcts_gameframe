@@ -1,4 +1,4 @@
-package ai.ISMCTS;
+package ai.H_ISMCTS;
 
 import ai.MCTSOptions;
 import framework.IBoard;
@@ -11,18 +11,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TreeNode {
-    public int nPrime = 0, playerToMove;
+    public int nPrime = 0, playerToMove, budget, round;
     private final MCTSOptions options;
     public NPlayerStats stats; // Stats per player
     private ArrayList<TreeNode> children;
-    private IMove move;
+    private IMove move = null;
     private boolean simulated = false;
 
     /**
      * Constructor for the root
      */
-    public TreeNode(int playerToMove, int nPlayers, MCTSOptions options) {
+    public TreeNode(int budget, int playerToMove, int nPlayers, MCTSOptions options) {
         this.options = options;
+        this.budget = budget;
         this.playerToMove = playerToMove;
         stats = new NPlayerStats(nPlayers);
     }
@@ -44,8 +45,8 @@ public class TreeNode {
         if (child == null) {
             if (isTerminal())
                 child = this;
-            else // Do UCT selection over the children
-                child = select(board);
+            else // Do selection over the children
+                child = select(board, budget);
         }
         // Execute the move represented by the child
         if (!isTerminal())
@@ -100,28 +101,33 @@ public class TreeNode {
         return newNode;
     }
 
-    private TreeNode select(IBoard board) {
+    private TreeNode select(IBoard board, int budget) {
         TreeNode selected = null;
-        double bestValue = Double.NEGATIVE_INFINITY, uctValue;
-        // For a chance-move, select a random child
-        if (move != null && move.isChance())
-            return children.get(MCTSOptions.r.nextInt(children.size()));
-        // Select a child according to the UCT Selection policy
-        for (TreeNode c : children) {
-            // If the game is partially observable, moves in the tree may not be legal
-            if (board.isPartialObservable() && !board.isLegal(c.getMove()))
-                continue;
-            // First, visit all children at least once
-            if (c.nPrime == 0)
-                uctValue = 10000. + MCTSOptions.r.nextDouble();
-            else
-                uctValue = c.stats.mean(board.getPlayerToMove()) + options.uctC * Math.sqrt(FastLog.log(c.nPrime) / c.getnVisits());
-            // Number of times this node was available
-            c.nPrime++;
-            // Remember the highest UCT value
-            if (uctValue > bestValue) {
-                selected = c;
-                bestValue = uctValue;
+        if(isRoot()) {
+            // At the root, do sequential halving
+            // TODO
+        } else {
+            double bestValue = Double.NEGATIVE_INFINITY, uctValue;
+            // For a chance-move, select a random child
+            if (move != null && move.isChance())
+                return children.get(MCTSOptions.r.nextInt(children.size()));
+            // Select a child according to the UCT Selection policy
+            for (TreeNode c : children) {
+                // If the game is partially observable, moves in the tree may not be legal
+                if (board.isPartialObservable() && !board.isLegal(c.getMove()))
+                    continue;
+                // First, visit all children at least once
+                if (c.nPrime == 0)
+                    uctValue = 10000. + MCTSOptions.r.nextDouble();
+                else
+                    uctValue = c.stats.mean(board.getPlayerToMove()) + options.uctC * Math.sqrt(FastLog.log(c.nPrime) / c.getnVisits());
+                // Number of times this node was available
+                c.nPrime++;
+                // Remember the highest UCT value
+                if (uctValue > bestValue) {
+                    selected = c;
+                    bestValue = uctValue;
+                }
             }
         }
         return selected;
@@ -170,6 +176,10 @@ public class TreeNode {
             stats.pushDraw();
         else
             stats.pushWin(value); // TODO What if multiple players win?!?!
+    }
+
+    private boolean isRoot() {
+        return move == null;
     }
 
     public boolean isTerminal() {

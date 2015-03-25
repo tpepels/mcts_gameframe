@@ -12,7 +12,7 @@ import java.util.List;
 
 public class Board implements IBoard {
     private static final int[] SCORES = {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2};
-    private static final int Q_SIZE = 2;
+    private static final int Q_SIZE = 4;
     //
     public LinkedList<Integer> p1Hand, p2Hand;
     public int p1Score, p2Score;
@@ -91,12 +91,6 @@ public class Board implements IBoard {
         //
         for (Integer c : hand) {
             cardCount[(c % 100) - 1]++;
-            // We know that the player has no book!
-            // Therefore, this determinization is not possible
-//            if (cardCount[(c % 100) - 1] == Q_SIZE) {
-//                newDeterminization(myPlayer);
-//                return;
-//            }
         }
     }
 
@@ -139,9 +133,8 @@ public class Board implements IBoard {
         int[] opCardCount = (player == P1) ? p2CardCount : p1CardCount;
         int opp = getOpponent(currentPlayer);
         Iterator<Integer> it = opHand.iterator();
-        int card, index = 0;
+        int card;
         boolean cardTaken = false;
-        int[] sw1 = new int[4];
         // Take all cards of the requested type from the user's hand
         while (it.hasNext()) {
             card = it.next();
@@ -151,8 +144,6 @@ public class Board implements IBoard {
                 opCardCount[(card % 100) - 1]--;
                 it.remove();
                 cardTaken = true;
-                sw1[index] = card;
-                index++;
             }
         }
         // The opponent gave all his cards to the player
@@ -164,6 +155,10 @@ public class Board implements IBoard {
             Integer draw = deck.takeCard();
             myCardCount[(draw % 100) - 1]++;
             myHand.add(draw);
+            // The player drew the card he asked for
+            // therefore he gets another turn
+            if(draw % 100 == move.getMove()[0])
+                cardTaken = true;
         }
         book = checkBook(player);
         // Keep track of the book
@@ -172,12 +167,10 @@ public class Board implements IBoard {
             if (myHand.isEmpty())
                 dealEmptyHand(myHand, myCardCount, currentPlayer);
         }
-        // Push the book (null if none found)
-        if (index > 0) {
-            int[] sw2 = new int[index];
-            System.arraycopy(sw1, 0, sw2, 0, index);
+        if(!cardTaken) {
+            // No card taken, opponent's turn
+            currentPlayer = getOpponent(currentPlayer);
         }
-        currentPlayer = getOpponent(currentPlayer);
         return true;
     }
 
