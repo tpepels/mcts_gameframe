@@ -8,10 +8,12 @@ import framework.util.FastLog;
 import framework.util.NPlayerStats;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class TreeNode {
-    public int nPrime = 0, playerToMove, budget, round;
+    public int nPrime = 0, playerToMove, budget, totB, round, sSize, totS;
     private final MCTSOptions options;
     public NPlayerStats stats; // Stats per player
     private ArrayList<TreeNode> children;
@@ -24,6 +26,7 @@ public class TreeNode {
     public TreeNode(int budget, int playerToMove, int nPlayers, MCTSOptions options) {
         this.options = options;
         this.budget = budget;
+        this.totB = budget;
         this.playerToMove = playerToMove;
         stats = new NPlayerStats(nPlayers);
     }
@@ -38,7 +41,30 @@ public class TreeNode {
         stats = new NPlayerStats(nPlayers);
     }
 
-    public int MCTS(IBoard board) {
+    public void HMCTS(IBoard board) {
+        // Expand all nodes
+        while (expand(board) != null) {
+            sSize++;
+            totS++;
+        }
+        // Run simulations
+        while (budget > 0) {
+            int b = getBudget();
+            for (TreeNode c : children) {
+                for (int i = 0; i < b; i++) {
+                    IBoard tempBoard = board.copy();
+                    tempBoard.newDeterminization(playerToMove);
+                    tempBoard.doAIMove(c.getMove(), board.getPlayerToMove());
+                    c.MCTS(tempBoard);
+                    budget--;
+                }
+            }
+            Collections.sort(children.subList(0, sSize), comparator);
+            sSize = (int) Math.ceil(sSize / 2.);
+        }
+    }
+
+    private int MCTS(IBoard board) {
         // Expand returns an expanded leaf if any was added to the tree
         TreeNode child = expand(board);
         // Select the best child, if we didn't find a winning position in the expansion
@@ -46,7 +72,7 @@ public class TreeNode {
             if (isTerminal())
                 child = this;
             else // Do selection over the children
-                child = select(board, budget);
+                child = select(board);
         }
         // Execute the move represented by the child
         if (!isTerminal())
@@ -76,7 +102,7 @@ public class TreeNode {
         MoveList moves = board.getExpandMoves();
         moves.shuffle();
         if (children == null)
-            children = new ArrayList<TreeNode>(moves.size() * 2);
+            children = new ArrayList<>(moves.size() * 2);
         int winner = board.checkWin();
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
@@ -101,39 +127,39 @@ public class TreeNode {
         return newNode;
     }
 
-    private TreeNode select(IBoard board, int budget) {
+    private TreeNode select(IBoard board) {
         TreeNode selected = null;
-        if(isRoot()) {
-            // At the root, do sequential halving
-            // TODO
-        } else {
-            double bestValue = Double.NEGATIVE_INFINITY, uctValue;
-            // For a chance-move, select a random child
-            if (move != null && move.isChance())
-                return children.get(MCTSOptions.r.nextInt(children.size()));
-            // Select a child according to the UCT Selection policy
-            for (TreeNode c : children) {
-                // If the game is partially observable, moves in the tree may not be legal
-                if (board.isPartialObservable() && !board.isLegal(c.getMove()))
-                    continue;
-                // First, visit all children at least once
-                if (c.nPrime == 0)
-                    uctValue = 10000. + MCTSOptions.r.nextDouble();
-                else
-                    uctValue = c.stats.mean(board.getPlayerToMove()) + options.uctC * Math.sqrt(FastLog.log(c.nPrime) / c.getnVisits());
-                // Number of times this node was available
-                c.nPrime++;
-                // Remember the highest UCT value
-                if (uctValue > bestValue) {
-                    selected = c;
-                    bestValue = uctValue;
-                }
+        double bestValue = Double.NEGATIVE_INFINITY, uctValue;
+        // For a chance-move, select a random child
+        if (move != null && move.isChance())
+            return children.get(MCTSOptions.r.nextInt(children.size()));
+        // Select a child according to the UCT Selection policy
+        for (TreeNode c : children) {
+            // If the game is partially observable, moves in the tree may not be legal
+            if (board.isPartialObservable() && !board.isLegal(c.getMove()))
+                continue;
+            // First, visit all children at least once
+            if (c.nPrime == 0)
+                uctValue = 10000. + MCTSOptions.r.nextDouble();
+            else
+                uctValue = c.stats.mean(board.getPlayerToMove()) + options.uctC * Math.sqrt(FastLog.log(c.nPrime) / c.getnVisits());
+            // Number of times this node was available
+            c.nPrime++;
+            // Remember the highest UCT value
+            if (uctValue > bestValue) {
+                selected = c;
+                bestValue = uctValue;
             }
         }
         return selected;
     }
 
-    @SuppressWarnings("ConstantConditions")
+    private int getBudget() {
+        return (int) Math.max(1, totB / (sSize * Math.ceil(Math.log(totS) / LOG2)));
+    }
+
+    private final double LOG2 = Math.log(2.);
+
     private int playOut(IBoard board) {
         int currentPlayer = board.getPlayerToMove();
         int winner = board.checkWin();
@@ -150,25 +176,8 @@ public class TreeNode {
         return winner;
     }
 
-    public TreeNode getBestChild(IBoard board) {
-        double max = Double.NEGATIVE_INFINITY, value;
-        TreeNode bestChild = null;
-        for (TreeNode t : children) {
-            // If the game is partial observable, moves in the tree may not be illegal
-            if (board.isPartialObservable() && !board.isLegal(t.getMove()))
-                continue;
-            // For partial observable games, use the visit count, not the values.
-            value = t.getnVisits();
-            //
-            if (value > max) {
-                max = value;
-                bestChild = t;
-            }
-            // For debugging, print the node
-            if (options.debug)
-                System.out.println(t);
-        }
-        return bestChild;
+    public TreeNode getBestChild() {
+        return children.get(0);
     }
 
     private void updateStats(int value) {
@@ -178,9 +187,12 @@ public class TreeNode {
             stats.pushWin(value); // TODO What if multiple players win?!?!
     }
 
-    private boolean isRoot() {
-        return move == null;
-    }
+    private final Comparator<TreeNode> comparator = new Comparator<TreeNode>() {
+        @Override
+        public int compare(TreeNode o1, TreeNode o2) {
+            return Double.compare(o2.stats.mean(playerToMove), o1.stats.mean(playerToMove));
+        }
+    };
 
     public boolean isTerminal() {
         return children != null && children.size() == 0;

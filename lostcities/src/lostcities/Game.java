@@ -1,8 +1,10 @@
 package lostcities;
 
+import ai.H_ISMCTS.HISMCTSPlayer;
 import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import framework.AIPlayer;
+import framework.IBoard;
 import lostcities.game.Deck;
 import lostcities.game.Move;
 import lostcities.game.Table;
@@ -16,14 +18,14 @@ public class Game {
 
         // Set up the first AI player
         MCTSOptions options1 = new MCTSOptions();
-        options1.timeInterval = 1000;
-        options1.fullQuality = true;
-        AIPlayer aiPlayer1 = new ISMCTSPlayer();
+        options1.fixedSimulations = true;
+        options1.simulations = 10000;
+        AIPlayer aiPlayer1 = new HISMCTSPlayer();
         aiPlayer1.setOptions(options1);
         // Second AI player
         MCTSOptions options2 = new MCTSOptions();
-        options2.timeInterval = 1000;
-        options1.qualityBonus = true;
+        options1.fixedSimulations = true;
+        options1.simulations = 10000;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
@@ -48,7 +50,9 @@ public class Game {
                 }
                 // Run the GC in between moves, to limit the runs during search
                 System.gc();
-                aiPlayer.getMove(t.copy(), null, t.getPlayerToMove(), false, m);
+                IBoard tempTable = t.copy();
+                tempTable.newDeterminization(t.getPlayerToMove());
+                aiPlayer.getMove(tempTable, null, t.getPlayerToMove(), false, m);
                 m = (Move) aiPlayer.getBestMove();
                 t.doMove(m);
                 continue;
