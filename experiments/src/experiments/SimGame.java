@@ -1,5 +1,7 @@
 package experiments;
 
+import ai.H_ISMCTS.HISMCTSPlayer;
+import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
@@ -333,8 +335,32 @@ public class SimGame {
                     alphaBetaOptions.evVer = Integer.parseInt(tag.substring(2));
                 }
             }
-
             playerRef.setOptions(alphaBetaOptions);
+        } else if (parts[0].equals("ismcts") || parts[0].equals("hismcts")) {
+            //
+            if(parts[0].equals("ismcts"))
+                playerRef = new ISMCTSPlayer();
+            else
+                playerRef = new HISMCTSPlayer();
+
+            options.useHeuristics = false;
+            options.timeInterval = timeLimit;
+            options.simulations = timeLimit;
+            options.debug = mctsDebug; // false by default
+            options.setGame(game);
+            MCTSOptions.r.setSeed(seed);
+            //
+            for (int i = 1; i < parts.length; i++) {
+                String tag = parts[i];
+                if (tag.equals("sl")) {
+                    options.fixedSimulations = true;
+                } else if (tag.equals("h")) {
+                    options.useHeuristics = true;
+                    options.setGame(game);
+                } else if (tag.startsWith("uct")) {
+                    options.uctC = Double.parseDouble(tag.substring(3));
+                }
+            }
         } else if (parts[0].equals("random")) {
             playerRef = new RandomPlayer();
         } else if (parts[0].equals("keyboard")) {
