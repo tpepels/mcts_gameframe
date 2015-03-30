@@ -169,27 +169,39 @@ my @matchups = (
 #
 #   "mctstt_sl,srmctstt_sl_shot"
 
-# "srmctstt_sl_s_shot,srmctstt_sl_shot",
-# "mctstt_sl_s,mctstt_sl",	
-# "srmctstt_sl_s,srmctstt_sl"
-	"mctstt_sl,srmctstt_sl_dcn0.05",
- 	"mctstt_sl,srmctstt_sl_dc0.05",
- 	"mctstt_sl,srmctstt_sl_dcn0.1",
- 	"mctstt_sl,srmctstt_sl_dc0.1",
- 	"mctstt_sl,srmctstt_sl_dcn0.15",
- 	"mctstt_sl,srmctstt_sl_dc0.15",
- 	"mctstt_sl,srmctstt_sl_dcn0.2",
- 	"mctstt_sl,srmctstt_sl_dc0.2"
+#"srmctstt_sl_s_shot,srmctstt_sl_shot",
+#"mctstt_sl_s,mctstt_sl",	
+#"srmctstt_sl_s,srmctstt_sl"
+
+#"mctstt_sl_h,srmctstt_sl_h",
+
+#"mctstt_sl_s,srmctstt_sl_s_bl10",
+#"mctstt_sl_s,srmctstt_sl_s_bl30",
+"mctstt_sl_s,srmctstt_sl_s_bl50",
+#"mctstt_sl_s,srmctstt_sl_s_bl70",
+#"mctstt_sl_s,srmctstt_sl_s_bl90"
+
+#	"mctstt_sl,srmctstt_sl_dcn0.05",
+# 	"mctstt_sl,srmctstt_sl_dc0.05",
+# 	"mctstt_sl,srmctstt_sl_dcn0.1",
+# 	"mctstt_sl,srmctstt_sl_dc0.1",
+# 	"mctstt_sl,srmctstt_sl_dcn0.15",
+# 	"mctstt_sl,srmctstt_sl_dc0.15",
+# 	"mctstt_sl,srmctstt_sl_dcn0.2",
+# 	"mctstt_sl,srmctstt_sl_dc0.2"
 #  "mctstt_sl,srmctstt_sl_bl20",
 #  "mctstt_sl,srmctstt_sl_bl10",
 #  "mctstt_sl,srmctstt_sl_bl40",
 #  "mctstt_sl,srmctstt_sl_bl80",
 #  "mctstt_sl,srmctstt_sl_bl60",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct0.2",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct0.4",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct0.6",
-#	"mctstt_sl,srmctstt_sl_bl30_uct0.8",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct1.0",
+
+# 	"mctstt_sl_s_uct0.2,srmctstt_sl_s_uct0.2",
+# 	"mctstt_sl_s_uct0.4,srmctstt_sl_s_uct0.4",
+# 	"mctstt_sl_s_uct0.5,srmctstt_sl_s_uct0.5",
+# 	"mctstt_sl_s_uct0.6,srmctstt_sl_s_uct0.6",
+#	"mctstt_sl_s_uct0.8,srmctstt_sl_s_uct0.8",
+# 	"mctstt_sl_s_uct1.0,srmctstt_sl_s_uct1.0"
+
 #	"mctstt_sl,srmctstt_sl_bl40_uct0.2",
 # 	"mctstt_sl,srmctstt_sl_bl40_uct0.4",
 # 	"mctstt_sl,srmctstt_sl_bl40_uct0.6",
@@ -206,11 +218,11 @@ my @games = (
 #	"lostcities",
 #	"cannon",
 #	"checkers",	
-	"breakthrough",
+#	"breakthrough",
 	"pentalath",	
 #	"chinesecheckers",
- 	"amazons",
-	"nogo9"
+#	"amazons",
+#	"nogo9"
 #	"nogo19"
 );
 
