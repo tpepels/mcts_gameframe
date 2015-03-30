@@ -1,6 +1,6 @@
 package lostcities.game;
 
-import ai.framework.IMove;
+import framework.IMove;
 
 public class Move extends IMove {
     // 0 Is draw from the deck, 1 - 5 corresponds to the coloured stacks
@@ -31,7 +31,7 @@ public class Move extends IMove {
         return "ERROR";
     }
 
-   public int[] getMove() {
+    public int[] getMove() {
         return move;
     }
 
@@ -41,16 +41,20 @@ public class Move extends IMove {
     }
 
 
+    @Override
     public boolean equals(IMove move) {
         return move.getMove()[0] == this.move[0] && move.getMove()[1] == this.move[1] && move.getType() == this.type;
     }
-
 
     public int getUniqueId() {
         int pd = (type == PLAY) ? 0 : 1;
         return move[0] + (1000 * move[1]) + (10000 * pd);
     }
 
+    @Override
+    public int hashCode() {
+        return getUniqueId();
+    }
 
     public boolean isChance() {
         return false;

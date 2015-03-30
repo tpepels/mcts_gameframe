@@ -1,17 +1,17 @@
 package experiments;
 
-import ai.*;
-import ai.MCTS_SR.MCTS_SR_Player;
-import ai.SRMCTS.SRMCTSPlayer;
-import ai.framework.AIPlayer;
-import ai.framework.IBoard;
-import ai.framework.IMove;
-import ai.mcts.MCTSOptions;
+import ai.H_ISMCTS.HISMCTSPlayer;
+import ai.ISMCTS.ISMCTSPlayer;
+import ai.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import alphabeta.AlphaBeta;
 import alphabeta.AlphaBetaOptions;
+import framework.AIPlayer;
+import framework.IBoard;
+import framework.IMove;
+import framework.util.*;
 import mcts2e.BRUE.MCTS2ePlayer;
-import mcts_tt.MCTS_SR.SRPlayer;
+import mcts_tt.H_MCTS.HybridPlayer;
 import mcts_tt.uct.UCTPlayer;
 
 /**
@@ -163,8 +163,6 @@ public class SimGame {
                     options.relativeBonus = true;
                     if (tryParseDouble(tag.substring(2)))
                         options.kr = Double.parseDouble(tag.substring(2));
-                } else if (tag.equals("sr")) {
-                    playerRef = new SRMCTSPlayer();
                 } else if (tag.startsWith("qb")) {
                     options.qualityBonus = true;
                     if (tryParseDouble(tag.substring(2)))
@@ -246,9 +244,9 @@ public class SimGame {
             playerRef.setOptions(options);
         } else if (parts[0].equals("srmcts") || parts[0].equals("srmctstt")) {
             if (parts[0].equals("srmctstt")) {
-                playerRef = new SRPlayer();
+                playerRef = new HybridPlayer();
             } else {
-                playerRef = new MCTS_SR_Player();
+                playerRef = new HybridPlayer();
             }
             options.hybrid = true;
             options.debug = mctsDebug; // false by default
@@ -337,8 +335,32 @@ public class SimGame {
                     alphaBetaOptions.evVer = Integer.parseInt(tag.substring(2));
                 }
             }
-
             playerRef.setOptions(alphaBetaOptions);
+        } else if (parts[0].equals("ismcts") || parts[0].equals("hismcts")) {
+            //
+            if(parts[0].equals("ismcts"))
+                playerRef = new ISMCTSPlayer();
+            else
+                playerRef = new HISMCTSPlayer();
+
+            options.useHeuristics = false;
+            options.timeInterval = timeLimit;
+            options.simulations = timeLimit;
+            options.debug = mctsDebug; // false by default
+            options.setGame(game);
+            MCTSOptions.r.setSeed(seed);
+            //
+            for (int i = 1; i < parts.length; i++) {
+                String tag = parts[i];
+                if (tag.equals("sl")) {
+                    options.fixedSimulations = true;
+                } else if (tag.equals("h")) {
+                    options.useHeuristics = true;
+                    options.setGame(game);
+                } else if (tag.startsWith("uct")) {
+                    options.uctC = Double.parseDouble(tag.substring(3));
+                }
+            }
         } else if (parts[0].equals("random")) {
             playerRef = new RandomPlayer();
         } else if (parts[0].equals("keyboard")) {

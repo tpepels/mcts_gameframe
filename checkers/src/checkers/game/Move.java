@@ -1,6 +1,6 @@
 package checkers.game;
 
-import ai.framework.IMove;
+import framework.IMove;
 
 public class Move extends IMove {
     public static int P_SLIDE = 1, K_SLIDE = 2, P_CAP = 3, K_CAP = 4;

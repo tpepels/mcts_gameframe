@@ -1,10 +1,10 @@
 package breakthrough;
 
-import ai.framework.AIPlayer;
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
-import mcts_tt.MCTS_SR.SRPlayer;
+import framework.AIPlayer;
+import mcts_tt.H_MCTS.HybridPlayer;
 
 public class Game {
 
@@ -13,7 +13,7 @@ public class Game {
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
-        AIPlayer aiPlayer1 = new SRPlayer();
+        AIPlayer aiPlayer1 = new HybridPlayer();
         aiPlayer1.setOptions(options1);
         options1.fixedSimulations = true;
         options1.useHeuristics = true;

@@ -1,14 +1,14 @@
 package breakthrough.gui;
 
-import ai.MCTS_SR.MCTS_SR_Player;
-import ai.framework.AIPlayer;
-import ai.framework.IMove;
-import ai.framework.MoveCallback;
-import ai.framework.MoveList;
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
+import framework.AIPlayer;
+import framework.IMove;
+import framework.MoveCallback;
+import framework.MoveList;
+import mcts_tt.H_MCTS.HybridPlayer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -57,7 +57,7 @@ public class BreakthroughPanel extends JPanel implements MouseListener, MouseMot
         options1.simulations = 25000;
 
         // Definition for player 2
-        aiPlayer2 = new MCTS_SR_Player();
+        aiPlayer2 = new HybridPlayer();
         MCTSOptions options2 = new MCTSOptions();
         aiPlayer2.setOptions(options2);
         options2.fixedSimulations = true;

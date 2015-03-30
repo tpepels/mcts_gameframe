@@ -1,8 +1,8 @@
 package nogo;
 
-import ai.framework.AIPlayer;
-import ai.mcts.MCTSOptions;
-import mcts_tt.MCTS_SR.SRPlayer;
+import ai.MCTSOptions;
+import framework.AIPlayer;
+import mcts_tt.H_MCTS.HybridPlayer;
 import mcts_tt.uct.UCTPlayer;
 import nogo.game.Board;
 import nogo.game.Move;
@@ -24,7 +24,7 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("nogo");
-        AIPlayer aiPlayer2 = new SRPlayer();
+        AIPlayer aiPlayer2 = new HybridPlayer();
         aiPlayer2.setOptions(options2);
         options2.fixedSimulations = true;
         options2.simulations = 25000;

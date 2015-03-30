@@ -1,6 +1,6 @@
 package domineering.game;
 
-import ai.framework.IMove;
+import framework.IMove;
 
 public class Move extends IMove {
     private int[] move = new int[4];

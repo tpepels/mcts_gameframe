@@ -1,11 +1,11 @@
 package pentalath.gui;
 
-import ai.framework.AIPlayer;
-import ai.framework.IMove;
-import ai.framework.MoveCallback;
-import ai.mcts.MCTSOptions;
+import ai.MCTSOptions;
 import com.rush.HexGridCell;
-import mcts_tt.MCTS_SR.SRPlayer;
+import framework.AIPlayer;
+import framework.IMove;
+import framework.MoveCallback;
+import mcts_tt.H_MCTS.HybridPlayer;
 import pentalath.game.Board;
 import pentalath.game.Move;
 
@@ -53,7 +53,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
 
     private void resetPlayers() {
         if (!p1Human) {
-            aiPlayer1 = new SRPlayer();
+            aiPlayer1 = new HybridPlayer();
             MCTSOptions options1 = new MCTSOptions();
             options1.simulations = 25000;
             options1.fixedSimulations = true;
@@ -63,7 +63,7 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
             aiPlayer1.newGame(1, "pentalath");
         }
         if (!p2Human) {
-            aiPlayer2 = new SRPlayer();
+            aiPlayer2 = new HybridPlayer();
 //            aiPlayer2 = new MCTSPlayer();
             MCTSOptions options2 = new MCTSOptions();
             options2.simulations = 25000;
@@ -164,11 +164,11 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
         long endtime = board.totalTime;
         g2d.setFont(new Font("Arial", Font.BOLD, 14));
         g2d.drawString(String.format(
-                "%d : %d",
-                TimeUnit.MILLISECONDS.toMinutes(endtime),
-                TimeUnit.MILLISECONDS.toSeconds(endtime)
-                        - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))
-        ),
+                        "%d : %d",
+                        TimeUnit.MILLISECONDS.toMinutes(endtime),
+                        TimeUnit.MILLISECONDS.toSeconds(endtime)
+                                - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(endtime))
+                ),
                 10, 15
         );
         g2d.drawString(aiMessage, 10, this.getHeight() - 15);

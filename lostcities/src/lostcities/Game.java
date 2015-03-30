@@ -1,7 +1,10 @@
 package lostcities;
 
-import ai.mcts.MCTSOptions;
-import ai.mcts.MCTSPlayer;
+import ai.H_ISMCTS.HISMCTSPlayer;
+import ai.ISMCTS.ISMCTSPlayer;
+import ai.MCTSOptions;
+import framework.AIPlayer;
+import framework.IBoard;
 import lostcities.game.Deck;
 import lostcities.game.Move;
 import lostcities.game.Table;
@@ -12,22 +15,27 @@ public class Game {
     private static boolean allAi = true;
 
     public static void main(String[] args) {
-        Table t = new Table();
-        t.initialize();
-        String player = "";
-        Scanner in = new Scanner(System.in);
-        MCTSOptions options1 = new MCTSOptions();
-        MCTSPlayer aiPlayer1 = new MCTSPlayer();
-        aiPlayer1.setOptions(options1);
 
+        // Set up the first AI player
+        MCTSOptions options1 = new MCTSOptions();
+        options1.fixedSimulations = true;
+        options1.simulations = 10000;
+        AIPlayer aiPlayer1 = new HISMCTSPlayer();
+        aiPlayer1.setOptions(options1);
+        // Second AI player
         MCTSOptions options2 = new MCTSOptions();
-        MCTSPlayer aiPlayer2 = new MCTSPlayer();
+        options1.fixedSimulations = true;
+        options1.simulations = 10000;
+        AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
-        MCTSPlayer aiPlayer;
+        AIPlayer aiPlayer;
 
         Move m = null;
-        //
+        String player = "";
+        Table t = new Table();
+        t.initialize();
+        Scanner in = new Scanner(System.in);
         while (t.checkWin() == Table.NONE_WIN) {
             drawTable(t);
             if (m != null)
@@ -42,7 +50,9 @@ public class Game {
                 }
                 // Run the GC in between moves, to limit the runs during search
                 System.gc();
-                aiPlayer.getMove(t.copy(), null, t.getPlayerToMove(), false, m);
+                IBoard tempTable = t.copy();
+                tempTable.newDeterminization(t.getPlayerToMove());
+                aiPlayer.getMove(tempTable, null, t.getPlayerToMove(), false, m);
                 m = (Move) aiPlayer.getBestMove();
                 t.doMove(m);
                 continue;
@@ -73,7 +83,6 @@ public class Game {
             }
             t.doMove(m);
         }
-
         // Check and announce who won!
         player = (t.checkWin() == Table.P1) ? "Player 1" : "Player 2";
         System.out.println(player + " wins");
