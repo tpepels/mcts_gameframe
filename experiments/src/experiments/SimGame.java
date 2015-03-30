@@ -420,6 +420,8 @@ public class SimGame {
             board = new nogo.game.Board();
         } else if (game.equals("penguin")) {
             board = new penguin.game.Board();
+        } else if (game.equals("gofish")) {
+            board = new gofish.game.Board();
         } else {
             throw new RuntimeException("Unrecognized game: " + game);
         }
