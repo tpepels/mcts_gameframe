@@ -205,6 +205,8 @@ public class MCTSOptions {
             uctC = .6;
         } else if (game.startsWith("penguin")) {
             uctC = 1.;
+        } else if (game.startsWith("gofish")) {
+            uctC = 1.;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }
