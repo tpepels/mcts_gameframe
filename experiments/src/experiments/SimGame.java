@@ -361,6 +361,7 @@ public class SimGame {
                     options.uctC = Double.parseDouble(tag.substring(3));
                 }
             }
+            playerRef.setOptions(options);
         } else if (parts[0].equals("random")) {
             playerRef = new RandomPlayer();
         } else if (parts[0].equals("keyboard")) {
