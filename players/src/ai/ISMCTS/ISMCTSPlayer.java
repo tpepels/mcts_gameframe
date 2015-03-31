@@ -75,15 +75,11 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
 
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
-                playBoard = board.copy();
+
                 simulations++;
                 options.simsLeft--;
-                time = System.currentTimeMillis() - startTime;
-                if (simulations == 0 || (time % detInterval == 0 && !dets[(int) (time / detInterval)])) {
-                    playBoard.newDeterminization(myPlayer);
-                    nDeterminizations++;
-                    dets[(int) (time / detInterval)] = true;
-                }
+                playBoard = board.copy();
+                playBoard.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
                 root.MCTS(playBoard);
@@ -91,14 +87,14 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     break;
             }
         } else {
-            int detInterval = options.simulations / 10;
+            //int detInterval = options.simulations / 10;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
-                playBoard = board.copy();
                 simulations++;
                 options.simsLeft--;
-                if (simulations % detInterval == 0)
-                    playBoard.newDeterminization(myPlayer);
+                //if (simulations % detInterval == 0)
+                playBoard = board.copy();
+                playBoard.newDeterminization(myPlayer);
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
                 root.MCTS(playBoard);
