@@ -24,14 +24,14 @@ public class Game {
         Scanner in = new Scanner(System.in);
         //
         MCTSOptions options1 = new MCTSOptions();
-        options1.timeInterval = 500;
-        // options1.fullQuality = true;
+        options1.numSimulations = 10000;
+        options1.fixedSimulations = true;
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.timeInterval = 1000;
-        //options2.qualityBonus = true;
+        options2.numSimulations = 10000;
+        options2.fixedSimulations = true;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 

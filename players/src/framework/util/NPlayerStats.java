@@ -47,7 +47,7 @@ public class NPlayerStats {
         return n;
     }
 
-    private final DecimalFormat df2 = new DecimalFormat("###,##0.000");
+    private static final DecimalFormat df2 = new DecimalFormat("###,##0.000");
 
     @Override
     public String toString() {

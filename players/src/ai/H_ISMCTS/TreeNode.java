@@ -44,13 +44,14 @@ public class TreeNode {
     public void HMCTS(IBoard board) {
         // Expand all nodes
         while (expand(board) != null) {
-            sSize++;
-            totS++;
         }
+        sSize = children.size();
+        totS = children.size();
         // Run simulations
         while (budget > 0) {
-            int b = getBudget();
-            for (TreeNode c : children) {
+            int b = Math.min(budget, getBudget());
+            for (int j = 0; j < sSize; j++) {
+                TreeNode c = children.get(j);
                 for (int i = 0; i < b; i++) {
                     IBoard tempBoard = board.copy();
                     tempBoard.newDeterminization(playerToMove);
@@ -155,10 +156,10 @@ public class TreeNode {
     }
 
     private int getBudget() {
-        return (int) Math.max(1, totB / (sSize * Math.ceil(Math.log(totS) / LOG2)));
+        return (int) Math.max(1, Math.floor(totB / (sSize * Math.ceil(Math.log(totS) / LOG2))));
     }
 
-    private final double LOG2 = Math.log(2.);
+    private static final double LOG2 = Math.log(2.);
 
     private int playOut(IBoard board) {
         int currentPlayer = board.getPlayerToMove();
