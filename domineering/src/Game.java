@@ -3,6 +3,7 @@ import ai.mcts.MCTSPlayer;
 import domineering.game.Board;
 import domineering.game.Move;
 import framework.AIPlayer;
+import mcts_tt.H_MCTS.HybridPlayer;
 
 public class Game {
     public static void main(String[] args) {
@@ -17,7 +18,7 @@ public class Game {
 
         MCTSOptions options2 = new MCTSOptions();
         options2.setGame("domineering");
-        AIPlayer aiPlayer2 = new MCTSPlayer();
+        AIPlayer aiPlayer2 = new HybridPlayer();
         aiPlayer2.setOptions(options2);
 
         AIPlayer aiPlayer;
