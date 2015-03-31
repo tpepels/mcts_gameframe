@@ -30,7 +30,7 @@ public class Game {
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.timeInterval = 1000;
+        options2.timeInterval = 5000;
         //options2.qualityBonus = true;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
