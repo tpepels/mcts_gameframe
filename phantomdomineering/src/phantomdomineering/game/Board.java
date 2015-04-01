@@ -49,12 +49,11 @@ public class Board implements FiniteBoard {
             board[y2][x2] = currentPlayer;
             nMoves++;
             currentPlayer = getOpponent(currentPlayer);
-            return true;
         } else {
             // Remember that this move is not possible
             blocked[currentPlayer - 1].add(move);
-            return false;
         }
+        return true;
     }
 
     @Override
@@ -225,7 +224,7 @@ public class Board implements FiniteBoard {
     @Override
     public void newDeterminization(int myPlayer) {
         int removed = 0;
-        int opp = getOpponent(currentPlayer);
+        int opp = getOpponent(myPlayer);
         for (int i = 0; i < board.length; i++) {
             for (int j = 0; j < board[i].length; j++) {
                 if (board[i][j] == opp) {
@@ -239,40 +238,51 @@ public class Board implements FiniteBoard {
         MoveList list = getExpandMoves();
         currentPlayer = myPlayer;
         list.shuffle();
-        int moveI = 0;
+        int[][] counts = new int[size][size];
+        int max = 0;
         // First, play all moves that conform to MY observations are made
         for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
-
             IMove move = blocked[myPlayer - 1].get(i);
             int x1 = move.getMove()[0], x2 = move.getMove()[2];
             int y1 = move.getMove()[1], y2 = move.getMove()[3];
+            counts[y1][x1]++;
+            counts[y2][x2]++;
+            if (counts[y1][x1] > max)
+                max = counts[y1][x1];
+            if (counts[y2][x2] > max)
+                max = counts[y1][x1];
+        }
 
+        for (int i = max; i > 0; i--) {
+            if (removed == 0)
+                return;
             for (int j = 0; j < list.size(); j++) {
-                IMove move2 = list.get(j);
-
-                int x3 = move2.getMove()[0], x4 = move2.getMove()[2];
-                int y3 = move2.getMove()[1], y4 = move2.getMove()[3];
-
-                if (board[y3][x3] == EMPTY && board[y4][x4] == EMPTY) {
-                    if ((x3 == x1 && y3 == y1) || (x4 == x2 && y4 == y2)) {
-                        board[y3][x3] = opp;
-                        board[y4][x4] = opp;
-                        removed -= 2;
-                        if(removed == 0)
-                            return;
-                        break;
-                    }
+                IMove move = list.get(j);
+                int x1 = move.getMove()[0], x2 = move.getMove()[2];
+                int y1 = move.getMove()[1], y2 = move.getMove()[3];
+                // Check if the move coincides with the square
+                if ((counts[y1][x1] == i || counts[y2][x2] == j) &&
+                        (board[y1][x1] == EMPTY && board[y2][x2] == EMPTY)) {
+                    board[y1][x1] = opp;
+                    board[y2][x2] = opp;
+                    removed -= 2;
                 }
             }
         }
+        currentPlayer = opp;
+        list = getExpandMoves();
+        currentPlayer = myPlayer;
+        list.shuffle();
+        int moveI = 0;
         // Now play the rest of the moves at random
-        for (int i = 0; i < (removed / 2); i++) {
+        while (removed > 0) {
             IMove move = list.get(moveI++);
             int x1 = move.getMove()[0], x2 = move.getMove()[2];
             int y1 = move.getMove()[1], y2 = move.getMove()[3];
             if (board[y1][x1] == EMPTY && board[y2][x2] == EMPTY) {
                 board[y1][x1] = opp;
                 board[y2][x2] = opp;
+                removed -= 2;
             }
         }
     }

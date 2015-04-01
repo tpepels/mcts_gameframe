@@ -132,6 +132,7 @@ public class TreeNode {
 
     @SuppressWarnings("ConstantConditions")
     private int playOut(IBoard board) {
+        IBoard temp = board.copy();
         int winner = board.checkWin();
         List<IMove> moves;
         IMove currentMove;

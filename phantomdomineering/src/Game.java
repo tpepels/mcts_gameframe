@@ -1,4 +1,3 @@
-import ai.H_ISMCTS.HISMCTSPlayer;
 import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import framework.AIPlayer;
@@ -33,11 +32,14 @@ public class Game {
             System.gc();
             IBoard copyBoard = b.copy();
             copyBoard.newDeterminization(b.getPlayerToMove());
+            System.out.println(copyBoard);
+            copyBoard = b.copy();
+            copyBoard.newDeterminization(b.getPlayerToMove());
             aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
             b.doAIMove(m, b.getPlayerToMove());
             if (m != null)
-                System.out.println("Player " + b.getPlayerToMove() + " played " + m);
+                System.out.println("Player " + (3 - b.getPlayerToMove()) + " played " + m);
         }
 
         System.out.println("Winner is " + b.checkWin());
