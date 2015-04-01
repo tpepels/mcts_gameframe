@@ -38,21 +38,24 @@ public class TreeNode {
     }
 
     public int MCTS(IBoard board) {
+        if(children == null)
+            children = new ArrayList<>();
         // Expand returns an expanded leaf if any was added to the tree
         TreeNode child = expand(board, children, stats.getNPlayers(), options);
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
-            if (isTerminal())
+            if (board.checkWin() != IBoard.NONE_WIN)
                 child = this;
-            else // Do UCT selection over the children
+            else {// Do UCT selection over the children
                 child = select(board);
-        }
-        // Execute the move represented by the child
-        if (!isTerminal())
+                board.doAIMove(child.getMove(), board.getPlayerToMove());
+            }
+        } else {
             board.doAIMove(child.getMove(), board.getPlayerToMove());
+        }
         int result;
         // When a leaf is reached return the result of the play-out
-        if (!child.simulated || child.isTerminal()) {
+        if (!child.simulated || board.checkWin() != IBoard.NONE_WIN) {
             result = child.playOut(board);
             child.updateStats(result);
             child.simulated = true;
@@ -74,8 +77,6 @@ public class TreeNode {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         moves.shuffle();
-        if (children == null)
-            children = new ArrayList<>(moves.size() * 2);
         int winner = board.checkWin();
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
@@ -109,7 +110,7 @@ public class TreeNode {
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // If the game is partially observable, moves in the tree may not be legal
-            if (board.isPartialObservable() && !board.isLegal(c.getMove()))
+            if (!board.isLegal(c.getMove()))
                 continue;
             // First, visit all children at least once
             if (c.nPrime == 0)
@@ -129,7 +130,6 @@ public class TreeNode {
 
     @SuppressWarnings("ConstantConditions")
     private int playOut(IBoard board) {
-        int currentPlayer = board.getPlayerToMove();
         int winner = board.checkWin();
         List<IMove> moves;
         IMove currentMove;
@@ -137,9 +137,8 @@ public class TreeNode {
             moves = board.getPlayoutMoves(options.useHeuristics);
             currentMove = moves.get(MCTSOptions.r.nextInt(moves.size()));
             // Check if the move can be made, otherwise remove it from the list
-            board.doAIMove(currentMove, currentPlayer);
+            board.doAIMove(currentMove, board.getPlayerToMove());
             winner = board.checkPlayoutWin();
-            currentPlayer = board.getPlayerToMove();
         }
         return winner;
     }
@@ -149,7 +148,7 @@ public class TreeNode {
         TreeNode bestChild = null;
         for (TreeNode t : children) {
             // If the game is partial observable, moves in the tree may not be illegal
-            if (board.isPartialObservable() && !board.isLegal(t.getMove()))
+            if (!board.isLegal(t.getMove()))
                 continue;
             // For partial observable games, use the visit count, not the values.
             value = t.getnVisits();
@@ -170,10 +169,6 @@ public class TreeNode {
             stats.pushDraw();
         else
             stats.pushWin(value); // TODO What if multiple players win?!?!
-    }
-
-    public boolean isTerminal() {
-        return children != null && children.size() == 0;
     }
 
     public List<TreeNode> getChildren() {

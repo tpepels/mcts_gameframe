@@ -41,6 +41,8 @@ public class TreeNode {
     }
 
     public void HMCTS(IBoard board) {
+        if(children == null)
+            children = new ArrayList<>();
         // Expand all nodes
         while (ai.ISMCTS.TreeNode.expand(board, children, stats.getNPlayers(), options) != null) {
         }
