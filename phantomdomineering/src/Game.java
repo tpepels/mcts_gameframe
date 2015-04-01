@@ -8,7 +8,7 @@ import phantomdomineering.game.Move;
 
 public class Game {
     public static void main(String[] args) {
-        Board b = new Board(8);
+        Board b = new Board(6);
         b.initialize();
 
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
@@ -22,13 +22,12 @@ public class Game {
         options2.setGame("domineering");
         options2.fixedSimulations = true;
         options2.simulations = 10000;
-        AIPlayer aiPlayer2 = new HISMCTSPlayer();
+        AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
         AIPlayer aiPlayer;
         Move m = null;
         while (b.checkWin() == Board.NONE_WIN) {
-            int player = b.getPlayerToMove();
             System.out.println(b.toString());
             aiPlayer = (b.getPlayerToMove() == 1 ? aiPlayer1 : aiPlayer2);
             System.gc();
@@ -36,9 +35,9 @@ public class Game {
             copyBoard.newDeterminization(b.getPlayerToMove());
             aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
-            b.doAIMove(m, player);
+            b.doAIMove(m, b.getPlayerToMove());
             if (m != null)
-                System.out.println("Player " + player + " played " + m);
+                System.out.println("Player " + b.getPlayerToMove() + " played " + m);
         }
 
         System.out.println("Winner is " + b.checkWin());

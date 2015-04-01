@@ -237,9 +237,10 @@ public class Board implements FiniteBoard {
         // Execute opponent moves at random
         currentPlayer = opp;
         MoveList list = getExpandMoves();
+        currentPlayer = myPlayer;
         list.shuffle();
         int moveI = 0;
-        // First, play all moves that conform to MY observations
+        // First, play all moves that conform to MY observations are made
         for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
 
             IMove move = blocked[myPlayer - 1].get(i);
@@ -256,7 +257,10 @@ public class Board implements FiniteBoard {
                     if ((x3 == x1 && y3 == y1) || (x4 == x2 && y4 == y2)) {
                         board[y3][x3] = opp;
                         board[y4][x4] = opp;
-                        removed-=2;
+                        removed -= 2;
+                        if(removed == 0)
+                            return;
+                        break;
                     }
                 }
             }
@@ -271,7 +275,6 @@ public class Board implements FiniteBoard {
                 board[y2][x2] = opp;
             }
         }
-        currentPlayer = myPlayer;
     }
 
     @Override

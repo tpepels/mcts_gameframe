@@ -27,26 +27,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         this.callback = callback;
         this.myPlayer = myPlayer;
         // Create a new root, or reuse the old tree
-        if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
-            root = new TreeNode(myPlayer, 2, options);
-        } else if (options.treeReuse) {
-            // Get the opponents last move from the root's children
-            for (TreeNode t : root.getChildren()) {
-                // Don't select the virtual node
-                if (t.getMove().equals(lastMove)) {
-                    root = t;
-                    break;
-                }
-            }
-        }
-        // Possible if new root was not expanded
-        if (root.playerToMove != myPlayer) {
-            if (options.debug && root.getChildren() != null)
-                System.err.println("Incorrect player at root, old root has " + root.getArity() + " children");
-            // Create a new root
-            root = new TreeNode(myPlayer, 2, options);
-        }
-        //
+        root = new TreeNode(myPlayer, 2, options);
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -63,19 +44,13 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             throw new RuntimeException("MCTS Options not set.");
         //
         int simulations = 0;
-        int nDeterminizations = 0;
         IBoard playBoard;
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
             long startTime = System.currentTimeMillis();
             long endTime = startTime + options.timeInterval;
-            long detInterval = options.timeInterval / 10;
-            long time ;
-            boolean[] dets = new boolean[20];
-
             // Run the MCTS algorithm while time allows it
             while (!interrupted) {
-
                 simulations++;
                 options.simsLeft--;
                 playBoard = board.copy();
@@ -103,20 +78,14 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         // Return the best move found
         TreeNode bestChild = root.getBestChild(board);
         bestMove = bestChild.getMove();
-
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
-            System.out.println("N Determinizations: " + nDeterminizations);
         }
-        // Set the root to the best child, so in the next move, the opponent's move can become the new root
-        if (options.treeReuse)
-            root = bestChild;
-        else
-            root = null;
+        root = null;
         // Release the board's memory
         board = null;
         // Make the move in the GUI, if parallel
