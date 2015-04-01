@@ -27,18 +27,7 @@ public class HISMCTSPlayer implements AIPlayer, Runnable {
         this.callback = callback;
         this.myPlayer = myPlayer;
         // Create a new root, or reuse the old tree
-        if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
-            root = new TreeNode(options.simulations, myPlayer, 2, options);
-        } else if (options.treeReuse) {
-            // Get the opponents last move from the root's children
-            for (TreeNode t : root.getChildren()) {
-                // Don't select the virtual node
-                if (t.getMove().equals(lastMove)) {
-                    root = t;
-                    break;
-                }
-            }
-        }
+        root = new TreeNode(options.simulations, myPlayer, 2, options);
         // Possible if new root was not expanded
         if (root.playerToMove != myPlayer) {
             if (options.debug && root.getChildren() != null)
@@ -66,22 +55,18 @@ public class HISMCTSPlayer implements AIPlayer, Runnable {
         b.newDeterminization(myPlayer);
         root.HMCTS(b);
         // Return the best move found
-        TreeNode bestChild = root.getBestChild();
+        ai.ISMCTS.TreeNode bestChild = root.getBestChild();
         bestMove = bestChild.getMove();
-
         // show information on the best move
         if (options.debug) {
-            for (TreeNode t : root.getChildren()) {
+            for (ai.ISMCTS.TreeNode t : root.getChildren()) {
                 System.out.println(t);
             }
             System.out.println("Player " + myPlayer);
             System.out.println("Best child: " + bestChild);
         }
         // Set the root to the best child, so in the next move, the opponent's move can become the new root
-        if (options.treeReuse)
-            root = bestChild;
-        else
-            root = null;
+        root = null;
         // Release the board's memory
         board = null;
         // Make the move in the GUI, if parallel

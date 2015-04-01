@@ -39,7 +39,7 @@ public class TreeNode {
 
     public int MCTS(IBoard board) {
         // Expand returns an expanded leaf if any was added to the tree
-        TreeNode child = expand(board);
+        TreeNode child = expand(board, children, stats.getNPlayers(), options);
         // Select the best child, if we didn't find a winning position in the expansion
         if (child == null) {
             if (isTerminal())
@@ -69,13 +69,13 @@ public class TreeNode {
      * @param board The Board
      * @return The expanded node
      */
-    private TreeNode expand(IBoard board) {
+    public static TreeNode expand(IBoard board, List<TreeNode> children, int nPlayers, MCTSOptions options) {
         TreeNode newNode = null;
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         moves.shuffle();
         if (children == null)
-            children = new ArrayList<TreeNode>(moves.size() * 2);
+            children = new ArrayList<>(moves.size() * 2);
         int winner = board.checkWin();
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
@@ -90,7 +90,7 @@ public class TreeNode {
                 if (node.move.equals(moves.get(i)) && node.playerToMove == board.getPlayerToMove())
                     exists = true;
             if (!exists) {
-                newNode = new TreeNode(board.getPlayerToMove(), stats.getNPlayers(), moves.get(i), options);
+                newNode = new TreeNode(board.getPlayerToMove(), nPlayers, moves.get(i), options);
                 children.add(newNode);
                 newNode.nPrime++;
                 // We have a new node, no need to look further.
