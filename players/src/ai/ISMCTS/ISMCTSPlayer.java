@@ -165,7 +165,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             if (visits[i] == 0) {
                 return i;
             }
-            uctV = (-1. * (scores[i] / visits[i])) + Math.sqrt(FastLog.log(totSim) / visits[i]);
+            uctV = (1. - Math.abs(scores[i] / visits[i])) + Math.sqrt(FastLog.log(totSim) / visits[i]);
             if (uctV > max) {
                 max = uctV;
                 selected = i;
