@@ -5,6 +5,7 @@ import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
+import framework.util.FastLog;
 
 public class ISMCTSPlayer implements AIPlayer, Runnable {
 
@@ -38,6 +39,10 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         }
     }
 
+    int nd;
+    double[] visits, scores;
+    IBoard[] boards;
+
     @Override
     public void run() {
         if (options == null)
@@ -45,6 +50,19 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         //
         int simulations = 0;
         IBoard playBoard;
+
+
+        if (options.banditD) {
+            nd = options.nDeterminizations;
+            boards = new IBoard[nd];
+            visits = new double[nd];
+            scores = new double[nd];
+            for (int i = 0; i < nd; i++) {
+                boards[i] = board.copy();
+                boards[i].newDeterminization(myPlayer);
+            }
+        }
+
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
             long startTime = System.currentTimeMillis();
@@ -53,11 +71,29 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             while (!interrupted) {
                 simulations++;
                 options.simsLeft--;
-                playBoard = board.copy();
-                playBoard.newDeterminization(myPlayer);
+
+                int selBoard = -1;
+                if (options.banditD) {
+                    selBoard = selectBoard(simulations);
+                    playBoard = boards[selBoard];
+                    visits[selBoard]++;
+                } else {
+                    playBoard = board.copy();
+                    playBoard.newDeterminization(myPlayer);
+                }
+
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
-                root.MCTS(playBoard);
+                int res = root.MCTS(playBoard);
+
+                if(options.banditD) {
+                    if(res == myPlayer) {
+                        scores[selBoard]++;
+                    } else {
+                        scores[selBoard]--;
+                    }
+                }
+
                 if (System.currentTimeMillis() >= endTime)
                     break;
             }
@@ -67,12 +103,28 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             while (simulations <= options.simulations) {
                 simulations++;
                 options.simsLeft--;
-                //if (simulations % detInterval == 0)
-                playBoard = board.copy();
-                playBoard.newDeterminization(myPlayer);
+
+                int selBoard = -1;
+                if (options.banditD) {
+                    selBoard = selectBoard(simulations);
+                    playBoard = boards[selBoard].copy();
+                    visits[selBoard]++;
+                } else {
+                    playBoard = board.copy();
+                    playBoard.newDeterminization(myPlayer);
+                }
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
-                root.MCTS(playBoard);
+                int res = root.MCTS(playBoard);
+
+                if(options.banditD) {
+                    if(res == myPlayer) {
+                        scores[selBoard]++;
+                    } else {
+                        scores[selBoard]--;
+                    }
+                }
+
             }
         }
         // Return the best move found
@@ -84,6 +136,11 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
+            if(options.banditD) {
+                for (int i = 0; i < nd; i++) {
+                    System.out.println("Board: " + i + " v: " + visits[i] + " s: " + scores[i]);
+                }
+            }
         }
         root = null;
         // Release the board's memory
@@ -91,6 +148,22 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         // Make the move in the GUI, if parallel
         if (!interrupted && parallel && callback != null)
             callback.makeMove(bestChild.getMove());
+    }
+
+    private int selectBoard(int totSim) {
+        int selected = -1;
+        double max = 0, uctV;
+        for (int i = 0; i < nd; i++) {
+            if (visits[i] == 0) {
+                return i;
+            }
+            uctV = (scores[i] / visits[i]) + Math.sqrt(FastLog.log(totSim) / visits[i]);
+            if (uctV > max) {
+                max = uctV;
+                selected = i;
+            }
+        }
+        return selected;
     }
 
     public void setOptions(MCTSOptions options) {

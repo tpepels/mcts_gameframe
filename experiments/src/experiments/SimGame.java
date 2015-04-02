@@ -359,6 +359,9 @@ public class SimGame {
                     options.setGame(game);
                 } else if (tag.startsWith("uct")) {
                     options.uctC = Double.parseDouble(tag.substring(3));
+                } else if (tag.startsWith("bd")) {
+                    options.banditD = true;
+                    options.nDeterminizations = Integer.parseInt(tag.substring(2));
                 }
             }
             playerRef.setOptions(options);
