@@ -5,8 +5,6 @@ import framework.IBoard;
 import phantomdomineering.game.Board;
 import phantomdomineering.game.Move;
 
-import java.util.concurrent.ExecutorService;
-
 public class Game {
     public static void main(String[] args) {
         Board b = new Board(6);
@@ -37,12 +35,7 @@ public class Game {
             System.out.println(copyBoard);
             copyBoard = b.copy();
             copyBoard.newDeterminization(b.getPlayerToMove());
-            try {
-                aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
-            } catch (Exception ex) {
-                copyBoard = b.copy();
-                copyBoard.newDeterminization(b.getPlayerToMove());
-            }
+            aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
             b.doAIMove(m, b.getPlayerToMove());
             if (m != null)
