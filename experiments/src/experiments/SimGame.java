@@ -362,6 +362,9 @@ public class SimGame {
                 } else if (tag.startsWith("bd")) {
                     options.banditD = true;
                     options.nDeterminizations = Integer.parseInt(tag.substring(2));
+                } else if (tag.startsWith("nd")) {
+                    options.limitD = true;
+                    options.nDeterminizations = Integer.parseInt(tag.substring(2));
                 }
             }
             playerRef.setOptions(options);
