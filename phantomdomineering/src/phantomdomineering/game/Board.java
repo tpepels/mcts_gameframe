@@ -7,6 +7,7 @@ import framework.MoveList;
 import framework.util.StatCounter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class Board implements FiniteBoard {
@@ -235,60 +236,45 @@ public class Board implements FiniteBoard {
         }
         if (removed > 0) {
             currentPlayer = opp;
-            MoveList list = getExpandMoves();
+            List<IMove> moves = getPlayoutMoves(false);
             currentPlayer = myPlayer;
-            list.shuffle();
+            Collections.shuffle(moves);
+            List<IMove> moves1 = new ArrayList<>();
+            // Shift all moves that coincide with observations to the front of the move list
+            for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
+                IMove move1 = blocked[myPlayer - 1].get(i);
+                int x1 = move1.getMove()[0], x2 = move1.getMove()[2];
+                int y1 = move1.getMove()[1], y2 = move1.getMove()[3];
+                //
+                for (int j = 0; j < moves.size(); j++) {
+                    IMove move2 = moves.get(j);
+                    int x3 = move2.getMove()[0], x4 = move2.getMove()[2];
+                    int y3 = move2.getMove()[1], y4 = move2.getMove()[3];
+                    if (!moves1.contains(move2)) {
+                        if (((x3 == x1 && y3 == y1) || (x4 == x2 && y4 == y2)) &&
+                                (board[y3][x3] == EMPTY && board[y4][x4] == EMPTY)) {
+                            moves1.add(move2);
+                        }
+                    }
+                }
+            }
+            for (IMove m : moves) {
+                if (!moves1.contains(m))
+                    moves1.add(m);
+            }
             // Find a valid determinization
-            if (!determinize1(list, removed, myPlayer, opp, 0)) {
+            if (!determinize(moves1, removed, myPlayer, opp)) {
                 throw new RuntimeException("Cannot find determinization!");
             }
         }
     }
 
-    private boolean determinize1(MoveList moves, int removed, int myPlayer, int opp, int i) {
-        if (removed == 0)
-            return true;
-        if(blocked[myPlayer - 1].size() > 0) {
-            // First, play all moves that conform to observations are made
-            for (; i < blocked[myPlayer - 1].size(); i++) {
-                IMove move1 = blocked[myPlayer - 1].get(i);
-                int x1 = move1.getMove()[0], x2 = move1.getMove()[2];
-                int y1 = move1.getMove()[1], y2 = move1.getMove()[3];
-                if((board[x1][y1] != EMPTY && board[x2][y2] != EMPTY))
-                    continue;
-                for (int j = 0; j < moves.size(); j++) {
-                    IMove move2 = moves.get(j);
-                    int x3 = move2.getMove()[0], x4 = move2.getMove()[2];
-                    int y3 = move2.getMove()[1], y4 = move2.getMove()[3];
-
-                    if (((x3 == x1 && y3 == y1) || (x4 == x2 && y4 == y2)) &&
-                            (board[y3][x3] == EMPTY && board[y4][x4] == EMPTY)) {
-                        board[y3][x3] = opp;
-                        board[y4][x4] = opp;
-
-                        if ((i + 1) < blocked[myPlayer - 1].size()) {
-                            if (determinize1(moves, removed - 2, myPlayer, opp, i + 1))
-                                return true;
-                        } else if (determinize2(moves, removed - 2, opp, 0))
-                            return true;
-
-                        board[y3][x3] = EMPTY;
-                        board[y4][x4] = EMPTY;
-                    }
-                }
-            }
-            return false;
-        } else {
-            return determinize2(moves, removed, opp, 0);
-        }
-    }
-
-    private boolean determinize2(MoveList moves, int removed, int opp, int i) {
+    private boolean determinize(List<IMove> moves, int removed, int myPlayer, int opp) {
         // Finished!
         if (removed == 0)
-            return true;
+            return checkDeterminization(myPlayer);
         // First, play all moves that conform to MY observations are made
-        for (; i < moves.size(); i++) {
+        for (int i = 0; i < moves.size(); i++) {
             IMove move = moves.get(i);
             int x1 = move.getMove()[0], x2 = move.getMove()[2];
             int y1 = move.getMove()[1], y2 = move.getMove()[3];
@@ -298,7 +284,7 @@ public class Board implements FiniteBoard {
                 board[y1][x1] = opp;
                 board[y2][x2] = opp;
 
-                if (determinize2(moves, removed - 2, opp, i + 1))
+                if (determinize(moves, removed - 2, myPlayer, opp))
                     return true;
 
                 board[y1][x1] = EMPTY;
@@ -307,6 +293,18 @@ public class Board implements FiniteBoard {
         }
         // No move was found
         return false;
+    }
+
+    private boolean checkDeterminization(int myPlayer) {
+        for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
+            IMove move1 = blocked[myPlayer - 1].get(i);
+            int x1 = move1.getMove()[0], x2 = move1.getMove()[2];
+            int y1 = move1.getMove()[1], y2 = move1.getMove()[3];
+            if ((board[y1][x1] == EMPTY && board[y2][x2] == EMPTY))
+                return false;
+        }
+        // None of the blocked moves could be played!
+        return true;
     }
 
     @Override

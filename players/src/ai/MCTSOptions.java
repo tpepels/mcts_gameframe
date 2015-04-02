@@ -149,6 +149,8 @@ public class MCTSOptions {
             kq = 2.0;
         } else if (game.equalsIgnoreCase("domineering")) {
             uctC = 1.;
+        } else if (game.equalsIgnoreCase("phantomdomineering")) {
+            uctC = 1.;
         } else if (game.equalsIgnoreCase("penguin")) {
             uctC = 1.;
         } else if (game.equalsIgnoreCase("gofish")) {
@@ -196,18 +198,35 @@ public class MCTSOptions {
             else
                 numSimulations = 17 * timeInterval;
         } else if (game.startsWith("kalah")) {
-            uctC = 1.;
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 22 * timeInterval;
         } else if (game.equalsIgnoreCase("domineering")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
                 numSimulations = 22 * timeInterval;
+        } else if (game.equalsIgnoreCase("phantomdomineering")) {
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 22 * timeInterval;
         } else if (game.startsWith("nogo")) {
-            uctC = .6;
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 22 * timeInterval;
         } else if (game.startsWith("penguin")) {
-            uctC = 1.;
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 22 * timeInterval;
         } else if (game.startsWith("gofish")) {
-            uctC = 1.;
+            if (fixedSimulations)
+                numSimulations = simulations;
+            else
+                numSimulations = 22 * timeInterval;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }
