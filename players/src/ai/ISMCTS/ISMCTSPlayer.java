@@ -152,7 +152,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
 
     private int selectBoard(int totSim) {
         int selected = -1;
-        double max = 0, uctV;
+        double max = Integer.MIN_VALUE, uctV;
         for (int i = 0; i < nd; i++) {
             if (visits[i] == 0) {
                 return i;
