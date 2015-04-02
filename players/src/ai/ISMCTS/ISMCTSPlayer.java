@@ -62,7 +62,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 boards[i].newDeterminization(myPlayer);
             }
         }
-
+        int nDet = 0;
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
             long startTime = System.currentTimeMillis();
@@ -98,7 +98,9 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     break;
             }
         } else {
-            //int detInterval = options.simulations / 10;
+            int detInterval = options.simulations / options.nDeterminizations;
+
+            board.newDeterminization(myPlayer); // To make sure we have a determinization and not the actual board
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
                 simulations++;
@@ -110,8 +112,13 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     playBoard = boards[selBoard].copy();
                     visits[selBoard]++;
                 } else {
+                    if(!options.limitD || simulations % detInterval == 0) {
+                        board.newDeterminization(myPlayer);
+                        nDet++;
+                    } else {
+                        board.newDeterminization(myPlayer);
+                    }
                     playBoard = board.copy();
-                    playBoard.newDeterminization(myPlayer);
                 }
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
@@ -136,6 +143,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Did " + simulations + " simulations");
             System.out.println("Best child: " + bestChild);
             System.out.println("Root visits: " + root.getnVisits());
+            System.out.println("Determinizations: " + nDet);
             if(options.banditD) {
                 for (int i = 0; i < nd; i++) {
                     System.out.println("Board: " + i + " v: " + visits[i] + " s: " + scores[i]);
