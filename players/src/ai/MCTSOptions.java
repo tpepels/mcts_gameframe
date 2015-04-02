@@ -149,7 +149,7 @@ public class MCTSOptions {
             kq = 2.0;
         } else if (game.equalsIgnoreCase("domineering")) {
             uctC = 1.;
-        } else if (game.equalsIgnoreCase("phantomdomineering")) {
+        } else if (game.startsWith("phantomdomineering")) {
             uctC = 1.;
         } else if (game.equalsIgnoreCase("penguin")) {
             uctC = 1.;
@@ -207,7 +207,7 @@ public class MCTSOptions {
                 numSimulations = simulations;
             else
                 numSimulations = 22 * timeInterval;
-        } else if (game.equalsIgnoreCase("phantomdomineering")) {
+        } else if (game.startsWith("phantomdomineering")) {
             if (fixedSimulations)
                 numSimulations = simulations;
             else
