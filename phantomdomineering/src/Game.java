@@ -1,10 +1,11 @@
-import ai.H_ISMCTS.HISMCTSPlayer;
 import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import framework.AIPlayer;
 import framework.IBoard;
 import phantomdomineering.game.Board;
 import phantomdomineering.game.Move;
+
+import java.util.concurrent.ExecutorService;
 
 public class Game {
     public static void main(String[] args) {
@@ -33,11 +34,19 @@ public class Game {
             System.gc();
             IBoard copyBoard = b.copy();
             copyBoard.newDeterminization(b.getPlayerToMove());
-            aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
+            System.out.println(copyBoard);
+            copyBoard = b.copy();
+            copyBoard.newDeterminization(b.getPlayerToMove());
+            try {
+                aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
+            } catch (Exception ex) {
+                copyBoard = b.copy();
+                copyBoard.newDeterminization(b.getPlayerToMove());
+            }
             m = (Move) aiPlayer.getBestMove();
             b.doAIMove(m, b.getPlayerToMove());
             if (m != null)
-                System.out.println("Player " + b.getPlayerToMove() + " played " + m);
+                System.out.println("Player " + (3 - b.getPlayerToMove()) + " played " + m);
         }
 
         System.out.println("Winner is " + b.checkWin());
