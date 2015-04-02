@@ -1,3 +1,5 @@
+package phantomdomineering;
+
 import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import framework.AIPlayer;
