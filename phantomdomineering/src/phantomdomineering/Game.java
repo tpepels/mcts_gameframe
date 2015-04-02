@@ -1,5 +1,6 @@
 package phantomdomineering;
 
+import ai.H_ISMCTS.HISMCTSPlayer;
 import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import framework.AIPlayer;
@@ -16,14 +17,18 @@ public class Game {
         MCTSOptions options1 = new MCTSOptions();
         options1.fixedSimulations = true;
         options1.simulations = 10000;
-        options1.setGame("domineering");
+        options1.limitD = true;
+        options1.nDeterminizations = 20;
+        options1.setGame("phantomdomineering");
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.setGame("domineering");
+        options2.setGame("phantomdomineering");
         options2.fixedSimulations = true;
         options2.simulations = 10000;
-        AIPlayer aiPlayer2 = new ISMCTSPlayer();
+        options2.limitD = true;
+        options2.nDeterminizations = 20;
+        AIPlayer aiPlayer2 = new HISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
         AIPlayer aiPlayer;

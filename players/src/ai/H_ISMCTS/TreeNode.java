@@ -48,14 +48,32 @@ public class TreeNode {
         }
         sSize = children.size();
         totS = children.size();
+
+
+        IBoard boards[] = null;
+        if (options.limitD) {
+            boards = new IBoard[options.nDeterminizations];
+            for (int i = 0; i < options.nDeterminizations; i++) {
+                boards[i] = board.copy();
+                boards[i].newDeterminization(playerToMove);
+            }
+        }
+
         // Run simulations
         while (budget > 0) {
             int b = Math.min(budget, getBudget());
             for (int j = 0; j < sSize; j++) {
                 ai.ISMCTS.TreeNode c = children.get(j);
                 for (int i = 0; i < b; i++) {
-                    IBoard tempBoard = board.copy();
-                    tempBoard.newDeterminization(playerToMove);
+
+                    IBoard tempBoard;
+                    if (!options.limitD) {
+                        tempBoard = board.copy();
+                        tempBoard.newDeterminization(playerToMove);
+                    } else {
+                        tempBoard = boards[budget % options.nDeterminizations].copy();
+                    }
+
                     tempBoard.doAIMove(c.getMove(), board.getPlayerToMove());
                     c.MCTS(tempBoard);
                     budget--;
