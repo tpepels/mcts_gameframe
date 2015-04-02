@@ -91,7 +91,7 @@ public class Deck {
         shuffleDeck();
     }
 
-    // Fisher–Yates shuffle
+    // FisherYates shuffle
     public void shuffleDeck() {
         int index, a;
         for (int i = size() - 1; i > 0; i--) {

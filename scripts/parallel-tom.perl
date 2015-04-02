@@ -147,71 +147,22 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-#	"mcts_sl,mctstt_sl_uct0.2",
-#	"mcts_sl,mctstt_sl_uct0.4",
-#	"mcts_sl,mctstt_sl_uct0.6",
-#	"mcts_sl,mctstt_sl_uct0.8",
-#	"mcts_sl,mctstt_sl_uct1.0",
-#	"mcts_sl,mctstt_sl_uct1.2",
-#	"mctstt_sl_h,srmctstt_shot_sl_h",
-#	"mctstt_sl_s_h,srmctstt_shot_sl_s_h"
-#	"mctstt_h_s_sl,mctstt_sl_h_s_ph1",
-#	"mctstt_h_s_sl,mctstt_sl_h_s_ph5",
-#	"mctstt_h_s_sl,mctstt_sl_h_s_ph10",
-#	"mctstt_h_s_sl,mctstt_sl_h_s_ph15",
-#	"mctstt_h_s_sl,mctstt_sl_h_s_ph20",
-#	"mctstt_h_s_sl,mctstt_sl_h_s_ph30",
-#	"mctstt_h_s_sl,mctstt_sl_h_s_ph50"
-#	"mcts_sl,srmcts_shot_sl",
-#	"mcts_sl_s_h,srmcts_shot_sl_s_h",
-#	"mcts_sl_h,srmcts_shot_sl_h",
-#	"mcts_sl_s,srmcts_shot_sl_s"
-#
-#   "mctstt_sl,srmctstt_sl_shot"
-
-# "srmctstt_sl_s_shot,srmctstt_sl_shot",
-# "mctstt_sl_s,mctstt_sl",	
-# "srmctstt_sl_s,srmctstt_sl"
-	"mctstt_sl,srmctstt_sl_dcn0.05",
- 	"mctstt_sl,srmctstt_sl_dc0.05",
- 	"mctstt_sl,srmctstt_sl_dcn0.1",
- 	"mctstt_sl,srmctstt_sl_dc0.1",
- 	"mctstt_sl,srmctstt_sl_dcn0.15",
- 	"mctstt_sl,srmctstt_sl_dc0.15",
- 	"mctstt_sl,srmctstt_sl_dcn0.2",
- 	"mctstt_sl,srmctstt_sl_dc0.2"
-#  "mctstt_sl,srmctstt_sl_bl20",
-#  "mctstt_sl,srmctstt_sl_bl10",
-#  "mctstt_sl,srmctstt_sl_bl40",
-#  "mctstt_sl,srmctstt_sl_bl80",
-#  "mctstt_sl,srmctstt_sl_bl60",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct0.2",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct0.4",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct0.6",
-#	"mctstt_sl,srmctstt_sl_bl30_uct0.8",
-# 	"mctstt_sl,srmctstt_sl_bl30_uct1.0",
-#	"mctstt_sl,srmctstt_sl_bl40_uct0.2",
-# 	"mctstt_sl,srmctstt_sl_bl40_uct0.4",
-# 	"mctstt_sl,srmctstt_sl_bl40_uct0.6",
-# 	"mctstt_sl,srmctstt_sl_bl40_uct0.8",
-# 	"mctstt_sl,srmctstt_sl_bl40_uct1.0",
-# 	"mctstt_sl,srmctstt_sl_bl50_uct0.2",
-# 	"mctstt_sl,srmctstt_sl_bl50_uct0.4",
-# 	"mctstt_sl,srmctstt_sl_bl50_uct0.6",
-# 	"mctstt_sl,srmctstt_sl_bl50_uct0.8",
-# 	"mctstt_sl,srmctstt_sl_bl50_uct1.0"
+	"hismcts_sl,ismcts_sl",
+	"hismcts_sl_h,ismcts_sl_h"
 );
 
 my @games = (
 #	"lostcities",
 #	"cannon",
 #	"checkers",	
-	"breakthrough",
-	"pentalath",	
+#	"breakthrough",
+#	"pentalath",	
 #	"chinesecheckers",
- 	"amazons",
-	"nogo9"
+#	"amazons",
+#	"nogo9"
 #	"nogo19"
+	"lostcities",
+	"gofish"
 );
 
 print "queuing jobs... \n";

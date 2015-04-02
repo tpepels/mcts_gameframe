@@ -1,5 +1,6 @@
 #!/bin/sh
-dirs="alphabeta BRUE domineering cannon checkers chinesecheckers kalah lostcities mcts mcts_tt nogo pentalath amazons experiments breakthrough penguin"
+dirs="ai domineering cannon checkers chinesecheckers kalah lostcities nogo pentalath amazons 
+experiments breakthrough penguin gofish"
 class=`shift`
 
 CP="."
