@@ -420,7 +420,6 @@ public class SimGame {
         } else if (game.startsWith("phantomdomineering")) {
             int size = Integer.parseInt(game.substring(18));
             board = new phantomdomineering.game.Board(size);
-            domineering.game.Board.CRAM = false;
         } else if (game.startsWith("cram")) {
             int size = Integer.parseInt(game.substring(4));
             board = new domineering.game.Board(size);
