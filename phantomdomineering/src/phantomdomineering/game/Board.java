@@ -234,8 +234,8 @@ public class Board implements FiniteBoard {
                 }
             }
         }
-        System.out.println("Determinizing");
-        long time = System.currentTimeMillis();
+        // System.out.println("Determinizing");
+        // long time = System.currentTimeMillis();
         if (removed > 0) {
             currentPlayer = opp;
             List<IMove> moves = getPlayoutMoves(false);
@@ -269,7 +269,7 @@ public class Board implements FiniteBoard {
                 throw new RuntimeException("Cannot find determinization!");
             }
         }
-        System.out.println("Determinizing took:" + (System.currentTimeMillis() - time));
+        // System.out.println("Determinizing took:" + (System.currentTimeMillis() - time));
     }
 
     private boolean determinize(List<IMove> moves, int removed, int myPlayer, int opp) {
