@@ -62,6 +62,16 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 boards[i].newDeterminization(myPlayer);
             }
         }
+        //
+        if (options.limitD) {
+            boards = new IBoard[options.nDeterminizations];
+            for (int i = 0; i < options.nDeterminizations; i++) {
+                boards[i] = board.copy();
+                boards[i].newDeterminization(myPlayer);
+            }
+        }
+
+
         int nDet = 0;
         if (!options.fixedSimulations) {
             // Search for timeInterval seconds
@@ -98,8 +108,6 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     break;
             }
         } else {
-            int detInterval = options.simulations / options.nDeterminizations;
-
             board.newDeterminization(myPlayer); // To make sure we have a determinization and not the actual board
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
@@ -112,10 +120,9 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     playBoard = boards[selBoard].copy();
                     visits[selBoard]++;
                 } else {
-                    if(!options.limitD || simulations % detInterval == 0) {
-                        board.newDeterminization(myPlayer);
-                        nDet++;
-                    } else {
+                    if(options.limitD) {
+                        board = boards[simulations % options.nDeterminizations].copy();
+                    } else if (!options.limitD) {
                         board.newDeterminization(myPlayer);
                     }
                     playBoard = board.copy();

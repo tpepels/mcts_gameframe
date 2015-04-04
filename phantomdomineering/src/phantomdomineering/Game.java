@@ -10,10 +10,10 @@ import phantomdomineering.game.Move;
 
 public class Game {
     public static void main(String[] args) {
-        Board b = new Board(6);
+        Board b = new Board(8);
         b.initialize();
 
-        AIPlayer aiPlayer1 = new ISMCTSPlayer();
+        AIPlayer aiPlayer1 = new HISMCTSPlayer();
         MCTSOptions options1 = new MCTSOptions();
         options1.fixedSimulations = true;
         options1.simulations = 10000;
@@ -28,7 +28,7 @@ public class Game {
         options2.simulations = 10000;
         options2.limitD = true;
         options2.nDeterminizations = 20;
-        AIPlayer aiPlayer2 = new HISMCTSPlayer();
+        AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 
         AIPlayer aiPlayer;
