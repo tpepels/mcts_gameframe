@@ -10,7 +10,7 @@ import phantomdomineering.game.Move;
 
 public class Game {
     public static void main(String[] args) {
-        Board b = new Board(8);
+        Board b = new Board(10);
         b.initialize();
 
         AIPlayer aiPlayer1 = new HISMCTSPlayer();
@@ -38,9 +38,6 @@ public class Game {
             aiPlayer = (b.getPlayerToMove() == 1 ? aiPlayer1 : aiPlayer2);
             System.gc();
             IBoard copyBoard = b.copy();
-            copyBoard.newDeterminization(b.getPlayerToMove());
-            System.out.println(copyBoard);
-            copyBoard = b.copy();
             copyBoard.newDeterminization(b.getPlayerToMove());
             aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();

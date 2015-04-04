@@ -11,7 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 public class TreeNode {
-    private final double LOG2 = Math.log(2.);
+    private final static double LOG2 = Math.log(2.);
     private final MCTSOptions options;
     //
     public int nPrime = 0, playerToMove, budget, totB, round, sSize, totS;

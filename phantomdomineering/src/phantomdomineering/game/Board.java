@@ -4,6 +4,7 @@ import framework.FiniteBoard;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
+import framework.util.IntHashMap;
 import framework.util.StatCounter;
 
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class Board implements FiniteBoard {
     private static final int EMPTY = 0;
     private static final ArrayList<IMove> poMoves = new ArrayList<>(1000);
     private static final MoveList static_moves = new MoveList(1000);
+    private static final IntHashMap<String> impossibles = new IntHashMap<>();
     //
     private final int[][] board;
     private final int size;
@@ -173,6 +175,7 @@ public class Board implements FiniteBoard {
         currentPlayer = P1;
         blocked[0] = new ArrayList();
         blocked[1] = new ArrayList();
+        impossibles.clear();
     }
 
     @Override
@@ -235,7 +238,7 @@ public class Board implements FiniteBoard {
             }
         }
         // System.out.println("Determinizing");
-        // long time = System.currentTimeMillis();
+        //long time = System.currentTimeMillis();
         if (removed > 0) {
             currentPlayer = opp;
             List<IMove> moves = getPlayoutMoves(false);
@@ -256,6 +259,7 @@ public class Board implements FiniteBoard {
                         if (((x3 == x1 && y3 == y1) || (x4 == x2 && y4 == y2)) &&
                                 (board[y3][x3] == EMPTY && board[y4][x4] == EMPTY)) {
                             moves1.add(move2);
+                            break;
                         }
                     }
                 }
@@ -286,15 +290,17 @@ public class Board implements FiniteBoard {
 
                 board[y1][x1] = opp;
                 board[y2][x2] = opp;
-
-                if (determinize(moves, removed - 2, myPlayer, opp))
-                    return true;
+                if (!impossibles.exists(this.toString().hashCode(), this.toString())) {
+                    if (determinize(moves, removed - 2, myPlayer, opp))
+                        return true;
+                }
 
                 board[y1][x1] = EMPTY;
                 board[y2][x2] = EMPTY;
             }
         }
         // No move was found
+        impossibles.put(this.toString().hashCode(), this.toString());
         return false;
     }
 
@@ -303,8 +309,9 @@ public class Board implements FiniteBoard {
             IMove move1 = blocked[myPlayer - 1].get(i);
             int x1 = move1.getMove()[0], x2 = move1.getMove()[2];
             int y1 = move1.getMove()[1], y2 = move1.getMove()[3];
-            if ((board[y1][x1] == EMPTY && board[y2][x2] == EMPTY))
+            if ((board[y1][x1] == EMPTY && board[y2][x2] == EMPTY)) {
                 return false;
+            }
         }
         // None of the blocked moves could be played!
         return true;
