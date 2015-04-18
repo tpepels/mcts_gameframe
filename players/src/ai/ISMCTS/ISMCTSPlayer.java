@@ -6,6 +6,7 @@ import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
 import framework.util.FastLog;
+import framework.util.StatCounter;
 
 public class ISMCTSPlayer implements AIPlayer, Runnable {
 
@@ -40,7 +41,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
     }
 
     int nd;
-    double[] visits, scores;
+    StatCounter[] stats;
     IBoard[] boards;
 
     @Override
@@ -55,10 +56,10 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         if (options.banditD) {
             nd = options.nDeterminizations;
             boards = new IBoard[nd];
-            visits = new double[nd];
-            scores = new double[nd];
+            stats = new StatCounter[nd];
             for (int i = 0; i < nd; i++) {
                 boards[i] = board.copy();
+                stats[i] = new StatCounter();
                 boards[i].newDeterminization(myPlayer);
             }
         }
@@ -86,7 +87,6 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 if (options.banditD) {
                     selBoard = selectBoard(simulations);
                     playBoard = boards[selBoard];
-                    visits[selBoard]++;
                 } else {
                     playBoard = board.copy();
                     playBoard.newDeterminization(myPlayer);
@@ -96,13 +96,8 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 // Note: stats at root node are in view of the root player (also never used)
                 int res = root.MCTS(playBoard);
 
-                if(options.banditD) {
-                    if(res == myPlayer) {
-                        scores[selBoard]++;
-                    } else {
-                        scores[selBoard]--;
-                    }
-                }
+                if (options.banditD)
+                    stats[selBoard].push((res == myPlayer) ? 1 : -1);
 
                 if (System.currentTimeMillis() >= endTime)
                     break;
@@ -118,7 +113,6 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 if (options.banditD) {
                     selBoard = selectBoard(simulations);
                     playBoard = boards[selBoard].copy();
-                    visits[selBoard]++;
                 } else {
                     if(options.limitD) {
                         board = boards[simulations % options.nDeterminizations].copy();
@@ -131,14 +125,8 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 // Note: stats at the root node are in view of the root player (also never used)
                 int res = root.MCTS(playBoard);
 
-                if(options.banditD) {
-                    if(res == myPlayer) {
-                        scores[selBoard]++;
-                    } else {
-                        scores[selBoard]--;
-                    }
-                }
-
+                if (options.banditD)
+                    stats[selBoard].push((res == myPlayer) ? 1 : -1);
             }
         }
         // Return the best move found
@@ -153,7 +141,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             System.out.println("Determinizations: " + nDet);
             if(options.banditD) {
                 for (int i = 0; i < nd; i++) {
-                    System.out.println("Board: " + i + " v: " + visits[i] + " s: " + scores[i]);
+                    System.out.println("Board: " + i + " v: " + stats[i].visits() + " s: " + stats[i].mean());
                 }
             }
         }
@@ -169,10 +157,10 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         int selected = -1;
         double max = Integer.MIN_VALUE, uctV;
         for (int i = 0; i < nd; i++) {
-            if (visits[i] == 0) {
+            if (stats[i].visits() == 0) {
                 return i;
             }
-            uctV = (1. - Math.abs(scores[i] / visits[i])) + Math.sqrt(FastLog.log(totSim) / visits[i]);
+            uctV = stats[i].variance() + Math.sqrt(FastLog.log(totSim) / stats[i].visits());
             if (uctV > max) {
                 max = uctV;
                 selected = i;
