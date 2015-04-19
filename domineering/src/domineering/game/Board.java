@@ -239,6 +239,16 @@ public class Board implements FiniteBoard {
     }
 
     @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
+    @Override
     public void newDeterminization(int myPlayer) {
         // Not required
     }

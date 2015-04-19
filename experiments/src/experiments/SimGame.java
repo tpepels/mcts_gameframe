@@ -338,7 +338,7 @@ public class SimGame {
             playerRef.setOptions(alphaBetaOptions);
         } else if (parts[0].equals("ismcts") || parts[0].equals("hismcts")) {
             //
-            if(parts[0].equals("ismcts"))
+            if (parts[0].equals("ismcts"))
                 playerRef = new ISMCTSPlayer();
             else
                 playerRef = new HISMCTSPlayer();
@@ -361,9 +361,12 @@ public class SimGame {
                     options.uctC = Double.parseDouble(tag.substring(3));
                 } else if (tag.startsWith("bd")) {
                     options.banditD = true;
-                    options.nDeterminizations = Integer.parseInt(tag.substring(2));
-                } else if (tag.startsWith("nd")) {
+                    options.banditStrat = Integer.parseInt(tag.substring(2));
+                } else if (tag.startsWith("bc")) {
+                    options.detC = Double.parseDouble(tag.substring(2));
+                } else if (tag.startsWith("ld")) {
                     options.limitD = true;
+                } else if (tag.startsWith("nd")) {
                     options.nDeterminizations = Integer.parseInt(tag.substring(2));
                 }
             }
