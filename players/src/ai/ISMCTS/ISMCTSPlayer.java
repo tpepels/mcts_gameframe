@@ -87,7 +87,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             int selBoard = -1;
             if (options.banditD) {
                 selBoard = selectBoard(simulations);
-                playBoard = boards[selBoard];
+                playBoard = boards[selBoard].copy();
             } else {
                 if (options.limitD) {
                     playBoard = boards[simulations % nd].copy();
