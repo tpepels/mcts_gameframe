@@ -288,4 +288,14 @@ public class Board implements IBoard {
     public long hash() {
         return 0;
     }
+
+    @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
 }

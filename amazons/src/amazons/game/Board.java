@@ -632,6 +632,16 @@ public class Board implements IBoard {
         return zbHash;
     }
 
+    @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
     private int getFreedom(int player) {
         int from, total = 0;
         for (int i = 0; i < queens[player - 1].length; i++) {

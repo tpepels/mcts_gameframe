@@ -40,11 +40,11 @@ public class TreeNode {
         stats = new NPlayerStats(nPlayers);
     }
 
-    public void HMCTS(IBoard board) {
+    public void HMCTS(IBoard board, int visiblePlayer) {
         if(children == null)
             children = new ArrayList<>();
         // Expand all nodes
-        while (ai.ISMCTS.TreeNode.expand(board, children, stats.getNPlayers(), options) != null) {
+        while (ai.ISMCTS.TreeNode.expand(board, children, options, visiblePlayer) != null) {
         }
         sSize = children.size();
         totS = children.size();
@@ -75,7 +75,7 @@ public class TreeNode {
                     }
 
                     tempBoard.doAIMove(c.getMove(), board.getPlayerToMove());
-                    c.MCTS(tempBoard);
+                    c.MCTS(tempBoard, visiblePlayer);
                     budget--;
                 }
             }

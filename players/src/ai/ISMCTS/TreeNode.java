@@ -12,6 +12,7 @@ import java.util.List;
 
 public class TreeNode {
     public int nPrime = 0, playerToMove;
+    private final boolean hiddenMove;
     private final MCTSOptions options;
     public NPlayerStats stats; // Stats per player
     private ArrayList<TreeNode> children;
@@ -21,27 +22,39 @@ public class TreeNode {
     /**
      * Constructor for the root
      */
-    public TreeNode(int playerToMove, int nPlayers, MCTSOptions options) {
+    public TreeNode(int playerToMove, MCTSOptions options) {
         this.options = options;
         this.playerToMove = playerToMove;
-        stats = new NPlayerStats(nPlayers);
+        this.hiddenMove = false;
+        stats = new NPlayerStats(2);
     }
 
     /**
      * Constructor for internal node
      */
-    public TreeNode(int playerToMove, int nPlayers, IMove move, MCTSOptions options) {
+    public TreeNode(int playerToMove, IMove move, MCTSOptions options) {
         this.playerToMove = playerToMove;
         this.move = move;
         this.options = options;
-        stats = new NPlayerStats(nPlayers);
+        this.hiddenMove = false;
+        stats = new NPlayerStats(2);
     }
 
-    public int MCTS(IBoard board) {
+    /**
+     * Constructor for hidden-move node
+     */
+    public TreeNode(int playerToMove, boolean hiddenMove, MCTSOptions options) {
+        this.playerToMove = playerToMove;
+        this.hiddenMove = hiddenMove;
+        this.options = options;
+        stats = new NPlayerStats(2);
+    }
+
+    public int MCTS(IBoard board, int visiblePlayer) {
         if (children == null)
             children = new ArrayList<>();
         // Expand returns an expanded leaf if any was added to the tree
-        TreeNode child = expand(board, children, stats.getNPlayers(), options);
+        TreeNode child = expand(board, children, options, visiblePlayer);
         // Select the best child, if we didn't find a winning position in the expansion
         int result = board.checkWin();
         boolean isTerminal = (result != IBoard.NONE_WIN);
@@ -49,8 +62,16 @@ public class TreeNode {
             // Select a child node
             if (child == null)
                 child = select(board);
-            // Perform the move
-            board.doAIMove(child.getMove(), board.getPlayerToMove());
+            // Do the opponent's hidden move before descending
+            if (child.hiddenMove) {
+                MoveList ml = board.getExpandMoves();
+                // Randomly select a hidden move (SO-ISMCTS)
+                IMove hMove = ml.get(MCTSOptions.r.nextInt(ml.size()));
+                board.doAIMove(hMove, board.getPlayerToMove());
+            } else {
+                // Perform the move
+                board.doAIMove(child.getMove(), board.getPlayerToMove());
+            }
             if (!child.simulated) {
                 // Roll-out
                 result = child.playOut(board);
@@ -58,7 +79,7 @@ public class TreeNode {
                 child.simulated = true;
             } else {
                 // Tree
-                result = child.MCTS(board);
+                result = child.MCTS(board, visiblePlayer);
             }
         }
         // Back-prop
@@ -72,7 +93,16 @@ public class TreeNode {
      * @param board The Board
      * @return The expanded node
      */
-    public static TreeNode expand(IBoard board, List<TreeNode> children, int nPlayers, MCTSOptions options) {
+    public static TreeNode expand(IBoard board, List<TreeNode> children, MCTSOptions options, int visiblePlayer) {
+        if (board.poMoves() && board.getPlayerToMove() != visiblePlayer) {
+            for (TreeNode c : children)
+                if (c.hiddenMove)
+                    return c;
+            // The aggregate node for the hidden player was not yet made
+            TreeNode newNode = new TreeNode(board.getPlayerToMove(), true, options);
+            children.add(newNode);
+            return newNode;
+        }
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         moves.shuffle();
@@ -80,19 +110,20 @@ public class TreeNode {
         // Board is terminal, don't expand
         if (winner != IBoard.NONE_WIN)
             return null;
-
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
             boolean exists = false;
             // Check here if the move is already in tree
             for (TreeNode node : children) {
+                if (board.poMoves() && node.hiddenMove)
+                    continue;
                 if (node.move.equals(moves.get(i)) && node.playerToMove == board.getPlayerToMove()) {
                     exists = true;
                     break;
                 }
             }
             if (!exists) {
-                TreeNode newNode = new TreeNode(board.getPlayerToMove(), nPlayers, moves.get(i), options);
+                TreeNode newNode = new TreeNode(board.getPlayerToMove(), moves.get(i), options);
                 children.add(newNode);
                 newNode.nPrime++;
                 // We have a new node, no need to look further.
@@ -106,17 +137,14 @@ public class TreeNode {
     private TreeNode select(IBoard board) {
         TreeNode selected = null;
         double bestValue = Double.NEGATIVE_INFINITY, uctValue;
-        // For a chance-move, select a random child
-        if (move != null && move.isChance())
-            return children.get(MCTSOptions.r.nextInt(children.size()));
         // Select a child according to the UCT Selection policy
         for (TreeNode c : children) {
             // If the game is partially observable, moves in the tree may not be legal
-            if (!board.isLegal(c.getMove()))
+            if (board.getPlayerToMove() != c.playerToMove || !board.isLegal(c.getMove()))
                 continue;
             // First, visit all children at least once
             if (c.nPrime == 0)
-                uctValue = 10000. + MCTSOptions.r.nextDouble();
+                uctValue = 100. + MCTSOptions.r.nextDouble();
             else
                 uctValue = c.stats.mean(board.getPlayerToMove()) + options.uctC * Math.sqrt(FastLog.log(c.nPrime) / c.getnVisits());
             // Number of times this node was available
@@ -166,11 +194,8 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(int value) {
-        if (value == IBoard.DRAW)
-            stats.pushDraw();
-        else
-            stats.pushWin(value); // TODO What if multiple players win?!?!
+    private void updateStats(int winner) {
+        stats.push(winner);
     }
 
     public List<TreeNode> getChildren() {
@@ -183,10 +208,6 @@ public class TreeNode {
 
     public double getnVisits() {
         return stats.getN();
-    }
-
-    public int getArity() {
-        return (children != null) ? children.size() : 0;
     }
 
     @Override

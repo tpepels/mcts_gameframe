@@ -808,6 +808,16 @@ public class Board implements IBoard {
         return zbHash;
     }
 
+    @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
     public String toString() {
         String rowLabels = "87654321";
         String colLabels = "abcdefgh";

@@ -71,6 +71,16 @@ public class Board implements IBoard {
         return zbHash;
     }
 
+    @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
     public void initialize(int setboard[]) {
         board = new int[N_HOUSES * 2];
         store1 = 0;

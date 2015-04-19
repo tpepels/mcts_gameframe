@@ -577,6 +577,16 @@ public class Board implements IBoard {
         return 0;
     }
 
+    @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
     public String toString() {
         String str = "Scores: " + score1 + " " + score2 +
                 ", Floes: " + floes1 + " " + floes2 + "\n\n";

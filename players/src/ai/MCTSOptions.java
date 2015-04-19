@@ -20,7 +20,9 @@ public class MCTSOptions {
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, treeReuse = false, solver = true;
     public boolean ucbTuned = false, auct = false, swUCT = false;
     // Plot stats to a file
-    public boolean mapping = false, banditD = false;
+    public boolean banditD = false;
+    public int banditStrat = 1;
+    public double detC = 1.;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";
     // MCTS Specific values
     public double uctC = 1., uctCC = .5, maxVar = 1.;

@@ -811,6 +811,16 @@ public class Board implements IBoard {
         return zobristHash;
     }
 
+    @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
     public double getRowScore(int player) {
         double currentMax, maxRow = -10;
         // Check minimal freedom, longest rows etc.

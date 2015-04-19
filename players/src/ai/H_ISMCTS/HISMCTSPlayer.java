@@ -53,7 +53,7 @@ public class HISMCTSPlayer implements AIPlayer, Runnable {
         // Make a new copy and determinization just in case :)
         IBoard b = board.copy();
         b.newDeterminization(myPlayer);
-        root.HMCTS(b);
+        root.HMCTS(b, myPlayer);
         // Return the best move found
         ai.ISMCTS.TreeNode bestChild = root.getBestChild();
         bestMove = bestChild.getMove();

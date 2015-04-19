@@ -389,6 +389,16 @@ public class Board implements IBoard {
     }
 
     @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
+    @Override
     public void newDeterminization(int myPlayer) {
         // Fully observable
     }

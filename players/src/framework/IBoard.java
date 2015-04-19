@@ -8,8 +8,8 @@ public interface IBoard {
     /**
      * Win/loss/draw and player definitions, don't change these
      */
-    public final int NONE_WIN = 0, P1_WIN = 1, P2_WIN = 2, DRAW = 3;
-    public final int P1 = 1, P2 = 2;
+    int NONE_WIN = 0, P1_WIN = 1, P2_WIN = 2, P3_WIN = 3, P4_WIN = 4, DRAW = 100;
+    int P1 = 1, P2 = 2;
 
     /**
      * Is called before every iteration to create a new determinization.
@@ -17,21 +17,21 @@ public interface IBoard {
      *
      * @param myPlayer The player running the algorithm
      */
-    public void newDeterminization(int myPlayer);
+    void newDeterminization(int myPlayer);
 
     /**
      * Should return true if the game is not fully observable
      *
      * @return true if not fully observable
      */
-    public boolean isPartialObservable();
+    boolean isPartialObservable();
 
     /**
      * Should return the number of moves made in the current game
      *
      * @return The number of moves made so far
      */
-    public int getNMovesMade();
+    int getNMovesMade();
 
     /**
      * In partially observable games, the legality of a move is tested during selection.
@@ -155,4 +155,7 @@ public interface IBoard {
      */
     public long hash();
 
+    boolean poMoves();
+
+    int getNPlayers();
 }

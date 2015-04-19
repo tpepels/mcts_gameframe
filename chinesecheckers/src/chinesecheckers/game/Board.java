@@ -531,6 +531,16 @@ public class Board implements IBoard {
         return zbHash;
     }
 
+    @Override
+    public boolean poMoves() {
+        return false;
+    }
+
+    @Override
+    public int getNPlayers() {
+        return 2;
+    }
+
     public String toString() {
         return ("toString mostly unimplemented.. :(  nMoves = " + nMoves);
     }
