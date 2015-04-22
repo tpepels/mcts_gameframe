@@ -100,12 +100,12 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     playBoard.newDeterminization(myPlayer);
                 }
             }
-
             int res;
             if (!options.forceSO && !board.poMoves())
                 res = root.MCTS(playBoard, myPlayer);
             else
                 res = TreeNode.MCTS(playBoard, myPlayer, root, root2);
+            //
             if (options.banditD) {
                 int reward = (res == myPlayer) ? 1 : -1;
                 stats[selBoard].push(reward);
@@ -166,6 +166,9 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     break;
                 case 5:
                     uctV = (score / (double) simulations) - stats[i].mean();
+                    break;
+                case 6:
+                    uctV = 1. - stats[i].variance();
                     break;
             }
             //

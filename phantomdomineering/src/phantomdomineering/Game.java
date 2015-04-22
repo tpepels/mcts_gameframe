@@ -16,8 +16,9 @@ public class Game {
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         options1.fixedSimulations = true;
         options1.simulations = 10000;
-        options1.banditD = true;
-        options1.nDeterminizations = 20;
+        options1.limitD = true;
+        //options1.banditD = true;
+        options1.nDeterminizations = 100;
         options1.setGame("phantomdomineering");
         aiPlayer1.setOptions(options1);
 
@@ -26,7 +27,7 @@ public class Game {
         options2.fixedSimulations = true;
         options2.simulations = 10000;
         options2.limitD = true;
-        options2.nDeterminizations = 20;
+        options2.nDeterminizations = 100;
         options2.forceSO = true;
         options2.setGame("phantomdomineering");
         aiPlayer2.setOptions(options2);
