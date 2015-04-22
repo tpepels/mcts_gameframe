@@ -87,6 +87,50 @@ public class TreeNode {
         return result;
     }
 
+    public static int MCTS(IBoard board, int visiblePlayer, TreeNode node1, TreeNode node2) {
+        if (node1.children == null)
+            node1.children = new ArrayList<>();
+        if (node2.children == null)
+            node2.children = new ArrayList<>();
+
+        // Expand returns an expanded leaf if any was added to the tree
+        TreeNode child, child1, child2;
+        child1 = node1.expand(board, node1.children, node1.options, visiblePlayer);
+        child2 = node2.expand(board, node2.children, node2.options, board.getOpponent(visiblePlayer));
+        // Select the best child, if we didn't find a winning position in the expansion
+        int result = board.checkWin();
+        boolean isTerminal = (result != IBoard.NONE_WIN);
+        if (!isTerminal) {
+            // Select a child node
+            if (child1 == null)
+                child1 = node1.select(board);
+            if (child2 == null)
+                child2 = node2.select(board);
+            // Check which tree has the current move to make
+            if (board.getPlayerToMove() == visiblePlayer)
+                child = child1;
+            else
+                child = child2;
+            // Perform the move
+            board.doAIMove(child.getMove(), board.getPlayerToMove());
+            if (!child.simulated) {
+                // Roll-out
+                result = child.playOut(board);
+                child1.updateStats(result);
+                child2.updateStats(result);
+                child1.simulated = true;
+                child2.simulated = true;
+            } else {
+                // Tree
+                result = child.MCTS(board, visiblePlayer, child1, child2);
+            }
+        }
+        // Back-prop
+        node1.updateStats(result);
+        node2.updateStats(result);
+        return result;
+    }
+
     /**
      * Adds a single node to the tree
      *

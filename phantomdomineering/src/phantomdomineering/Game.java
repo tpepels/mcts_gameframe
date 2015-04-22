@@ -27,6 +27,7 @@ public class Game {
         options2.simulations = 10000;
         options2.limitD = true;
         options2.nDeterminizations = 20;
+        options2.forceSO = true;
         options2.setGame("phantomdomineering");
         aiPlayer2.setOptions(options2);
 

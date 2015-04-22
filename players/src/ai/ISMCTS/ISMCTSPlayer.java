@@ -11,7 +11,7 @@ import framework.util.StatCounter;
 public class ISMCTSPlayer implements AIPlayer, Runnable {
 
     private boolean interrupted = false, parallel = false;
-    public TreeNode root;
+    public TreeNode root, root2;
     private IBoard board;
     private MoveCallback callback;
     private IMove bestMove;
@@ -28,8 +28,12 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         this.board = board;
         this.callback = callback;
         this.myPlayer = myPlayer;
+
         // Create a new root, or reuse the old tree
         root = new TreeNode(myPlayer, options);
+        if (board.poMoves())
+            root2 = new TreeNode(myPlayer, options);
+
         interrupted = false;
         if (parallel) {
             // Start the search in a new Thread.
@@ -76,8 +80,8 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         long endTime = startTime + options.timeInterval;
 
         if (options.fixedSimulations) {
-            // 24h search
-            endTime += 24 * 60 * 60 * 1000;
+            // 1 week search
+            endTime += 7 * 24 * 60 * 60 * 1000;
         }
 
         // Run the MCTS algorithm while time allows it
@@ -97,8 +101,11 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 }
             }
 
-            int res = root.MCTS(playBoard, myPlayer);
-
+            int res;
+            if (!options.forceSO && !board.poMoves())
+                res = root.MCTS(playBoard, myPlayer);
+            else
+                res = TreeNode.MCTS(playBoard, myPlayer, root, root2);
             if (options.banditD) {
                 int reward = (res == myPlayer) ? 1 : -1;
                 stats[selBoard].push(reward);
