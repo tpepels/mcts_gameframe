@@ -368,6 +368,8 @@ public class SimGame {
                     options.limitD = true;
                 } else if (tag.startsWith("nd")) {
                     options.nDeterminizations = Integer.parseInt(tag.substring(2));
+                } else if (tag.equalsIgnoreCase("so")) {
+                    options.forceSO = true;
                 }
             }
             playerRef.setOptions(options);
