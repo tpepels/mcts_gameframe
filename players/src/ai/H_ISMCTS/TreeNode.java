@@ -76,7 +76,7 @@ public class TreeNode {
                     if (!options.flat)
                         c.MCTS(tempBoard, visiblePlayer);
                     else {
-                        c.updateStats(c.playOut(board));
+                        c.updateStats(c.playOut(tempBoard));
                     }
                     budget--;
                 }
