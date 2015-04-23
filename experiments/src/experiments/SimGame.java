@@ -370,6 +370,8 @@ public class SimGame {
                     options.nDeterminizations = Integer.parseInt(tag.substring(2));
                 } else if (tag.equalsIgnoreCase("so")) {
                     options.forceSO = true;
+                } else if (tag.equals("flat")) {
+                    options.flat = true;
                 } else {
                     throw new RuntimeException("Unrecognised tag " + tag);
                 }

@@ -19,8 +19,7 @@ public class MCTSOptions {
     // note: useHeuristics has a different default (false) when using SimGame
     public boolean debug = true, useHeuristics = true, solverFix = true, fixedSimulations = false, treeReuse = false, solver = true;
     public boolean ucbTuned = false, auct = false, swUCT = false, forceSO = false;
-    // Plot stats to a file
-    public boolean banditD = false;
+    public boolean banditD = false, flat = false;
     public int banditStrat = 1;
     public double detC = 1.;
     public String plotOutFile = "C:\\users\\tom\\desktop\\data\\arms%s.dat";

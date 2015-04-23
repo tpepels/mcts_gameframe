@@ -72,7 +72,7 @@ public class TreeNode {
                 // Perform the move
                 board.doAIMove(child.getMove(), board.getPlayerToMove());
             }
-            if (!child.simulated) {
+            if (!child.simulated || options.flat) {
                 // Roll-out
                 result = child.playOut(board);
                 child.updateStats(result);
@@ -113,7 +113,7 @@ public class TreeNode {
                 child = child2;
             // Perform the move
             board.doAIMove(child.getMove(), board.getPlayerToMove());
-            if (!child.simulated) {
+            if (!child.simulated || child.options.flat) {
                 // Roll-out
                 result = child.playOut(board);
                 child1.updateStats(result);
@@ -202,8 +202,7 @@ public class TreeNode {
         return selected;
     }
 
-    @SuppressWarnings("ConstantConditions")
-    private int playOut(IBoard board) {
+    public int playOut(IBoard board) {
         int winner = board.checkWin();
         List<IMove> moves;
         IMove currentMove;
@@ -238,7 +237,7 @@ public class TreeNode {
         return bestChild;
     }
 
-    private void updateStats(int winner) {
+    public void updateStats(int winner) {
         stats.push(winner);
     }
 
