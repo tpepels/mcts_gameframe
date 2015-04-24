@@ -63,22 +63,17 @@ public class Board implements FiniteBoard {
     @Override
     public MoveList getExpandMoves() {
         static_moves.clear();
-        IMove m;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (board[i][j] != currentPlayer) {
-                    if (currentPlayer == P1)
-                        if (i + 1 < size && board[i + 1][j] != P1) {
-                            m = new Move(j, i, j, i + 1);
-                            if (!isBlocked(currentPlayer, m))
-                                static_moves.add(m);
-                        }
-                    if (currentPlayer == P2)
-                        if (j + 1 < size && board[i][j + 1] != P2) {
-                            m = new Move(j, i, j + 1, i);
-                            if (!isBlocked(currentPlayer, m))
-                                static_moves.add(m);
-                        }
+                if (board[i][j] == EMPTY) {
+                    if (currentPlayer == P1) {
+                        if (i + 1 < size && board[i + 1][j] == EMPTY)
+                            static_moves.add(new Move(j, i, j, i + 1));
+                    } else if (currentPlayer == P2) {
+                        if (j + 1 < size && board[i][j + 1] == EMPTY)
+                            static_moves.add(new Move(j, i, j + 1, i));
+
+                    }
                 }
             }
         }
@@ -87,24 +82,22 @@ public class Board implements FiniteBoard {
 
     List<IMove> allMoves = new ArrayList<>();
 
-    public List<IMove> getMoves() {
+    public List<IMove> getMoves(int player) {
         allMoves.clear();
         IMove m;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (board[i][j] != currentPlayer) {
-                    if (currentPlayer == P1)
-                        if (i + 1 < size && board[i + 1][j] != P1) {
+                m = null;
+                if (board[i][j] == EMPTY) {
+                    if (player == P1) {
+                        if (i + 1 < size && board[i + 1][j] == EMPTY)
                             m = new Move(j, i, j, i + 1);
-                            if (!isBlocked(currentPlayer, m))
-                                allMoves.add(m);
-                        }
-                    if (currentPlayer == P2)
-                        if (j + 1 < size && board[i][j + 1] != P2) {
+                    } else if (player == P2) {
+                        if (j + 1 < size && board[i][j + 1] == EMPTY)
                             m = new Move(j, i, j + 1, i);
-                            if (!isBlocked(currentPlayer, m))
-                                allMoves.add(m);
-                        }
+                    }
+                    if (m != null)
+                        allMoves.add(m);
                 }
             }
         }
@@ -114,25 +107,22 @@ public class Board implements FiniteBoard {
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         poMoves.clear();
-        IMove m = null, minMove = null;
-        int x1, y1, x2, y2, minNMoves = size * size, nMoves;
+        IMove m, maxMove = null;
+        int x1, y1, x2, y2, maxMoves = -size * size - 1, nMoves;
         boolean greedy = MCTSOptions.r.nextFloat() < .9;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 m = null;
                 if (board[i][j] == EMPTY) {
                     if (currentPlayer == P1) {
-                        if (i + 1 < size && board[i + 1][j] == EMPTY) {
+                        if (i + 1 < size && board[i + 1][j] == EMPTY)
                             m = new Move(j, i, j, i + 1);
-                        }
                     } else if (currentPlayer == P2) {
-                        if (j + 1 < size && board[i][j + 1] == EMPTY) {
+                        if (j + 1 < size && board[i][j + 1] == EMPTY)
                             m = new Move(j, i, j + 1, i);
-                        }
                     }
-                    if (m != null && !isBlocked(currentPlayer, m)) {
+                    if (m != null)
                         poMoves.add(m);
-                    }
                 }
             }
         }
@@ -145,47 +135,41 @@ public class Board implements FiniteBoard {
                 y2 = m1.getMove()[3];
                 board[y1][x1] = currentPlayer;
                 board[y2][x2] = currentPlayer;
-                nMoves = checkNMoves(getOpponent(currentPlayer));
-                if (nMoves < minNMoves) {
-                    minMove = m1;
-                    minNMoves = nMoves;
+                nMoves = checkNMoves(currentPlayer);
+                if (nMoves > maxMoves) {
+                    maxMove = m1;
+                    maxMoves = nMoves;
                 }
                 board[y1][x1] = EMPTY;
                 board[y2][x2] = EMPTY;
             }
             poMoves.clear();
-            poMoves.add(minMove);
+            poMoves.add(maxMove);
         }
         return poMoves;
     }
 
     private int checkNMoves(int player) {
-        int n = 0;
-        Move m;
+        int no = 0, nm = 0;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                m = null;
                 if (board[i][j] == EMPTY) {
-                    if (player == P1) {
-                        if (i + 1 < size && board[i + 1][j] == EMPTY)
-                            m = new Move(j, i, j, i + 1);
-                    } else if (player == P2) {
-                        if (j + 1 < size && board[i][j + 1] == EMPTY)
-                            m = new Move(j, i, j + 1, i);
+                    if (i + 1 < size && board[i + 1][j] == EMPTY) {
+                        if (player == P1)
+                            nm++;
+                        else
+                            no++;
                     }
-                    if (m != null && !isBlocked(player, m))
-                        n++;
+                    if (j + 1 < size && board[i][j + 1] == EMPTY) {
+                        if (player == P2)
+                            nm++;
+                        else
+                            no++;
+                    }
                 }
             }
         }
-        return n;
-    }
-
-    private boolean isBlocked(int player, IMove m) {
-        for (IMove bm : blocked[player - 1])
-            if (bm.equals(m))
-                return true;
-        return false;
+        return nm - no;
     }
 
     @Override
@@ -320,9 +304,7 @@ public class Board implements FiniteBoard {
         }
         // Determinize the gamestate
         if (removed > 0) {
-            currentPlayer = opp;
-            List<IMove> moves = getMoves();
-            currentPlayer = myPlayer;
+            List<IMove> moves = getMoves(opp);
             Collections.shuffle(moves);
             List<IMove> moves1 = new ArrayList<>();
             // Shift all moves that coincide with observations to the front of the move list
@@ -407,8 +389,8 @@ public class Board implements FiniteBoard {
     public boolean isLegal(IMove move) {
         int x1 = move.getMove()[0], x2 = move.getMove()[2];
         int y1 = move.getMove()[1], y2 = move.getMove()[3];
-        if (board[y1][x1] != currentPlayer && board[y2][x2] != currentPlayer)
-            return !isBlocked(currentPlayer, move);
+        if (board[y1][x1] == EMPTY && board[y2][x2] == EMPTY)
+            return true;
         else
             return false;
     }

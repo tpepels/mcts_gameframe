@@ -9,7 +9,7 @@ import phantomdomineering.game.Move;
 
 public class Game {
     public static void main(String[] args) {
-        Board b = new Board(6);
+        Board b = new Board(8);
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
@@ -17,7 +17,6 @@ public class Game {
         options1.fixedSimulations = true;
         options1.simulations = 10000;
         options1.limitD = true;
-        options1.flat = true;
         options1.useHeuristics = true;
         //options1.banditD = true;
         options1.nDeterminizations = 100;
@@ -29,7 +28,6 @@ public class Game {
         options2.fixedSimulations = true;
         options2.simulations = 10000;
         options2.limitD = true;
-        options2.flat = true;
         options2.nDeterminizations = 100;
         options2.setGame("phantomdomineering");
         aiPlayer2.setOptions(options2);

@@ -141,7 +141,7 @@ public class MCTSOptions {
             kq = 1.6;
         } else if (game.equalsIgnoreCase("lostcities")) {
             //
-            uctC = 1.;
+            uctC = .6;
         } else if (game.equalsIgnoreCase("kalah")) {
             uctC = 1.;
         } else if (game.equalsIgnoreCase("checkers")) {
@@ -155,7 +155,7 @@ public class MCTSOptions {
         } else if (game.equalsIgnoreCase("penguin")) {
             uctC = 1.;
         } else if (game.equalsIgnoreCase("gofish")) {
-            uctC = 1.;
+            uctC = .8;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }
