@@ -10,7 +10,7 @@ import phantomdomineering.game.Move;
 
 public class Game {
     public static void main(String[] args) {
-        Board b = new Board(8);
+        Board b = new Board(6);
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();

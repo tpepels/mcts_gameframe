@@ -107,7 +107,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 res = TreeNode.MCTS(playBoard, myPlayer, root, root2);
             //
             if (options.banditD) {
-                int reward = (res == myPlayer) ? 1 : -1;
+                int reward = (res == myPlayer) ? 1 : 0;
                 stats[selBoard].push(reward);
                 score += reward;
             }

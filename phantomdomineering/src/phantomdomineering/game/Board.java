@@ -1,5 +1,6 @@
 package phantomdomineering.game;
 
+import ai.MCTSOptions;
 import framework.FiniteBoard;
 import framework.IBoard;
 import framework.IMove;
@@ -87,27 +88,68 @@ public class Board implements FiniteBoard {
     @Override
     public List<IMove> getPlayoutMoves(boolean heuristics) {
         poMoves.clear();
-        IMove m;
+        IMove m = null, minMove = null;
+        int x1, y1, x2, y2, minNMoves = size * size, nMoves;
+        boolean greedy = MCTSOptions.r.nextFloat() < .9;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (board[i][j] != currentPlayer) {
                     // if cram, check in all directions
-                    if (currentPlayer == P1)
+                    if (currentPlayer == P1) {
                         if (i + 1 < size && board[i + 1][j] != P1) {
                             m = new Move(j, i, j, i + 1);
-                            if (!isBlocked(currentPlayer, m))
-                                poMoves.add(m);
                         }
-                    if (currentPlayer == P2)
+                    } else if (currentPlayer == P2) {
                         if (j + 1 < size && board[i][j + 1] != P2) {
                             m = new Move(j, i, j + 1, i);
-                            if (!isBlocked(currentPlayer, m))
-                                poMoves.add(m);
                         }
+                    }
+                    if (!isBlocked(currentPlayer, m)) {
+                        poMoves.add(m);
+                    }
                 }
             }
         }
+        if (greedy) {
+            Collections.shuffle(poMoves);
+            for (IMove m1 : poMoves) {
+                x1 = m1.getMove()[0];
+                x2 = m1.getMove()[2];
+                y1 = m1.getMove()[1];
+                y2 = m1.getMove()[3];
+                board[y1][x1] = currentPlayer;
+                board[y2][x2] = currentPlayer;
+                nMoves = checkNMoves(getOpponent(currentPlayer));
+                if (nMoves < minNMoves) {
+                    minMove = m1;
+                    minNMoves = nMoves;
+                }
+                board[y1][x1] = EMPTY;
+                board[y2][x2] = EMPTY;
+            }
+            poMoves.clear();
+            poMoves.add(minMove);
+        }
         return poMoves;
+    }
+
+    private int checkNMoves(int player) {
+        int n = 0;
+        Move m = null;
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                if (player == P1) {
+                    if (i + 1 < size && board[i + 1][j] != P1)
+                        m = new Move(j, i, j, i + 1);
+                } else if (player == P2) {
+                    if (j + 1 < size && board[i][j + 1] != P2)
+                        m = new Move(j, i, j + 1, i);
+                }
+                if (!isBlocked(player, m))
+                    n++;
+            }
+        }
+        return n;
     }
 
     private boolean isBlocked(int player, IMove m) {
