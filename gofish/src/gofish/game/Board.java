@@ -262,7 +262,7 @@ public class Board implements IBoard {
 
     @Override
     public boolean isLegal(IMove move) {
-        return true;
+        return checkHand((currentPlayer == P1) ? p1Hand : p2Hand, move.getMove()[0] % 100);
     }
 
     @Override
