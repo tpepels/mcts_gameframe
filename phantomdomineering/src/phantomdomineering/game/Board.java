@@ -109,7 +109,7 @@ public class Board implements FiniteBoard {
         poMoves.clear();
         IMove m, maxMove = null;
         int x1, y1, x2, y2, maxMoves = -size * size - 1, nMoves;
-        boolean greedy = MCTSOptions.r.nextFloat() < .9;
+        boolean greedy = MCTSOptions.r.nextFloat() < 1.;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 m = null;
