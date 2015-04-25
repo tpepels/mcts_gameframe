@@ -1,5 +1,6 @@
 package phantomdomineering.game;
 
+import ai.MCTSOptions;
 import framework.FiniteBoard;
 import framework.IBoard;
 import framework.IMove;
@@ -109,6 +110,8 @@ public class Board implements FiniteBoard {
         IMove m, maxMove = null;
         int x1, y1, x2, y2, maxMoves = -size * size - 1, nMoves;
         boolean greedy = false;
+        if (heuristics)
+            greedy = MCTSOptions.r.nextInt() < .9;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 m = null;
