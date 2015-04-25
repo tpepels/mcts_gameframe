@@ -151,7 +151,7 @@ public class MCTSOptions {
         } else if (game.equalsIgnoreCase("domineering")) {
             uctC = 1.;
         } else if (game.startsWith("phantomdomineering")) {
-            uctC = 1.;
+            uctC = .6;
         } else if (game.equalsIgnoreCase("penguin")) {
             uctC = 1.;
         } else if (game.equalsIgnoreCase("gofish")) {
