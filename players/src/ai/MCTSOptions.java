@@ -140,8 +140,8 @@ public class MCTSOptions {
             kr = 1.;
             kq = 1.6;
         } else if (game.equalsIgnoreCase("lostcities")) {
-            //
             uctC = .6;
+            nDeterminizations = 250;
         } else if (game.equalsIgnoreCase("kalah")) {
             uctC = 1.;
         } else if (game.equalsIgnoreCase("checkers")) {
@@ -152,10 +152,12 @@ public class MCTSOptions {
             uctC = 1.;
         } else if (game.startsWith("phantomdomineering")) {
             uctC = .6;
+            nDeterminizations = 250;
         } else if (game.equalsIgnoreCase("penguin")) {
             uctC = 1.;
         } else if (game.equalsIgnoreCase("gofish")) {
             uctC = .8;
+            nDeterminizations = 150;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }
