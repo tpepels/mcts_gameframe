@@ -63,25 +63,32 @@ public class Board implements FiniteBoard {
     @Override
     public MoveList getExpandMoves() {
         static_moves.clear();
+        Move m;
+        // Returns all moves in view of the current player.
+        // This method assumes that the opponent's stones are not visible to the player
+        // This method should be called every time a node is visited to determine whether new nodes
+        // can be added to the tree.
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
-                if (board[i][j] == EMPTY) {
+                m = null;
+                if (board[i][j] != currentPlayer) {
                     if (currentPlayer == P1) {
-                        if (i + 1 < size && board[i + 1][j] == EMPTY)
-                            static_moves.add(new Move(j, i, j, i + 1));
+                        if (i + 1 < size && board[i + 1][j] != currentPlayer)
+                            m = new Move(j, i, j, i + 1);
                     } else if (currentPlayer == P2) {
-                        if (j + 1 < size && board[i][j + 1] == EMPTY)
-                            static_moves.add(new Move(j, i, j + 1, i));
-
+                        if (j + 1 < size && board[i][j + 1] != currentPlayer)
+                            m = new Move(j, i, j + 1, i);
                     }
+                    // Add only the possible moves in view of my player
+                    if (m != null && !blocked[currentPlayer - 1].contains(m))
+                        static_moves.add(m);
                 }
             }
         }
         return static_moves.copy();
     }
 
-    List<IMove> allMoves = new ArrayList<>();
-
+    private final static List<IMove> allMoves = new ArrayList<>();
     public List<IMove> getMoves(int player) {
         allMoves.clear();
         IMove m;

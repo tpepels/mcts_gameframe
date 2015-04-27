@@ -122,7 +122,7 @@ public class TreeNode {
                 child2.simulated = true;
             } else {
                 // Tree
-                result = child.MCTS(board, visiblePlayer, child1, child2);
+                result = MCTS(board, visiblePlayer, child1, child2);
             }
         }
         // Back-prop
@@ -156,6 +156,9 @@ public class TreeNode {
             return null;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
+            // It may be possible that getExpandMoves returns illegal moves
+            if (!board.isLegal(moves.get(i)))
+                continue;
             boolean exists = false;
             // Check here if the move is already in tree
             for (TreeNode node : children) {
@@ -166,6 +169,7 @@ public class TreeNode {
                     break;
                 }
             }
+            // Add the node to the tree if it didn't exist
             if (!exists) {
                 TreeNode newNode = new TreeNode(board.getPlayerToMove(), moves.get(i), options);
                 children.add(newNode);
