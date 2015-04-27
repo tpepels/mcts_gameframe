@@ -22,12 +22,14 @@ public class Board implements FiniteBoard {
     private final int size;
     private final List<IMove>[] blocked;
     private int nMoves, currentPlayer;
+    public int lastMoveBy;
 
     public Board(int size) {
         this.size = size;
         this.board = new int[size][size];
         this.nMoves = 0;
         this.blocked = new ArrayList[2];
+        this.lastMoveBy = 0;
     }
 
     @Override
@@ -41,6 +43,7 @@ public class Board implements FiniteBoard {
         newBoard.blocked[1] = new ArrayList<>(blocked[1]);
         newBoard.nMoves = nMoves;
         newBoard.currentPlayer = currentPlayer;
+        newBoard.lastMoveBy = lastMoveBy;
         return newBoard;
     }
 
@@ -52,6 +55,7 @@ public class Board implements FiniteBoard {
             board[y1][x1] = currentPlayer;
             board[y2][x2] = currentPlayer;
             nMoves++;
+            lastMoveBy = currentPlayer;
             currentPlayer = getOpponent(currentPlayer);
         } else {
             // Remember that this move is not possible
@@ -192,23 +196,24 @@ public class Board implements FiniteBoard {
 
     @Override
     public int checkWin() {
-        boolean canMove = false;
+        boolean p1Move = false, p2Move = false;
         for (int i = 0; i < size; i++) {
             for (int j = 0; j < size; j++) {
                 if (board[i][j] == EMPTY) {
-                    // if cram, check in all directions
-                    if (currentPlayer == P1)
-                        if (i + 1 < size && board[i + 1][j] == EMPTY) canMove = true;
-                    if (currentPlayer == P2)
-                        if (j + 1 < size && board[i][j + 1] == EMPTY) canMove = true;
+                    if (i + 1 < size && board[i + 1][j] == EMPTY) p1Move = true;
+                    if (j + 1 < size && board[i][j + 1] == EMPTY) p2Move = true;
                 }
-                if (canMove) break;
+                if (p1Move && p2Move) break;
             }
-            if (canMove) break;
+            if (p1Move && p2Move) break;
         }
         // If the current player can move, nothing can be said about the winner
-        if (!canMove)
-            return getOpponent(currentPlayer);
+        if (!p1Move && p2Move)
+            return P2_WIN;
+        else if (p1Move && !p2Move)
+            return P1_WIN;
+        else if (!p1Move && !p2Move)
+            return lastMoveBy;
         else
             return NONE_WIN;
     }
@@ -372,6 +377,8 @@ public class Board implements FiniteBoard {
     }
 
     private boolean checkDeterminization(int myPlayer) {
+        if (checkWin() != NONE_WIN)
+            return false;
         for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
             IMove move1 = blocked[myPlayer - 1].get(i);
             int x1 = move1.getMove()[0], x2 = move1.getMove()[2];

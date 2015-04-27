@@ -9,7 +9,7 @@ public class MCTSOptions {
     public static final Random r = new Random();
     private static int instances = 0;
     // Sliding-window UCT
-    public int numSimulations, minSWDepth = 2, maxSWDepth = 3;
+    public int tempSims, minSWDepth = 2, maxSWDepth = 3;
     public double windowSize = 500;
     public int[] maxSims = new int[10];
     // Relative bonus!
@@ -167,73 +167,73 @@ public class MCTSOptions {
     public void resetSimulations(String game) {
         if (game.equalsIgnoreCase("cannon")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 2 * timeInterval;
+                tempSims = 2 * timeInterval;
         } else if (game.equalsIgnoreCase("chinesecheckers")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 14 * timeInterval;
+                tempSims = 14 * timeInterval;
         } else if (game.equalsIgnoreCase("checkers")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 24 * timeInterval;
+                tempSims = 24 * timeInterval;
         } else if (game.equalsIgnoreCase("lostcities")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 6 * timeInterval;
+                tempSims = 6 * timeInterval;
         } else if (game.equalsIgnoreCase("pentalath")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 21 * timeInterval;
+                tempSims = 21 * timeInterval;
         } else if (game.equalsIgnoreCase("amazons")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 3 * timeInterval;
+                tempSims = 3 * timeInterval;
         } else if (game.equalsIgnoreCase("breakthrough")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 17 * timeInterval;
+                tempSims = 17 * timeInterval;
         } else if (game.startsWith("kalah")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 22 * timeInterval;
+                tempSims = 22 * timeInterval;
         } else if (game.equalsIgnoreCase("domineering")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 22 * timeInterval;
+                tempSims = 22 * timeInterval;
         } else if (game.startsWith("phantomdomineering")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 22 * timeInterval;
+                tempSims = 22 * timeInterval;
         } else if (game.startsWith("nogo")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 22 * timeInterval;
+                tempSims = 22 * timeInterval;
         } else if (game.startsWith("penguin")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 22 * timeInterval;
+                tempSims = 22 * timeInterval;
         } else if (game.startsWith("gofish")) {
             if (fixedSimulations)
-                numSimulations = simulations;
+                tempSims = simulations;
             else
-                numSimulations = 22 * timeInterval;
+                tempSims = 22 * timeInterval;
         } else {
             throw new RuntimeException("Game not found! " + game);
         }
-        simsLeft = numSimulations;
+        simsLeft = tempSims;
     }
 
     public int getWindowSize() {

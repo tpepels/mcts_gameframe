@@ -24,13 +24,13 @@ public class Game {
         Scanner in = new Scanner(System.in);
         //
         MCTSOptions options1 = new MCTSOptions();
-        options1.numSimulations = 10000;
+        options1.simulations = 10000;
         options1.fixedSimulations = true;
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.numSimulations = 10000;
+        options2.simulations = 10000;
         options2.fixedSimulations = true;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);

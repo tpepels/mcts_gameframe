@@ -129,11 +129,11 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 
             }
             // (SW-UCT) Remember the number of simulations for the next round
-            options.numSimulations = simulations + (int) (0.1 * simulations);
-            options.simsLeft = options.numSimulations;
+            options.tempSims = simulations + (int) (0.1 * simulations);
+            options.simsLeft = options.tempSims;
         } else {
-            options.numSimulations = options.simulations;
-            options.simsLeft = options.numSimulations;
+            options.tempSims = options.simulations;
+            options.simsLeft = options.tempSims;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
                 simulations++;

@@ -75,6 +75,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 boards[i].newDeterminization(myPlayer);
             }
         }
+        System.out.println(boards[0]);
 
         long startTime = System.currentTimeMillis();
         long endTime = startTime + options.timeInterval;

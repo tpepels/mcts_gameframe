@@ -35,7 +35,7 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
 
         // Create a new root, or reuse the old tree
         if (!options.treeReuse || root == null || root.getArity() == 0 || lastMove == null) {
-            root = new TreeNode(myPlayer, options, options.numSimulations, selectionPolicy);
+            root = new TreeNode(myPlayer, options, options.tempSims, selectionPolicy);
         } else if (options.treeReuse) {
             // Get the opponent's last move from the root's children
             for (TreeNode t : root.getChildren()) {
@@ -50,7 +50,7 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
             if (options.debug && root.getChildren() != null)
                 System.err.println("Incorrect player at root, old root has " + root.getArity() + " children");
             // Create a new root
-            root = new TreeNode(myPlayer, options, options.numSimulations, selectionPolicy);
+            root = new TreeNode(myPlayer, options, options.tempSims, selectionPolicy);
         }
         // Reset the nodes' stats
         TreeNode.moveStats[0].reset();
@@ -101,11 +101,11 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
             }
-            options.numSimulations = simulations + (int) (0.1 * simulations);
-            options.simsLeft = options.numSimulations;
+            options.tempSims = simulations + (int) (0.1 * simulations);
+            options.simsLeft = options.tempSims;
         } else {
-            options.numSimulations = options.simulations;
-            options.simsLeft = options.numSimulations;
+            options.tempSims = options.simulations;
+            options.simsLeft = options.tempSims;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
                 simulations++;
@@ -169,7 +169,7 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
         if (options == null || selectionPolicy == null)
             throw new RuntimeException("MCTS Options or selection policy not set.");
 
-        root = new TreeNode(myPlayer, options, options.numSimulations, selectionPolicy);
+        root = new TreeNode(myPlayer, options, options.tempSims, selectionPolicy);
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
         TreeNode.qualityStats[0].reset();

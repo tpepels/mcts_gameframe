@@ -1,6 +1,5 @@
 package phantomdomineering;
 
-import ai.H_ISMCTS.HISMCTSPlayer;
 import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import framework.AIPlayer;
@@ -10,26 +9,28 @@ import phantomdomineering.game.Move;
 
 public class Game {
     public static void main(String[] args) {
-        Board b = new Board(8);
+        Board b = new Board(6);
         b.initialize();
 
         MCTSOptions options1 = new MCTSOptions();
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         options1.fixedSimulations = true;
+        options1.flat = true;
         options1.simulations = 10000;
         options1.limitD = true;
-        options1.useHeuristics = true;
-        options1.nDeterminizations = 250;
+        //options1.useHeuristics = true;
+        options1.nDeterminizations = 1;
         options1.setGame("phantomdomineering");
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        AIPlayer aiPlayer2 = new HISMCTSPlayer();
+        AIPlayer aiPlayer2 = new ISMCTSPlayer();
+        options2.flat = true;
         options2.fixedSimulations = true;
         options2.simulations = 10000;
         options2.limitD = true;
-        options1.useHeuristics = true;
-        options2.nDeterminizations = 250;
+        //options2.useHeuristics = true;
+        options2.nDeterminizations = 1;
         options2.setGame("phantomdomineering");
         aiPlayer2.setOptions(options2);
 
@@ -47,7 +48,7 @@ public class Game {
             if (m != null)
                 System.out.println("Player " + (3 - b.getPlayerToMove()) + " played " + m);
         }
-
+        System.out.println("Last move by: " + b.lastMoveBy);
         System.out.println("Winner is " + b.checkWin());
     }
 }

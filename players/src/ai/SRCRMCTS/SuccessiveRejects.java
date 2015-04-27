@@ -30,7 +30,7 @@ public class SuccessiveRejects implements SelectionPolicy {
             myPlayer = node.player;
             // If the root was just expanded
             if (node.getnVisits() == 0) {
-                n = options.numSimulations;
+                n = options.tempSims;
                 K = node.getArity();
                 A.clear();
                 A.addAll(node.getChildren());

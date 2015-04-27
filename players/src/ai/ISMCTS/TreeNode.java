@@ -217,6 +217,8 @@ public class TreeNode {
             board.doAIMove(currentMove, board.getPlayerToMove());
             winner = board.checkPlayoutWin();
         }
+        //System.out.println("Winner = " + winner);
+        //System.out.println(board);
         return winner;
     }
 
@@ -224,7 +226,7 @@ public class TreeNode {
         double max = Double.NEGATIVE_INFINITY, value;
         TreeNode bestChild = null;
         for (TreeNode t : children) {
-            // If the game is partial observable, moves in the tree may not be illegal
+            // If the game is partial observable, moves in the tree may not be legal
             if (!board.isLegal(t.getMove()))
                 continue;
             // For partial observable games, use the visit count, not the values.
