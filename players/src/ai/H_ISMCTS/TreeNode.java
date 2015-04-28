@@ -81,34 +81,33 @@ public class TreeNode {
                     //
                     if (tempBoard.isLegal(c.getMove())) {
                         tempBoard.doAIMove(c.getMove(), tempBoard.getPlayerToMove());
+                        int result;
                         if (!options.flat) {
                             if (board.poMoves() && !options.forceSO) {
-                                ai.ISMCTS.TreeNode.MCTS(tempBoard, visiblePlayer, c, hiddenRoot);
+                                result = ai.ISMCTS.TreeNode.MCTS(tempBoard, visiblePlayer, c, hiddenRoot);
                             } else
-                                c.MCTS(tempBoard, visiblePlayer);
-                        } else
-                            c.updateStats(c.playOut(tempBoard));
+                                result = c.MCTS(tempBoard, visiblePlayer);
+                        } else {
+                            result = c.playOut(tempBoard);
+                            c.updateStats(result);
+                        }
+                        stats.push(result);
                         budget--;
-                    } else if (reps < options.nDeterminizations) {
+                    } else if (options.limitD && reps < options.nDeterminizations) {
                         // This determinization is not compatible with this node
                         // TODO This is not correct, selects determinizations based on moves,
                         // TODO however, some dets may be much less likely than others.
                         i--;
                         reps++;
+                    } else if (!options.limitD) {
+                        // Select a new determinization
+                        i--;
                     }
                 }
             }
             Collections.sort(children.subList(0, sSize), comparator);
             sSize = (int) Math.ceil(sSize / 2.);
         }
-    }
-
-    private ai.ISMCTS.TreeNode getNode(IMove m, List<ai.ISMCTS.TreeNode> nodes) {
-        for (ai.ISMCTS.TreeNode n : nodes) {
-            if (n.getMove() != null && n.getMove().equals(m))
-                return n;
-        }
-        return null;
     }
 
     private int getBudget() {
