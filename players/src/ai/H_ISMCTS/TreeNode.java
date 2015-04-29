@@ -3,6 +3,7 @@ package ai.H_ISMCTS;
 import ai.MCTSOptions;
 import framework.IBoard;
 import framework.IMove;
+import framework.MoveList;
 import framework.util.NPlayerStats;
 
 import java.util.ArrayList;
@@ -44,9 +45,9 @@ public class TreeNode {
     public void HMCTS(IBoard board, int visiblePlayer) {
         if (children == null)
             children = new ArrayList<>();
-        // Expand all nodes
-        while (ai.ISMCTS.TreeNode.expand(board, children, options, visiblePlayer) != null) {
-        }
+        // Add all available moves (instead of 1 by 1)
+        expandAll(board, options);
+        // A node for the hidden player in MO-ISMCTS
         if (board.poMoves() && !options.forceSO)
             hiddenRoot = ai.ISMCTS.TreeNode.expand(board, new ArrayList<ai.ISMCTS.TreeNode>(), options, board.getOpponent(visiblePlayer));
 
@@ -107,6 +108,18 @@ public class TreeNode {
             }
             Collections.sort(children.subList(0, sSize), comparator);
             sSize = (int) Math.ceil(sSize / 2.);
+        }
+    }
+
+
+    private void expandAll(IBoard board, MCTSOptions options) {
+        // Generate all moves
+        MoveList moves = board.getExpandMoves();
+        // Add all moves as children to the current node
+        for (int i = 0; i < moves.size(); i++) {
+            // Add the node to the tree if it didn't exist
+            ai.ISMCTS.TreeNode newNode = new ai.ISMCTS.TreeNode(board.getPlayerToMove(), moves.get(i), options);
+            children.add(newNode);
         }
     }
 

@@ -177,7 +177,7 @@ public class TreeNode {
                     return newNode;
             }
         }
-        // No node was added to the tree
+        // No (legal) node was added to the tree
         return null;
     }
 
