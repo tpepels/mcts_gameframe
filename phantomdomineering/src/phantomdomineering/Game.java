@@ -17,6 +17,7 @@ public class Game {
         AIPlayer aiPlayer1 = new HISMCTSPlayer();
         options1.fixedSimulations = true;
         options1.simulations = 10000;
+        options1.forceSO = true;
         options1.limitD = true;
         options1.useHeuristics = true;
         options1.nDeterminizations = 250;
@@ -24,9 +25,10 @@ public class Game {
         aiPlayer1.setOptions(options1);
 
         MCTSOptions options2 = new MCTSOptions();
-        AIPlayer aiPlayer2 = new HISMCTSPlayer();
+        AIPlayer aiPlayer2 = new ISMCTSPlayer();
         options2.fixedSimulations = true;
         options2.simulations = 10000;
+        options2.forceSO = true;
         options2.limitD = true;
         options2.useHeuristics = true;
         options2.nDeterminizations = 250;

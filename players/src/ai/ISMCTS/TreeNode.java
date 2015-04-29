@@ -90,7 +90,7 @@ public class TreeNode {
     public static int MCTS(IBoard board, int visiblePlayer, TreeNode node1, TreeNode node2) {
         if (node1.children == null)
             node1.children = new ArrayList<>();
-        if (node2.children == null)
+        if (node2 != null && node2.children == null)
             node2.children = new ArrayList<>();
 
         // Expand returns an expanded leaf if any was added to the tree
