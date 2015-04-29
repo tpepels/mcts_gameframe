@@ -85,7 +85,6 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             // 1 week search
             endTime += 7 * 24 * 60 * 60 * 1000;
         }
-
         // Run the MCTS algorithm while time allows it
         while (!interrupted) {
             simulations++;
