@@ -31,7 +31,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
 
         // Create a new root, or reuse the old tree
         root = new TreeNode(myPlayer, options);
-        if (board.poMoves())
+        if (board.poMoves() && !options.forceSO)
             root2 = new TreeNode(myPlayer, options);
 
         interrupted = false;
@@ -56,13 +56,15 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         simulations = 0;
         score = 0.;
         IBoard playBoard;
+        IBoard b = board.copy();
+        b.newDeterminization(myPlayer);
         nd = options.nDeterminizations;
         // Use bandit selection over the determinizations
         if (options.banditD) {
             boards = new IBoard[nd];
             stats = new StatCounter[nd];
             for (int i = 0; i < nd; i++) {
-                boards[i] = board.copy();
+                boards[i] = b.copy();
                 stats[i] = new StatCounter();
                 boards[i].newDeterminization(myPlayer);
             }
@@ -71,7 +73,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         if (options.limitD) {
             boards = new IBoard[nd];
             for (int i = 0; i < nd; i++) {
-                boards[i] = board.copy();
+                boards[i] = b.copy();
                 boards[i].newDeterminization(myPlayer);
             }
         }
@@ -96,12 +98,12 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                 if (options.limitD) {
                     playBoard = boards[simulations % nd].copy();
                 } else {
-                    playBoard = board.copy();
+                    playBoard = b.copy();
                     playBoard.newDeterminization(myPlayer);
                 }
             }
             int res;
-            if (!options.forceSO && !board.poMoves())
+            if (!options.forceSO && !playBoard.poMoves())
                 res = root.MCTS(playBoard, myPlayer);
             else
                 res = TreeNode.MCTS(playBoard, myPlayer, root, root2);
@@ -119,7 +121,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         }
 
         // Return the best move found
-        TreeNode bestChild = root.getBestChild(board);
+        TreeNode bestChild = root.getBestChild();
         bestMove = bestChild.getMove();
         // show information on the best move
         if (options.debug) {

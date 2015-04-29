@@ -19,14 +19,14 @@ public class Game {
         MCTSOptions options1 = new MCTSOptions();
         options1.fixedSimulations = true;
         options1.simulations = 10000;
-        options1.limitD = true;
+        options1.limitD = false;
         AIPlayer aiPlayer1 = new ISMCTSPlayer();
         aiPlayer1.setOptions(options1);
         // Second AI player
         MCTSOptions options2 = new MCTSOptions();
         options2.fixedSimulations = true;
         options2.simulations = 10000;
-        options2.limitD = true;
+        options2.limitD = false;
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         aiPlayer2.setOptions(options2);
 

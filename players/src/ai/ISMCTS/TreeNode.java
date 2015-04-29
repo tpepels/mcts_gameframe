@@ -222,13 +222,10 @@ public class TreeNode {
         return winner;
     }
 
-    public TreeNode getBestChild(IBoard board) {
+    public TreeNode getBestChild() {
         double max = Double.NEGATIVE_INFINITY, value;
         TreeNode bestChild = null;
         for (TreeNode t : children) {
-            // If the game is partial observable, moves in the tree may not be legal
-            if (!board.isLegal(t.getMove()))
-                continue;
             // For partial observable games, use the visit count, not the values.
             value = t.getnVisits();
             //
