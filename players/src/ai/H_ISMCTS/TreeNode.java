@@ -64,9 +64,9 @@ public class TreeNode {
                 c = children.get(j);
                 for (int i = 0; i < b; i++) {
                     tempBoard = board.copy();
-                    tempBoard.newDeterminization(playerToMove, true);
-                    while (!board.isLegal(c.getMove())) {
-                        tempBoard.newDeterminization(playerToMove, true);
+                    tempBoard.newDeterminization(playerToMove, false);
+                    while (!tempBoard.isLegal(c.getMove())) {
+                        tempBoard.newDeterminization(playerToMove, false);
                     }
                     tempBoard.doAIMove(c.getMove(), tempBoard.getPlayerToMove());
                     if (!options.flat) {
