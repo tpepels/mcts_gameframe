@@ -377,7 +377,10 @@ public class Board implements FiniteBoard {
     }
 
     private boolean checkDeterminization(int myPlayer, boolean postMove) {
-        if (!postMove && checkWin() != NONE_WIN)
+        int winner = checkWin();
+        if (!postMove && winner != NONE_WIN)
+            return false;
+        if (postMove && winner == getOpponent(myPlayer))
             return false;
         for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
             IMove move1 = blocked[myPlayer - 1].get(i);
