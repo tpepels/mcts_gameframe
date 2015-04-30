@@ -65,7 +65,7 @@ public class TreeNode {
                 for (int i = 0; i < b; i++) {
                     tempBoard = board.copy();
                     tempBoard.doAIMove(c.getMove(), tempBoard.getPlayerToMove());
-                    tempBoard.newDeterminization(playerToMove);
+                    tempBoard.newDeterminization(playerToMove, true);
                     if (!options.flat) {
                         if (board.poMoves() && !options.forceSO)
                             result = ai.ISMCTS.TreeNode.MCTS(tempBoard, visiblePlayer, c, hiddenRoot);

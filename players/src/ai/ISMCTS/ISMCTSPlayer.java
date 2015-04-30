@@ -57,7 +57,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
         score = 0.;
         IBoard playBoard;
         IBoard b = board.copy();
-        b.newDeterminization(myPlayer);
+        b.newDeterminization(myPlayer, false);
         nd = options.nDeterminizations;
         // Use bandit selection over the determinizations
         if (options.banditD) {
@@ -66,7 +66,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             for (int i = 0; i < nd; i++) {
                 boards[i] = b.copy();
                 stats[i] = new StatCounter();
-                boards[i].newDeterminization(myPlayer);
+                boards[i].newDeterminization(myPlayer, false);
             }
         }
         // Generate a limited set of determinizations
@@ -74,7 +74,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
             boards = new IBoard[nd];
             for (int i = 0; i < nd; i++) {
                 boards[i] = b.copy();
-                boards[i].newDeterminization(myPlayer);
+                boards[i].newDeterminization(myPlayer, false);
             }
         }
 
@@ -98,7 +98,7 @@ public class ISMCTSPlayer implements AIPlayer, Runnable {
                     playBoard = boards[simulations % nd].copy();
                 } else {
                     playBoard = b.copy();
-                    playBoard.newDeterminization(myPlayer);
+                    playBoard.newDeterminization(myPlayer, false);
                 }
             }
             int res;

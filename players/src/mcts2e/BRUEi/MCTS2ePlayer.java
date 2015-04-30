@@ -56,7 +56,7 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
                 TreeNode.retract = false;
             } else
                 TreeNode.sigma++;
-            board.newDeterminization(myPlayer);
+            board.newDeterminization(myPlayer, false);
             root.MCTS2e(board, 0);
             // Check for stopping conditions
             if (!options.fixedSimulations && System.currentTimeMillis() >= endTime)

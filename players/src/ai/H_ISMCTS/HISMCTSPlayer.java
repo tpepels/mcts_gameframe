@@ -52,7 +52,7 @@ public class HISMCTSPlayer implements AIPlayer, Runnable {
             throw new RuntimeException("MCTS Options not set.");
         // Make a new copy and determinization just in case :)
         IBoard b = board.copy();
-        b.newDeterminization(myPlayer);
+        b.newDeterminization(myPlayer, false);
         root.HMCTS(b, myPlayer);
         // Return the best move found
         ai.ISMCTS.TreeNode bestChild = root.getBestChild();

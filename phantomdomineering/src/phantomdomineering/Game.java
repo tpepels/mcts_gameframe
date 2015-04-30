@@ -42,7 +42,7 @@ public class Game {
             aiPlayer = (b.getPlayerToMove() == 1 ? aiPlayer1 : aiPlayer2);
             System.gc();
             IBoard copyBoard = b.copy();
-            copyBoard.newDeterminization(b.getPlayerToMove());
+            copyBoard.newDeterminization(b.getPlayerToMove(), false);
             aiPlayer.getMove(copyBoard, null, b.getPlayerToMove(), false, m);
             m = (Move) aiPlayer.getBestMove();
             b.doAIMove(m, b.getPlayerToMove());

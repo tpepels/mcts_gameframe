@@ -608,7 +608,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public void newDeterminization(int myPlayer) {
+    public void newDeterminization(int myPlayer, boolean postMove) {
         // No implementation required
     }
 

@@ -305,7 +305,7 @@ public class Board implements FiniteBoard {
     }
 
     @Override
-    public void newDeterminization(int myPlayer) {
+    public void newDeterminization(int myPlayer, boolean postMove) {
         int removed = 0;
         int opp = getOpponent(myPlayer);
         for (int i = 0; i < board.length; i++) {
@@ -344,16 +344,16 @@ public class Board implements FiniteBoard {
             for (IMove m : moves)
                 moves1.add(m);
             // Find a valid determinization
-            if (!determinize(moves1, removed, myPlayer)) {
+            if (!determinize(moves1, removed, myPlayer, postMove)) {
                 throw new RuntimeException("Cannot find determinization!");
             }
         }
     }
 
-    private boolean determinize(List<IMove> moves, int removed, int myPlayer) {
+    private boolean determinize(List<IMove> moves, int removed, int myPlayer, boolean postMove) {
         // Finished!
         if (removed == 0)
-            return checkDeterminization(myPlayer);
+            return checkDeterminization(myPlayer, postMove);
         // First, play all moves that conform to MY observations are made
         for (int i = 0; i < moves.size(); i++) {
             IMove move = moves.get(i);
@@ -364,7 +364,7 @@ public class Board implements FiniteBoard {
                 board[y1][x1] = 3 - myPlayer;
                 board[y2][x2] = 3 - myPlayer;
                 if (!impossibles.exists(toString().hashCode(), toString())) {
-                    if (determinize(moves, removed - 2, myPlayer))
+                    if (determinize(moves, removed - 2, myPlayer, postMove))
                         return true;
                     else
                         impossibles.put(toString().hashCode(), toString());
@@ -376,8 +376,8 @@ public class Board implements FiniteBoard {
         return false;
     }
 
-    private boolean checkDeterminization(int myPlayer) {
-        if (checkWin() != NONE_WIN)
+    private boolean checkDeterminization(int myPlayer, boolean postMove) {
+        if (!postMove && checkWin() != NONE_WIN)
             return false;
         for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
             IMove move1 = blocked[myPlayer - 1].get(i);

@@ -76,7 +76,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
-                board.newDeterminization(myPlayer);
+                board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
                 if (Math.abs(root.MCTS(board, 0)) == State.INF)
@@ -92,7 +92,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
             while (simulations <= options.simulations) {
                 simulations++;
                 options.simsLeft--;
-                board.newDeterminization(myPlayer);
+                board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
                 if (Math.abs(root.MCTS(board, 0)) == State.INF)

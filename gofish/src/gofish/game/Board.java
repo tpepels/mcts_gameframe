@@ -71,7 +71,7 @@ public class Board implements IBoard {
     }
 
     @Override
-    public void newDeterminization(int myPlayer) {
+    public void newDeterminization(int myPlayer, boolean postMove) {
         LinkedList<Integer> hand = (myPlayer == P1) ? p2Hand : p1Hand;
         int nCards = hand.size();
         // Put the invisible player's hand back in the deck, and shuffle it

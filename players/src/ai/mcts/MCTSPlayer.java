@@ -110,7 +110,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                     System.out.println("Tick. I have searched " + ((System.currentTimeMillis() - startTime) / 1000.0) + " seconds.");
                     nextTickTime = System.currentTimeMillis() + tickInterval;
                 }
-                board.newDeterminization(myPlayer);
+                board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
                 if (root.MCTS(board, 0, root.player) == TreeNode.INF)
@@ -138,7 +138,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             while (simulations <= options.simulations) {
                 simulations++;
                 options.simsLeft--;
-                board.newDeterminization(myPlayer);
+                board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
                 if (root.MCTS(board, 0, root.player) == TreeNode.INF)

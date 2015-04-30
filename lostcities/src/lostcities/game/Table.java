@@ -452,7 +452,7 @@ public class Table implements IBoard {
     }
 
     @Override
-    public void newDeterminization(int myPlayer) {
+    public void newDeterminization(int myPlayer, boolean postMove) {
         int si = (myPlayer == P1) ? P2_HAND_I : 0, ei = (myPlayer == P1) ? hands.length : P2_HAND_I;
         // Put the invisible player's hand back in the deck, and shuffle it
         deck.addHandToDek(hands, si, ei);

@@ -96,7 +96,7 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 }
-                board.newDeterminization(myPlayer);
+                board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move
@@ -110,7 +110,7 @@ public class SRCRMCTSPlayer implements AIPlayer, Runnable {
             while (simulations <= options.simulations) {
                 simulations++;
                 options.simsLeft--;
-                board.newDeterminization(myPlayer);
+                board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 if (root.MCTS(board, 0) == TreeNode.INF)
                     break; // Break if you find a winning move

@@ -52,7 +52,7 @@ public class Game {
                 // Run the GC in between moves, to limit the runs during search
                 System.gc();
                 IBoard tempTable = t.copy();
-                tempTable.newDeterminization(t.getPlayerToMove());
+                tempTable.newDeterminization(t.getPlayerToMove(), false);
                 aiPlayer.getMove(tempTable, null, t.getPlayerToMove(), false, m);
                 m = (Move) aiPlayer.getBestMove();
                 t.doMove(m);

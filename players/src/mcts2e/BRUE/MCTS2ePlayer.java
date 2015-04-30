@@ -55,7 +55,7 @@ public class MCTS2ePlayer implements AIPlayer, Runnable {
             simulations++;
             // BRUE Round-robin switching function on sigma/horizon
             sigma = horizon - ((simulations - 1) % horizon);
-            board.newDeterminization(myPlayer);
+            board.newDeterminization(myPlayer, false);
             probe(board, 0);
             // Check for stopping conditions
             if (!options.fixedSimulations && System.currentTimeMillis() >= endTime)

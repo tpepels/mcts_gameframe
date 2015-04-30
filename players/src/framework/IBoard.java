@@ -17,7 +17,7 @@ public interface IBoard {
      *
      * @param myPlayer The player running the algorithm
      */
-    void newDeterminization(int myPlayer);
+    void newDeterminization(int myPlayer, boolean postMove);
 
     /**
      * Should return true if the game is not fully observable

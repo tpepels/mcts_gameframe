@@ -249,7 +249,7 @@ public class Board implements FiniteBoard {
     }
 
     @Override
-    public void newDeterminization(int myPlayer) {
+    public void newDeterminization(int myPlayer, boolean postMove) {
         // Not required
     }
 
