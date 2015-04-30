@@ -382,6 +382,7 @@ public class Board implements FiniteBoard {
             return false;
         if (postMove && winner == getOpponent(myPlayer))
             return false;
+
         for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
             IMove move1 = blocked[myPlayer - 1].get(i);
             int x1 = move1.getMove()[0], x2 = move1.getMove()[2];
