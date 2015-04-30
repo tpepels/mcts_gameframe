@@ -344,16 +344,16 @@ public class Board implements FiniteBoard {
             for (IMove m : moves)
                 moves1.add(m);
             // Find a valid determinization
-            if (!determinize(moves1, removed, myPlayer, postMove)) {
+            if (!determinize(moves1, removed, myPlayer)) {
                 throw new RuntimeException("Cannot find determinization!");
             }
         }
     }
 
-    private boolean determinize(List<IMove> moves, int removed, int myPlayer, boolean postMove) {
+    private boolean determinize(List<IMove> moves, int removed, int myPlayer) {
         // Finished!
         if (removed == 0)
-            return checkDeterminization(myPlayer, postMove);
+            return checkDeterminization(myPlayer);
         // First, play all moves that conform to MY observations are made
         for (int i = 0; i < moves.size(); i++) {
             IMove move = moves.get(i);
@@ -364,7 +364,7 @@ public class Board implements FiniteBoard {
                 board[y1][x1] = 3 - myPlayer;
                 board[y2][x2] = 3 - myPlayer;
                 if (!impossibles.exists(toString().hashCode(), toString())) {
-                    if (determinize(moves, removed - 2, myPlayer, postMove))
+                    if (determinize(moves, removed - 2, myPlayer))
                         return true;
                     else
                         impossibles.put(toString().hashCode(), toString());
@@ -376,11 +376,8 @@ public class Board implements FiniteBoard {
         return false;
     }
 
-    private boolean checkDeterminization(int myPlayer, boolean postMove) {
-        int winner = checkWin();
-        if (!postMove && winner != NONE_WIN)
-            return false;
-        if (postMove && winner == getOpponent(myPlayer))
+    private boolean checkDeterminization(int myPlayer) {
+        if (checkWin() != NONE_WIN)
             return false;
 
         for (int i = 0; i < blocked[myPlayer - 1].size(); i++) {
