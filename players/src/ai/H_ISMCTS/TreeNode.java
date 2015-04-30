@@ -54,56 +54,29 @@ public class TreeNode {
         sSize = children.size();
         totS = children.size();
 
-        IBoard boards[] = null;
-        if (options.limitD) {
-            boards = new IBoard[options.nDeterminizations];
-            for (int i = 0; i < options.nDeterminizations; i++) {
-                boards[i] = board.copy();
-                boards[i].newDeterminization(playerToMove);
-            }
-        }
         IBoard tempBoard;
         ai.ISMCTS.TreeNode c;
-        int reps, iteration = 0;
+        int result, b;
         // Run simulations
         while (budget > 0) {
-            int b = Math.min(budget, getBudget());
+            b = Math.min(budget, getBudget());
             for (int j = 0; j < sSize; j++) {
                 c = children.get(j);
-                reps = 0;
                 for (int i = 0; i < b; i++) {
-                    if (!options.limitD) {
-                        tempBoard = board.copy();
-                        tempBoard.newDeterminization(playerToMove);
+                    tempBoard = board.copy();
+                    tempBoard.doAIMove(c.getMove(), tempBoard.getPlayerToMove());
+                    tempBoard.newDeterminization(playerToMove);
+                    if (!options.flat) {
+                        if (board.poMoves() && !options.forceSO)
+                            result = ai.ISMCTS.TreeNode.MCTS(tempBoard, visiblePlayer, c, hiddenRoot);
+                        else
+                            result = c.MCTS(tempBoard, visiblePlayer);
                     } else {
-                        tempBoard = boards[iteration % options.nDeterminizations].copy();
+                        result = c.playOut(tempBoard);
+                        c.updateStats(result);
                     }
-                    iteration++;
-                    //
-                    if (tempBoard.isLegal(c.getMove())) {
-                        tempBoard.doAIMove(c.getMove(), tempBoard.getPlayerToMove());
-                        int result;
-                        if (!options.flat) {
-                            if (board.poMoves() && !options.forceSO) {
-                                result = ai.ISMCTS.TreeNode.MCTS(tempBoard, visiblePlayer, c, hiddenRoot);
-                            } else
-                                result = c.MCTS(tempBoard, visiblePlayer);
-                        } else {
-                            result = c.playOut(tempBoard);
-                            c.updateStats(result);
-                        }
-                        stats.push(result);
-                        budget--;
-                    } else if (options.limitD && reps < options.nDeterminizations) {
-                        // This determinization is not compatible with this node
-                        // TODO This is not correct, selects determinizations based on moves,
-                        // TODO however, some dets may be much less likely than others.
-                        i--;
-                        reps++;
-                    } else if (!options.limitD) {
-                        // Select a new determinization
-                        i--;
-                    }
+                    stats.push(result);
+                    budget--;
                 }
             }
             Collections.sort(children.subList(0, sSize), comparator);
@@ -111,12 +84,13 @@ public class TreeNode {
         }
     }
 
-
     private void expandAll(IBoard board, MCTSOptions options) {
         // Generate all moves
         MoveList moves = board.getExpandMoves();
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
+            if (!board.isLegal(moves.get(i)))
+                continue;
             // Add the node to the tree if it didn't exist
             ai.ISMCTS.TreeNode newNode = new ai.ISMCTS.TreeNode(board.getPlayerToMove(), moves.get(i), options);
             children.add(newNode);
