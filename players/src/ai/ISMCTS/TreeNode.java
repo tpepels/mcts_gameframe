@@ -190,7 +190,7 @@ public class TreeNode {
             if (board.getPlayerToMove() != c.playerToMove || !board.isLegal(c.getMove()))
                 continue;
             // First, visit all children at least once
-            if (c.nPrime == 0)
+            if (c.getnVisits() == 0)
                 uctValue = 100. + MCTSOptions.r.nextDouble();
             else
                 uctValue = c.stats.mean(board.getPlayerToMove()) + options.uctC * Math.sqrt(FastLog.log(c.nPrime) / c.getnVisits());
