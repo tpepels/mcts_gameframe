@@ -67,8 +67,12 @@ public class TreeNode {
                 MoveList ml = board.getExpandMoves();
                 // Randomly select a hidden move (SO-ISMCTS)
                 IMove hMove = ml.get(MCTSOptions.r.nextInt(ml.size()));
+                while(!board.isLegal(hMove))
+                    hMove = ml.get(MCTSOptions.r.nextInt(ml.size()));
                 board.doAIMove(hMove, board.getPlayerToMove());
             } else {
+                if(!board.isLegal(child.getMove()) || board.getPlayerToMove() != child.playerToMove)
+                    throw new RuntimeException("Invalid move!");
                 // Perform the move
                 board.doAIMove(child.getMove(), board.getPlayerToMove());
             }
@@ -111,6 +115,8 @@ public class TreeNode {
                 child = child1;
             else
                 child = child2;
+            if(!board.isLegal(child.getMove()) || board.getPlayerToMove() != child.playerToMove)
+                throw new RuntimeException("Invalid move!");
             // Perform the move
             board.doAIMove(child.getMove(), board.getPlayerToMove());
             if (!child.simulated || child.options.flat) {
@@ -156,13 +162,11 @@ public class TreeNode {
             return null;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
-
             boolean exists = false;
             // Check here if the move is already in tree
             for (TreeNode node : children) {
                 if (board.poMoves() && node.hiddenMove)
                     continue;
-
                 if (node.move.equals(moves.get(i)) && node.playerToMove == board.getPlayerToMove()) {
                     exists = true;
                     break;
@@ -172,9 +176,11 @@ public class TreeNode {
             if (!exists) {
                 TreeNode newNode = new TreeNode(board.getPlayerToMove(), moves.get(i), options);
                 children.add(newNode);
-                newNode.nPrime++;
-                if (board.isLegal(moves.get(i)))
+                //
+                if (board.isLegal(moves.get(i))) {
+                    newNode.nPrime++;
                     return newNode;
+                }
             }
         }
         // No (legal) node was added to the tree

@@ -68,6 +68,10 @@ public class TreeNode {
                     while (!tempBoard.isLegal(c.getMove())) {
                         tempBoard.newDeterminization(playerToMove, false);
                     }
+
+                    if(!board.isLegal(c.getMove()) || board.getPlayerToMove() != c.playerToMove)
+                        throw new RuntimeException("Invalid move!");
+
                     tempBoard.doAIMove(c.getMove(), tempBoard.getPlayerToMove());
                     if (!options.flat) {
                         if (tempBoard.poMoves() && !options.forceSO)
