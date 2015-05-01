@@ -156,8 +156,7 @@ public class TreeNode {
             return null;
         // Add all moves as children to the current node
         for (int i = 0; i < moves.size(); i++) {
-            if(!board.isLegal(moves.get(i)))
-                continue;
+
             boolean exists = false;
             // Check here if the move is already in tree
             for (TreeNode node : children) {
@@ -174,7 +173,8 @@ public class TreeNode {
                 TreeNode newNode = new TreeNode(board.getPlayerToMove(), moves.get(i), options);
                 children.add(newNode);
                 newNode.nPrime++;
-                return newNode;
+                if (board.isLegal(moves.get(i)))
+                    return newNode;
             }
         }
         // No (legal) node was added to the tree

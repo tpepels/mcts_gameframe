@@ -15,7 +15,7 @@ public class TreeNode {
     private final static double LOG2 = Math.log(2.);
     private final MCTSOptions options;
     //
-    public int nPrime = 0, playerToMove, budget, totB, round, sSize, totS;
+    public int playerToMove, budget, totB, round, sSize, totS;
     public NPlayerStats stats; // Stats per player
     private ArrayList<ai.ISMCTS.TreeNode> children;
     private ai.ISMCTS.TreeNode hiddenRoot;
@@ -25,10 +25,10 @@ public class TreeNode {
      * Constructor for the root
      */
     public TreeNode(int budget, int playerToMove, int nPlayers, MCTSOptions options) {
-        this.options = options;
-        this.budget = budget;
-        this.totB = budget;
         this.playerToMove = playerToMove;
+        this.options = options;
+        this.totB = budget;
+        this.budget = budget;
         stats = new NPlayerStats(nPlayers);
     }
 
@@ -70,7 +70,7 @@ public class TreeNode {
                     }
                     tempBoard.doAIMove(c.getMove(), tempBoard.getPlayerToMove());
                     if (!options.flat) {
-                        if (board.poMoves() && !options.forceSO)
+                        if (tempBoard.poMoves() && !options.forceSO)
                             result = ai.ISMCTS.TreeNode.MCTS(tempBoard, visiblePlayer, c, hiddenRoot);
                         else
                             result = c.MCTS(tempBoard, visiblePlayer);
@@ -133,6 +133,5 @@ public class TreeNode {
 
     @Override
     public String toString() {
-        return move + "\tValue: " + stats + "\tVisits: " + getnVisits() + "\tn': " + nPrime;
-    }
+        return move + "\tValue: " + stats + "\tVisits: " + getnVisits();    }
 }
