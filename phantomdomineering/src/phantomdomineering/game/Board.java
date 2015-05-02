@@ -296,7 +296,7 @@ public class Board implements FiniteBoard {
 
     @Override
     public boolean poMoves() {
-        return true;
+        return false;
     }
 
     @Override
