@@ -34,8 +34,8 @@ public class Deck {
      *
      * @return The top card from the deck
      */
-    public int takeCard() {
-        return deck[index--];
+    public Card takeCard() {
+        return new Card(deck[index--]);
     }
 
     public void returnCard(int card) {
@@ -52,19 +52,22 @@ public class Deck {
      *
      * @param hand The hand(s) to place back
      */
-    public void addHandToDek(LinkedList<Integer> hand) {
-        Iterator<Integer> it = hand.iterator();
+    public void addHandToDek(LinkedList<Card> hand) {
+        Iterator<Card> it = hand.iterator();
         while (it.hasNext()) {
-            returnCard(it.next());
+            Card c = it.next();
+            if (!c.visible) {
+                returnCard(c.card);
+                it.remove();
+            }
         }
-        hand.clear();
     }
 
     /**
      * Deal a hand to a player.
      */
-    public void dealHand(LinkedList hand, int nCards) {
-        for (int i = 0; i < nCards; i++) {
+    public void dealHand(LinkedList<Card> hand, int nCards) {
+        while (hand.size() < nCards) {
             if (isEmpty())
                 return;
             hand.offerFirst(takeCard());

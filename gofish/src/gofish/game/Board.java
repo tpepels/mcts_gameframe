@@ -14,7 +14,7 @@ public class Board implements IBoard {
     private static final int[] SCORES = {3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2};
     private static final int Q_SIZE = 4;
     //
-    public LinkedList<Integer> p1Hand, p2Hand;
+    public LinkedList<Card> p1Hand, p2Hand;
     public int p1Score, p2Score;
     private int[] p1CardCount, p2CardCount;
     public Deck deck;
@@ -34,8 +34,14 @@ public class Board implements IBoard {
     @Override
     public IBoard copy() {
         Board newBoard = new Board();
-        newBoard.p1Hand = (LinkedList<Integer>) p1Hand.clone();
-        newBoard.p2Hand = (LinkedList<Integer>) p2Hand.clone();
+        newBoard.p1Hand = new LinkedList<>();
+        for (Card c : p1Hand) {
+            newBoard.p1Hand.add(c.copy());
+        }
+        newBoard.p2Hand = new LinkedList<>();
+        for (Card c : p2Hand) {
+            newBoard.p2Hand.add(c.copy());
+        }
         System.arraycopy(p1CardCount, 0, newBoard.p1CardCount, 0, p1CardCount.length);
         System.arraycopy(p2CardCount, 0, newBoard.p2CardCount, 0, p2CardCount.length);
         newBoard.currentPlayer = currentPlayer;
@@ -61,18 +67,18 @@ public class Board implements IBoard {
         currentPlayer = P1;
     }
 
-    private void dealEmptyHand(LinkedList<Integer> hand, int[] cardCount, int player) {
+    private void dealEmptyHand(LinkedList<Card> hand, int[] cardCount, int player) {
         // Deal first player's hand
         deck.dealHand(hand, 7);
-        for (Integer card : hand) {
-            cardCount[(card % 100) - 1]++;
+        for (Card card : hand) {
+            cardCount[(card.card % 100) - 1]++;
         }
         checkBook(player);
     }
 
     @Override
     public void newDeterminization(int myPlayer, boolean postMove) {
-        LinkedList<Integer> hand = (myPlayer == P1) ? p2Hand : p1Hand;
+        LinkedList<Card> hand = (myPlayer == P1) ? p2Hand : p1Hand;
         int nCards = hand.size();
         // Put the invisible player's hand back in the deck, and shuffle it
         deck.addHandToDek(hand);
@@ -80,17 +86,16 @@ public class Board implements IBoard {
         // Deal a new hand to the invisible player
         deck.dealHand(hand, nCards);
         // Maintain the card counts for the player
-        int[] cardCount;
         if (myPlayer == P1) {
             p2CardCount = new int[Deck.MAX_CARD];
-            cardCount = p2CardCount;
+            for (Card c : hand) {
+                p2CardCount[(c.card % 100) - 1]++;
+            }
         } else {
             p1CardCount = new int[Deck.MAX_CARD];
-            cardCount = p1CardCount;
-        }
-        //
-        for (Integer c : hand) {
-            cardCount[(c % 100) - 1]++;
+            for (Card c : hand) {
+                p1CardCount[(c.card % 100) - 1]++;
+            }
         }
     }
 
@@ -117,9 +122,9 @@ public class Board implements IBoard {
         return playoutMoves;
     }
 
-    public boolean checkHand(LinkedList<Integer> hand, int rank) {
-        for (Integer card : hand) {
-            if (card % 100 == rank)
+    public boolean checkHand(LinkedList<Card> hand, int rank) {
+        for (Card card : hand) {
+            if (card.card % 100 == rank)
                 return true;
         }
         return false;
@@ -127,21 +132,22 @@ public class Board implements IBoard {
 
     @Override
     public boolean doAIMove(IMove move, int player) {
-        LinkedList<Integer> opHand = (player == P1) ? p2Hand : p1Hand;
-        LinkedList<Integer> myHand = (player == P2) ? p2Hand : p1Hand;
+        LinkedList<Card> opHand = (player == P1) ? p2Hand : p1Hand;
+        LinkedList<Card> myHand = (player == P2) ? p2Hand : p1Hand;
         int[] myCardCount = (player == P1) ? p1CardCount : p2CardCount;
         int[] opCardCount = (player == P1) ? p2CardCount : p1CardCount;
         int opp = getOpponent(currentPlayer);
-        Iterator<Integer> it = opHand.iterator();
-        int card;
+        Iterator<Card> it = opHand.iterator();
+        Card card;
         boolean cardTaken = false;
         // Take all cards of the requested type from the user's hand
         while (it.hasNext()) {
             card = it.next();
-            if (card % 100 == move.getMove()[0]) {
+            if (card.card % 100 == move.getMove()[0]) {
                 myHand.add(card);
-                myCardCount[(card % 100) - 1]++;
-                opCardCount[(card % 100) - 1]--;
+                card.visible = true;
+                myCardCount[(card.card % 100) - 1]++;
+                opCardCount[(card.card % 100) - 1]--;
                 it.remove();
                 cardTaken = true;
             }
@@ -152,12 +158,12 @@ public class Board implements IBoard {
         //
         int[] book;
         if (!cardTaken && !deck.isEmpty()) {
-            Integer draw = deck.takeCard();
-            myCardCount[(draw % 100) - 1]++;
+            Card draw = deck.takeCard();
+            myCardCount[(draw.card % 100) - 1]++;
             myHand.add(draw);
             // The player drew the card he asked for
             // therefore he gets another turn
-            if(draw % 100 == move.getMove()[0])
+            if (draw.card % 100 == move.getMove()[0])
                 cardTaken = true;
         }
         book = checkBook(player);
@@ -176,8 +182,9 @@ public class Board implements IBoard {
 
     private int[] checkBook(int player) {
         int[] cardCount = (player == P1) ? p1CardCount : p2CardCount;
-        LinkedList<Integer> hand = (player == P1) ? p1Hand : p2Hand;
-        int card, index = 0;
+        LinkedList<Card> hand = (player == P1) ? p1Hand : p2Hand;
+        int index = 0;
+        Card card;
         int[] book = null;
         // Check for books!
         for (int i = 0; i < cardCount.length; i++) {
@@ -187,11 +194,11 @@ public class Board implements IBoard {
                 cardCount[i] -= Q_SIZE;
                 book = new int[Q_SIZE];
                 // Remove the Q_SIZE cards from the hand
-                Iterator<Integer> it = hand.iterator();
+                Iterator<Card> it = hand.iterator();
                 while (it.hasNext() && index < 2) {
                     card = it.next();
-                    if (card % 100 == (1 + i)) {
-                        book[index] = card;
+                    if (card.card % 100 == (1 + i)) {
+                        book[index] = card.card;
                         index++;
                         it.remove();
                     }

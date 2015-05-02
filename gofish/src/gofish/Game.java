@@ -4,6 +4,7 @@ import ai.ISMCTS.ISMCTSPlayer;
 import ai.MCTSOptions;
 import framework.AIPlayer;
 import gofish.game.Board;
+import gofish.game.Card;
 import gofish.game.Move;
 
 import java.util.Scanner;
@@ -85,18 +86,23 @@ public class Game {
     }
 
     private static void drawTable(Board board) {
-        for (Integer card : board.p2Hand) {
-            if (allAi)
-                System.out.print(getCardString(card));
-            else
+        for (Card card : board.p2Hand) {
+            if (allAi || card.visible) {
+                System.out.print(getCardString(card.card));
+                if (card.visible)
+                    System.out.print("*");
+            } else {
                 System.out.print("#");
+            }
             System.out.print(" ");
         }
         System.out.println("\n");
         System.out.print("P1 Score: " + board.p1Score);
         System.out.println(" :: P2 Score: " + board.p2Score + " \t Deck: " + board.deck.size() + "\n");
-        for (Integer card : board.p1Hand) {
-            System.out.print(getCardString(card));
+        for (Card card : board.p1Hand) {
+            System.out.print(getCardString(card.card));
+            if (card.visible)
+                System.out.print("*");
             System.out.print(" ");
         }
         System.out.println();
