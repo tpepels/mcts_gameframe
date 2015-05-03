@@ -147,12 +147,33 @@ my @jobs = ();
 # a matchup is a string of "playertype1,playertype2"
 # you can also use a loop to fill this with different player types
 my @matchups = (
-	"hismcts_sl,ismcts_sl",
+	#"ismcts_sl_h_ld_nd100_uct0.2,ismcts_sl_ld_h_nd100",
+	#"ismcts_sl_h_ld_nd100_uct0.4,ismcts_sl_ld_h_nd100",
+	#"ismcts_sl_h_ld_nd100_uct0.6,ismcts_sl_ld_h_nd100",
+	#"ismcts_sl_h_ld_nd100_uct0.8,ismcts_sl_ld_h_nd100",
+	#"ismcts_sl_h_ld_nd100_uct1.0,ismcts_sl_ld_h_nd100",
+	"ismcts_sl_h_flat,ismcts_sl_h",
+	"hismcts_sl_h_flat,hismcts_sl_h",
+	"hismcts_sl_h_flat,ismcts_sl_h",	
+	"hismcts_sl_h_flat,ismcts_sl_h_flat",
 	"hismcts_sl_h,ismcts_sl_h"
+	#"ismcts_sl_h_ld_nd10,ismcts_sl_h_bd1_nd10",
+	#"ismcts_sl_h_ld_nd10,ismcts_sl_h_bd2_nd10",
+	#"ismcts_sl_h_ld_nd10,ismcts_sl_h_bd3_nd10",
+	#"ismcts_sl_h_ld_nd10,ismcts_sl_h_bd4_nd10",
+	#"ismcts_sl_h_ld_nd10,ismcts_sl_h_bd5_nd10"
+	#"ismcts_sl_h_ld_nd5,ismcts_sl_h", 
+	#"ismcts_sl_h_ld_nd10,ismcts_sl_h", 
+	#"ismcts_sl_h_ld_nd20,ismcts_sl_h", 
+	#"ismcts_sl_h_ld_nd50,ismcts_sl_h",
+	#"ismcts_sl_h_ld_nd75,ismcts_sl_h", 
+	#"ismcts_sl_h_ld_nd150,ismcts_sl_h",  
+	#"ismcts_sl_h_ld_nd200,ismcts_sl_h",  
+	#"ismcts_sl_h_ld_nd250,ismcts_sl_h"
+	#"ismcts_sl_ld_nd100,ismcts_sl_so_ld_nd100"  
 );
 
 my @games = (
-#	"lostcities",
 #	"cannon",
 #	"checkers",	
 #	"breakthrough",
@@ -162,7 +183,10 @@ my @games = (
 #	"nogo9"
 #	"nogo19"
 	"lostcities",
-	"gofish"
+	"gofish",
+#	"phantomdomineering6",
+	"phantomdomineering8",
+#	"phantomdomineering10"
 );
 
 print "queuing jobs... \n";

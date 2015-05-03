@@ -1,5 +1,5 @@
 #!/bin/sh
-dirs="players domineering cannon checkers chinesecheckers kalah lostcities nogo 
+dirs="players phantomdomineering domineering cannon checkers chinesecheckers kalah lostcities nogo 
 pentalath amazons experiments breakthrough penguin gofish"
 
 for d in $dirs
