@@ -11,6 +11,9 @@ package framework.util;
 import ai.MCTSOptions;
 import ai.mcts.TreeNode;
 
+import java.text.DecimalFormat;
+import java.util.Scanner;
+
 public class StatCounter {
     private MovingAverage ma;
     private boolean windowed = false;
@@ -213,5 +216,24 @@ public class StatCounter {
 
     public double ci95() {
         return (1.96 * stddev() / Math.sqrt(m_n));
+    }
+
+    public static void main(String[] args) {
+        DecimalFormat df = new DecimalFormat("00.0");
+        Scanner scanner = new Scanner(System.in);
+        StatCounter stat = new StatCounter();
+        while(true) {
+            System.out.print("Enter value: ");
+            String in = scanner.nextLine();
+            int val = Integer.parseInt(in);
+            if(in.equals("."))
+                break;
+            System.out.println("n: ");
+            in = scanner.nextLine();
+            int n = Integer.parseInt(in);
+            for(int i = 0; i < n; i++)
+                stat.push(val);
+        }
+        System.out.println(df.format(stat.mean()) + "\\%$\\pm$" + df.format(stat.ci95()));
     }
 }
