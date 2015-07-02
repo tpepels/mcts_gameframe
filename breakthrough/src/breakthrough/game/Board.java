@@ -13,14 +13,14 @@ import java.util.Stack;
 
 public class Board implements IBoard {
     private static final int N_PIECES = 16;
-    private static final MoveList tempList = new MoveList(3);   // Temp move store for heuristic evaluation
-    private static final ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
-    private static final MoveList static_moves = new MoveList(384);   // 64*6
-    private static final MoveList cap1_moves = new MoveList(384);   // 64*6
-    private static final MoveList cap2_moves = new MoveList(384);   // 64*6
-    private static final MoveList cap3_moves = new MoveList(384);   // 64*6
-    private static final MoveList reg_moves = new MoveList(384);   // 64*6
-    private static final MoveList dec_moves = new MoveList(384);
+    private  final MoveList tempList = new MoveList(3);   // Temp move store for heuristic evaluation
+    private  final ArrayList<IMove> poMoves = new ArrayList<IMove>(384);
+    private  final MoveList static_moves = new MoveList(384);   // 64*6
+    private  final MoveList cap1_moves = new MoveList(384);   // 64*6
+    private  final MoveList cap2_moves = new MoveList(384);   // 64*6
+    private  final MoveList cap3_moves = new MoveList(384);   // 64*6
+    private  final MoveList reg_moves = new MoveList(384);   // 64*6
+    private  final MoveList dec_moves = new MoveList(384);
 
     // these are the values for black (p2)
     private static final char[][] lorentzValues = {{5, 15, 15, 5, 5, 15, 15, 5},

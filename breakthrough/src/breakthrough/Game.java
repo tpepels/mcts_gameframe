@@ -1,9 +1,11 @@
 package breakthrough;
 
 import ai.MCTSOptions;
+import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
 import framework.AIPlayer;
+import framework.util.KeyboardPlayer;
 import mcts_tt.H_MCTS.HybridPlayer;
 
 public class Game {
@@ -12,24 +14,22 @@ public class Game {
         Board b = new Board();
         b.initialize();
 
-        MCTSOptions options1 = new MCTSOptions();
-        AIPlayer aiPlayer1 = new HybridPlayer();
-        aiPlayer1.setOptions(options1);
-        options1.fixedSimulations = true;
-        options1.useHeuristics = true;
-        options1.simulations = 25000;
-        options1.max_back = true;
-        options1.setGame("breakthrough");
-
+        AIPlayer aiPlayer1 = new KeyboardPlayer();
 
         MCTSOptions options2 = new MCTSOptions();
-        options2.setGame("breakthrough");
-        AIPlayer aiPlayer2 = new mcts2e.BRUEi.MCTS2ePlayer();
+        options2.pdepth = 4;
+        options2.earlyEval = true;
+        options2.useHeuristics = true;
+        options2.timeInterval = 60000;
+        options2.implicitMM = true;
+        options2.treeReuse = true;
+        options2.solver = true;
+        options2.solverFix = true;
+        options2.debug = true;
+        options2.progBias = true;
+        options2.nodePriors = true;
+        MCTSPlayer aiPlayer2 = new MCTSPlayer();
         aiPlayer2.setOptions(options2);
-        options2.fixedSimulations = true;
-        options2.simulations = 25000;
-//        options2.useHeuristics = true;
-//        options2.solver = true;
 
         AIPlayer aiPlayer;
         Move m = null;

@@ -5,10 +5,11 @@ import framework.AIPlayer;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveCallback;
+import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.util.*;
 
 public class MCTSPlayer implements AIPlayer, Runnable {
 
@@ -28,7 +29,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
         this.retry = false;
-        this.board = board;
+        this.board = board.copy();
         this.callback = callback;
         this.parallel = parallel;
         this.myPlayer = myPlayer;
@@ -61,6 +62,8 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             // Create a new root
             root = new TreeNode(myPlayer, options);
         }
+        if(root.getArity() == 0)
+            root.expand(board, 0, myPlayer);
         // Reset the nodes' stats
         TreeNode.moveStats[0].reset();
         TreeNode.moveStats[1].reset();
@@ -68,19 +71,51 @@ public class MCTSPlayer implements AIPlayer, Runnable {
         TreeNode.qualityStats[1].reset();
         //
         interrupted = false;
-        if (parallel) {
+
+        Thread[] t = new Thread[4];
+        for(int i = 0; i < 4; i++) {
             // Start the search in a new Thread.
-            Thread t = new Thread(this);
-            t.start();
-        } else {
-            run();
+            t[i] = new Thread(this);
+            t[i].start();
         }
+        for(int i = 0; i < 4; i++) {
+            try {
+                t[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
+        int maxVisits = -1;
+        for(IMove m : roots.keySet()) {
+            if(roots.get(m) > maxVisits) {
+                maxVisits = roots.get(m);
+                bestMove = m;
+            }
+        }
+        for(IMove c : roots.keySet()) {
+            System.out.println(c  + " n: "  + roots.get(c));
+        }
+
+        nMoves++;
+        // Release the board's memory
+        this.board = null;
+        System.out.println("Move: " + bestMove);
+        roots.clear();
+//        if (parallel) {
+//            // Start the search in a new Thread.
+//            Thread t = new Thread(this);
+//            t.start();
+//        } else {
+//            run();
+//        }
     }
 
     @Override
     public void run() {
         if (options == null)
             throw new RuntimeException("MCTS Options not set.");
+        TreeNode root = new TreeNode(myPlayer, options);
 
         int simulations = 0;
         boolean qb = options.qualityBonus;
@@ -92,7 +127,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             options.relativeBonus = false;
         if (sw && nMoves == 0)
             options.swUCT = false;
-
+        IBoard board = this.board.copy();
         if (!options.fixedSimulations) {
             double tickInterval = 30000.0;
             double startTime = System.currentTimeMillis();
@@ -145,43 +180,43 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                     break; // Break if you find a winning move
             }
         }
-        // Return the best move found
-        TreeNode bestChild = root.getBestChild(board);
-        // This sometimes happens in experiments
-        if (bestChild == null) {
-            options.debug = true;
-            // Print the root's children
-            root.getBestChild(board);
-            options.debug = false;
-            int nChildren = (root.getChildren() == null) ? 0 : root.getChildren().size();
-            System.err.println("Null bestMove in MCTS player! Root has " + nChildren + " children.");
-            // Try again with a new root
-            root = new TreeNode(myPlayer, options);
-            if (!parallel && !retry) {
-                retry = true;
-                interrupted = false;
-                run();
-            }
-        }
-        bestMove = bestChild.getMove();
-
-//        if (options.mapping) {
-//            double[] data = new double[2];
-//            for (TreeNode t : root.getChildren()) {
-//                data[0] += t.stats.true_mean();
-//                data[1] += t.stats.variance();
+        addRoot(root);
+//        // Return the best move found
+//        TreeNode bestChild = root.getBestChild(board);
+//        // This sometimes happens in experiments
+//        if (bestChild == null) {
+//            options.debug = true;
+//            // Print the root's children
+//            root.getBestChild(board);
+//            options.debug = false;
+//            int nChildren = (root.getChildren() == null) ? 0 : root.getChildren().size();
+//            System.err.println("Null bestMove in MCTS player! Root has " + nChildren + " children.");
+//            // Try again with a new root
+//            root = new TreeNode(myPlayer, options);
+//            if (!parallel && !retry) {
+//                retry = true;
+//                interrupted = false;
+//                run();
 //            }
-//            data[0] /= root.getChildren().size();
-//            data[1] /= root.getChildren().size();
-//            allData.add(data);
-//            plotAllData();
 //        }
-
+//        bestMove = bestChild.getMove();
+//
+////        if (options.mapping) {
+////            double[] data = new double[2];
+////            for (TreeNode t : root.getChildren()) {
+////                data[0] += t.stats.true_mean();
+////                data[1] += t.stats.variance();
+////            }
+////            data[0] /= root.getChildren().size();
+////            data[1] /= root.getChildren().size();
+////            allData.add(data);
+////            plotAllData();
+////        }
+//
         // show information on the best move
         if (options.debug) {
             System.out.println("Player " + myPlayer);
-            System.out.println("Did " + simulations + " simulations");
-            System.out.println("Best child: " + bestChild);
+//            System.out.println("Did " + simulations + " simulations");
             System.out.println("Root visits: " + root.getnVisits());
             //
             if (options.relativeBonus) {
@@ -196,35 +231,47 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 System.out.println("c*                : " + options.qualityCov.getCovariance() / options.qualityCov.variance2());
             }
         }
-        // Turn the qb/rb/sw-uct back on
-        options.qualityBonus = qb;
-        options.relativeBonus = rb;
-        options.swUCT = sw;
+//        // Turn the qb/rb/sw-uct back on
+//        options.qualityBonus = qb;
+//        options.relativeBonus = rb;
+//        options.swUCT = sw;
+//
+//        //options.moveCov.reset();
+//        //options.qualityCov.reset();
+//
+//        if (options.swUCT) {
+//            for (int i = 0; i < options.maxSims.length; i++) {
+//                if (options.maxSims[i] > options.windowSize)
+//                    options.maxSWDepth = i;
+//                options.maxSims[i] = 0;
+//            }
+//            options.maxSWDepth = Math.max(options.minSWDepth, options.maxSWDepth);
+//            System.out.println("Max SW depth: " + options.maxSWDepth);
+//        }
+//
+//        nMoves++;
+//        // Set the root to the best child, so in the next move, the opponent's move can become the new root
+//        if (options.treeReuse)
+//            root = bestChild;
+//        else
+//            root = null;
+//        // Release the board's memory
+//        board = null;
+//        // Make the move in the GUI, if parallel
+//        if (!interrupted && parallel && callback != null)
+//            callback.makeMove(bestChild.getMove());
+    }
 
-        //options.moveCov.reset();
-        //options.qualityCov.reset();
+    Map<IMove, Integer> roots = new HashMap<>();
 
-        if (options.swUCT) {
-            for (int i = 0; i < options.maxSims.length; i++) {
-                if (options.maxSims[i] > options.windowSize)
-                    options.maxSWDepth = i;
-                options.maxSims[i] = 0;
-            }
-            options.maxSWDepth = Math.max(options.minSWDepth, options.maxSWDepth);
-            System.out.println("Max SW depth: " + options.maxSWDepth);
-        }
-
-        nMoves++;
-        // Set the root to the best child, so in the next move, the opponent's move can become the new root
-        if (options.treeReuse)
-            root = bestChild;
-        else
-            root = null;
-        // Release the board's memory
-        board = null;
-        // Make the move in the GUI, if parallel
-        if (!interrupted && parallel && callback != null)
-            callback.makeMove(bestChild.getMove());
+    private synchronized void addRoot(TreeNode rootNode) {
+       for (TreeNode t : rootNode.getChildren()) {
+           if(roots.containsKey(t)) {
+               roots.put(t.getMove(), (int)(roots.get(t) + t.getnVisits()));
+           } else {
+               roots.put(t.getMove(), (int) t.getnVisits());
+           }
+       }
     }
 
     public void setOptions(MCTSOptions options) {

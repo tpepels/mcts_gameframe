@@ -59,6 +59,11 @@ public class Move extends IMove {
     }
 
 
+    @Override
+    public int hashCode() {
+        return this.toString().hashCode();
+    }
+
     public int getUniqueId() {
         int digit1 = movearr[0] * 8 + movearr[1];
         int digit2 = movearr[2] * 8 + movearr[3];
