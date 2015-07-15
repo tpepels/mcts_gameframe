@@ -225,7 +225,10 @@ public class TreeNode {
             updateStats(result, previousPlayer, depth);
         // Back-propagate the result
         // always return in view of me
-        return result;
+        if(options.test)
+            return result;
+        else
+            return -result;
     }
 
     public TreeNode expand(IBoard board, int depth, int parentPlayer) {

@@ -140,6 +140,8 @@ public class SimGame {
                 if (tag.startsWith("pd")) {
                     options.earlyEval = true;
                     options.pdepth = Integer.parseInt(tag.substring(2));
+                } else if (tag.equals("test")) {
+                    options.test = true;
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
                 } else if (tag.startsWith("im")) {
