@@ -3,7 +3,6 @@ package ai.mcts;
 import ai.MCTSOptions;
 import framework.*;
 import framework.util.StatCounter;
-import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
 import java.io.PrintWriter;
