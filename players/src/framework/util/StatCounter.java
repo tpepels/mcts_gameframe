@@ -145,9 +145,11 @@ public class StatCounter {
 
     public void add(StatCounter statCounter, boolean isOpp) {
         if (Math.abs(m_mean) == TreeNode.INF)
-            throw new RuntimeException("Left mean is INF in add");
-        if (Math.abs(statCounter.m_mean) == TreeNode.INF)
-            throw new RuntimeException("Right mean is INF in add");
+            return;
+        if (Math.abs(statCounter.m_mean) == TreeNode.INF) {
+            this.m_mean = statCounter.m_mean;
+            return;
+        }
         if (isOpp) {
             m_wins += statCounter.m_losses;
             m_losses += statCounter.m_wins;
@@ -156,7 +158,7 @@ public class StatCounter {
         } else {
             m_wins += statCounter.m_wins;
             m_losses += statCounter.m_losses;
-            // Add, because its in view of opponent
+            // Add, because its in view of myself
             m_sum += statCounter.m_sum;
         }
         m_n += statCounter.m_n;
@@ -235,5 +237,9 @@ public class StatCounter {
                 stat.push(val);
         }
         System.out.println(df.format(stat.mean()) + "\\%$\\pm$" + df.format(stat.ci95()));
+    }
+
+    public String toString() {
+        return "value: " + mean() + " visits: " + visits();
     }
 }

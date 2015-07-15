@@ -115,7 +115,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
         }
         total += simulations;
         totalT += endT - startT;
-        int removed = tt.pack(0);
+        int removed = tt.pack(1);
         if (options.debug) {
             System.out.println("Pack cleaned: " + removed + " transpositions");
         }

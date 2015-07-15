@@ -1,10 +1,8 @@
 package ai.mcts;
 
 import ai.MCTSOptions;
-import framework.AIPlayer;
-import framework.IBoard;
-import framework.IMove;
-import framework.MoveCallback;
+import framework.*;
+import framework.util.StatCounter;
 import sun.reflect.generics.tree.Tree;
 
 import java.io.IOException;
@@ -86,15 +84,25 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             }
         }
 
-        int maxVisits = -1;
-        for(IMove m : roots.keySet()) {
-            if(roots.get(m) > maxVisits) {
-                maxVisits = roots.get(m);
+        double max = -1;
+        String bestMove = null;
+        for(String m : roots.keySet()) {
+            if(roots.get(m).mean() > max) {
+                max = roots.get(m).mean();
                 bestMove = m;
             }
         }
-        for(IMove c : roots.keySet()) {
-            System.out.println(c  + " n: "  + roots.get(c));
+
+//        for(String c : roots.keySet()) {
+//            System.out.println(c  + " n: "  + roots.get(c));
+//        }
+        MoveList list = board.getExpandMoves();
+
+        for (int i = 0; i < list.size(); i++) {
+            if(list.get(i).toString().equals(bestMove)) {
+                this.bestMove = list.get(i);
+                break;
+            }
         }
 
         nMoves++;
@@ -129,7 +137,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
             options.swUCT = false;
         IBoard board = this.board.copy();
         if (!options.fixedSimulations) {
-            double tickInterval = 30000.0;
+            double tickInterval = 9900.0;
             double startTime = System.currentTimeMillis();
             double nextTickTime = startTime + tickInterval;
 
@@ -142,8 +150,9 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                 if (System.currentTimeMillis() >= endTime) {
                     break;
                 } else if (System.currentTimeMillis() >= nextTickTime) {
-                    System.out.println("Tick. I have searched " + ((System.currentTimeMillis() - startTime) / 1000.0) + " seconds.");
+                    System.out.println("I have searched " + ((System.currentTimeMillis() - startTime) / 1000.0) + " seconds.");
                     nextTickTime = System.currentTimeMillis() + tickInterval;
+                    System.out.println("Best child: " + root.getBestChild(board));
                 }
                 board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
@@ -180,6 +189,7 @@ public class MCTSPlayer implements AIPlayer, Runnable {
                     break; // Break if you find a winning move
             }
         }
+        System.out.println("Best child: " + root.getBestChild(board));
         addRoot(root);
 //        // Return the best move found
 //        TreeNode bestChild = root.getBestChild(board);
@@ -262,14 +272,19 @@ public class MCTSPlayer implements AIPlayer, Runnable {
 //            callback.makeMove(bestChild.getMove());
     }
 
-    Map<IMove, Integer> roots = new HashMap<>();
+    Map<String, StatCounter> roots = new HashMap<>();
 
-    private synchronized void addRoot(TreeNode rootNode) {
-       for (TreeNode t : rootNode.getChildren()) {
-           if(roots.containsKey(t)) {
-               roots.put(t.getMove(), (int)(roots.get(t) + t.getnVisits()));
-           } else {
-               roots.put(t.getMove(), (int) t.getnVisits());
+    private void addRoot(TreeNode rootNode) {
+       synchronized (roots) {
+           for (TreeNode t : rootNode.getChildren()) {
+               if (roots.containsKey(t.getMove().toString())) {
+                   StatCounter sc = roots.get(t.getMove().toString());
+                   sc.add(t.stats, false);
+               } else {
+                   StatCounter sc = new StatCounter();
+                   sc.add(t.stats, false);
+                   roots.put(t.getMove().toString(), sc);
+               }
            }
        }
     }
