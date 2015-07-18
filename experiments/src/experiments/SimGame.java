@@ -12,6 +12,7 @@ import framework.IMove;
 import framework.util.*;
 import mcts2e.BRUE.MCTS2ePlayer;
 import mcts_tt.H_MCTS.HybridPlayer;
+import mcts_tt.SHOT.SHOTPlayer;
 import mcts_tt.uct.UCTPlayer;
 
 /**
@@ -244,12 +245,12 @@ public class SimGame {
             }
             // and set the options for this player
             playerRef.setOptions(options);
-        } else if (parts[0].equals("srmcts") || parts[0].equals("srmctstt")) {
-            if (parts[0].equals("srmctstt")) {
+        } else if (parts[0].equals("srmcts") || parts[0].equals("srmctstt") || parts[0].equals("shot")) {
+            if(parts[0].equals("shot"))
+                playerRef = new SHOTPlayer();
+            else
                 playerRef = new HybridPlayer();
-            } else {
-                playerRef = new HybridPlayer();
-            }
+
             options.hybrid = true;
             options.debug = mctsDebug; // false by default
             options.useHeuristics = false;
