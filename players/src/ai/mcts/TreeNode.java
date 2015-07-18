@@ -107,13 +107,10 @@ public class TreeNode {
             else
                 child = select(board, depth + 1);
         }
-
-        if(child.move == null)
-            throw new RuntimeException("Child == this");
         //
         if (child.player < 0)
             throw new RuntimeException("Child player weird!");
-
+        //
         double result;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.stats.mean()) != INF) {
@@ -228,8 +225,10 @@ public class TreeNode {
             updateStats(result, previousPlayer, depth);
         // Back-propagate the result
         // always return in view of me
-        // TODO I think this should be -result!!!!
-        return -result;
+        if(options.test)
+            return result;
+        else
+            return -result;
     }
 
     public TreeNode expand(IBoard board, int depth, int parentPlayer) {

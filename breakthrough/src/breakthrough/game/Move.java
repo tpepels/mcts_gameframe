@@ -61,7 +61,7 @@ public class Move extends IMove {
 
     @Override
     public int hashCode() {
-        return this.toString().hashCode();
+        return this.getUniqueId();
     }
 
     public int getUniqueId() {

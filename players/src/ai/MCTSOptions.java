@@ -69,6 +69,8 @@ public class MCTSOptions {
     private int instance = 0;
     private double[][] histVal, histVis;
 
+    public boolean test = false;
+
     public MCTSOptions() {
         this.instance = ++instances;
         plotOutFile = String.format(plotOutFile, instance);

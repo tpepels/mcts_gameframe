@@ -582,6 +582,9 @@ public class Board implements IBoard {
         initNodePriorsLorenz(parentPlayer, stats, move, npvisits);
     }
 
+    private static final int[] rowOffset = {-1, -1, +1, +1};
+    private static final int[] colOffset = {-1, +1, -1, +1};
+
     public void initNodePriorsLorenz(int parentPlayer, StatCounter stats, IMove move, int npvisits) {
 
         //if (true) return;
@@ -605,8 +608,7 @@ public class Board implements IBoard {
         // count immediate attackers and defenders
         int attackers = 0, defenders = 0;
 
-        int[] rowOffset = {-1, -1, +1, +1};
-        int[] colOffset = {-1, +1, -1, +1};
+
 
         for (int oi = 0; oi < 4; oi++) {
             int rpp = rp + rowOffset[oi];

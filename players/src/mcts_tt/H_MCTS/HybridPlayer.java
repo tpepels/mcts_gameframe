@@ -62,12 +62,12 @@ public class HybridPlayer implements AIPlayer, Runnable {
             System.out.println("Player " + myPlayer);
             System.out.println("Best child: " + bestChild);
             System.out.println("Play-outs: " + pl[3]);
-            System.out.println("Play-outs check: " + HybridNode.totalPlayouts);
+//            System.out.println("Play-outs check: " + HybridNode.totalPlayouts);
             System.out.println((int) ((1000. * HybridNode.totalPlayouts) / (endT - startT)) + " playouts per s");
         }
         total += HybridNode.totalPlayouts;
         totalTime += endT - startT;
-        int removed = tt.pack(0);
+        int removed = tt.pack(1);
         if (options.debug)
             System.out.println("Pack cleaned: " + removed + " transpositions");
         root = null;

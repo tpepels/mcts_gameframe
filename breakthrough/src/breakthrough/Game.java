@@ -5,6 +5,8 @@ import ai.mcts.MCTSPlayer;
 import breakthrough.game.Board;
 import breakthrough.game.Move;
 import framework.AIPlayer;
+import framework.util.KeyboardPlayer;
+import mcts_tt.H_MCTS.HybridPlayer;
 import mcts_tt.uct.UCTPlayer;
 
 public class Game {
@@ -13,26 +15,26 @@ public class Game {
         Board b = new Board();
         b.initialize();
 
-        AIPlayer aiPlayer1 = new UCTPlayer();
-        MCTSOptions options = new MCTSOptions();
-        options.solver = true;
-        options.timeInterval = 5000;
-        options.useHeuristics = true;
-        options.debug = true;
-        aiPlayer1.setOptions(options);
+        AIPlayer aiPlayer2 = new KeyboardPlayer();
 
+//        AIPlayer aiPlayer1 = new UCTPlayer();
+//        MCTSOptions options1 = new MCTSOptions();
+//        options1.setGame("breakthrough");
+//        options1.fixedSimulations = true;
+//        options1.simulations = 30000;
+//        options1.solver = true;
+//        options1.useHeuristics = true;
+//        aiPlayer1.setOptions(options1);
+
+
+        AIPlayer aiPlayer1 = new UCTPlayer();
         MCTSOptions options2 = new MCTSOptions();
-        options2.pdepth = 4;
-        options2.earlyEval = true;
-        options2.useHeuristics = true;
-        options2.timeInterval = 5000;
-        options2.implicitMM = true;
+        options2.setGame("breakthrough");
+        options2.timeInterval = 30000;
         options2.solver = true;
-        options2.debug = true;
-//        options2.progBias = true;
-        options2.nodePriors = true;
-        MCTSPlayer aiPlayer2 = new MCTSPlayer();
-        aiPlayer2.setOptions(options2);
+        options2.solverFix = true;
+        options2.useHeuristics = true;
+        aiPlayer1.setOptions(options2);
 
         AIPlayer aiPlayer;
         Move m = null;
