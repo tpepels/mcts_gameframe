@@ -353,13 +353,13 @@ public class HybridNode {
     private int playOut(IBoard board) {
         totalPlayouts++;
         simulated = true;
-        boolean gameEnded, moveMade;
+        boolean gameEnded, moveMade, interrupted = false;
         int cp = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
-        while (!gameEnded) {
+        while (!gameEnded && !interrupted) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
@@ -386,8 +386,21 @@ public class HybridNode {
                     moveMade = false;
                     moves.remove(currentMove);
                 }
+                if (!gameEnded && options.earlyEval && nMoves == options.pdepth) {
+                    interrupted = true;
+                }
             }
         }
+        if (interrupted) {
+            winner = IBoard.DRAW;
+            double eval = board.evaluate(player, options.efVer);
+            //System.out.println(eval);
+            if (eval > options.detThreshold)
+                winner = player;
+            else if (eval < -options.detThreshold)
+                winner = 3 - player;
+        }
+
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();

@@ -16,7 +16,7 @@ public class Game {
         MCTSOptions options1 = new MCTSOptions();
         AIPlayer aiPlayer1 = new HISMCTSPlayer();
         options1.fixedSimulations = true;
-        options1.simulations = 10000;
+        options1.simulations = 100000;
         options1.useHeuristics = true;
         options1.setGame("phantomdomineering");
         aiPlayer1.setOptions(options1);
@@ -24,7 +24,7 @@ public class Game {
         MCTSOptions options2 = new MCTSOptions();
         AIPlayer aiPlayer2 = new ISMCTSPlayer();
         options2.fixedSimulations = true;
-        options2.simulations = 10000;
+        options2.simulations = 100000;
         options2.useHeuristics = true;
         options2.setGame("phantomdomineering");
         aiPlayer2.setOptions(options2);

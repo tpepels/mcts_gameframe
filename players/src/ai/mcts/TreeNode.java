@@ -228,7 +228,8 @@ public class TreeNode {
             updateStats(result, previousPlayer, depth);
         // Back-propagate the result
         // always return in view of me
-        return result;
+        // TODO I think this should be -result!!!!
+        return -result;
     }
 
     public TreeNode expand(IBoard board, int depth, int parentPlayer) {

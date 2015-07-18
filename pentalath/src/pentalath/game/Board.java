@@ -3,7 +3,6 @@ package pentalath.game;
 import framework.IBoard;
 import framework.IMove;
 import framework.MoveList;
-import framework.util.FastTanh;
 import framework.util.StatCounter;
 
 import java.util.ArrayList;
@@ -776,8 +775,7 @@ public class Board implements IBoard {
         score += weights[8] * maxTotalFreeMe;
         score += weights[9] * maxTotalFreeOpp;
 
-        double score_nt = FastTanh.tanh(score / 1000.0);
-        return score_nt;
+        return score;
     }
 
     @Override

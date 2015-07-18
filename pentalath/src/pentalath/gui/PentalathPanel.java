@@ -5,7 +5,8 @@ import com.rush.HexGridCell;
 import framework.AIPlayer;
 import framework.IMove;
 import framework.MoveCallback;
-import mcts_tt.H_MCTS.HybridPlayer;
+import mcts_tt.SHOT.SHOTPlayer;
+import mcts_tt.uct.UCTPlayer;
 import pentalath.game.Board;
 import pentalath.game.Move;
 
@@ -53,9 +54,9 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
 
     private void resetPlayers() {
         if (!p1Human) {
-            aiPlayer1 = new HybridPlayer();
+            aiPlayer1 = new SHOTPlayer();
             MCTSOptions options1 = new MCTSOptions();
-            options1.simulations = 25000;
+            options1.simulations = 50000;
             options1.fixedSimulations = true;
             options1.solver = true;
             options1.setGame("pentalath");
@@ -63,13 +64,15 @@ public class PentalathPanel extends JPanel implements MouseListener, MoveCallbac
             aiPlayer1.newGame(1, "pentalath");
         }
         if (!p2Human) {
-            aiPlayer2 = new HybridPlayer();
-//            aiPlayer2 = new MCTSPlayer();
+//            aiPlayer2 = new HybridPlayer();
+            aiPlayer2 = new UCTPlayer();
             MCTSOptions options2 = new MCTSOptions();
-            options2.simulations = 25000;
+            options2.simulations = 50000;
             options2.fixedSimulations = true;
+            options2.earlyEval = true;
+            options2.pdepth = 4;
+            options2.detThreshold = 100;
             options2.solver = true;
-            options2.UBLB = true;
             options2.setGame("pentalath");
             aiPlayer2.setOptions(options2);
             aiPlayer2.newGame(2, "pentalath");

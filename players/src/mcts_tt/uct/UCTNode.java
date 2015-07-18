@@ -199,14 +199,14 @@ public class UCTNode {
     }
 
     private double playOut(IBoard board) {
-        boolean gameEnded, moveMade;
+        boolean gameEnded, moveMade, interrupted = false;
         int currentPlayer = board.getPlayerToMove(), nMoves = 0;
         List<IMove> moves;
         int winner = board.checkWin();
         gameEnded = (winner != IBoard.NONE_WIN);
         IMove currentMove;
 
-        while (!gameEnded) {
+        while (!gameEnded && !interrupted) {
             moves = board.getPlayoutMoves(options.useHeuristics);
             moveMade = false;
             while (!moveMade) {
@@ -233,13 +233,25 @@ public class UCTNode {
                     moveMade = false;
                     moves.remove(currentMove);
                 }
+                if (!gameEnded && options.earlyEval && nMoves == options.pdepth) {
+                    interrupted = true;
+                }
             }
         }
 
-        double score;
-        if (winner == player) score = 1.0;
-        else if (winner == IBoard.DRAW) score = 0.0;
-        else score = -1;
+        double score = 0.;
+        if (gameEnded) {
+            if (winner == player) score = 1.0;
+            else if (winner == IBoard.DRAW) score = 0.0;
+            else score = -1;
+        } else if (interrupted) {
+            double eval = board.evaluate(player, options.efVer);
+            //System.out.println(eval);
+            if (eval > options.detThreshold)
+                score = 1.;
+            else if (eval < -options.detThreshold)
+                score = -1.;
+        }
         // Undo the moves done in the playout
         for (int i = 0; i < nMoves; i++)
             board.undoMove();
