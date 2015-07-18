@@ -93,10 +93,9 @@ public class UCTNode {
             // set the board back to its previous configuration
             if (!isTerminal())
                 board.undoMove();
-        }
-        // Could be solved deeper in the tree as a transposition
-        if (Math.abs(child.getValue()) == State.INF)
+        } else {
             result = child.getValue();
+        }
 
         // result is now in view of me in all cases
         if (options.solver) {
@@ -122,8 +121,12 @@ public class UCTNode {
         }
         if (board.hash() != hash)
             throw new RuntimeException("Incorrect hash");
-        // Update the results for the current node
-        updateStats(result);
+        if (Math.abs(getValue()) != State.INF)
+            // Update the results for the current node
+            updateStats(result);
+        else
+            // Sometimes the node becomes solved deeper in the tree
+            return getValue();
         // Back-propagate the result always return in view of me
         return result;
     }
