@@ -43,7 +43,7 @@ public class MCTSOptions {
     public boolean hybrid = false;
     // Marc's stuff (mostly for implicit minimax)
     public boolean earlyEval = false;           // enable dropping down to evaluation function in playouts?
-    public int pdepth = Integer.MAX_VALUE;      // number of moves in playout before dropping down to eval func
+    public int pdepth = 4;                        // number of moves in playout before dropping down to eval func
     public boolean implicitMM = false;          // implicit minimax
     public double imAlpha = 0.0;
     public boolean imPruning = false;
