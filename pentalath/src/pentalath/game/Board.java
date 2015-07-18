@@ -86,7 +86,8 @@ public class Board implements IBoard {
     // [5] pieces capped by opponent.
     // [6] my largest group
     // [7] opponent's largest group
-    private int[] weights = {800, 50, 5, -5, -50, -800, 10, -10, 5, -5};
+//    private int[] weights = {800, 50, 5, -5, -50, -800, 10, -10, 5, -5};
+    private int[] weights = {10, 3, 1, 0, 0, 0, 0, 0, 0, 0};
     private boolean[] seenFree, visited;
     private ArrayList<Field> checkedFree = new ArrayList<Field>(Board.SIZE);
     private int groupSize = 0;
