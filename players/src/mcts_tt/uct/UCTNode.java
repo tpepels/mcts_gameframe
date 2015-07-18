@@ -247,9 +247,9 @@ public class UCTNode {
             if (winner == player) score = 1.0;
             else if (winner == IBoard.DRAW) score = 0.0;
             else score = -1;
-        } else if (interrupted) {
+        } else {
             double eval = board.evaluate(player, options.efVer);
-            //System.out.println(eval);
+            System.out.println(eval);
             if (eval > options.detThreshold)
                 score = 1.;
             else if (eval < -options.detThreshold)
