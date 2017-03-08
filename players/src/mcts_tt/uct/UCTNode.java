@@ -249,7 +249,7 @@ public class UCTNode {
             else score = -1;
         } else {
             double eval = board.evaluate(player, options.efVer);
-            System.out.println(eval);
+            //System.out.println(eval);
             if (eval > options.detThreshold)
                 score = 1.;
             else if (eval < -options.detThreshold)
