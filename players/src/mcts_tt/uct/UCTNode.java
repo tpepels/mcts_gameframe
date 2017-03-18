@@ -75,7 +75,7 @@ public class UCTNode {
         if (child.player < 0)
             throw new RuntimeException("Child player weird!");
 
-        double[] result = null;
+        double[] result;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.getValue()) != State.INF) {
             // Execute the move represented by the child
@@ -300,13 +300,14 @@ public class UCTNode {
     private void updateStats(double[] value) {
         if (state == null)
             state = tt.getState(hash, false);
+        //
         for (int i = 0; i < value.length; i++) {
             if (value[i] == -1)
                 state.updateStats(player);
             else
                 state.updateStats(3 - player);
         }
-        visits++;
+        visits += value.length;
     }
 
     private void setSolved(boolean win) {

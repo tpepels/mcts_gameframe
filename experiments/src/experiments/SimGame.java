@@ -143,6 +143,9 @@ public class SimGame {
                     options.pdepth = Integer.parseInt(tag.substring(2));
                 } else if (tag.equals("test")) {
                     options.test = true;
+                } else if (tag.startsWith("rs")) {
+                    options.resample = true;
+                    options.nResamples = Integer.parseInt(tag.substring(2));
                 } else if (tag.equals("h")) {
                     options.useHeuristics = true;
                 } else if (tag.startsWith("im")) {
