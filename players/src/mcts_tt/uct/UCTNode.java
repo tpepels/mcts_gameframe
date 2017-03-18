@@ -84,16 +84,16 @@ public class UCTNode {
 
             // When a leaf is reached return the result of the playout
             if (!child.isSimulated() || child.isTerminal()) {
-
+                double firstResult = child.playOut(board);
                 if (options.resample && child.getMove().isInteresting()) {
                     // Perform multiple resamples if the leaf's move was interesting
-                    result = new double[options.nResamples];
-                    for (int i = 0; i < options.nResamples; i++) {
+                    result = new double[options.nResamples + 1];
+                    result[0] = firstResult;
+                    for (int i = 1; i <= options.nResamples; i++) {
                         result[i] = -child.playOut(board);
                     }
                     options.totalResamples++;
                 } else {
-                    double firstResult = child.playOut(board);
                     result = new double[]{-firstResult};
                 }
                 child.updateStats(result);
