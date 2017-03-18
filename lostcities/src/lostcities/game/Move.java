@@ -61,7 +61,7 @@ public class Move extends IMove {
     }
 
     @Override
-    public boolean isProtected() {
+    public boolean isInteresting() {
         return false;
     }
 

@@ -39,6 +39,9 @@ public class MCTSOptions {
     public boolean history = false, to_history = false; // Set this to true to keep track of all results
     public boolean MAST = false; // Turning off heuristics also disables MAST
     public double mastEps = 0.1;
+    // RESAMPLING STUFF
+    public boolean resample = false;
+    public int nResamples = 5, totalResamples = 0;
     //
     public boolean hybrid = false;
     // Marc's stuff (mostly for implicit minimax)

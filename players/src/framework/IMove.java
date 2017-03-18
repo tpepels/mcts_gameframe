@@ -21,5 +21,5 @@ public abstract class IMove {
         return (int) options.getHistoryVisits(player, getUniqueId());
     }
 
-    public abstract boolean isProtected();
+    public abstract boolean isInteresting();
 }

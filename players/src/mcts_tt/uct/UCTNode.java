@@ -55,7 +55,7 @@ public class UCTNode {
      * @param board The current board
      * @return the currently evaluated playout value of the node
      */
-    public double MCTS(IBoard board, int depth) {
+    public double[] MCTS(IBoard board, int depth) {
         if (board.hash() != hash)
             throw new RuntimeException("Incorrect hash");
         UCTNode child = null;
@@ -75,7 +75,7 @@ public class UCTNode {
         if (child.player < 0)
             throw new RuntimeException("Child player weird!");
 
-        double result = 0;
+        double[] result = null;
         // (Solver) Check for proven win / loss / draw
         if (Math.abs(child.getValue()) != State.INF) {
             // Execute the move represented by the child
@@ -84,34 +84,47 @@ public class UCTNode {
 
             // When a leaf is reached return the result of the playout
             if (!child.isSimulated() || child.isTerminal()) {
-                result = child.playOut(board);
-                child.updateStats(-result);
+
+                if (options.resample && child.getMove().isInteresting()) {
+                    // Perform multiple resamples if the leaf's move was interesting
+                    result = new double[options.nResamples];
+                    for (int i = 0; i < options.nResamples; i++) {
+                        result[i] = -child.playOut(board);
+                    }
+                    options.totalResamples++;
+                } else {
+                    double firstResult = child.playOut(board);
+                    result = new double[]{-firstResult};
+                }
+                child.updateStats(result);
+                flipSigns(result);
                 child.simulated = true;
             } else {
-                result = -child.MCTS(board, depth + 1);
+                result = child.MCTS(board, depth + 1);
+                flipSigns(result);
             }
             // set the board back to its previous configuration
             if (!isTerminal())
                 board.undoMove();
         } else {
-            result = child.getValue();
+            result = new double[]{child.getValue()};
         }
 
         // result is now in view of me in all cases
         if (options.solver) {
             // (Solver) If one of the children is a win, then I'm a win
-            if (result == State.INF) {
+            if (result[0] == State.INF) {
                 // If I have a win, my parent has a loss.
                 setSolved(false);
                 return result;
-            } else if (result == -State.INF) {
+            } else if (result[0] == -State.INF) {
                 // (Solver) Check if all children are a loss
                 for (UCTNode tn : children) {
                     // Are all children a loss?
-                    if (tn.getValue() != result) {
+                    if (tn.getValue() != result[0]) {
                         // Return a single loss, if not all children are a loss
-                        updateStats(1);
-                        return -1;
+                        updateStats(new double[]{1});
+                        return new double[]{-1};
                     }
                 }
                 // (Solver) If all children lead to a loss for the opponent, then I'm a win
@@ -126,7 +139,7 @@ public class UCTNode {
             updateStats(result);
         else
             // Sometimes the node becomes solved deeper in the tree
-            return getValue();
+            return new double[]{getValue()};
         // Back-propagate the result always return in view of me
         return result;
     }
@@ -284,13 +297,15 @@ public class UCTNode {
         return bestChild;
     }
 
-    private void updateStats(double value) {
+    private void updateStats(double[] value) {
         if (state == null)
             state = tt.getState(hash, false);
-        if (value == -1)
-            state.updateStats(player);
-        else
-            state.updateStats(3 - player);
+        for (int i = 0; i < value.length; i++) {
+            if (value[i] == -1)
+                state.updateStats(player);
+            else
+                state.updateStats(3 - player);
+        }
         visits++;
     }
 
@@ -323,6 +338,12 @@ public class UCTNode {
         if (state == null)
             return 0.;
         return state.getVisits();
+    }
+
+    private void flipSigns(double[] result) {
+        for (int i = 0; i < result.length; i++) {
+            result[i] = -result[i];
+        }
     }
 
     private boolean isSolved() {

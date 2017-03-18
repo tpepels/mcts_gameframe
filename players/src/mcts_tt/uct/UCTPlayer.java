@@ -59,6 +59,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
         boolean qb = options.qualityBonus;
         boolean rb = options.relativeBonus;
         boolean sw = options.swUCT;
+        options.totalResamples = 0;
         if (qb && nMoves == 0)
             options.qualityBonus = false;
         if (rb && nMoves == 0)
@@ -79,7 +80,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
                 board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 // Note: stats at root node are in view of the root player (also never used)
-                if (Math.abs(root.MCTS(board, 0)) == State.INF)
+                if (Math.abs(root.MCTS(board, 0)[0]) == State.INF)
                     break; // Break if you find a winning move
             }
             // (SW-UCT) Remember the number of simulations for the next round
@@ -95,7 +96,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
                 board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
                 // Note: stats at the root node are in view of the root player (also never used)
-                if (Math.abs(root.MCTS(board, 0)) == State.INF)
+                if (Math.abs(root.MCTS(board, 0)[0]) == State.INF)
                     break; // Break if you find a winning move
             }
         }
@@ -111,6 +112,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
             System.out.println("Best child: " + bestChild);
             System.out.println("Collisions: " + tt.collisions + ", tps: " + tt.positions);
             System.out.println("Recoveries: " + tt.recoveries);
+            System.out.println("Total resamples: " + options.totalResamples);
             System.out.println((int) ((1000. * simulations) / (endT - startT)) + " playouts per s");
         }
         total += simulations;
