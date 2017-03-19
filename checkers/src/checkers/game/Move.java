@@ -63,7 +63,7 @@ public class Move extends IMove {
 
     @Override
     public boolean isInteresting() {
-        return captures.length > 0;
+        return captures != null && captures.length > 0;
     }
 
     @Override
