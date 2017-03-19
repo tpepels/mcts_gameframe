@@ -523,10 +523,11 @@ public class SimGame {
 //
 //        System.out.println("Fixed: " + fixedTime);
 //        System.out.println("Timed: " + timedTime);
+        lastWinner = board.checkWin();
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
-        System.out.println("Game over. Winner is " + board.checkWin());
-        lastWinner = board.checkWin();
+        System.out.println("Game over. Winner is " + lastWinner);
+
     }
 
     public void run_kalah() {
