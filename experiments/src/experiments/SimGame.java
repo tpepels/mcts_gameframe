@@ -30,6 +30,7 @@ public class SimGame {
     private AIPlayer player2;
     private MCTSOptions options1, options2;
     private int timeLimit;
+    public int lastWinner = 0;
     private long seed;
     private boolean printBoard;
     private boolean mctsDebug;
@@ -37,7 +38,7 @@ public class SimGame {
     private boolean timed = false;
     private int timedPlayer = 0;
 
-    SimGame() {
+    public SimGame() {
         game = "none specified";
         p1label = "none specified";
         p2label = "none specified";
@@ -525,6 +526,7 @@ public class SimGame {
 
         // Do not change the format of this line. Used by results aggregator scripts/parseres.perl
         System.out.println("Game over. Winner is " + board.checkWin());
+        lastWinner = board.checkWin();
     }
 
     public void run_kalah() {
