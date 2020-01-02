@@ -84,6 +84,7 @@ public class UCTNode {
 
             // When a leaf is reached return the result of the playout
             if (!child.isSimulated() || child.isTerminal()) {
+                long preplayout = board.hash();
                 double firstResult = child.playOut(board);
                 //
                 if (options.resample && child.getMove().isInteresting()) {
@@ -374,3 +375,5 @@ public class UCTNode {
         return move + "\tValue: " + df2.format(getValue()) + "\tVisits: " + getVisits();
     }
 }
+
+

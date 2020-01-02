@@ -91,7 +91,7 @@ public class UCTPlayer implements AIPlayer, Runnable {
             options.simsLeft = options.tempSims;
             // Run as many simulations as allowed
             while (simulations <= options.simulations) {
-                simulations++;
+                simulations++; // TODO Put this in options so fixed sims works with resampling
                 options.simsLeft--;
                 board.newDeterminization(myPlayer, false);
                 // Make one simulation from root to leaf.
